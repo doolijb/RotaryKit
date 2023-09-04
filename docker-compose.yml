@@ -1,0 +1,108 @@
+# # # # # # # # # # # # # # # # # # # #
+# DEVELOPMENT DOCKERFILE              #
+# # # # # # # # # # # # # # # # # # # #
+
+version: '3.8'
+
+# # # # # # # # # # # # # # # # # # # #
+# NETWORKS                            #
+# # # # # # # # # # # # # # # # # # # #
+
+networks:
+
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+services:
+
+  # # # # # # # # # # # # # # # # # # #
+  # APP                               #
+  # # # # # # # # # # # # # # # # # # #
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    command: unitd --no-daemon --control 0.0.0.0:8090
+    volumes:
+      - ./app:/srv/www/app
+      - ./server:/srv/www/app/server
+    networks:
+      default:
+        ipv4_address: 172.20.0.10
+    ports:
+      - 8080:8080 # App
+      - 6006:6006 # Storybook
+      - 4983:4983 # Drizzle Studio
+      - 8090:8090 # Unit config
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - mail
+      - redis
+    restart: on-failure
+
+  # # # # # # # # # # # # # # # # # # #
+  # DB: POSTGRES                      #
+  # # # # # # # # # # # # # # # # # # #
+
+  db:
+    image: postgres:13.0-alpine
+    networks:
+      default:
+        ipv4_address: 172.20.0.20
+    ports:
+      - 5432:5432
+    env_file:
+      - ./.env.dev
+    restart: on-failure
+
+  # # # # # # # # # # # # # # # # # # #
+  # MEDIA: MINIO - S3 COMPATIBLE      #
+  # # # # # # # # # # # # # # # # # # #
+
+  media:
+    image: minio/minio:RELEASE.2023-01-25T00-19-54Z
+    networks:
+      default:
+        ipv4_address: 172.20.0.30
+    ports:
+      - 9000:9000
+    env_file:
+      - ./.env.dev
+    command: server /data
+    restart: on-failure
+
+  # # # # # # # # # # # # # # # # # # #
+  # REDIS                             #
+  # # # # # # # # # # # # # # # # # # #
+
+  redis:
+    image: redis:7.0-alpine
+    networks:
+      default:
+        ipv4_address: 172.20.0.40
+    ports:
+      - 6379:6379
+    env_file:
+      - ./.env.dev
+    restart: on-failure
+
+  # # # # # # # # # # # # # # # # # # #
+  # MAIL: MAILDEV - MOCK SMTP & INBOX #
+  # # # # # # # # # # # # # # # # # # #
+
+  mail:
+    image: maildev/maildev
+    networks:
+      default:
+        ipv4_address: 172.20.0.50
+    ports:
+      - 1080:1080
+      - 1025:1025
+    env_file:
+      - ./.env.dev
