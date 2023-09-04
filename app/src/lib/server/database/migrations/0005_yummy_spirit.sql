@@ -1,0 +1,1 @@
+ALTER TABLE "images" ADD COLUMN "total_bytes" bigint NOT NULL;

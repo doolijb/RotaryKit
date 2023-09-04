@@ -1,0 +1,27 @@
+{
+	"listeners": {
+		"*:8080": {
+			"pass": "routes/main"
+		}
+	},
+	"routes": {
+		"main": [
+			{
+				"action": {
+					"proxy": "http://172.20.0.90:6006"
+				},
+				"match": {
+					"uri": ["/dev/sb*", "/dev/storybook*"]
+				}
+			},
+			{
+				"action": {
+					"proxy": "http://127.0.0.1:5173"
+				},
+				"match": {
+					"uri": ["*", "/*"]
+				}
+			}
+		]
+	}
+}
