@@ -1,4 +1,4 @@
-import { exists } from "drizzle-orm"
+// import { exists } from "drizzle-orm"
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 import { migrate as pgMigrate } from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
@@ -27,20 +27,20 @@ const client = new pg.Client({ connectionString: getConnectionString(databases.d
 await client.connect()
 
 export async function migrate() {
-    const migrateText = "Updating database..."
-    process.stdout.write(chalk.whiteBright('• ') + chalk.yellow(migrateText))
-    process.stdout.cursorTo(migrateText.length + 4)
+    // const migrateText = "Updating database..."
+    // process.stdout.write(chalk.whiteBright('• ') + chalk.yellow(migrateText))
+    // process.stdout.cursorTo(migrateText.length + 4)
 
     const db = drizzle(client, { schema })
 
     return pgMigrate(db, {
         migrationsFolder: './src/lib/server/database/migrations',
     }).catch((err) => {
-        process.stdout.write("❌")
+        // process.stdout.write("❌")
         console.log(err)
         process.exit(1)
     }).then(() => {
-        process.stdout.write(chalk.green("🗸\n"))
+        // process.stdout.write(chalk.green("🗸\n"))
         return
     })
 }

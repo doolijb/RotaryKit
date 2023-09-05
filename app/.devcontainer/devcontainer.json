@@ -14,7 +14,8 @@
                 "yoavbls.pretty-ts-errors",
                 "pkief.material-icon-theme",
                 "svelte.svelte-vscode",
-                "pivaszbs.svelte-autoimport"
+                "pivaszbs.svelte-autoimport",
+                "rvest.vs-code-prettier-eslint"
             ],
             "settings": {
                 "remote.forwardOnOpen": false

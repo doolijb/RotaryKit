@@ -21,6 +21,7 @@ const config = {
 			"@server": "./src/lib/server",
 			"@server/*": "./src/lib/server/*",
 			"@validators": "./src/lib/validators",
+			"@validators/*": "./src/lib/validators/*",
 		}
 	}
 }

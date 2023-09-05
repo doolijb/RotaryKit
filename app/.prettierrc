@@ -7,4 +7,5 @@
 	"pluginSearchDirs": ["."],
 	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
 	"semi": false,
+	"editor.formatOnSave": true
 }

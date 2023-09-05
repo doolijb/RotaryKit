@@ -1,4 +1,4 @@
-import { uuid, varchar, timestamp, pgTable, uniqueIndex } from 'drizzle-orm/pg-core'
+import { uuid, varchar, pgTable } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 export const permissions = pgTable('permissions', {

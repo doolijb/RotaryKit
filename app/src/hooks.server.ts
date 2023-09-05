@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { migrate } from "@server/database"
-import { error } from "@sveltejs/kit"
+// import { error } from "@sveltejs/kit"
 import type { Event, Resolve } from "@sveltejs/kit/types/hooks"
-import { db } from "@server/database"
-import { exists } from 'drizzle-orm'
+// import { db } from "@server/database"
+// import { exists } from 'drizzle-orm'
 
 chalk.level = 1
 

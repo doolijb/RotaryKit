@@ -1,6 +1,7 @@
-import utils from "@validators/utils"
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js"
 import type { IFieldValidator } from "@interfaces"
+import utils from "@validators/utils"
+
 
 export default function (
     args: { label?: string; getCountryCode: () => string } = {

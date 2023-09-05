@@ -1,10 +1,9 @@
 import { getRequestData, validateData } from '@server'
 import forms from '@validators/forms'
-import { db, users, email, emails, userEmails } from '@server/database'
+import { db, users, emails, userEmails } from '@server/database'
 import type { IFormValidatorSetArgs } from '@interfaces'
 import { error } from '@sveltejs/kit'
-import { eq, sql } from 'drizzle-orm'
-import { pbkdf2 } from 'pbkdf2'
+import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
 
 /** @type {import('./$types').RequestHandler} */
@@ -80,7 +79,7 @@ export async function POST(event: { request: Request }) {
     })
 
     // Create passphrase
-    
+
 
     return new Response("Hello World")
 }
