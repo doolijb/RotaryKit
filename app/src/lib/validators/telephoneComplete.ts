@@ -10,13 +10,13 @@ export default function (
 ): IFieldValidator {
     if (!args.getCountryCode) {
         throw new Error(
-            "completeTelephoneValidator requires a getCountryCode function"
+            "telephoneComplete validator requires a getCountryCode function"
         )
     }
     return {
         args,
         badge: "Invalid",
-        key: "completeTelephone",
+        key: "telephoneComplete",
         message: "Must be a complete phone number",
         popup: utils.makePopup(),
         sticky: false,

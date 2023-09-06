@@ -4,9 +4,9 @@
         lowercaseRequiredValidator,
         maxLengthValidator,
         minLengthValidator,
-        numberRequiredValidator,
+        numberIncludedValidator,
         requiredValidator,
-        specialCharRequiredValidator,
+        specialCharIncludedValidator,
         uppercaseRequiredValidator    } from "@validators"
     import type {IFieldValidator} from "@interfaces"
 
@@ -23,8 +23,8 @@
         maxLengthValidator({maxLen: 100}),
         lowercaseRequiredValidator({}),
         uppercaseRequiredValidator({}),
-        numberRequiredValidator({}),
-        specialCharRequiredValidator({})
+        numberIncludedValidator({}),
+        specialCharIncludedValidator({})
     ]
     export let value = ""
 </script>

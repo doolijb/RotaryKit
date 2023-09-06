@@ -8,13 +8,13 @@ export default function (args: {
 }): IFieldValidator {
     if (!args.getCountryCode) {
         throw new Error(
-            "possibleTelephoneValidator requires a getCountryCode function"
+            "telephonePossible validator requires a getCountryCode function"
         )
     }
     return {
         args,
         badge: "Partial",
-        key: "possibleTelephone",
+        key: "telephonePossible",
         message: "You must enter a valid phone number",
         popup: utils.makePopup(),
         sticky: false,

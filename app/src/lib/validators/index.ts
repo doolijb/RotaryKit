@@ -1,32 +1,36 @@
-import { default as completeTelephone } from "./completeTelephone"
+/**
+ * Validators that can be used for form validation, client side and server side.
+ * 
+ * Validator names should be noun + adjective, e.g. "required", "emailAddressComplete".
+ */
+
+import { default as telephoneComplete } from "./telephoneComplete"
 import { default as confirmMatch } from "./confirmMatch"
-import { default as emailAddress } from "./emailAddress"
+import { default as emailAddressComplete } from "./emailAddressComplete"
 import { default as lowercaseRequired } from "./lowercaseRequired"
 import { default as maxLength } from "./maxLength"
 import { default as minLength } from "./minLength"
-import { default as numberRequired } from "./numberRequired"
-import { default as possibleTelephone } from "./possibleTelephone"
-import { default as postalCode } from "./postalCode"
+import { default as numberIncluded } from "./numberIncluded"
+import { default as telephonePossible } from "./telephonePossible"
+import { default as postalCodeComplete } from "./postalCodeComplete"
 import { default as required } from "./required"
-import { default as specialCharRequired } from "./specialCharRequired"
-import { default as specialChar } from "./specialChar"
-import { default as uppercaseRequired } from "./uppercaseRequired"
+import { default as specialCharIncluded } from "./specialCharIncluded"
+import { default as specialCharExcluded} from "./specialCharExcluded"
+import { default as uppercaseRequired } from "./uppercaseIncluded"
 
-// export { default as fields } from './fields'
-// export { default as forms } from './forms'
 
 export default {
-    completeTelephone,
     confirmMatch,
-    emailAddress,
+    emailAddressComplete,
     lowercaseRequired,
     maxLength,
     minLength,
-    numberRequired,
-    possibleTelephone,
-    postalCode,
+    numberIncluded,
+    postalCodeComplete,
     required,
-    specialCharRequired,
-    specialChar,
+    specialCharExcluded,
+    specialCharIncluded,
+    telephoneComplete,
+    telephonePossible,
     uppercaseRequired,
 }

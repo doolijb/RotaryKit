@@ -13,7 +13,7 @@ const defaultDefinitions: IFieldValidatorSetDefaultArgs = {
     },
     emailAddress: {
         args: {},
-        validator: validators.emailAddress,
+        validator: validators.emailAddressComplete,
     },
 }
 
