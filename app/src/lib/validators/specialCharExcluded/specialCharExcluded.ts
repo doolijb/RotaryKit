@@ -8,11 +8,13 @@ import utils from "@validators/utils"
  * @returns IFieldValidator
  */
 
-export default function (
-    args: { label?: string } = {}
-): IFieldValidator {
+export default function ({ 
+    label 
+}: {
+    label?: string
+} = {} ): IFieldValidator {
     return {
-        args,
+        args: { label },
         badge: "Special characters",
         key: "specialChar",
         message: "Must not contain spaces or special characters",

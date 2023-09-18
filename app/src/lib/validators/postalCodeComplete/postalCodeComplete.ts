@@ -9,15 +9,23 @@ import utils from "@validators/utils"
  * @returns { IFieldValidator }
  */
 
-export default function (args: { getCountryCode: () => string | null }): IFieldValidator {
+export default function ({
+    label,
+    getCountryCode
+}: { 
+    label?: string,
+    getCountryCode: () => string | null 
+}
+): IFieldValidator {
     return {
-        args,
+        args: { label, getCountryCode },
         badge: "Format",
         key: "postalCode",
         message: "Must be a valid postal code",
         popup: utils.makePopup(),
         sticky: false,
         test: (value: string): boolean => {
+            // TODO
             // const countryCode = args.getCountryCode()
             // // We will only test if the country code is valid
             // if (!countryCode) {

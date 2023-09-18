@@ -9,16 +9,20 @@ import utils from "@validators/utils"
  * @returns IFieldValidator
  */
 
-export default function (
-    args: { label?: string; maxLen: number } = { maxLen: 20 }
-): IFieldValidator {
+export default function ({
+    label,
+    maxLen = 20
+}: { 
+    label?: string; 
+    maxLen?: number
+} = {} ): IFieldValidator {
     return {
-        args,
+        args: { label, maxLen },
         badge: "Max length",
         key: "maxLength",
-        message: `Must be at most ${args.maxLen} characters long`,
+        message: `Must be at most ${maxLen} characters long`,
         popup: utils.makePopup(),
         sticky: false,
-        test: (value: string) => (value ? value.length <= args.maxLen : true)
+        test: (value: string) => (value ? value.length <= maxLen : true)
     }
 }

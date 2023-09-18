@@ -9,16 +9,20 @@ import utils from "@validators/utils"
  * @returns IFieldValidator
  */
 
-export default function (
-    args: { label?: string; minLen: number } = { minLen: 3 }
-): IFieldValidator {
+export default function ({ 
+    label, 
+    minLen = 3 
+}: { 
+    label?: string,
+    minLen?: number
+} = {} ): IFieldValidator {
     return {
-        args,
+        args: { label, minLen },
         badge: "Min length",
         key: "minLength",
-        message: `Must be at least ${args.minLen} characters long`,
+        message: `Must be at least ${minLen} characters long`,
         popup: utils.makePopup(),
         sticky: false,
-        test: (value: string) => (value ? value.length >= args.minLen : true)
+        test: (value: string) => (value ? value.length >= minLen : true)
     }
 }

@@ -13,11 +13,11 @@ const defaultDefinitions: IFieldValidatorSetDefaultArgs= {
     },
     specialChar: {
         args: {},
-        validator: validators.specialChar,
+        validator: validators.specialCharIncluded,
     },
 }
 
-export default function (args: IFieldValidatorSetArgs): IFieldValidatorSet {
+export default function (args: IFieldValidatorSetArgs = {}): IFieldValidatorSet {
     const definitions = utils.mergeFieldValidatorSetArgs(defaultDefinitions, args);
     return utils.makeFieldValidatorSet(definitions);
 }
