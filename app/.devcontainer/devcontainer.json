@@ -15,7 +15,8 @@
                 "pkief.material-icon-theme",
                 "svelte.svelte-vscode",
                 "pivaszbs.svelte-autoimport",
-                "rvest.vs-code-prettier-eslint"
+                "rvest.vs-code-prettier-eslint",
+                "hardikmodha.create-tests"
             ],
             "settings": {
                 "remote.forwardOnOpen": false

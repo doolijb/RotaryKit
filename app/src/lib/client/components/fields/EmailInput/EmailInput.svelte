@@ -1,12 +1,7 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
-    import {
-        emailValidator,
-        maxLengthValidator,
-        minLengthValidator,
-        requiredValidator    } from "@validators"
-    import type {IFieldValidator} from "@interfaces"
-
+    import fieldValidators from "@validators/fields"
+    import type {IFieldValidator, IFieldValidatorSet} from "@interfaces"
 
     export let disabled = false
 
@@ -24,17 +19,9 @@
     // Refs
     export let ref: HTMLInputElement
 
-
-
     export let type = "email"
 
-
-    export let validators: IFieldValidator[] = [
-        requiredValidator({}),
-        minLengthValidator({minLen: 5}),
-        maxLengthValidator({maxLen: 100}),
-        emailValidator({})
-    ]
+    export let validators: IFieldValidatorSet = fieldValidators.email()
 
     export let value = ""
 
@@ -49,6 +36,7 @@
     bind:value
     bind:errors
     bind:disabled
+    bind:ref
     bind:onFocus
     bind:onBlur
     bind:onInput

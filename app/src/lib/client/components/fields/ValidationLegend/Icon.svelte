@@ -1,14 +1,14 @@
 <script lang="ts">
     import {ValidStates} from "@constants"
+    // @ts-ignore 
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
     import {onMount} from "svelte"
-    import type {IFieldValidator} from "@interfaces"
-
+    import type {IFieldValidatorSet} from "@interfaces"
     export let errors: IFieldValidator[] = []
     export let legendPopup: PopupSettings
     export let validState = ValidStates.NONE
-    export let validators: IFieldValidator[] = []
+    export let validators: IFieldValidatorSet = {}
     let legendIcon: HTMLDivElement
 
     onMount(() => {

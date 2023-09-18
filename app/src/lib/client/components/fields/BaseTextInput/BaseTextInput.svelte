@@ -2,7 +2,7 @@
     import {ValidationBadges, ValidationLegend} from "@components"
     import {ValidStates} from "@constants"
     import {onMount} from "svelte"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IFieldValidator, IFieldValidatorSet} from "@interfaces"
     import type {PopupSettings} from "@skeletonlabs/skeleton"
 
     //
@@ -21,7 +21,7 @@
     /** Type of the input element */
     export let type = "text"
     /** List of validators */
-    export let validators: IFieldValidator[] = []
+    export let validators: IFieldValidatorSet = {}
     /** Field value */
     export let value = ""
 
@@ -55,7 +55,7 @@
      * Functions
      */
     function validate() {
-        errors = validators.filter(validator => !validator.test(value))
+        errors = Object(validators).values.filter((validator: IFieldValidator) => !validator.test(value))
         validState =
             errors.length === 0 ? ValidStates.VALID : ValidStates.INVALID
     }
@@ -73,7 +73,7 @@
             isTouched = true
             validate()
         }
-        validators.forEach(validator => {
+        Object(validators).values.forEach((validator: IFieldValidator) => {
             switch (validator.key) {
             case "required":
                 required = true

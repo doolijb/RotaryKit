@@ -17,7 +17,7 @@ const defaultDefinitions: IFieldValidatorSetDefaultArgs = {
     },
 }
 
-export default function (args: IFieldValidatorSetArgs): IFieldValidatorSet {
+export default function (args: IFieldValidatorSetArgs = {}): IFieldValidatorSet {
     const definitions = utils.mergeFieldValidatorSetArgs(defaultDefinitions, args)
     return utils.makeFieldValidatorSet(definitions)
 }
