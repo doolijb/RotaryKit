@@ -2,9 +2,9 @@
     import {BaseTextInput} from "@components"
     import {countries} from "@data"
     import {
-        telephoneCompleteValidator,
-        maxLengthValidator,
-        telephonePossibleValidator
+        telephoneComplete,
+        maxLength,
+        telephonePossible
     } from "@validators"
     import {AsYouType} from "libphonenumber-js"
     import type {IFieldValidator} from "@interfaces"

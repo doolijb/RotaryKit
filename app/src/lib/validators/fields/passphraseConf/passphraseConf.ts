@@ -1,12 +1,6 @@
-import type { IFieldValidatorSet, IFieldValidatorSetArgs, IFieldValidatorSetDefaultArgs } from '@interfaces'
+import type { IFieldValidatorSet, IFieldValidatorSetDefs, IFieldValidatorSetDefaultArgs } from '@interfaces'
 import validators from '@validators'
 import utils from '@validators/utils'
-
-// interface SpecificArgs extends IFieldValidatorSetArgs {
-//     getMatchValue: {
-//         args: { [key: string]: any },
-//     }
-// }
 
 const defaultDefinitions: IFieldValidatorSetDefaultArgs = {
     confirmMatch: {
@@ -15,7 +9,7 @@ const defaultDefinitions: IFieldValidatorSetDefaultArgs = {
     }
 }
 
-export default function (args: IFieldValidatorSetArgs): IFieldValidatorSet {
+export default function (args: IFieldValidatorSetDefs = {}): IFieldValidatorSet {
     const definitions = utils.mergeFieldValidatorSetArgs(defaultDefinitions, args)
     return utils.makeFieldValidatorSet(definitions)
 }

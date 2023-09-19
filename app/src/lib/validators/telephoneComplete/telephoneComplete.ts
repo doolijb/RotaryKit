@@ -28,6 +28,10 @@ export default function (
         popup: utils.makePopup(),
         sticky: false,
         test: (value: string) => {
+            // Ignore if empty
+            if (!value) {
+                return true
+            }
             const numOnly = value.replace(/\D/g, "")
             const countryCode = args.getCountryCode() as CountryCode
             const parsedNumber = parsePhoneNumber(numOnly, countryCode)

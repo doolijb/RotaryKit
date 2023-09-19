@@ -9,5 +9,5 @@ test("postalCode validator passes", async () => {
 
 test("postalCode validator fails", async () => {
     const validator = postalCodeComplete({ getCountryCode: () => "US" })
-    expect(validator.test("9920")).toBe(false)
+    expect(validator.test("abc")).toBe(false)
 })

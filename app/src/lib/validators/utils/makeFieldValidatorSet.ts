@@ -1,4 +1,4 @@
-import type { IFieldValidator, IFieldValidatorSetArgs } from '@interfaces'
+import type { IFieldValidator, IFieldValidatorSetDefs } from '@interfaces'
 import type { IFieldValidatorSet } from '@interfaces'
 
 /**
@@ -28,10 +28,10 @@ import type { IFieldValidatorSet } from '@interfaces'
  * //     emailAddress: IFieldValidator
  * //   }
  */
-export default function (args: IFieldValidatorSetArgs): IFieldValidatorSet {
-    const field: IFieldValidatorSet = {}
-    Object.entries(args).forEach(([name, data]) => {
-        field[name] = data.validator(data.args || {})
+export default function (definitions: IFieldValidatorSetDefs): IFieldValidatorSet {
+    const fieldValidators: IFieldValidatorSet = {}
+    Object.entries(definitions).forEach(([key, { args, validator }]) => {
+        fieldValidators[key] = validator(args);
     })
-    return field
+    return fieldValidators
 }

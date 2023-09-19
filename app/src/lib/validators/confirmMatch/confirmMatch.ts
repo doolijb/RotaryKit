@@ -10,27 +10,29 @@ import utils from "@validators/utils"
  * @returns IFieldValidator
  */
 
-export default function (
-    args: { label?: string; getMatchValue: () => string } = {
-        getMatchValue: null as unknown as () => string
-    }
-): IFieldValidator {
-    if (!args.getMatchValue) {
-        throw new Error(
-            "confirmMatchValidator requires a getMatchValue function"
-        )
-    }
+export default function ({
+    label,
+    getMatchValue
+}: { 
+    label?: string; 
+    getMatchValue: () => string 
+}): IFieldValidator {
+    // if (!args.getMatchValue) {
+    //     throw new Error(
+    //         "confirmMatch validator requires a getMatchValue function"
+    //     )
+    // }
     return {
-        args,
-        badge: `${args.label ? sentenceCase(args.label) + "s" : "Values"
+        args: { label, getMatchValue },
+        badge: `${label ? sentenceCase(label) + "s" : "Values"
             } Match`,
         key: "confirmMatch",
-        message: `The ${args.label ? args.label.toLowerCase() + "s" : "values"
-            } entered does not match, please try again`,
+        message: `The ${label ? label.toLowerCase() + "s" : "values"
+            } entered do not match, please try again`,
         popup: utils.makePopup(),
         sticky: false,
         test: (value: any) => {
-            const matchValue = args.getMatchValue()
+            const matchValue = getMatchValue()
             return Boolean(value ? matchValue && value === matchValue : true)
         }
     }

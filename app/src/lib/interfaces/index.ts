@@ -40,12 +40,12 @@ export interface IFormValidatorSet {
 }
 
 /**
- * Additional arguments for field validators
+ * Definition for a field validator
  */
-export interface IFieldValidatorSetArgs {
+export interface IFieldValidatorSetDefs {
     [key: string]: {
-        args?: { [key: string]: any }
-        validator?: (args: any) => IFieldValidator
+        args?: Record<string, any>
+        validator?: (args: Record<string, any>) => IFieldValidator
     }
 }
 
@@ -64,8 +64,8 @@ export interface IFieldValidatorSetDefaultArgs {
  */
 export interface IFormValidatorSetArgs {
     [key: string]: {
-        field: (args: IFieldValidatorSetArgs) => IFieldValidatorSet,
-        args: IFieldValidatorSetArgs
+        field: (args: IFieldValidatorSetDef) => IFieldValidatorSet,
+        args: IFieldValidatorSetDef
     },
 }
 

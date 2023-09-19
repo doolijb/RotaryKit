@@ -1,4 +1,4 @@
-// import postalCodes from "postal-codes-js" // TODO!!!
+import postalCodes from "postal-codes-js"
 import type { IFieldValidator } from "@interfaces"
 import utils from "@validators/utils"
 
@@ -25,14 +25,16 @@ export default function ({
         popup: utils.makePopup(),
         sticky: false,
         test: (value: string): boolean => {
-            // TODO
-            // const countryCode = args.getCountryCode()
-            // // We will only test if the country code is valid
-            // if (!countryCode) {
-            //     return true
-            // }
-            // return postalCodes.validate(countryCode, value) === true
-            return true
+            // Ignore if empty
+            if (!value) {
+                return true
+            }
+            const countryCode = getCountryCode()
+            // We will only test if the country code is valid
+            if (!countryCode) {
+                return true
+            }
+            return postalCodes.validate(countryCode, value) === true
         },
     }
 }

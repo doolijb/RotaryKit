@@ -4,7 +4,7 @@ import passphraseConf from "."
 test("passphraseConf field validation passes", async () => {
     const getMatchValue = () => "password"
     const fieldValidators = passphraseConf({ 
-        getMatchValue: {
+        confirmMatch: {
             args: { getMatchValue }
         }
     })
@@ -16,8 +16,8 @@ test("passphraseConf field validation passes", async () => {
 
 test("passphraseConf field validation fails", async () => {
     const getMatchValue = () => "password"
-    const fieldValidators = passphraseConf({ 
-        getMatchValue: {
+    const fieldValidators = passphraseConf({
+        confirmMatch: {
             args: { getMatchValue }
         }
     })

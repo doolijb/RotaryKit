@@ -1,4 +1,4 @@
-import type { IFieldValidatorSet, IFieldValidatorSetArgs, IFieldValidatorSetDefaultArgs } from '@interfaces'
+import type { IFieldValidatorSet, IFieldValidatorSetDef, IFieldValidatorSetDefaultArgs } from '@interfaces'
 import validators from '@validators'
 import utils from '@validators/utils'
 
@@ -17,7 +17,7 @@ const defaultDefinitions: IFieldValidatorSetDefaultArgs = {
     },
 }
 
-export default function (args: IFieldValidatorSetArgs = {}): IFieldValidatorSet {
+export default function (args: IFieldValidatorSetDef = {}): IFieldValidatorSet {
     const definitions = utils.mergeFieldValidatorSetArgs(defaultDefinitions, args)
     return utils.makeFieldValidatorSet(definitions)
 }
