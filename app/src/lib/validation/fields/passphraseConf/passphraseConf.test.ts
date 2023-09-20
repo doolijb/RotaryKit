@@ -10,7 +10,7 @@ test("passphraseConf field validation passes", async () => {
     })
     const input = "password"
     for (const [key, validator] of Object.entries(fieldValidators)) {
-        expect(validator.test(input)).toBe(true)
+        expect(await validator.test(input)).toBe(true)
     }
 })
 
@@ -25,7 +25,7 @@ test("passphraseConf field validation fails", async () => {
     let failed = false
     for (const [key, validator] of Object.entries(fieldValidators)) {
         try {
-            expect(validator.test(input)).toBe(true)
+            expect(await validator.test(input)).toBe(true)
         }
         catch {
             failed = true

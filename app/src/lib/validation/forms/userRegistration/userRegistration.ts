@@ -33,11 +33,25 @@ const defaultDefinitions = {
         args: {
             required: {
                 validator: v.required,
+            },
+            confirmMatch: {
+                validator: v.confirmMatch,
             }
         },
     }
 } as IFormValidatorSetArgs
 
+/**
+ * Default definitions for user registration form
+ * 
+ * @field username: string,
+ * @field email: string,
+ * @field passphrase: string,
+ * @field passphraseConf: string
+ * 
+ * @param {IFormValidatorSetArgs} args
+ * @returns {IFormValidatorSetArgs}
+ */
 export default function (args: IFormValidatorSetArgs) { // Use typeof to get the type of defaultDefinitions
     args = utils.mergeFormValidatorSetArgs(defaultDefinitions, args)
     return makeFormValidatorSet(args)

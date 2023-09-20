@@ -5,7 +5,7 @@ test("username field validation passes", async () => {
     const fieldValidators = username()
     const input = "SparrowJack"
     for (const [key, validator] of Object.entries(fieldValidators)) {
-        expect(validator.test(input)).toBe(true)
+        expect(await validator.test(input)).toBe(true)
     }
 })
 
@@ -15,7 +15,7 @@ test("username field validation fails", async () => {
     let failed = false
     for (const [key, validator] of Object.entries(fieldValidators)) {
         try {
-            expect(validator.test(input)).toBe(true)
+            expect(await validator.test(input)).toBe(true)
         }
         catch {
             failed = true

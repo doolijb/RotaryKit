@@ -1,4 +1,4 @@
-import userRegistration from "./userRegistration"
+import userRegistration from "./userRegistration/userRegistration"
 
 export default {
     userRegistration,

@@ -31,7 +31,7 @@ export default function ({
             } entered do not match, please try again`,
         popup: utils.makePopup(),
         sticky: false,
-        test: (value: any) => {
+        test: async (value: any) => {
             const matchValue = getMatchValue()
             return Boolean(value ? matchValue && value === matchValue : true)
         }

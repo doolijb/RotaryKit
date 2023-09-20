@@ -22,7 +22,8 @@ export interface IFieldValidator {
     sticky: boolean
     message: string
     popup: PopupSettings
-    test: (value: any) => boolean
+    //Async
+    test: (value: any) => Promise<boolean>
 }
 
 /**
