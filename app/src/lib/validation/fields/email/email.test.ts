@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "vitest"
 import email from "."
 
 test("email field validation passes", async () => {

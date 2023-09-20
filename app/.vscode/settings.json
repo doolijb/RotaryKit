@@ -5,7 +5,7 @@
     "explorer.compactFolders": false,
     "createTests.testDirectoryName": "",
     "createTests.template.default": [
-        "import { expect, test } from \"@playwright/test\"",
+        "import { expect, test } from \"vitest\"",
         "import ${moduleName} from \".\"",
         "",
         "test(\"${moduleName} test passes\", async () => {",

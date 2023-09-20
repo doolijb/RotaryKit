@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "vitest"
 import postalCodeComplete from "."
 
 test("postalCode validator passes", async () => {

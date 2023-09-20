@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "vitest"
 import lowercaseRequired from "."
 
 test("lowercaseRequired validator passes", async () => {

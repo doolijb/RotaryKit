@@ -28,12 +28,6 @@ COPY ../app .
 RUN npm i
 
 # # # # # # # # # # # # # # # # # # #
-#  INSTALL TEST DEPENDENCIES        #
-# # # # # # # # # # # # # # # # # # #
-RUN npx playwright install
-RUN npx playwright install-deps
-
-# # # # # # # # # # # # # # # # # # #
 #  COPY UNIT CONFIG                 #
 # # # # # # # # # # # # # # # # # # #
 
