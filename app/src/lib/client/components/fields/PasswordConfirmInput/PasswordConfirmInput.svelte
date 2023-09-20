@@ -1,10 +1,10 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
     import { validators as v } from "@validation"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IValidator} from "@interfaces"
 
     export let disabled = false
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     export let label = "Password"
     // Component specific
     export let matchValue = ""
@@ -19,7 +19,7 @@
 
     export let type = "password"
 
-    export let validators: IFieldValidator[] = [
+    export let validators: IValidator[] = [
         v.required(),
         v.confirmMatch({label: "Password", getMatchValue})
     ]

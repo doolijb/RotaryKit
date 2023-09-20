@@ -1,12 +1,12 @@
 import postalCodes from "postal-codes-js"
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { validators as v, utils } from "@validation"
 
 /**
  * Validates that a string is a valid postal code
  * 
  * @param args { getCountryCode: () => string | null }
- * @returns { IFieldValidator }
+ * @returns { IValidator }
  */
 
 export default function ({
@@ -16,7 +16,7 @@ export default function ({
     label?: string,
     getCountryCode: () => string | null 
 }
-): IFieldValidator {
+): IValidator {
     return {
         args: { label, getCountryCode },
         badge: "Format",

@@ -1,18 +1,18 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
  * Validates that a string is a valid email address
  * 
  * @param args { label?: string }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({
     label,
 } : { 
     label?: string 
-} = {} ): IFieldValidator {
+} = {} ): IValidator {
     return {
         args: { label },
         badge: "Email",

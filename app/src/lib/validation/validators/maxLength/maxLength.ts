@@ -1,4 +1,4 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
@@ -6,7 +6,7 @@ import { utils } from "@validation"
  * Defaults to 20 characters
  * 
  * @param args { label?: string, maxLen: number }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({
@@ -15,7 +15,7 @@ export default function ({
 }: { 
     label?: string; 
     maxLen?: number
-} = {} ): IFieldValidator {
+} = {} ): IValidator {
     return {
         args: { label, maxLen },
         badge: "Max length",

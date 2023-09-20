@@ -1,7 +1,7 @@
 import { getRequestData, validateData } from '@server'
 import forms from '@validation/forms'
 import { db, users, emails, userEmails } from '@server/database'
-import type { IFormValidatorSetArgs } from '@interfaces'
+import type { IFormValidatorDefinition } from '@interfaces'
 import { error } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
@@ -23,7 +23,7 @@ export async function POST(event: { request: Request }) {
                 }
             }
         }
-    } as unknown as IFormValidatorSetArgs)
+    } as unknown as IFormValidatorDefinition)
     validateData(data, formValidators)
 
     // Database validation

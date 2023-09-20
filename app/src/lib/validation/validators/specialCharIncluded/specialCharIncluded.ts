@@ -1,11 +1,11 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
  * Validates that a string contains at least one special character
  * 
  * @param args { count: number, choices: string[] }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function specialCharIncluded({
@@ -46,7 +46,7 @@ export default function specialCharIncluded({
     label?: string,
     choices?: string[],
     count?: number
-  } = {}): IFieldValidator {
+  } = {}): IValidator {
 
     return {
         args: { label, choices, count },

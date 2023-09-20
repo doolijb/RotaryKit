@@ -1,16 +1,16 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
  * Validates that a string contains at least one uppercase letter
  * 
  * @param args { count: number }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function (
     args: { label?: string; count: number } = { count: 1 }
-): IFieldValidator {
+): IValidator {
     return {
         args,
         badge: "Uppercase Required",

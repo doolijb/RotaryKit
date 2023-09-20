@@ -1,6 +1,6 @@
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js"
 
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
@@ -8,13 +8,13 @@ import { utils } from "@validation"
  * useful for validating when a user is still typing
  * 
  * @param args { getCountryCode: () => string }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function (args: {
     label?: string
     getCountryCode: () => string
-}): IFieldValidator {
+}): IValidator {
     if (!args.getCountryCode) {
         throw new Error(
             "telephonePossible validator requires a getCountryCode function"

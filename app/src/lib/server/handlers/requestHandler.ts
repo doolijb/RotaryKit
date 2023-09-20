@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import type { IFieldValidator, IFormValidatorSet } from '@interfaces'
+import type { IValidator, IFormValidatorSet } from '@interfaces'
 
 export async function getRequestData(request: Request): Promise<{ [key: string]: string }> {
     let data: { [key: string]: string } = {}

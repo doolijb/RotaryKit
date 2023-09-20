@@ -1,14 +1,14 @@
-import type { IFieldValidatorSetDefs } from "@interfaces"
+import type { IFieldValidatorDefinition } from "@interfaces"
 /**
  * Merge default definitions with custom args
  * If a custom definition is provided, it will override the default
  * If a new definition is provided, it will be added to the set
- * @param definitions: IFieldValidatorSetArgs 
- * @param extraArgs: IFieldValidatorSetArgs 
- * @returns IFieldValidatorSetArgs
+ * @param definitions: IValidatorSetArgs 
+ * @param extraArgs: IValidatorSetArgs 
+ * @returns IValidatorSetArgs
  */
 
-export default function (definitions: IFieldValidatorSetDefs, extraArgs: IFieldValidatorSetDefs): IFieldValidatorSetDefs {
+export default function (definitions: IFieldValidatorDefinition, extraArgs: IFieldValidatorDefinition): IFieldValidatorDefinition {
     
     // Merge extraArgs into definitions, extraArgs will override definitions where values are not null
     Object.entries(extraArgs).forEach(([key, {args = {}, validator = null}]) => {

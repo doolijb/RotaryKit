@@ -1,14 +1,14 @@
-import type { IFormValidatorSetArgs } from "@interfaces"
+import type { IFormValidatorDefinition } from "@interfaces"
 /**
  * Merge default definitions with custom args
  * If a custom definition is provided, it will override the default
  * If a new definition is provided, it will be added to the set
- * @param definitions: IFormValidatorSetArgs
- * @param args: IFormValidatorSetArgs
- * @returns IFormValidatorSetArgs
+ * @param definitions: IFormValidatorDefinition
+ * @param args: IFormValidatorDefinition
+ * @returns IFormValidatorDefinition
  */
 
-export default function (definitions: IFormValidatorSetArgs, args: IFormValidatorSetArgs): IFormValidatorSetArgs {
+export default function (definitions: IFormValidatorDefinition, args: IFormValidatorDefinition): IFormValidatorDefinition {
     Object.entries(args).forEach(([key, value]) => {
         if (definitions[key]) {
             definitions[key].args = { ...definitions[key].args, ...value.args }

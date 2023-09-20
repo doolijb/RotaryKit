@@ -1,4 +1,4 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { validators as v, utils } from "@validation"
 
 /**
@@ -6,7 +6,7 @@ import { validators as v, utils } from "@validation"
  * Defaults to 3 characters
  * 
  * @param args { label?: string, minLen: number }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({ 
@@ -15,7 +15,7 @@ export default function ({
 }: { 
     label?: string,
     minLen?: number
-} = {} ): IFieldValidator {
+} = {} ): IValidator {
     return {
         args: { label, minLen },
         badge: "Min length",

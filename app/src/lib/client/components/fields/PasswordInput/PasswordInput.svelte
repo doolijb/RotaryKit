@@ -1,16 +1,16 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
     import { validators as v } from "@validation"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IValidator} from "@interfaces"
 
     export let disabled = false
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     export let label = "Password"
     export let onBlur: (e: Event) => void | undefined
     export let onFocus: (e: Event) => void | undefined
     export let onInput: (e: Event) => void | undefined
     export let type = "password"
-    export let validators: IFieldValidator[] = [
+    export let validators: IValidator[] = [
         v.required(),
         v.minLength({minLen: 10}),
         v.maxLength({maxLen: 100}),

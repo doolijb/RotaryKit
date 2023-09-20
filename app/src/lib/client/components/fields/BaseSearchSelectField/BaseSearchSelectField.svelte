@@ -11,12 +11,12 @@
     import { v4 as uuidv4 } from "uuid"
     import { onMount } from "svelte"
     import type { AutocompleteOption } from "@skeletonlabs/skeleton"
-    import type { IFieldValidator } from "@interfaces"
+    import type { IValidator } from "@interfaces"
 
 
     export let disabled = false
 
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     /**
      * Exported Props
      */
@@ -39,7 +39,7 @@
     export let searchInput = ""
 
 
-    export let validators: IFieldValidator[] = []
+    export let validators: IValidator[] = []
 
     export let value: any = null
 

@@ -1,18 +1,18 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { validators as v, utils } from "@validation"
 
 /**
  * Validates that a string does not contain spaces or special characters
  * 
  * @param args { label?: string }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({ 
     label 
 }: {
     label?: string
-} = {} ): IFieldValidator {
+} = {} ): IValidator {
     return {
         args: { label },
         badge: "Special characters",

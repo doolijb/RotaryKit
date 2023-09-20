@@ -2,24 +2,15 @@ import { expect, test } from "vitest"
 import email from "."
 
 test("email field validation passes", async () => {
-    const fieldValidators = email()
+    const field = email()
     const input = "jack.sparrow@example.com"
-    for (const [key, validator] of Object.entries(fieldValidators)) {
-        expect(await validator.test(input)).toBe(true)
-    }
+    const errors = await field.test(input)
+    expect(errors).toHaveLength(0)
 })
 
 test("email field validation fails", async () => {
-    const fieldValidators = email()
+    const field = email()
     const input = "jack.sparrow@example"
-    let failed = false
-    for (const [key, validator] of Object.entries(fieldValidators)) {
-        try {
-            expect(await validator.test(input)).toBe(true)
-        }
-        catch {
-            failed = true
-        }
-    }
-    expect(failed).toBe(true)
+    const errors = await field.test(input)
+    expect(errors).toHaveLength(1)
 })

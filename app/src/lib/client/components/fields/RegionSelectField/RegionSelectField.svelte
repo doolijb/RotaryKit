@@ -2,15 +2,15 @@
     import {BaseSearchSelectField} from "@components"
     import {countries} from "@data"
     import { validators as v } from "@validation"
-    import type {ICountry, IFieldValidator, IRegion} from "@interfaces"
+    import type {ICountry, IValidator, IRegion} from "@interfaces"
     import type {AutocompleteOption} from "@skeletonlabs/skeleton"
     import type { CountryCode } from "libphonenumber-js"
 
     export let label = "Region"
     export let placeholder = "Search regions"
     export let value: any = null
-    export let validators: IFieldValidator[] = [v.required()]
-    export let errors: IFieldValidator[] = []
+    export let validators: IValidator[] = [v.required()]
+    export let errors: IValidator[] = []
     export let disabled = false
     // Events
     export let onInput: (e: Event) => void | undefined

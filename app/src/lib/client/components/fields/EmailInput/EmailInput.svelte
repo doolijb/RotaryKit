@@ -1,11 +1,11 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
     import fieldValidators from "@validation/fields"
-    import type {IFieldValidator, IFieldValidatorSet} from "@interfaces"
+    import type {IValidator, IValidatorSet} from "@interfaces"
 
     export let disabled = false
 
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     /**
      * Variables
      */
@@ -21,7 +21,7 @@
 
     export let type = "email"
 
-    export let validators: IFieldValidatorSet = fieldValidators.email()
+    export let validators: IValidatorSet = fieldValidators.email()
 
     export let value = ""
 

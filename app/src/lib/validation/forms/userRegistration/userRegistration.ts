@@ -1,7 +1,7 @@
 import { validators as v, utils } from "@validation"
 import fields from '@validation/fields'
-import type { IFormValidatorSetArgs } from '@interfaces'
-import makeFormValidatorSet from '@validation/utils/makeFormValidatorSet'
+import type { IFormValidatorDefinition } from '@interfaces'
+import makeFormValidator from '@validation/utils/makeFormValidator'
 
 const defaultDefinitions = {
     username: {
@@ -39,7 +39,7 @@ const defaultDefinitions = {
             }
         },
     }
-} as IFormValidatorSetArgs
+} as IFormValidatorDefinition
 
 /**
  * Default definitions for user registration form
@@ -49,10 +49,10 @@ const defaultDefinitions = {
  * @field passphrase: string,
  * @field passphraseConf: string
  * 
- * @param {IFormValidatorSetArgs} args
- * @returns {IFormValidatorSetArgs}
+ * @param {IFormValidatorDefinition} args
+ * @returns {IFormValidatorDefinition}
  */
-export default function (args: IFormValidatorSetArgs) { // Use typeof to get the type of defaultDefinitions
+export default function (args: IFormValidatorDefinition) { // Use typeof to get the type of defaultDefinitions
     args = utils.mergeFormValidatorSetArgs(defaultDefinitions, args)
-    return makeFormValidatorSet(args)
+    return makeFormValidator(args)
 }

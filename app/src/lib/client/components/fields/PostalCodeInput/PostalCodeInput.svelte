@@ -2,7 +2,7 @@
     import {BaseTextInput} from "@components"
     import { countries } from "@data"
     import { validators as v } from "@validation"
-    import type {ICountry, IFieldValidator} from "@interfaces"
+    import type {ICountry, IValidator} from "@interfaces"
     import type { CountryCode } from "libphonenumber-js"
 
 
@@ -13,7 +13,7 @@
     export let disabled = false
 
 
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
 
     
     /**
@@ -35,7 +35,7 @@
 
     export let type = "text"
 
-    export let validators: IFieldValidator[] = [
+    export let validators: IValidator[] = [
         v.required(),
         v.minLength({minLen: 3}),
         v.maxLength({maxLen: 10}),

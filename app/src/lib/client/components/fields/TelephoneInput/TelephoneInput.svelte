@@ -3,12 +3,12 @@
     import {countries} from "@data"
     import { validators as v } from "@validation"
     import {AsYouType} from "libphonenumber-js"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IValidator} from "@interfaces"
 
     export let label = "Telephone"
     export let type = "tel"
     export let value = ""
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     export let disabled = false
     export let onInput: (e: Event) => void | undefined
     export let onFocus: (e: Event) => void | undefined
@@ -48,7 +48,7 @@
     $: value ? formatInput() : null
 
     // Validators (OOP)
-    export let validators: IFieldValidator[] = [
+    export let validators: IValidator[] = [
         v.maxLength({maxLen: 15}),
         v.telephoneComplete({getCountryCode: () => country}),
         v.telephonePossible({getCountryCode: () => country})

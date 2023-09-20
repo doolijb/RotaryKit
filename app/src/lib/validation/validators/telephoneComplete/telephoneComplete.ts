@@ -1,20 +1,20 @@
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js"
 
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
  * Validates that a string contains a complete phone number
  * 
  * @param args { getCountryCode: () => string }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function (
     args: { label?: string; getCountryCode: () => string } = {
         getCountryCode: null as unknown as () => string
     }
-): IFieldValidator {
+): IValidator {
     if (!args.getCountryCode) {
         throw new Error(
             "telephoneComplete validator requires a getCountryCode function"

@@ -2,13 +2,13 @@
     import {BaseSearchSelectField} from "@components"
     import { GenderIdentities } from "@constants"
     import { validators as v } from "@validation"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IValidator} from "@interfaces"
     import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 
 
     export let disabled = false
 
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     /**
      * Exported Props
      */
@@ -29,7 +29,7 @@
     export let searchInput = ""
 
 
-    export let validators: IFieldValidator[] = [v.required()]
+    export let validators: IValidator[] = [v.required()]
 
     export let value: any = null
 

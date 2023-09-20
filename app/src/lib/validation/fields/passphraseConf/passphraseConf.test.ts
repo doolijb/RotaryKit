@@ -2,34 +2,23 @@ import { expect, test } from "vitest"
 import passphraseConf from "."
 
 test("passphraseConf field validation passes", async () => {
-    const getMatchValue = () => "password"
-    const fieldValidators = passphraseConf({ 
+    const field = passphraseConf({ 
         confirmMatch: {
-            args: { getMatchValue }
+            args: { getMatchValue: () => "password" }
         }
     })
     const input = "password"
-    for (const [key, validator] of Object.entries(fieldValidators)) {
-        expect(await validator.test(input)).toBe(true)
-    }
+    const errors = await field.test(input)
+    expect(errors).toHaveLength(0)
 })
 
 test("passphraseConf field validation fails", async () => {
-    const getMatchValue = () => "password"
-    const fieldValidators = passphraseConf({
+    const field = passphraseConf({ 
         confirmMatch: {
-            args: { getMatchValue }
+            args: { getMatchValue: () => "password" }
         }
     })
     const input = "password1"
-    let failed = false
-    for (const [key, validator] of Object.entries(fieldValidators)) {
-        try {
-            expect(await validator.test(input)).toBe(true)
-        }
-        catch {
-            failed = true
-        }
-    }
-    expect(failed).toBe(true)
+    const errors = await field.test(input)
+    expect(errors).toHaveLength(1)
 })

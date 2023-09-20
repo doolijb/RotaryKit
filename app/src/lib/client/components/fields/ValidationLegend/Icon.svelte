@@ -4,11 +4,11 @@
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
     import {onMount} from "svelte"
-    import type {IFieldValidatorSet} from "@interfaces"
-    export let errors: IFieldValidator[] = []
+    import type {IValidatorSet} from "@interfaces"
+    export let errors: IValidator[] = []
     export let legendPopup: PopupSettings
     export let validState = ValidStates.NONE
-    export let validators: IFieldValidatorSet = {}
+    export let validators: IValidatorSet = {}
     let legendIcon: HTMLDivElement
 
     onMount(() => {

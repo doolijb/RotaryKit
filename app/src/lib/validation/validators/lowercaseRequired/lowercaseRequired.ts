@@ -1,11 +1,11 @@
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { validators as v, utils } from "@validation"
 
 /**
  * Validates that a string contains at least one lowercase letter
  * 
  * @param args { label?: string, count: number }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({ 
@@ -14,7 +14,7 @@ export default function ({
  } : { 
     label?: string; 
     count?: number 
-} = {} ): IFieldValidator {
+} = {} ): IValidator {
     return {
         args: { label, count },
         badge: "Lowercase Required",

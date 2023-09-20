@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { IFieldValidator } from "@interfaces"
+    import type { IValidator } from "@interfaces"
     import { ValidStates } from "@constants"
     import type { PopupSettings } from "@skeletonlabs/skeleton/index"
     import { ValidationBadges, ValidationLegend } from "@components"
@@ -12,7 +12,7 @@
     /** If the field is disabled */
     export let disabled = false
     /** List of validators with errors */
-    export let errors: IFieldValidator[] = []
+    export let errors: IValidator[] = []
     /** Field name */
     export let label = "Field Label"
     /** Placeholder text */
@@ -28,7 +28,7 @@
     /** Type of the input element */
     export let type = "text"
     /** List of validators */
-    export let validators: IFieldValidator[] = []
+    export let validators: IValidator[] = []
     /** Field value */
     export let value = ""
     

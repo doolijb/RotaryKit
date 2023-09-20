@@ -1,13 +1,13 @@
 import { sentenceCase } from "change-case"
 
-import type { IFieldValidator } from "@interfaces"
+import type { IValidator } from "@interfaces"
 import { utils } from "@validation"
 
 /**
  * Validates that a string is not empty
  * 
  * @param args { label?: string }
- * @returns IFieldValidator
+ * @returns IValidator
  */
 
 export default function ({
@@ -16,7 +16,7 @@ export default function ({
 }: { 
     label?: string; 
     getMatchValue: () => string 
-}): IFieldValidator {
+}): IValidator {
     // if (!args.getMatchValue) {
     //     throw new Error(
     //         "confirmMatch validator requires a getMatchValue function"

@@ -1,9 +1,9 @@
 <script lang="ts">
     import {popup} from "@skeletonlabs/skeleton"
-    import type {IFieldValidator} from "@interfaces"
+    import type {IValidator} from "@interfaces"
 
-    export let errors: IFieldValidator[] = []
-    export let validators: IFieldValidator[] = []
+    export let errors: IValidator[] = []
+    export let validators: IValidator[] = []
 </script>
 
 {#each validators as validator}
