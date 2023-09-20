@@ -1,5 +1,5 @@
 import { getRequestData, validateData } from '@server'
-import forms from '@validators/forms'
+import forms from '@validation/forms'
 import { db, users, emails, userEmails } from '@server/database'
 import type { IFormValidatorSetArgs } from '@interfaces'
 import { error } from '@sveltejs/kit'

@@ -1,5 +1,5 @@
 import Component from "."
-import {requiredValidator} from "@validators"
+import { validators as v } from "@validation"
 import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
@@ -7,7 +7,6 @@ import type {ComponentType} from "svelte"
 
 const meta: Meta<typeof Component> = {
     argTypes: {
-
         disabled: {
             control: {
                 type: "boolean"
@@ -52,7 +51,7 @@ const Template = (args: {value: boolean}) => ({
     props: args
 })
 
-const validators = [requiredValidator()]
+const fieldValidators = [v.required()]
 const options: AutocompleteOption[] = [
     {label: "Option 1", value: "Value 1"},
     {label: "Option 2", value: "Value 2"},
@@ -77,7 +76,7 @@ export const Example = {
 export const WithValidators = {
     args: {
         options,
-        validators,
+        fieldValidators,
     },
     render: Template
 }

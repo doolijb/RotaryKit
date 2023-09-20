@@ -1,6 +1,6 @@
 import Component from "."
 import type { Meta } from "@storybook/svelte"
-import { maxLengthValidator, requiredValidator } from "@validators"
+import { validators as v } from "@validation"
 import type { ComponentType } from "svelte"
 
 const meta: Meta<typeof Component> = {
@@ -27,8 +27,8 @@ export const Example = {
 export const WithValidators = {
     args: {
         validators: [
-            validators.required(),
-            maxLengthValidator({ maxLen: 100 })
+            v.required(),
+            v.maxLength({ maxLen: 100 })
         ]
     },
     render: Template

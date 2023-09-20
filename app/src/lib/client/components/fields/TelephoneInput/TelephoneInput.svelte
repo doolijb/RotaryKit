@@ -1,11 +1,7 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
     import {countries} from "@data"
-    import {
-        telephoneComplete,
-        maxLength,
-        telephonePossible
-    } from "@validators"
+    import { validators as v } from "@validation"
     import {AsYouType} from "libphonenumber-js"
     import type {IFieldValidator} from "@interfaces"
 
@@ -53,9 +49,9 @@
 
     // Validators (OOP)
     export let validators: IFieldValidator[] = [
-        maxLengthValidator({maxLen: 15}),
-        telephoneCompleteValidator({getCountryCode: () => country}),
-        telephonePossibleValidator({getCountryCode: () => country})
+        v.maxLength({maxLen: 15}),
+        v.telephoneComplete({getCountryCode: () => country}),
+        v.telephonePossible({getCountryCode: () => country})
     ]
 
 </script>

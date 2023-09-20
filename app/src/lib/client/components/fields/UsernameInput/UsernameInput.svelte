@@ -1,11 +1,6 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
-    import {
-        maxLengthValidator,
-        minLengthValidator,
-        requiredValidator,
-        specialCharValidator
-    } from "@validators"
+    import { validators as v } from "@validation"
     import type {IFieldValidator} from "@interfaces"    /** If the field is disabled */
     export let disabled = false
     /** List of validators with errors */
@@ -19,10 +14,10 @@
     export let ref: HTMLInputElement    /** Type of the input */
     export let type = "text"    /** List of validators to test the field */
     export let validators: IFieldValidator[] = [
-        requiredValidator({}),
-        minLengthValidator({minLen: 3}),
-        maxLengthValidator({maxLen: 20}),
-        specialCharValidator({})
+        v.required(),
+        v.minLength({minLen: 3}),
+        v.maxLength({maxLen: 20}),
+        v.specialCharExcluded()
     ]
     /** Value of the field */
     export let value = ""    /**

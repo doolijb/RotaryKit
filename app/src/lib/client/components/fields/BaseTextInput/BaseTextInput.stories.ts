@@ -1,10 +1,5 @@
 import Component from "."
-import {
-    maxLengthValidator,
-    minLengthValidator,
-    requiredValidator,
-    specialCharValidator
-} from "@validators"
+import { validators as v } from "@validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
 
@@ -115,10 +110,10 @@ export const FilledWithValidators = {
     args: {
         value: "Hello World",
         validators: [
-            validators.required(),
-            minLengthValidator(),
-            maxLengthValidator(),
-            specialCharValidator()
+            v.required(),
+            v.minLength(),
+            v.maxLength(),
+            v.specialCharIncluded()
         ]
     }
 }
@@ -134,10 +129,10 @@ export const WithValidators = {
     render: Template,
     args: {
         validators: [
-            validators.required(),
-            minLengthValidator(),
-            maxLengthValidator(),
-            specialCharValidator()
+            v.required(),
+            v.minLength(),
+            v.maxLength(),
+            v.specialCharIncluded()
         ]
     }
 }

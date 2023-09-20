@@ -1,5 +1,5 @@
 import Component from "."
-import { minLengthValidator, requiredValidator } from "@validators"
+import { validators as v } from "@validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
 
@@ -31,8 +31,8 @@ const Template = (args: { value: boolean }) => ({
     props: args
 })
 
-const minLength = minLengthValidator({ minLen: 5 })
-const required = validators.required()
+const minLength = v.minLength({ minLen: 5 })
+const required = v.required()
 
 export const Multiple = {
     render: Template,

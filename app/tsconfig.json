@@ -38,11 +38,11 @@
 			"@server/*": [
 				"./src/lib/server/*"
 			],
-			"@validators": [
-				"./src/lib/validators"
+			"@validation": [
+				"src/lib/validation"
 			],
-			"@validators/*": [
-				"./src/lib/validators/*"
+			"@validation/*": [
+				"src/lib/validation/*"
 			],
 		}
 	}

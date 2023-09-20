@@ -1,9 +1,6 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
-    import {
-        confirmMatchValidator,
-        requiredValidator,
-    } from "@validators"
+    import { validators as v } from "@validation"
     import type {IFieldValidator} from "@interfaces"
 
     export let disabled = false
@@ -23,8 +20,8 @@
     export let type = "password"
 
     export let validators: IFieldValidator[] = [
-        requiredValidator({}),
-        confirmMatchValidator({label: "Password", getMatchValue})
+        v.required(),
+        v.confirmMatch({label: "Password", getMatchValue})
     ]
 
 

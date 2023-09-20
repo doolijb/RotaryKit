@@ -1,7 +1,7 @@
 <script lang="ts">
     import {BaseSearchSelectField} from "@components"
     import { GenderIdentities } from "@constants"
-    import {requiredValidator} from "@validators"
+    import { validators as v } from "@validation"
     import type {IFieldValidator} from "@interfaces"
     import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 
@@ -29,7 +29,7 @@
     export let searchInput = ""
 
 
-    export let validators: IFieldValidator[] = [validators.required()]
+    export let validators: IFieldValidator[] = [v.required()]
 
     export let value: any = null
 

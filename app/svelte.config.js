@@ -20,8 +20,8 @@ const config = {
 			"@interfaces": "./src/lib/interfaces",
 			"@server": "./src/lib/server",
 			"@server/*": "./src/lib/server/*",
-			"@validators": "./src/lib/validators",
-			"@validators/*": "./src/lib/validators/*",
+			"@validation": "./src/lib/validation",
+			"@validation/*": "./src/lib/validation/*",
 		}
 	}
 }

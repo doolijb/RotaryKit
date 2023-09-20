@@ -1,6 +1,6 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
-    import fieldValidators from "@validators/fields"
+    import fieldValidators from "@validation/fields"
     import type {IFieldValidator, IFieldValidatorSet} from "@interfaces"
 
     export let disabled = false

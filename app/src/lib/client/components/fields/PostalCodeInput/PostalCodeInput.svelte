@@ -1,12 +1,7 @@
 <script lang="ts">
     import {BaseTextInput} from "@components"
     import { countries } from "@data"
-    import {
-        maxLengthValidator,
-        minLengthValidator,
-        postalCodeValidator,
-        requiredValidator,
-    } from "@validators"
+    import { validators as v } from "@validation"
     import type {ICountry, IFieldValidator} from "@interfaces"
     import type { CountryCode } from "libphonenumber-js"
 
@@ -20,6 +15,7 @@
 
     export let errors: IFieldValidator[] = []
 
+    
     /**
      * Variables
      */
@@ -34,29 +30,23 @@
     export let onInput: (e: Event) => void | undefined
 
 
-
     // Refs
     export let ref: HTMLInputElement
 
-
-
-
     export let type = "text"
 
-
-
-
     export let validators: IFieldValidator[] = [
-        requiredValidator({}),
-        minLengthValidator({minLen: 3}),
-        maxLengthValidator({maxLen: 10}),
-        postalCodeValidator({
+        v.required(),
+        v.minLength({minLen: 3}),
+        v.maxLength({maxLen: 10}),
+        v.postalCodeComplete({
             getCountryCode: () => countryCode || null
         })
     ]
 
 
     export let value = ""
+
 
     /**
      * Component specific
