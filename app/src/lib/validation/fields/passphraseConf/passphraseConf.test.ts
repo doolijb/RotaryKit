@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import passphraseConf from "."
 
 test("passphraseConf field validation passes", async () => {
-    const field = passphraseConf({ 
+    const field = passphraseConf.field({ 
         confirmMatch: {
             args: { getMatchValue: () => "password" }
         }
@@ -13,7 +13,7 @@ test("passphraseConf field validation passes", async () => {
 })
 
 test("passphraseConf field validation fails", async () => {
-    const field = passphraseConf({ 
+    const field = passphraseConf.field({ 
         confirmMatch: {
             args: { getMatchValue: () => "password" }
         }

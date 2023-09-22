@@ -28,10 +28,7 @@ export interface IFieldValidatorDefinition {
  * Definition for an unstubstiated form validator
  */
 export interface IFormValidatorDefinition {
-    [key: string]: {
-        field: (args: IFieldValidatorDefinition) => IFieldValidator,
-        args: IFieldValidatorDefinition
-    },
+    [key: string]: IFieldValidatorDefinition,
 }
 
 /**
@@ -47,7 +44,7 @@ export interface IFieldValidator {
 /**
  * Output of makeFormValidator
  */
-interface IFormValidator {
+export interface IFormValidator {
     fields: {
         [key: string]: IFieldValidator
     }
