@@ -1,7 +1,7 @@
-import * as email from './email/email'
-import * as passphrase from './passphrase/passphrase'
-import * as username from './username/username'
-import * as passphraseConf from './passphraseConf/passphraseConf'
+import { default as email } from "./email"
+import { default as passphrase } from "./passphrase"
+import { default as username } from "./username"
+import { default as passphraseConf } from "./passphraseConf"
 
 export default {
     email,

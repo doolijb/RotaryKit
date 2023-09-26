@@ -1,5 +1,1 @@
-import userRegistration from "./userRegistration/userRegistration"
-
-export default {
-    userRegistration,
-}
+export { default } from "./userRegistration"

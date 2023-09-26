@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import userRegistration from "."
+// import userRegistration from "."
 
 test("userRegistration test passes", async () => {
     // const data = {

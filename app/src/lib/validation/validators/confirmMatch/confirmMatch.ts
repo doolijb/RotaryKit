@@ -17,11 +17,11 @@ export default function ({
     label?: string; 
     getMatchValue: () => string 
 }): IValidator {
-    // if (!args.getMatchValue) {
-    //     throw new Error(
-    //         "confirmMatch validator requires a getMatchValue function"
-    //     )
-    // }
+    if (!getMatchValue) {
+        throw new Error(
+            "confirmMatch validator requires a getMatchValue function"
+        )
+    }
     return {
         args: { label, getMatchValue },
         badge: `${label ? sentenceCase(label) + "s" : "Values"
@@ -32,8 +32,8 @@ export default function ({
         popup: utils.makePopup(),
         sticky: false,
         test: async (value: any) => {
-            const matchValue = getMatchValue()
-            return Boolean(value ? matchValue && value === matchValue : true)
+            if (!value) return true
+            return getMatchValue() === value
         }
     }
 }

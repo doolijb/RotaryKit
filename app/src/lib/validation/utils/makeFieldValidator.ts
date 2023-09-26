@@ -37,11 +37,12 @@ export default function (definitions: IFieldValidatorDefinition): IFieldValidato
         validators,
         test: async (value): Promise<string[]> => {
             const errors: string[] = []
-            Object.entries(validators).forEach(([name, validator]) => {
-                if (!validator.test(value)) {
+            for (const [name, validator] of Object.entries(validators)) {
+                const passes = await validator.test(value)
+                if (!passes) {
                     errors.push(validator.message)
                 }
-            })
+            }
             return errors
         }
     }

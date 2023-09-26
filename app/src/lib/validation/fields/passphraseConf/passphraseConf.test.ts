@@ -20,5 +20,6 @@ test("passphraseConf field validation fails", async () => {
     })
     const input = "password1"
     const errors = await field.test(input)
+    console.log("errors", errors)
     expect(errors).toHaveLength(1)
 })

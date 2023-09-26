@@ -22,12 +22,12 @@ const definition: IFieldValidatorDefinition = {
  * @param args IFieldValidatorDefinition // Additional definitions
  * @returns IFieldValidator
  */
-function field (args: IFieldValidatorDefinition = {}): IFieldValidator {
+export function field (args: IFieldValidatorDefinition = {}): IFieldValidator {
     const definitions = utils.mergeFieldValidatorSetArgs(definition, args)
     return utils.makeFieldValidator(definitions)
 }
 
 export default {
-    definition,
     field,
-}
+    definition
+  }
