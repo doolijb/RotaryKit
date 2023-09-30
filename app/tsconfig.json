@@ -11,12 +11,6 @@
 		"sourceMap": true,
 		"strict": false,
 		"paths": {
-			"$lib": [
-				"./src/lib"
-			],
-			"$lib/*": [
-				"./src/lib/*"
-			],
 			"@constants": [
 				"./src/lib/constants"
 			],
@@ -37,6 +31,12 @@
 			],
 			"@server/*": [
 				"./src/lib/server/*"
+			],
+			"@testing": [
+				"./src/lib/testing"
+			],
+			"@testing/*": [
+				"./src/lib/testing/*"
 			],
 			"@validation": [
 				"src/lib/validation"

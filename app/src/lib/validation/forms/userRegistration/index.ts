@@ -1,1 +1,1 @@
-// export * as default from "./userRegistration"
+export { default } from "./userRegistration"

@@ -1,4 +1,5 @@
-import type { IFormValidatorDefinition, IFormValidator, IFieldValidator } from '@interfaces'
+import type { IFormValidatorDefinition, IFormValidator, IFieldValidator } from "@interfaces"
+import { utils } from "@validation"
 
 /**
  * Takes an object of form fields, their validators and 
@@ -20,7 +21,7 @@ import type { IFormValidatorDefinition, IFormValidator, IFieldValidator } from '
  *   }
  * })
  * 
- * const formValidators = validators.utils.makeFormValidator(args)
+ * const formValidators = validators.utils.formValidator(args)
  * 
  * // formValidators = {
  * //   email: {
@@ -31,15 +32,22 @@ import type { IFormValidatorDefinition, IFormValidator, IFieldValidator } from '
  * ```
  */
 
-export default function (args: IFormValidatorDefinition): IFormValidator {
+export default function ({
+    definition, 
+    args = null
+}: {
+    definition: IFormValidatorDefinition, 
+    args?: IFormValidatorDefinition
+}): IFormValidator {
     const fields: Record<string, IFieldValidator> = {}
-    Object.entries(args).forEach(([name, data]) => {
-        fields[name] = data.field(data.args || {})
+    const final = args ? utils.mergeFormValidatorDefinitions(definition, args) : definition
+    Object.entries(final).forEach(([name, def]) => {
+        fields[name] = utils.fieldValidator({definition:def})
     })
     return {
         fields,
         test: async (data) => {
-            const errors: Record<string, string[]> = {}
+            const errors: Record<string, Record<string, string>> = {}
             await Promise.all(Object.entries(fields).map(async ([name, field]) => {
                 const value = data[name]
                 const fieldErrors = await field.test(value)

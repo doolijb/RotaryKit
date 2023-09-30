@@ -4,28 +4,34 @@ import type { IFieldValidatorDefinition } from "@interfaces"
  * If a custom definition is provided, it will override the default
  * If a new definition is provided, it will be added to the set
  * @param definitions: IValidatorSetArgs 
- * @param extraArgs: IValidatorSetArgs 
+ * @param extras: IValidatorSetArgs 
  * @returns IValidatorSetArgs
  */
 
-export default function (definitions: IFieldValidatorDefinition, extraArgs: IFieldValidatorDefinition): IFieldValidatorDefinition {
+export default function mergeFieldValidatorDefinitions({
+    definition, 
+    extras
+}: {
+    definition: IFieldValidatorDefinition, 
+    extras?: IFieldValidatorDefinition
+}): IFieldValidatorDefinition {
     
-    // Merge extraArgs into definitions, extraArgs will override definitions where values are not null
-    Object.entries(extraArgs).forEach(([key, {args = {}, validator = null}]) => {
+    // Merge extras into definitions, extras will override definitions where values are not null
+    Object.entries(extras).forEach(([key, {args = {}, validator = null}]) => {
         // Check if the key exists in definitions
-        if (!definitions[key]) {
-            definitions[key] = {args, validator}
+        if (!definition[key]) {
+            definition[key] = {args, validator}
         } else {
             // If the key exists, check if the validator is null
             if (validator) {
-                definitions[key].validator = validator
+                definition[key].validator = validator
             }
-            // Merge the args
+            // Merge args
             if (args) {
-                definitions[key].args = {
-                    ...definitions[key].args,
-                    ...args
-                }
+                Object.entries(args).forEach(([argKey, argValue]) => {
+                    if (!definition[key].args) definition[key].args = {}
+                    definition[key].args[argKey] = argValue
+                }) 
             }
         }
     })
@@ -33,12 +39,12 @@ export default function (definitions: IFieldValidatorDefinition, extraArgs: IFie
     // Check if dev server or test suite is running
     if ([undefined, "development", "test"].includes(process.env.NODE_ENV)) {
         // Check if any definitions are missing a validator
-        Object.entries(definitions).forEach(([key, {validator}]) => {
+        Object.entries(definition).forEach(([key, {validator}]) => {
             if (!validator) {
                 throw new Error(`Validator for ${key} is missing, check the definitions for this field`)
             }
         })
     }
 
-    return definitions
+    return definition
 }

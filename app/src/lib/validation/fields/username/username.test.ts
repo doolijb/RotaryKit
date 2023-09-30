@@ -1,16 +1,17 @@
 import { expect, test } from "vitest"
-import username from "."
+import definition from "."
+import { utils } from "@validation"
 
 test("username field validation passes", async () => {
-    const field = username.field()
+    const field = utils.fieldValidator({definition})
     const input = "SparrowJack"
     const errors = await field.test(input)
-    expect(errors).toHaveLength(0)
+    expect(Object.keys(errors)).toHaveLength(0)
 })
 
 test("username field validation fails", async () => {
-    const field = username.field()
+    const field = utils.fieldValidator({definition})
     const input = "$parrowJack"
     const errors = await field.test(input)
-    expect(errors).toHaveLength(1)
+    expect(Object.keys(errors)).toHaveLength(1)
 })

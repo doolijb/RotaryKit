@@ -1,7 +1,7 @@
-import type { IFieldValidator, IFieldValidatorDefinition } from '@interfaces'
-import { validators as v, utils } from "@validation"
+import type { IFieldValidatorDefinition } from '@interfaces'
+import { validators as v } from "@validation"
 
-const definition: IFieldValidatorDefinition = {
+export default {
     minLength: {
         args: { minLen: 3 },
         validator: v.minLength,
@@ -14,20 +14,4 @@ const definition: IFieldValidatorDefinition = {
         args: {},
         validator: v.specialCharExcluded,
     },
-}
-
-/**
- * Instantiates the field
- * 
- * @param args IFieldValidatorDefinition // Additional definitions
- * @returns IFieldValidator
- */
-function field (args: IFieldValidatorDefinition = {}): IFieldValidator {
-    const final = utils.mergeFieldValidatorSetArgs(definition, args)
-    return utils.makeFieldValidator(final)
-}
-
-export default {
-    definition,
-    field,
-}
+} as IFieldValidatorDefinition

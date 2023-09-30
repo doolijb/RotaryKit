@@ -1,25 +1,28 @@
 import { expect, test } from "vitest"
-import passphraseConf from "."
+import definition from "."
+import { utils } from "@validation"
+import type { IFieldValidatorDefinition } from "@interfaces"
 
 test("passphraseConf field validation passes", async () => {
-    const field = passphraseConf.field({ 
+    const extras: IFieldValidatorDefinition = ({ 
         confirmMatch: {
             args: { getMatchValue: () => "password" }
         }
     })
+    const field = utils.fieldValidator({definition, extras})
     const input = "password"
     const errors = await field.test(input)
-    expect(errors).toHaveLength(0)
+    expect(Object.keys(errors)).toHaveLength(0)
 })
 
 test("passphraseConf field validation fails", async () => {
-    const field = passphraseConf.field({ 
+    const extras: IFieldValidatorDefinition = ({ 
         confirmMatch: {
-            args: { getMatchValue: () => "password" }
+            args: { getMatchValue: () => "bad pass" }
         }
     })
+    const field = utils.fieldValidator({definition, extras})
     const input = "password1"
     const errors = await field.test(input)
-    console.log("errors", errors)
-    expect(errors).toHaveLength(1)
+    expect(Object.keys(errors)).toHaveLength(1)
 })
