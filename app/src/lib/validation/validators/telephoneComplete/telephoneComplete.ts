@@ -25,7 +25,7 @@ export default function (
         badge: "Invalid",
         key: "telephoneComplete",
         message: "Must be a complete phone number",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             // Ignore if empty

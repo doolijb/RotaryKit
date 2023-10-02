@@ -25,7 +25,7 @@ export default function (args: {
         badge: "Partial",
         key: "telephonePossible",
         message: "You must enter a valid phone number",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             const numOnly = value.replace(/\D/g, "")

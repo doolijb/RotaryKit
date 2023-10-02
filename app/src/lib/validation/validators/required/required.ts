@@ -18,7 +18,7 @@ export default function ({
         badge: "Required",
         key: "required",
         message: "This field is required",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: true,
         test: (value: string) => !!value
     }

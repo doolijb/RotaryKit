@@ -59,7 +59,7 @@
     /**
      * Constants
      */
-    const legendPopup: PopupSettings = ValidationLegend.makePopupSettings()
+    const legendPopup: PopupSettings = ValidationLegend.popupSettingsSettings()
 
     /**
      * Functions

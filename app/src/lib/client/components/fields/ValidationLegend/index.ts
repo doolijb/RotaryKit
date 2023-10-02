@@ -4,7 +4,7 @@ import {default as Popup} from "./Popup.svelte"
 import {v4 as uuidv4} from "uuid"
 import type {PopupSettings} from "@skeletonlabs/skeleton/index"
 
-function makePopupSettings(): PopupSettings {
+function popupSettingsSettings(): PopupSettings {
     return {
         // Represents the type of event that opens/closed the popup
         event: "click",
@@ -18,5 +18,5 @@ function makePopupSettings(): PopupSettings {
 export default {
     Icon,
     Popup,
-    makePopupSettings
+    popupSettingsSettings
 }

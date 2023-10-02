@@ -21,7 +21,7 @@ export default function ({
         badge: "Max length",
         key: "maxLength",
         message: `Must be at most ${maxLen} characters long`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => (value ? value.length <= maxLen : true)
     }

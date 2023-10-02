@@ -18,7 +18,7 @@ export default function ({
         badge: "Email",
         key: "email",
         message: "Must be a valid email address",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) =>
             value ? /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) : true

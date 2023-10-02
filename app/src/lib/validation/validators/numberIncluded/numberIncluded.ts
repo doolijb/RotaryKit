@@ -21,7 +21,7 @@ export default function ({
         key: "numberIncluded",
         message: `Must have at least ${count} number${count > 1 ? "s" : ""
             }`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             const numbers = value.match(/\d/g) || []

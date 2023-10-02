@@ -21,7 +21,7 @@ export default function ({
         badge: "Min length",
         key: "minLength",
         message: `Must be at least ${minLen} characters long`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => (value ? value.length >= minLen : true)
     }

@@ -22,7 +22,7 @@ export default function ({
         badge: "Format",
         key: "postalCode",
         message: "Must be a valid postal code",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string): boolean => {
             // Ignore if empty

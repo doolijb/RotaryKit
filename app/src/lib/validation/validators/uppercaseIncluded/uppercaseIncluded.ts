@@ -17,7 +17,7 @@ export default function (
         key: "uppercaseRequired",
         message: `Must have at least ${args.count} uppercase letter${args.count > 1 ? "s" : ""
             }`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             const uppercase = value.match(/[A-Z]/g) || []

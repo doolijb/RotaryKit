@@ -10,7 +10,7 @@ export default {
         args: { maxLen: 100 },
         validator: v.maxLength,
     },
-    emailAddress: {
+    emailAddressComplete: {
         args: {},
         validator: v.emailAddressComplete,
     },

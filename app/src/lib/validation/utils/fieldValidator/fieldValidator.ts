@@ -1,5 +1,5 @@
 import type { IValidator, IFieldValidatorDefinition, IFieldValidator } from '@interfaces'
-import utils from '.'
+import utils from '..'
 
 /**
  * TODO

@@ -54,7 +54,7 @@ export default function specialCharIncluded({
         key: "specialCharIncluded",
         message: `Must have at least ${count} special character${count > 1 ? "s" : ""
             }, such as ${choices.join(", ")}`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             const escaped_chars = choices.map(char => "\\" + char).join("")

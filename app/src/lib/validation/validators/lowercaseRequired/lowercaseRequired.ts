@@ -21,7 +21,7 @@ export default function ({
         key: "lowercaseRequired",
         message: `Must have at least ${count} lowercase letter${count > 1 ? "s" : ""
             }`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => {
             const lowercase = value.match(/[a-z]/g) || []

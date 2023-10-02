@@ -18,7 +18,7 @@ export default function ({
         badge: "Special characters",
         key: "specialChar",
         message: "Must not contain spaces or special characters",
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: (value: string) => (value ? /^[a-zA-Z0-9_]+$/.test(value) : true)
     }

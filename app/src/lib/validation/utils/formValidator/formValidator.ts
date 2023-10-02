@@ -33,14 +33,14 @@ import { utils } from "@validation"
  */
 
 export default function ({
-    definition, 
-    args = null
+    definitions, 
+    extras = null
 }: {
-    definition: IFormValidatorDefinition, 
-    args?: IFormValidatorDefinition
+    definitions: IFormValidatorDefinition, 
+    extras?: IFormValidatorDefinition
 }): IFormValidator {
     const fields: Record<string, IFieldValidator> = {}
-    const final = args ? utils.mergeFormValidatorDefinitions(definition, args) : definition
+    const final = extras ? utils.mergeFormValidatorDefinitions({definitions, extras}) : definitions
     Object.entries(final).forEach(([name, def]) => {
         fields[name] = utils.fieldValidator({definition:def})
     })

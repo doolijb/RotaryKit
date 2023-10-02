@@ -29,7 +29,7 @@ export default function ({
         key: "confirmMatch",
         message: `The ${label ? label.toLowerCase() + "s" : "values"
             } entered do not match, please try again`,
-        popup: utils.makePopup(),
+        popup: utils.popupSettings(),
         sticky: false,
         test: async (value: any) => {
             if (!value) return true

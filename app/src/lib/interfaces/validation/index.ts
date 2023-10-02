@@ -48,5 +48,5 @@ export interface IFormValidator {
     fields: {
         [key: string]: IFieldValidator
     }
-    test: ( data: Record<string, any> ) => Record<string, Record<string, string>>
+    test: ( data: Record<string, any> ) => Promise<Record<string, Record<string, string>>>
 }

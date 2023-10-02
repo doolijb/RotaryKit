@@ -13,6 +13,5 @@ test("passphrase field validation fails", async () => {
     const field = utils.fieldValidator({definition})
     const input = "password"
     const errors = await field.test(input)
-    console.log(errors) 
     expect(Object.keys(errors)).toHaveLength(1)
 })
