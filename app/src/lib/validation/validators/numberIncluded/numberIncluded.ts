@@ -8,7 +8,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({ 
+export default function numberIncluded({ 
     label,
     count = 1
 }: {
@@ -23,7 +23,7 @@ export default function ({
             }`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
             const numbers = value.match(/\d/g) || []
             return value.length ? numbers.length >= count : true
         }

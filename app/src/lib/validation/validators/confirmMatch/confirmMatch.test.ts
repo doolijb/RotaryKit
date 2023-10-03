@@ -1,12 +1,12 @@
 import { expect, test } from "vitest"
 import confirmMatch from "."
 
-test("confirmMatch validator passes", async () => {
+test("confirmMatch validator test passes", async () => {
 	const validator = confirmMatch({ getMatchValue: () => "test" });
 	expect( await validator.test("test")).toBe(true)
 })
 
-test("confirmMatch validator fails", async () => {
+test("confirmMatch validator test fails", async () => {
 	const validator = confirmMatch({ getMatchValue: () => "test" })
 	expect( await validator.test("test2")).toBe(false)
 })

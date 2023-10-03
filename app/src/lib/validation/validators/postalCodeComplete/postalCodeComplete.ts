@@ -9,7 +9,7 @@ import { validators as v, utils } from "@validation"
  * @returns { IValidator }
  */
 
-export default function ({
+export default function postalCodeComplete({
     label,
     getCountryCode
 }: { 
@@ -24,7 +24,7 @@ export default function ({
         message: "Must be a valid postal code",
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string): boolean => {
+        test: async (value: string): Promise<boolean> => {
             // Ignore if empty
             if (!value) {
                 return true

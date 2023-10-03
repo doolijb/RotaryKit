@@ -10,7 +10,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({
+export default function confirmMatch({
     label,
     getMatchValue
 }: { 
@@ -31,7 +31,7 @@ export default function ({
             } entered do not match, please try again`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: async (value: any) => {
+        test: async (value: any): Promise<boolean> => {
             if (!value) return true
             return getMatchValue() === value
         }

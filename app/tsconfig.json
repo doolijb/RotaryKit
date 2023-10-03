@@ -44,6 +44,9 @@
 			"@validation/*": [
 				"src/lib/validation/*"
 			],
+			// Do not use these for imports, only for type checking
+			"$lib": ["./src/lib"],
+      		"$lib/*": ["./src/lib/*"]
 		}
 	}
 }

@@ -8,7 +8,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function (
+export default function uppercaseIncluded(
     args: { label?: string; count: number } = { count: 1 }
 ): IValidator {
     return {
@@ -19,7 +19,7 @@ export default function (
             }`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
             const uppercase = value.match(/[A-Z]/g) || []
             return value ? uppercase && uppercase.length >= args.count : true
         }

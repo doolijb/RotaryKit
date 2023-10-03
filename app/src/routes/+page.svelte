@@ -4,7 +4,7 @@
     let username = ''
     let email = ''
     let passphrase = ''
-    let passphraseConf = ''
+    let passphraseConfirm = ''
 
     async function submit () {
         const data = {

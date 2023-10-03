@@ -9,7 +9,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({
+export default function maxLength({
     label,
     maxLen = 20
 }: { 
@@ -23,6 +23,6 @@ export default function ({
         message: `Must be at most ${maxLen} characters long`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => (value ? value.length <= maxLen : true)
+        test: async (value: string): Promise<boolean> => (value ? value.length <= maxLen : true)
     }
 }

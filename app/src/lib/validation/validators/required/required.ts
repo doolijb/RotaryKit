@@ -8,7 +8,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({
+export default function required({
     label
 }: { 
     label?: string 
@@ -20,6 +20,6 @@ export default function ({
         message: "This field is required",
         popup: utils.popupSettings(),
         sticky: true,
-        test: (value: string) => !!value
+        test: async (value: string): Promise<boolean> => !!value
     }
 }

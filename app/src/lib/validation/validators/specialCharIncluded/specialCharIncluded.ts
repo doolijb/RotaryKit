@@ -56,7 +56,8 @@ export default function specialCharIncluded({
             }, such as ${choices.join(", ")}`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
+            if (!value) return true
             const escaped_chars = choices.map(char => "\\" + char).join("")
             const regex = new RegExp("[" + escaped_chars + "]", "g")
             const specialChars = value.match(regex) || []

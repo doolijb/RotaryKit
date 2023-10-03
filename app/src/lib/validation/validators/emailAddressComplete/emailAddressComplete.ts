@@ -8,7 +8,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({
+export default function emailAddressComplete({
     label,
 } : { 
     label?: string 
@@ -20,7 +20,7 @@ export default function ({
         message: "Must be a valid email address",
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) =>
+        test: async (value: string): Promise<boolean> =>
             value ? /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) : true
     }
 }

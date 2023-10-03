@@ -11,8 +11,10 @@ import { default as required } from "./required"
 import { default as specialCharIncluded } from "./specialCharIncluded"
 import { default as specialCharExcluded} from "./specialCharExcluded"
 import { default as uppercaseRequired } from "./uppercaseIncluded"
+import { default as boolean } from "./boolean"
 
 export default {
+    boolean,
     telephoneComplete,
     confirmMatch,
     emailAddressComplete,

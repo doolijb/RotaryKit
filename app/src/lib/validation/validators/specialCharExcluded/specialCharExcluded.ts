@@ -8,7 +8,7 @@ import { validators as v, utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({ 
+export default function specialCharExcluded({ 
     label 
 }: {
     label?: string
@@ -20,6 +20,6 @@ export default function ({
         message: "Must not contain spaces or special characters",
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => (value ? /^[a-zA-Z0-9_]+$/.test(value) : true)
+        test: async (value: string): Promise<boolean> => (value ? /^[a-zA-Z0-9_]+$/.test(value) : true)
     }
 }

@@ -48,13 +48,15 @@ export default function ({
         fields,
         test: async (data) => {
             const errors: Record<string, Record<string, string>> = {}
-            await Promise.all(Object.entries(fields).map(async ([name, field]) => {
-                const value = data[name]
-                const fieldErrors = await field.test(value)
-                if (fieldErrors.length) {
-                    errors[name] = fieldErrors
+            for (const [name, field] of Object.entries(fields)) {
+
+                const result = await field.test(data[name])
+
+                if (Object.entries(result).length > 0) {
+                    errors[name] = result
                 }
-            }))
+            }   
+
             return errors
         }
     }

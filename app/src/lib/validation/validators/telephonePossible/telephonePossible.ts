@@ -11,7 +11,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function (args: {
+export default function telephonePossible(args: {
     label?: string
     getCountryCode: () => string
 }): IValidator {
@@ -27,7 +27,7 @@ export default function (args: {
         message: "You must enter a valid phone number",
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
             const numOnly = value.replace(/\D/g, "")
             const countryCode = args.getCountryCode() as CountryCode
             const parsedNumber = parsePhoneNumber(numOnly, countryCode)

@@ -10,7 +10,7 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function (
+export default function telephoneComplete(
     args: { label?: string; getCountryCode: () => string } = {
         getCountryCode: null as unknown as () => string
     }
@@ -27,7 +27,7 @@ export default function (
         message: "Must be a complete phone number",
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
             // Ignore if empty
             if (!value) {
                 return true

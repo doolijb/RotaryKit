@@ -8,7 +8,7 @@ import { validators as v, utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({ 
+export default function lowercaseRequired({ 
     label,
     count = 1
  } : { 
@@ -23,7 +23,7 @@ export default function ({
             }`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => {
+        test: async (value: string): Promise<boolean> => {
             const lowercase = value.match(/[a-z]/g) || []
             return value ? lowercase && lowercase.length >= count : true
         }

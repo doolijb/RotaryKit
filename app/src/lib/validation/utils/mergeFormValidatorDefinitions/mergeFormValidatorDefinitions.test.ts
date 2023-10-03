@@ -17,7 +17,7 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
                 }
             }
         },
-        passphraseConf: {
+        passphraseConfirm: {
             confirmMatch: {
                 validator: validators.confirmMatch,
             }
@@ -35,7 +35,7 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
             args: {},
           },
         },
-        passphraseConf: {
+        passphraseConfirm: {
           confirmMatch: {
             validator: validators.confirmMatch,
             args: {
@@ -68,7 +68,7 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
                 }
             },
         },
-        passphraseConf: {
+        passphraseConfirm: {
             confirmMatch: {
                 validator: validators.confirmMatch,
                 args: {

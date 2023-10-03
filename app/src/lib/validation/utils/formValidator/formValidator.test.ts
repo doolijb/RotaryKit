@@ -59,3 +59,23 @@ test("formValidator creates FormValidator", async () => {
 
     expect(result).toEqual(expected)
 })
+
+test("formValidator test returns errors", async () => {
+    const definitions: IFormValidatorDefinition = {
+        email: {
+            emailAddressComplete: {
+                args: {},
+                validator: validators.emailAddressComplete
+            }
+        }
+    }
+
+    const form = formValidator({definitions})
+    const data = {
+        email: "jack.sparrow@example"
+    }
+    const expected = { email: { emailAddressComplete: expect.any(String) } }
+    const result = await form.test(data)
+
+    expect(result).toEqual(expected)
+})

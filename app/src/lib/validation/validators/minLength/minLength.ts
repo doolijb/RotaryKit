@@ -9,7 +9,7 @@ import { validators as v, utils } from "@validation"
  * @returns IValidator
  */
 
-export default function ({ 
+export default function minLength({ 
     label, 
     minLen = 3 
 }: { 
@@ -23,6 +23,6 @@ export default function ({
         message: `Must be at least ${minLen} characters long`,
         popup: utils.popupSettings(),
         sticky: false,
-        test: (value: string) => (value ? value.length >= minLen : true)
+        test: async (value: string): Promise<boolean> => (value ? value.length >= minLen : true)
     }
 }
