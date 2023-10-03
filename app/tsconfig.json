@@ -17,6 +17,9 @@
 			"@components": [
 				"./src/lib/client/components"
 			],
+			"@components/*": [
+				"./src/lib/client/components/*"
+			],
 			"@stores": [
 				"./src/lib/client/stores"
 			],
@@ -37,6 +40,12 @@
 			],
 			"@testing/*": [
 				"./src/lib/testing/*"
+			],
+			"@themes": [
+				"./src/lib/themes"
+			],
+			"@themes/*": [
+				"./src/lib/themes/*"
 			],
 			"@validation": [
 				"src/lib/validation"

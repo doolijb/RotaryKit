@@ -6,6 +6,7 @@
  */
 
 // export * from './modals'
+export * from "./_decorators"
 export * from "./fields"
 export * from "./review"
 export * from "./tableCells"
