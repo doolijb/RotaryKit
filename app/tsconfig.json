@@ -42,10 +42,10 @@
 				"./src/lib/testing/*"
 			],
 			"@themes": [
-				"./src/lib/themes"
+				"./src/lib/client/themes"
 			],
 			"@themes/*": [
-				"./src/lib/themes/*"
+				"./src/lib/client/themes/*"
 			],
 			"@validation": [
 				"src/lib/validation"

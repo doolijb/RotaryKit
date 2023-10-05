@@ -2,8 +2,6 @@
     /**
      * This is a component that imports the vintage theme and styles.
      */
-    import "@vintagelabs/vintage/themes/theme-vintage.css"
-    import "@vintagelabs/vintage/styles/all.css"
 
     export let dark = false
     export let theme = ""

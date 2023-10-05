@@ -2,11 +2,12 @@
     /**
      * This is a component that imports the skeleton theme and styles.
      */
-    import "@skeletonlabs/skeleton/themes/theme-skeleton.css"
-    import "@skeletonlabs/skeleton/styles/all.css"
 
     export let dark = false
-    export let theme = ""
+    export let theme = "skeleton"
+
+    console.log("theme", theme)
+
 </script>
 
 <div class="dark:text-gray-100" data-theme={theme} class:dark>

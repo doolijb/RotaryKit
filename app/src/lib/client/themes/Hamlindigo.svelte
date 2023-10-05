@@ -2,8 +2,6 @@
     /**
      * This is a component that imports the hamlindigo theme and styles.
      */
-    import "@skeletonlabs/skeleton/themes/theme-hamlindigo.css"
-    import "@skeletonlabs/skeleton/styles/all.css"
 
     export let dark = false
     export let theme = ""

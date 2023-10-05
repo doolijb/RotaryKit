@@ -64,6 +64,12 @@ themes.push({
     enabled: false
 })
 
+themes.push({
+    title: "Wintry",
+    value: "wintry",
+    enabled: true
+})
+
 for (const theme of themes) {
     if (theme.enabled) {
         themeMap.set(theme.value, theme)

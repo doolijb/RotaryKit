@@ -1,1 +1,1 @@
-export {default} from "./BaseTextInput.svelte"
+export { default } from "./BaseTextInput.svelte"

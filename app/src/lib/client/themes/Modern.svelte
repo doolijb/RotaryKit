@@ -2,8 +2,8 @@
     /**
      * This is a component that imports the modern theme and styles.
      */
-    import "@skeletonlabs/skeleton/themes/theme-modern.css"
-    import "@skeletonlabs/skeleton/styles/all.css"
+    // import "@skeletonlabs/skeleton/themes/theme-modern.css"
+    // import "@skeletonlabs/skeleton/styles/all.css"
 
     export let dark = false
     export let theme = ""

@@ -7,11 +7,11 @@ const config: StorybookConfig = {
 			titlePrefix: "Components"
 		}
 	],
-	
+
 	addons: [
 		"@storybook/addon-links",
 		"@storybook/addon-essentials",
-		"@storybook/addon-interactions"
+		"@storybook/addon-interactions",
 	],
 	framework: {
 		name: "@storybook/sveltekit",

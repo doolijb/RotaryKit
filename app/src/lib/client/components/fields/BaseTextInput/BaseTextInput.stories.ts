@@ -1,5 +1,5 @@
 import Component from "."
-import { validators as v } from "@validation"
+import { validators as v, utils, fields } from "@validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
 
@@ -25,10 +25,10 @@ const meta: Meta<typeof Component> = {
                 options: ["text", "password", "email", "number"]
             }
         },
-        validators: {
+        fieldValidator: {
             type: {
-                name: "array",
-                required: false
+                name: "object",
+                required: true
             }
         },
         value: {
@@ -83,56 +83,59 @@ const Template = (args: { value: boolean }) => ({
     props: args
 })
 
-export const Disabled = {
-    render: Template,
-    args: {
-        value: "Hello World",
-        disabled: true
-    }
-}
+// export const Disabled = {
+//     render: Template,
+//     args: {
+//         value: "Hello World",
+//         disabled: true
+//     }
+// }
 
 export const Empty = {
     render: Template,
     args: {
         // Component Props Here
+        fieldValidator: utils.fieldValidator({
+            definition: fields.plain,
+        }),
     }
 }
 
-export const Filled = {
-    render: Template,
-    args: {
-        value: "Hello World"
-    }
-}
+// export const Filled = {
+//     render: Template,
+//     args: {
+//         value: "Hello World"
+//     }
+// }
 
-export const FilledWithValidators = {
-    render: Template,
-    args: {
-        value: "Hello World",
-        validators: [
-            v.required(),
-            v.minLength(),
-            v.maxLength(),
-            v.specialCharIncluded()
-        ]
-    }
-}
+// export const FilledWithValidators = {
+//     render: Template,
+//     args: {
+//         value: "Hello World",
+//         validators: [
+//             v.required(),
+//             v.minLength(),
+//             v.maxLength(),
+//             v.specialCharIncluded()
+//         ]
+//     }
+// }
 
-export const WithPlaceholder = {
-    render: Template,
-    args: {
-        placeholder: "Enter your name"
-    }
-}
+// export const WithPlaceholder = {
+//     render: Template,
+//     args: {
+//         placeholder: "Enter your name"
+//     }
+// }
 
-export const WithValidators = {
-    render: Template,
-    args: {
-        validators: [
-            v.required(),
-            v.minLength(),
-            v.maxLength(),
-            v.specialCharIncluded()
-        ]
-    }
-}
+// export const WithValidators = {
+//     render: Template,
+//     args: {
+//         validators: [
+//             v.required(),
+//             v.minLength(),
+//             v.maxLength(),
+//             v.specialCharIncluded()
+//         ]
+//     }
+// }

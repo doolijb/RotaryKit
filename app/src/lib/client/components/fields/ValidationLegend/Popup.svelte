@@ -1,19 +1,19 @@
 <script lang="ts">
     import {ValidStates} from "@constants"
-    import type {IValidator} from "@interfaces"
+    import type {IFieldErrors, IFieldValidator} from "@interfaces"
     import type {PopupSettings} from "@skeletonlabs/skeleton"
 
-    export let errors: IValidator[] = []
+    export let fieldErrors: IFieldErrors = {}
     export let legendPopup: PopupSettings
     export let validState = ValidStates.NONE
-    export let validators: IValidator[] = []
+    export let fieldValidator: IFieldValidator
 </script>
 
-{#if validators.length}
+{#if Object.keys(fieldValidator.validators).length}
     <div class="card z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
         <h4 class="h4 mb-2">Requirements</h4>
         <!-- Present the validators with name and description in a pretty layout -->
-        {#each validators as validator}
+        {#each Object.values(fieldValidator.validators) as validator}
             <div>
                 <span class="badge variant-filled">
                     {validator.badge}

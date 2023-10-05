@@ -1,5 +1,6 @@
 import {v4 as uuidv4} from "uuid"
 import type { PopupSettings } from "@skeletonlabs/skeleton"
+import { browser } from "$app/environment"
 
 /**
  * Returns the popup settings for the skeleton popup component
@@ -13,7 +14,7 @@ export default function popupSettings(): PopupSettings {
 
     
 
-    return process.env.browser ?{
+    return browser ?{
         event: "hover",
         placement: "bottom",
         target: uuidv4()

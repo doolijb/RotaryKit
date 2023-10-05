@@ -38,7 +38,7 @@ export interface IFieldValidator {
     validators: {
         [key: string]: IValidator
     }
-    test: (value: any) => Promise<Record<string, string>>
+    test: (value: any) => Promise<IFieldErrors>
 }
 
 /**
@@ -49,4 +49,19 @@ export interface IFormValidator {
         [key: string]: IFieldValidator
     }
     test: ( data: Record<string, any> ) => Promise<Record<string, Record<string, string>>>
+}
+
+/**
+ * Field validation errors
+ */
+export interface IFieldErrors {
+    [key: string]: string[]
+}
+
+/**
+ * Form validation errors
+ */
+
+export interface IFormErrors {
+    [key: string]: IFieldErrors
 }

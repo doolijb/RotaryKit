@@ -2,8 +2,6 @@
     /**
      * This is a component that imports the gold-nouveau theme and styles.
      */
-    import "@skeletonlabs/skeleton/themes/theme-gold-nouveau.css"
-    import "@skeletonlabs/skeleton/styles/all.css"
 
     export let dark = false
     export let theme = ""

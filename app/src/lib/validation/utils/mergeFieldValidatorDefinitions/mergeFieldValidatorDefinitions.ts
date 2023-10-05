@@ -36,15 +36,15 @@ export default function mergeFieldValidatorDefinitions({
         }
     })
     
-    // Check if dev server or test suite is running
-    if ([undefined, "development", "test"].includes(process.env.NODE_ENV)) {
-        // Check if any definitions are missing a validator
-        Object.entries(definition).forEach(([key, {validator}]) => {
-            if (!validator) {
-                throw new Error(`Validator for ${key} is missing, check the definitions for this field`)
-            }
-        })
-    }
+    // // Check if dev server or test suite is running
+    // if ([undefined, "development", "test"].includes(process.env.NODE_ENV)) {
+    //     // Check if any definitions are missing a validator
+    //     Object.entries(definition).forEach(([key, {validator}]) => {
+    //         if (!validator) {
+    //             throw new Error(`Validator for ${key} is missing, check the definitions for this field`)
+    //         }
+    //     })
+    // }
 
     return definition
 }

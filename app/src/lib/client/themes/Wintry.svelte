@@ -1,6 +1,6 @@
 <script lang="ts">
     /**
-     * This is a component that imports the sahara theme and styles.
+     * This is a component that imports the wintry theme and styles.
      */
 
     export let dark = false

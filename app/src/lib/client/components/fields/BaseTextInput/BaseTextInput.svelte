@@ -2,7 +2,7 @@
     import {ValidationBadges, ValidationLegend} from "@components"
     import {ValidStates} from "@constants"
     import {onMount} from "svelte"
-    import type {IValidator, IValidatorSet} from "@interfaces"
+    import type {IFieldValidator, IFieldErrors} from "@interfaces"
     import type {PopupSettings} from "@skeletonlabs/skeleton"
 
     //
@@ -11,7 +11,7 @@
     /** If the field is disabled */
     export let disabled = false
     /** List of validators with errors */
-    export let errors: IValidator[] = []
+    export let fieldErrors: IFieldErrors = {}
     /** Field name */
     export let label = "Field Label"
     /** Placeholder text */
@@ -21,7 +21,7 @@
     /** Type of the input element */
     export let type = "text"
     /** List of validators */
-    export let validators: IValidatorSet = {}
+    export let fieldValidator: IFieldValidator
     /** Field value */
     export let value = ""
 
@@ -41,10 +41,11 @@
     $: required = false
     $: isTouched = false
     $: validState = isTouched
-        ? errors.length === 0
+        ? Object.keys(fieldErrors)
             ? ValidStates.VALID
             : ValidStates.INVALID
         : ValidStates.NONE
+    $: validatorLength = Object.keys(fieldValidator.validators).length
 
     /**
      * Constants
@@ -54,10 +55,10 @@
     /**
      * Functions
      */
-    function validate() {
-        errors = Object(validators).values.filter((validator: IValidator) => !validator.test(value))
+    async function validate() {
+        fieldErrors = await fieldValidator.test(value)
         validState =
-            errors.length === 0 ? ValidStates.VALID : ValidStates.INVALID
+            Object.keys(fieldErrors) ? ValidStates.VALID : ValidStates.INVALID
     }
 
     function setType(node: HTMLInputElement) {
@@ -68,24 +69,11 @@
     /**
      * Lifecycle
      */
-    onMount(() => {
+    onMount(async () => {
         if (value) {
             isTouched = true
-            validate()
+            await validate()
         }
-        Object(validators).values.forEach((validator: IValidator) => {
-            switch (validator.key) {
-            case "required":
-                required = true
-                break
-            case "maxLength":
-                ref.maxLength = validator.args["maxLen"]
-                break
-            case "minLength":
-                ref.minLength = validator.args["minLen"]
-                break
-            }
-        })
     })
 </script>
 
@@ -95,16 +83,16 @@
             {label}
         </span>
         {#if !disabled}
-            <ValidationBadges {validators} {errors} />
+            <ValidationBadges {fieldValidator} {fieldErrors} />
         {/if}
     </div>
 
     <div
         class="input-group"
-        class:grid-cols-[auto_1fr_auto]={$$slots.prefix && validators.length}
-        class:grid-cols-[1fr_auto]={!$$slots.prefix && validators.length}
-        class:grid-cols-[auto_1fr]={$$slots.prefix && !validators.length && !disabled}
-        class:grid-cols-[1fr]={!$$slots.prefix && !validators.length && !disabled}
+        class:grid-cols-[auto_1fr_auto]={$$slots.prefix && validatorLength}
+        class:grid-cols-[1fr_auto]={!$$slots.prefix && validatorLength}
+        class:grid-cols-[auto_1fr]={$$slots.prefix && !validatorLength && !disabled}
+        class:grid-cols-[1fr]={!$$slots.prefix && !validatorLength && !disabled}
     >
         <slot name="prefix" />
         <input
@@ -127,17 +115,17 @@
             aria-label={label}
             {required}
         />
-        {#if !disabled}
+        <!-- {#if !disabled}
             <ValidationLegend.Icon
-                {validators}
-                {errors}
+                {fieldValidator}
+                {fieldErrors}
                 {validState}
                 {legendPopup}
             />
-        {/if}
+        {/if} -->
     </div>
     {#if !disabled}
-        <ValidationLegend.Popup {validators} {errors} {validState} {legendPopup} />
+        <ValidationLegend.Popup {fieldValidator} {fieldErrors} {validState} {legendPopup} />
     {/if}
 </label>
 

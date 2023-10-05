@@ -4,23 +4,25 @@
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
     import {onMount} from "svelte"
-    import type {IValidatorSet} from "@interfaces"
-    export let errors: IValidator[] = []
+    import type {IFieldValidator, IFieldErrors} from "@interfaces"
+    export let fieldErrors: IFieldErrors = {}
     export let legendPopup: PopupSettings
     export let validState = ValidStates.NONE
-    export let validators: IValidatorSet = {}
+    export let fieldValidator: IFieldValidator
     let legendIcon: HTMLDivElement
+
+    $: validatorLength = Object.keys(fieldValidator).length
 
     onMount(() => {
         // Enforce OOP to give elements a chance to render
         // before we try to attach the popup
-        if (validators.length) {
+        if (validatorLength) {
             popup(legendIcon, legendPopup)
         }
     })
 </script>
 
-{#if validators.length}
+{#if validatorLength}
     <!-- svelte-ignore a11y-click-events-have-key-events The event is required for event behavior to work as intended -->
     <!-- We need to execute the attached event, and prevent popagating up on click -->
     <div
@@ -32,6 +34,8 @@
             e.target.event = "click"
         }}
         aria-label="Requirements Legend"
+        role="button"
+        tabindex="0"
     >
         {#if validState === ValidStates.INVALID}
             <Icon
