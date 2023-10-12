@@ -1,12 +1,12 @@
 import Component from "."
-import baseTextInputMeta from "@components/fields/BaseTextInput/BaseTextInput.stories"
+import BasicTextInputMeta from "@components/fields/BasicTextInput/BasicTextInput.stories"
 import {faker} from "@faker-js/faker"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
 
 
 const meta: Meta<typeof Component> = {
-    ...baseTextInputMeta,
+    ...BasicTextInputMeta,
     component: Component as ComponentType
 }
 

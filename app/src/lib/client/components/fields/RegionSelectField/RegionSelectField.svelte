@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {BaseSearchSelectField} from "@components"
+    import {BasicSearchSelectField} from "@components"
     import {countries} from "@data"
     import { validators as v } from "@validation"
     import type {ICountry, IValidator, IRegion} from "@interfaces"
@@ -49,7 +49,7 @@
 
 </script>
 {#if countryCode && options.length > 0}
-    <BaseSearchSelectField
+    <BasicSearchSelectField
         label={country && country.regionTitle ? country.regionTitle : label}
         {placeholder}
         {options}

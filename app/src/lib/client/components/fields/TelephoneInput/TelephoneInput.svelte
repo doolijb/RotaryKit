@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {BaseTextInput} from "@components"
+    import {BasicTextInput} from "@components"
     import {countries} from "@data"
     import { validators as v } from "@validation"
     import {AsYouType} from "libphonenumber-js"
@@ -56,7 +56,7 @@
 
 </script>
 
-<BaseTextInput
+<BasicTextInput
     bind:label
     bind:type
     bind:validators
@@ -104,7 +104,7 @@
                 : ""}
         </span>
     </div>
-</BaseTextInput>
+</BasicTextInput>
 
 <style lang="postcss">
     .muted {

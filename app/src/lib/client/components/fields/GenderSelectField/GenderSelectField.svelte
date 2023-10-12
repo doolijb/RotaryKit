@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {BaseSearchSelectField} from "@components"
+    import {BasicSearchSelectField} from "@components"
     import { GenderIdentities } from "@constants"
     import { validators as v } from "@validation"
     import type {IValidator} from "@interfaces"
@@ -42,7 +42,7 @@
     }))
 </script>
 
-<BaseSearchSelectField
+<BasicSearchSelectField
     {label}
     {placeholder}
     {options}

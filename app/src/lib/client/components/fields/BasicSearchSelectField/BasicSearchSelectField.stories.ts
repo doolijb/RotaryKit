@@ -1,8 +1,8 @@
 import Component from "."
-import { validators as v } from "@validation"
 import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
+import { validators as v, utils, fields } from "@validation"
 
 
 const meta: Meta<typeof Component> = {
@@ -38,7 +38,7 @@ const meta: Meta<typeof Component> = {
                 type: "text"
             }
         }
-    },
+    } as any,
     component: Component as ComponentType,
     decorators: [],
     tags: ["autodocs"]
@@ -51,40 +51,49 @@ const Template = (args: {value: boolean}) => ({
     props: args
 })
 
-const fieldValidators = [v.required()]
 const options: AutocompleteOption[] = [
     {label: "Option 1", value: "Value 1"},
     {label: "Option 2", value: "Value 2"},
     {label: "Option 3", value: "Value 3"}
 ]
 
-export const Disabled = {
-    args: {
-        disabled: true,
-        options
-    },
-    render: Template
-}
-
-export const Example = {
-    args: {
-        options
-    },
-    render: Template
-}
-
-export const WithValidators = {
+export const Default = {
     args: {
         options,
-        fieldValidators,
+        fieldValidator: utils.fieldValidator({
+            definition: fields.plain
+        })
     },
     render: Template
 }
 
-export const WithValue = {
-    args: {
-        options,
-        value: "Value 2"
-    },
-    render: Template
-}
+// export const Disabled = {
+//     args: {
+//         disabled: true,
+//         options
+//     },
+//     render: Template
+// }
+
+// export const Example = {
+//     args: {
+//         options
+//     },
+//     render: Template
+// }
+
+// export const WithValidators = {
+//     args: {
+//         options,
+//         fieldValidators,
+//     },
+//     render: Template
+// }
+
+// export const WithValue = {
+//     args: {
+//         options,
+//         value: "Value 2"
+//     },
+//     render: Template
+// }

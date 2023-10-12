@@ -22,7 +22,6 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.22.5",
-		"@histoire/plugin-svelte": "^0.17.0",
 		"@skeletonlabs/skeleton": "^2.2.0",
 		"@skeletonlabs/tw-plugin": "^0.1.0",
 		"@storybook/addon-actions": "^7.4.6",
@@ -48,8 +47,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-storybook": "^0.6.14",
 		"eslint-plugin-svelte": "^2.30.0",
-		"histoire": "^0.17.2",
-		"postcss": "^7.0.32",
+		"postcss": "^8.4.31",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.8.8",
 		"prettier-plugin-svelte": "^2.10.1",
@@ -68,6 +66,7 @@
 	"type": "module",
 	"dependencies": {
 		"@faker-js/faker": "^8.1.0",
+		"@floating-ui/dom": "^1.5.3",
 		"@iconify/svelte": "^3.1.4",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/forms": "^0.5.6",

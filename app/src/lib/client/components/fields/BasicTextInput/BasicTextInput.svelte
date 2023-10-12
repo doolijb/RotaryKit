@@ -4,6 +4,7 @@
     import {onMount} from "svelte"
     import type {IFieldValidator, IFieldErrors} from "@interfaces"
     import type {PopupSettings} from "@skeletonlabs/skeleton"
+    import { v4 } from "uuid"
 
     //
     // Props
@@ -24,6 +25,10 @@
     export let fieldValidator: IFieldValidator
     /** Field value */
     export let value = ""
+    /** Field Id */
+    export let id = v4()
+    /** Touched state */
+    export let isTouched = false
 
     //
     // Events
@@ -35,30 +40,30 @@
     /** Additional input event handler */
     export let onInput: (e: Event) => void | undefined
 
-    /**
-     * Variables
-     */
-    $: required = false
-    $: isTouched = false
-    $: validState = isTouched
-        ? Object.keys(fieldErrors)
-            ? ValidStates.VALID
-            : ValidStates.INVALID
-        : ValidStates.NONE
+    //
+    // Variables
+    //
     $: validatorLength = Object.keys(fieldValidator.validators).length
+    $: required = !!fieldValidator.validators.required
+    $: validState = isTouched
+        ? Object.keys(fieldErrors).length
+            ? ValidStates.INVALID
+            : value 
+                ? ValidStates.VALID 
+                : ValidStates.NONE
+        : ValidStates.NONE
 
-    /**
-     * Constants
-     */
+    //
+    // Constants
+    //
     const legendPopup: PopupSettings = ValidationLegend.popupSettingsSettings()
 
-    /**
-     * Functions
-     */
+    //
+    // Functions
+    //
     async function validate() {
+        touch()
         fieldErrors = await fieldValidator.test(value)
-        validState =
-            Object.keys(fieldErrors) ? ValidStates.VALID : ValidStates.INVALID
     }
 
     function setType(node: HTMLInputElement) {
@@ -66,9 +71,13 @@
         node.type = type
     }
 
-    /**
-     * Lifecycle
-     */
+    function touch() {
+        isTouched = true
+    }
+
+    //
+    // Lifecycle
+    //
     onMount(async () => {
         if (value) {
             isTouched = true
@@ -77,33 +86,34 @@
     })
 </script>
 
-<label class="label">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<div>
     <div>
-        <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-            {label}
-        </span>
+        <label class="label inline-flex mb-1" for={id}>
+            <span 
+                class="cursor-pointer select-none" 
+                class:text-gray-500={disabled}
+            >
+                {label}
+            </span>
+        </label>
         {#if !disabled}
             <ValidationBadges {fieldValidator} {fieldErrors} />
         {/if}
     </div>
 
-    <div
-        class="input-group"
-        class:grid-cols-[auto_1fr_auto]={$$slots.prefix && validatorLength}
-        class:grid-cols-[1fr_auto]={!$$slots.prefix && validatorLength}
-        class:grid-cols-[auto_1fr]={$$slots.prefix && !validatorLength && !disabled}
-        class:grid-cols-[1fr]={!$$slots.prefix && !validatorLength && !disabled}
-    >
+    <div class="input-group flex">
         <slot name="prefix" />
         <input
-            class="input border-s-0 disabled:cursor-not-allowed"
+            {id}
+            class="input border-0 ms-3 my-1 disabled:cursor-not-allowed"
             use:setType
             bind:value
             bind:this={ref}
             placeholder={!disabled ? placeholder : ""}
             {disabled}
             on:input={e => {
-                isTouched = true
                 validate()
                 onInput(e)
             }}
@@ -115,19 +125,24 @@
             aria-label={label}
             {required}
         />
-        <!-- {#if !disabled}
+        <slot name="suffix" />
+        {#if !disabled && validatorLength}
             <ValidationLegend.Icon
                 {fieldValidator}
                 {fieldErrors}
                 {validState}
                 {legendPopup}
             />
-        {/if} -->
+        {/if}
     </div>
-    {#if !disabled}
+    {#if !disabled && validatorLength}
         <ValidationLegend.Popup {fieldValidator} {fieldErrors} {validState} {legendPopup} />
     {/if}
-</label>
+</div>
 
 <style lang="postcss">
+    .input:focus-visible {
+        outline: none;
+        border: none;
+    }
 </style>

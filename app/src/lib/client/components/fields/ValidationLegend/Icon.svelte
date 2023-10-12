@@ -52,7 +52,7 @@
         {:else}
             <Icon
                 icon="ic:sharp-minus"
-                class="pointer-events-none"
+                class="pointer-events-none text-surface-500"
                 width="2em"
             />
         {/if}

@@ -26,4 +26,9 @@
     .dark :global(th) {
             @apply text-dark;
         } */
+
+    /* set text color in dark mode */
+    .dark {
+        @apply text-gray-300;
+    }
 </style>

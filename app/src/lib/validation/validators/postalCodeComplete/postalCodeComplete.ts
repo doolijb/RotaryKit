@@ -14,9 +14,12 @@ export default function postalCodeComplete({
     getCountryCode
 }: { 
     label?: string,
-    getCountryCode: () => string | null 
+    getCountryCode: () => string
 }
 ): IValidator {
+    if (!getCountryCode) {
+        throw new Error("getCountryCode is required")
+    }
     return {
         args: { label, getCountryCode },
         badge: "Format",

@@ -1,42 +1,37 @@
 <script lang="ts">
-    import {BaseTextInput} from "@components"
-    import fieldValidators from "@validation/fields"
-    import type {IValidator, IValidatorSet} from "@interfaces"
+    import {BasicTextInput} from "@components"
+    import type {IFieldValidator, IFieldErrors} from "@interfaces"
 
-    export let disabled = false
-
-    export let errors: IValidator[] = []
-    /**
-     * Variables
-     */
+    // Values
     export let label = "Email Address"
-    export let onBlur: (e: Event) => void | undefined
-    export let onFocus: (e: Event) => void | undefined
+    export let value = ""
+    export let placeholder: string | undefined
+    export let disabled = false
+    export let type = "email"
+
     // Events
     export let onInput: (e: Event) => void | undefined
-
+    export let onBlur: (e: Event) => void | undefined
+    export let onFocus: (e: Event) => void | undefined
 
     // Refs
     export let ref: HTMLInputElement
 
-    export let type = "email"
-
-    export let validators: IValidatorSet = fieldValidators.email()
-
-    export let value = ""
-
-    // Transform value
-    $: value = value.toLocaleLowerCase().trim()
+    // Validation
+    export let fieldValidator: IFieldValidator
+    export let fieldErrors: IFieldErrors = {}
+    
 </script>
 
-<BaseTextInput
+<BasicTextInput
     bind:label
     bind:type
-    bind:validators
+    bind:fieldValidator
     bind:value
-    bind:errors
+    bind:fieldErrors
     bind:disabled
     bind:ref
+    bind:placeholder
     bind:onFocus
     bind:onBlur
     bind:onInput

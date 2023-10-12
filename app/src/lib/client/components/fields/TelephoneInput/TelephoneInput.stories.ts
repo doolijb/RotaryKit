@@ -1,5 +1,5 @@
 import Component from "."
-import baseTextInputMeta from "@components/fields/BaseTextInput/BaseTextInput.stories"
+import BasicTextInputMeta from "@components/fields/BasicTextInput/BasicTextInput.stories"
 // get country codes from phone number lib
 import { countries } from "@data"
 import { faker } from "@faker-js/faker"
@@ -8,10 +8,10 @@ import type { ComponentType } from "svelte"
 
 
 const meta: Meta<typeof Component> = {
-    ...baseTextInputMeta,
+    ...BasicTextInputMeta,
     component: Component as ComponentType,
     argTypes: {
-        ...baseTextInputMeta.argTypes,
+        ...BasicTextInputMeta.argTypes,
         country: {
             type: {
                 name: "string",

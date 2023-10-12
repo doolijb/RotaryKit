@@ -29,4 +29,8 @@
     .dark :global(th) {
             @apply text-dark;
         } */
+
+    .dark {
+        @apply text-gray-300;
+    }
 </style>

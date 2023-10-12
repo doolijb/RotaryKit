@@ -95,14 +95,7 @@ export const Default = {
     args: {
         // Component Props Here
         fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "US"
-                    }
-                }
-            }
+            definition: fields.passphrase,
         }),
     }
 }
@@ -110,85 +103,30 @@ export const Default = {
 export const Disabled = {
     render: Template,
     args: {
-        value: faker.location.zipCode(),
+        value: faker.internet.password(),
         disabled: true,
         fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "US"
-                    }
-                }
-            }
+            definition: fields.passphrase,
         }),
     }
 }
 
-export const USFilled = {
+export const Filled = {
     render: Template,
     args: {
-        value: faker.location.zipCode("#####"),
+        value: faker.internet.password(),
         fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "US"
-                    }
-                }
-            }
+            definition: fields.passphrase,
         }),
     }
 }
 
-export const USFilledLong = {
+export const FilledWithValidators = {
     render: Template,
     args: {
-        value: faker.location.zipCode("#####-####"),
+        value: faker.internet.password(),
         fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "US"
-                    }
-                }
-            }
-        }),
-    }
-}
-
-export const CanadianFilled = {
-    render: Template,
-    args: {
-        value: faker.location.zipCode("A#A #A#"),
-        fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "CA"
-                    }
-                }
-            }
-        })
-    }
-}
-
-export const CanadianLong = {
-    render: Template,
-    args: {
-        value: faker.location.zipCode("A#A #A#A"),
-        fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "CA"
-                    }
-                }
-            }
+            definition: fields.passphrase,
         })
     }
 }
@@ -196,16 +134,9 @@ export const CanadianLong = {
 export const WithPlaceholder = {
     render: Template,
     args: {
-        placeholder: "Enter a valid postal code",
+        placeholder: "Enter a password or passphrase",
         fieldValidator: utils.fieldValidator({
-            definition: fields.postalCode,
-            extras: {
-                postalCodeComplete: {
-                    args: {
-                        getCountryCode: () => "US"
-                    }
-                }
-            }
+            definition: fields.passphrase,
         }),
     }
 }

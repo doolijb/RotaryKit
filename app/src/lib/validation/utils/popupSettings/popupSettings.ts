@@ -14,7 +14,7 @@ export default function popupSettings(): PopupSettings {
 
     
 
-    return browser ?{
+    return browser ? {
         event: "hover",
         placement: "bottom",
         target: uuidv4()

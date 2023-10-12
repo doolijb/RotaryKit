@@ -1,5 +1,5 @@
 import Component from "."
-import baseMeta from "@components/fields/BaseSearchSelectField/BaseSearchSelectField.stories"
+import baseMeta from "@components/fields/BasicSearchSelectField/BasicSearchSelectField.stories"
 import { GenderIdentities } from "@constants"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"

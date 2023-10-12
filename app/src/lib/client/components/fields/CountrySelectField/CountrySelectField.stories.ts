@@ -1,5 +1,5 @@
 import Component from "."
-import baseMeta from "@components/fields/BaseSearchSelectField/BaseSearchSelectField.stories"
+import baseMeta from "@components/fields/BasicSearchSelectField/BasicSearchSelectField.stories"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
 
@@ -20,17 +20,17 @@ const Template = (args: {value: boolean}) => ({
     props: args
 })
 
+export const Default = {
+    render: Template,
+    args: {
+        // Component Props Here
+    }
+}
+
 export const Disabled = {
     render: Template,
     args: {
         disabled: true
-    }
-}
-
-export const Example = {
-    render: Template,
-    args: {
-        // Component Props Here
     }
 }
 

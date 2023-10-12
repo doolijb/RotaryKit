@@ -1,14 +1,10 @@
-import Component from "."
-import { validators as v, utils, fields } from "@validation"
-import type { Meta } from "@storybook/svelte"
-import type { ComponentType } from "svelte"
 import { faker } from "@faker-js/faker"
-
+import Component from "."
+import type { Meta } from "@storybook/svelte"
+import { validators as v, utils, fields } from "@validation"
+import type { ComponentType } from "svelte"
 
 const meta: Meta<typeof Component> = {
-    component: Component as ComponentType,
-    tags: ["autodocs"],
-    decorators: [],
     argTypes: {
         label: {
             type: {
@@ -62,6 +58,24 @@ const meta: Meta<typeof Component> = {
                 required: false
             }
         },
+        resizeX: {
+            type: {
+                name: "boolean",
+                required: false
+            }
+        },
+        resizeY: {
+            type: {
+                name: "boolean",
+                required: false
+            }
+        },
+        rows: {
+            type: {
+                name: "number",
+                required: false
+            }
+        },
         onInput: {
             action: "onInput",
             table: {
@@ -80,7 +94,10 @@ const meta: Meta<typeof Component> = {
                 disable: true
             }
         }
-    } as any
+    } as any,
+    component: Component as ComponentType,
+    decorators: [],
+    tags: ["autodocs"]
 }
 
 export default meta
@@ -93,9 +110,8 @@ const Template = (args: { value: boolean }) => ({
 export const Default = {
     render: Template,
     args: {
-        // Component Props Here
         fieldValidator: utils.fieldValidator({
-            definition: fields.email,
+            definition: fields.plain,
         }),
     }
 }
@@ -103,10 +119,10 @@ export const Default = {
 export const Disabled = {
     render: Template,
     args: {
-        value: faker.internet.email(),
+        value: faker.lorem.lines(10),
         disabled: true,
         fieldValidator: utils.fieldValidator({
-            definition: fields.email,
+            definition: fields.plain,
         }),
     }
 }
@@ -114,9 +130,9 @@ export const Disabled = {
 export const Filled = {
     render: Template,
     args: {
-        value: faker.internet.email(),
+        value: faker.lorem.lines(10),
         fieldValidator: utils.fieldValidator({
-            definition: fields.email,
+            definition: fields.plain,
         }),
     }
 }
@@ -124,19 +140,38 @@ export const Filled = {
 export const FilledWithValidators = {
     render: Template,
     args: {
-        value: faker.internet.email(),
+        value: faker.lorem.lines(10),
         fieldValidator: utils.fieldValidator({
-            definition: fields.email,
-        })
+            definition: {
+                required: {
+                    validator: v.required
+                },
+                minLength: {
+                    validator: v.minLength,
+                },
+                maxLength: {
+                    validator: v.maxLength,
+                },
+            }
+        }),
     }
 }
 
-export const WithPlaceholder = {
+export const WithValidators = {
     render: Template,
     args: {
-        placeholder: "john.doe@example.com",
         fieldValidator: utils.fieldValidator({
-            definition: fields.email,
+            definition: {
+                required: {
+                    validator: v.required
+                },
+                minLength: {
+                    validator: v.minLength,
+                },
+                maxLength: {
+                    validator: v.maxLength,
+                },
+            }
         }),
     }
 }

@@ -14,32 +14,23 @@
             class:variant-soft-primary={!fieldErrors[validatorName]}
             class:variant-soft-error={!!fieldErrors[validatorName]}
             use:popup={validator.popup}
-            on:click={e => {
-                e.preventDefault()
-                // @ts-ignore
-                e.target.event = "click"
-            }}
             aria-label={validator.message}
-            role="button"
-            tabindex="0"
         >
             {validator.badge}
         </span>
-        {#if validator.popup}
+        <div
+            class="card z-10 block p-4 hidden"
+            class:variant-filled-primary={!fieldErrors[validatorName]}
+            class:variant-filled-error={!!fieldErrors[validatorName]}
+            data-popup={validator.popup.target}
+        >
+            <p>{validator.message}</p>
             <div
-                class="card z-10 block p-4"
+                class="arrow"
                 class:variant-filled-primary={!fieldErrors[validatorName]}
                 class:variant-filled-error={!!fieldErrors[validatorName]}
-                data-popup={validator.popup.target}
-            >
-                <p>{validator.message}</p>
-                <div
-                    class="arrow"
-                    class:variant-filled-primary={!fieldErrors[validatorName]}
-                    class:variant-filled-error={!!fieldErrors[validatorName]}
-                />
-            </div>
-        {/if}
+            />
+        </div>
     {/if}
 {/each}
 

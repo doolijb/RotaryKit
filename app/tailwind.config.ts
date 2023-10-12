@@ -22,16 +22,16 @@ const config = {
 		skeleton({
 			themes: {
 				preset: [
-					{ name: "crimson", enhancements: true },
-					{ name: "gold-nouveau", enhancements: true },
-					{ name: "hamlindigo", enhancements: true },
-					{ name: "modern", enhancements: true },
-					{ name: "rocket", enhancements: true },
-					{ name: "sahara", enhancements: true },
-					{ name: "seafoam", enhancements: true },
+					{ name: "crimson", enhancements: false },
+					{ name: "gold-nouveau", enhancements: false },
+					{ name: "hamlindigo", enhancements: false },
+					{ name: "modern", enhancements: false },
+					{ name: "rocket", enhancements: false },
+					{ name: "sahara", enhancements: false },
+					{ name: "seafoam", enhancements: false },
 					{ name: "skeleton", enhancements: false },
-					{ name: "vintage", enhancements: true },
-					{ name: "wintry", enhancements: true },
+					{ name: "vintage", enhancements: false },
+					{ name: "wintry", enhancements: false },
 				]
 			}
 		})

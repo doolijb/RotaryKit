@@ -49,9 +49,15 @@ const meta: Meta<typeof Component> = {
                 required: false
             }
         },
-        errors: {
+        fieldErrors: {
             type: {
-                name: "array",
+                name: "object",
+                required: false
+            }
+        },
+        isTouched: {
+            type: {
+                name: "boolean",
                 required: false
             }
         },
@@ -83,15 +89,7 @@ const Template = (args: { value: boolean }) => ({
     props: args
 })
 
-// export const Disabled = {
-//     render: Template,
-//     args: {
-//         value: "Hello World",
-//         disabled: true
-//     }
-// }
-
-export const Empty = {
+export const Default = {
     render: Template,
     args: {
         // Component Props Here
@@ -101,41 +99,72 @@ export const Empty = {
     }
 }
 
-// export const Filled = {
-//     render: Template,
-//     args: {
-//         value: "Hello World"
-//     }
-// }
+export const Disabled = {
+    render: Template,
+    args: {
+        value: "Hello World",
+        disabled: true,
+        fieldValidator: utils.fieldValidator({
+            definition: fields.plain,
+        }),
+    }
+}
 
-// export const FilledWithValidators = {
-//     render: Template,
-//     args: {
-//         value: "Hello World",
-//         validators: [
-//             v.required(),
-//             v.minLength(),
-//             v.maxLength(),
-//             v.specialCharIncluded()
-//         ]
-//     }
-// }
+export const Filled = {
+    render: Template,
+    args: {
+        value: "Hello World",
+        fieldValidator: utils.fieldValidator({
+            definition: fields.plain,
+        }),
+    }
+}
 
-// export const WithPlaceholder = {
-//     render: Template,
-//     args: {
-//         placeholder: "Enter your name"
-//     }
-// }
+export const FilledWithValidators = {
+    render: Template,
+    args: {
+        value: "Hello World",
+        fieldValidator: utils.fieldValidator({
+            definition: {
+                required: {
+                    validator: v.required,
+                },
+                minLength: {
+                    validator: v.minLength,
+                },
+                maxLength: {
+                    validator: v.maxLength,
+                },
+            }
+        })
+    }
+}
 
-// export const WithValidators = {
-//     render: Template,
-//     args: {
-//         validators: [
-//             v.required(),
-//             v.minLength(),
-//             v.maxLength(),
-//             v.specialCharIncluded()
-//         ]
-//     }
-// }
+export const WithPlaceholder = {
+    render: Template,
+    args: {
+        placeholder: "Enter your name",
+        fieldValidator: utils.fieldValidator({
+            definition: fields.plain,
+        }),
+    }
+}
+
+export const WithValidators = {
+    render: Template,
+    args: {
+        fieldValidator: utils.fieldValidator({
+            definition: {
+                required: {
+                    validator: v.required,
+                },
+                minLength: {
+                    validator: v.minLength,
+                },
+                maxLength: {
+                    validator: v.maxLength,
+                },
+            }
+        })
+    }
+}

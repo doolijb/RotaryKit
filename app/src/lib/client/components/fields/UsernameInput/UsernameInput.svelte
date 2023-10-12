@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {BaseTextInput} from "@components"
+    import {BasicTextInput} from "@components"
     import { validators as v } from "@validation"
     import type {IValidator} from "@interfaces"    /** If the field is disabled */
     export let disabled = false
@@ -24,7 +24,7 @@
      * Reactivity
     */
     $: value = value.toLocaleLowerCase().trim()
-</script><BaseTextInput
+</script><BasicTextInput
     bind:label
     bind:type
     bind:validators

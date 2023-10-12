@@ -6,7 +6,9 @@
         computePosition,
         flip,
         offset,
-        shift    } from "@floating-ui/dom"
+        shift,
+        hide,
+    } from "@floating-ui/dom"
     import {storePopup} from "@skeletonlabs/skeleton"
     import {SvelteComponent, onMount} from "svelte"
 
@@ -26,7 +28,7 @@
         })
     }
 
-    storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow})
+    storePopup.set({computePosition, autoUpdate, offset, hide, shift, flip, arrow})
 
     onMount(async () => {
         await getTheme(theme)
@@ -40,3 +42,12 @@
         <slot slot="body" />
     </svelte:component>
 {/if}
+
+<style lang="postcss">
+    /* Expand full width and height */
+    :global(html),
+    :global(body),
+    :global(#svelte) {
+        @apply w-full h-full;
+    }
+</style>
