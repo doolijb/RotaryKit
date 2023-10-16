@@ -1,5 +1,5 @@
 import { default as telephoneComplete } from "./telephoneComplete"
-import { default as confirmMatch } from "./confirmMatch"
+import { default as matches } from "./matches"
 import { default as emailAddressComplete } from "./emailAddressComplete"
 import { default as lowercaseRequired } from "./lowercaseRequired"
 import { default as maxLength } from "./maxLength"
@@ -16,7 +16,7 @@ import { default as boolean } from "./boolean"
 export default {
     boolean,
     telephoneComplete,
-    confirmMatch,
+    matches,
     emailAddressComplete,
     lowercaseRequired,
     maxLength,

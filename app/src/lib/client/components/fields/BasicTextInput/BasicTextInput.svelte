@@ -18,15 +18,15 @@
     /** Placeholder text */
     export let placeholder = ""
     /** Reference to the input element */
-    export let ref: HTMLInputElement
+    export let ref: HTMLInputElement | undefined = undefined
     /** Type of the input element */
-    export let type = "text"
+    export let type: string = "text"
     /** List of validators */
     export let fieldValidator: IFieldValidator
     /** Field value */
-    export let value = ""
+    export let value: string = ""
     /** Field Id */
-    export let id = v4()
+    export let id: string = v4()
     /** Touched state */
     export let isTouched = false
 
@@ -34,11 +34,11 @@
     // Events
     //
     /** Additional blur event handler */
-    export let onBlur: (e: Event) => void | undefined
+    export let onBlur: (e: Event) => void | undefined = undefined
     /** Additional focus event handler */
-    export let onFocus: (e: Event) => void | undefined
+    export let onFocus: (e: Event) => void | undefined = undefined
     /** Additional input event handler */
-    export let onInput: (e: Event) => void | undefined
+    export let onInput: (e: Event) => void | undefined = undefined
 
     //
     // Variables
@@ -88,7 +88,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<div>
+<div class="mb-2">
     <div>
         <label class="label inline-flex mb-1" for={id}>
             <span 
@@ -115,12 +115,14 @@
             {disabled}
             on:input={e => {
                 validate()
-                onInput(e)
+                onInput && onInput(e)
             }}
-            on:focus={onFocus}
+            on:focus={e => {
+                    onFocus && onFocus(e)
+            }}
             on:blur={e => {
                 validate()
-                onBlur(e)
+                onblur && onBlur(e)
             }}
             aria-label={label}
             {required}

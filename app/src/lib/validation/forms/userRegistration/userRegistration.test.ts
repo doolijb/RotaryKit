@@ -12,9 +12,9 @@ test("userRegistration form test passes", async () => {
  
     const extras: IFormValidatorDefinition = {
         passphraseConfirm: { 
-            confirmMatch: {
+            matches: {
                 args: {
-                    getMatchValue: () => data.passphrase
+                    getValue: () => data.passphrase
                 }
             }
         }
@@ -31,9 +31,9 @@ test("userRegistration form fields are required", async () => {
 
     const extras: IFormValidatorDefinition = {
         passphraseConfirm: {
-            confirmMatch: {
+            matches: {
                 args: {
-                    getMatchValue: () => data["passphrase"]
+                    getValue: () => data["passphrase"]
                 }
             }
         }
@@ -64,9 +64,9 @@ test("userRegistration form passphrases must match", async () => {
 
     const extras: IFormValidatorDefinition = {
         passphraseConfirm: {
-            confirmMatch: {
+            matches: {
                 args: {
-                    getMatchValue: () => data["passphrase"]
+                    getValue: () => data["passphrase"]
                 }
             }
         }
@@ -75,7 +75,7 @@ test("userRegistration form passphrases must match", async () => {
     const form = utils.formValidator({definitions, extras})
     const expected = {
         passphraseConfirm: {
-            "confirmMatch": expect.any(String),
+            "matches": expect.any(String),
         }
     }
 

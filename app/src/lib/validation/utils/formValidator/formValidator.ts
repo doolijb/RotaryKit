@@ -1,4 +1,4 @@
-import type { IFormValidatorDefinition, IFormValidator, IFieldValidator } from "@interfaces"
+import type { IFormValidatorDefinition, IFormValidator, IFieldValidator, IFormErrors } from "@interfaces"
 import { utils } from "@validation"
 
 /**
@@ -44,10 +44,17 @@ export default function ({
     Object.entries(final).forEach(([name, def]) => {
         fields[name] = utils.fieldValidator({definition:def})
     })
+    const requiredFields: string[] = []
+            Object.entries(fields).forEach(([name, field]) => {
+                if (field.validators.required) {
+                    requiredFields.push(name)
+                }
+            })
     return {
         fields,
+        requiredFields,
         test: async (data) => {
-            const errors: Record<string, Record<string, string>> = {}
+            const errors: IFormErrors = {}
             for (const [name, field] of Object.entries(fields)) {
 
                 const result = await field.test(data[name])

@@ -16,9 +16,9 @@ export async function POST(event: { request: Request }) {
     const formValidators = forms.userRegistration({
         passphraseConfirm: {
             args: {
-                confirmMatch: {
+                matches: {
                     args: {
-                        getMatchValue: () => data.passphrase,
+                        getValue: () => data.passphrase,
                     }
                 }
             }

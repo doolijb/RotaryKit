@@ -2,8 +2,8 @@ import type { IFieldValidatorDefinition } from '@interfaces'
 import { validators as v } from "@validation"
 
 export default {
-    confirmMatch: {
+    matches: {
         args: {},
-        validator: v.confirmMatch,
+        validator: v.matches,
     }
 } as IFieldValidatorDefinition

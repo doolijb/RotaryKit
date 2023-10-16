@@ -10,30 +10,30 @@ import { utils } from "@validation"
  * @returns IValidator
  */
 
-export default function confirmMatch({
+export default function matches({
     label,
-    getMatchValue
+    getValue
 }: { 
     label?: string; 
-    getMatchValue: () => string 
+    getValue: () => string 
 }): IValidator {
-    if (!getMatchValue) {
+    if (!getValue) {
         throw new Error(
-            "confirmMatch validator requires a getMatchValue function"
+            "matches validator requires a getValue function"
         )
     }
     return {
-        args: { label, getMatchValue },
+        args: { label, getValue },
         badge: `${label ? sentenceCase(label) + "s" : "Values"
             } Match`,
-        key: "confirmMatch",
+        key: "matches",
         message: `The ${label ? label.toLowerCase() + "s" : "values"
             } entered do not match, please try again`,
         popup: utils.popupSettings(),
         sticky: false,
         test: async (value: any): Promise<boolean> => {
             if (!value) return true
-            return getMatchValue() === value
+            return getValue() === value
         }
     }
 }

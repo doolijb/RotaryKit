@@ -1,4 +1,5 @@
 import type { PopupSettings } from "@skeletonlabs/skeleton"
+import type required from "@validation/validators/required"
 
 /**
  * Validator for a single field
@@ -48,7 +49,8 @@ export interface IFormValidator {
     fields: {
         [key: string]: IFieldValidator
     }
-    test: ( data: Record<string, any> ) => Promise<Record<string, Record<string, string>>>
+    requiredFields: string[]
+    test: ( data: {[key: string]: any} ) => Promise<IFormErrors>
 }
 
 /**

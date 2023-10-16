@@ -5,8 +5,8 @@ import type { IFieldValidatorDefinition } from "@interfaces"
 
 test("passphraseConfirm field validation passes", async () => {
     const extras: IFieldValidatorDefinition = ({ 
-        confirmMatch: {
-            args: { getMatchValue: () => "password" }
+        matches: {
+            args: { getValue: () => "password" }
         }
     })
     const field = utils.fieldValidator({definition, extras})
@@ -17,8 +17,8 @@ test("passphraseConfirm field validation passes", async () => {
 
 test("passphraseConfirm field validation fails", async () => {
     const extras: IFieldValidatorDefinition = ({ 
-        confirmMatch: {
-            args: { getMatchValue: () => "bad pass" }
+        matches: {
+            args: { getValue: () => "bad pass" }
         }
     })
     const field = utils.fieldValidator({definition, extras})

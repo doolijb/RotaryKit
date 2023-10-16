@@ -18,8 +18,8 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
             }
         },
         passphraseConfirm: {
-            confirmMatch: {
-                validator: validators.confirmMatch,
+            matches: {
+                validator: validators.matches,
             }
         }
     }
@@ -36,10 +36,10 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
           },
         },
         passphraseConfirm: {
-          confirmMatch: {
-            validator: validators.confirmMatch,
+          matches: {
+            validator: validators.matches,
             args: {
-              getMatchValue: () => "password",
+              getValue: () => "password",
             },
           },
         },
@@ -69,10 +69,10 @@ test("mergeFormValidatorDefinitions has correct output", async () => {
             },
         },
         passphraseConfirm: {
-            confirmMatch: {
-                validator: validators.confirmMatch,
+            matches: {
+                validator: validators.matches,
                 args: {
-                    getMatchValue: () => "password"
+                    getValue: () => "password"
                 }
             }
         }

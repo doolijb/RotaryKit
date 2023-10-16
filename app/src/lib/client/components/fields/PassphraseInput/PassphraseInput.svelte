@@ -6,17 +6,18 @@
     // Values
     export let label = "Passphrase"
     export let value = ""
-    export let placeholder: string | undefined
+    export let placeholder: string | undefined = undefined
     export let disabled = false
     export let type = "password"
+    export let id: string | undefined = undefined
 
     // Events
-    export let onInput: (e: Event) => void | undefined
-    export let onBlur: (e: Event) => void | undefined
-    export let onFocus: (e: Event) => void | undefined
+    export let onInput: (e: Event) => void | undefined = undefined
+    export let onBlur: (e: Event) => void | undefined = undefined
+    export let onFocus: (e: Event) => void | undefined = undefined
 
     // Refs
-    export let ref: HTMLInputElement
+    export let ref: HTMLInputElement | undefined = undefined
 
     // Validation
     export let fieldValidator: IFieldValidator
@@ -35,6 +36,7 @@
 
 <BasicTextInput
     bind:label
+    bind:id
     bind:type
     bind:fieldValidator
     bind:value
