@@ -1,10 +1,8 @@
 <script lang="ts">
-	import type { IFormErrors, IFormValidator } from "@interfaces"
-
     export let disabled = false
     export let formData: {[key: string]: any}
-    export let formErrors: IFormErrors = {}
-    export let formValidator: IFormValidator
+    export let formErrors: FormErrors = {}
+    export let formValidator: FormValidator
 
     export let onSubmit: (e: Event) => Promise<void>
     export let onCancel: (e: Event) => Promise<void> | undefined = undefined
@@ -15,9 +13,6 @@
     $: isPopulated = !formValidator.requiredFields.some(field => !formData[field])
     $: hasErrors = Object.keys(formErrors).some(field => Object.keys(formErrors[field]).length)
     $: canSubmit = isPopulated && !hasErrors
-    $: console.log("isPopulated", isPopulated)
-    $: console.log("hasErrors", hasErrors)
-    $: console.log("canSubmit", canSubmit)
 
     async function validate() {
         formErrors = await formValidator.test(formData)

@@ -12,7 +12,7 @@
         Table,
         tableMapperValues
     } from "@skeletonlabs/skeleton"
-    import type {IUser} from "src/interfaces/index"
+    import type {IUser} from "src/types/index"
 
     export let pageCount = 0
 

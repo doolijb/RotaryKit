@@ -2,7 +2,7 @@
     import UserAdminReview from "@components/review/UserAdminReview/UserAdminReview.svelte"
     import {ReviewModes} from "@constants"
     import {AppShell, Tab, TabGroup} from "@skeletonlabs/skeleton"
-    import type {IUser} from "@interfaces"
+    
 
     export let parent: any = null
     export let user: IUser = null

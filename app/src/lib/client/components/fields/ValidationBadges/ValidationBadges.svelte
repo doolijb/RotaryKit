@@ -1,11 +1,10 @@
 <script lang="ts">
     import {popup} from "@skeletonlabs/skeleton"
-    import type {IFieldValidator, IFieldErrors} from "@interfaces"
+    
 
-    export let fieldErrors: IFieldErrors = {}
-    export let fieldValidator: IFieldValidator
+    export let fieldErrors: FieldErrors = {}
+    export let fieldValidator: FieldValidator
 </script>
-
 {#each Object.entries(fieldValidator.validators) as [validatorName, validator]}
     {#if validator.sticky || fieldErrors[validatorName]}
         <!-- svelte-ignore a11y-click-events-have-key-events Required to make cursor behavior work as intended-->

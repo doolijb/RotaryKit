@@ -12,7 +12,7 @@
         Table,
         tableMapperValues
     } from "@skeletonlabs/skeleton"
-    import type {IEmailAddress} from "src/interfaces/index"
+    import type {IEmailAddress} from "src/types/index"
 
     export let emailAddresses = new Map<string, IEmailAddress>()
 

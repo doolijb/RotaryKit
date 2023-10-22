@@ -3,8 +3,7 @@ import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 import { migrate as pgMigrate } from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
 import chalk from "chalk"
-import * as schema from "@server/database/schema"
-export * from "@server/database/schema"
+import * as schema from "./schema"
 
 chalk.level = 1
 
@@ -45,4 +44,9 @@ export async function migrate() {
     })
 }
 
-export const db: NodePgDatabase<typeof schema> = drizzle(client, { schema })
+const db: NodePgDatabase<typeof schema> = drizzle(client, { schema })
+
+export {
+    db, 
+    schema
+}

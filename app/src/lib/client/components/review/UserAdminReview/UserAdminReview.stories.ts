@@ -1,6 +1,5 @@
 import Component from "."
-import {ReviewModes} from "@constants"
-import {examples} from "@interfaces"
+import {ReviewModes} from "$lib/shared/constants"
 import type {Meta} from "@storybook/svelte"
 
 

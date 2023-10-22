@@ -8,7 +8,7 @@
     import { v4 } from "uuid"
     import { onMount } from "svelte"
     import type { AutocompleteOption } from "@skeletonlabs/skeleton"
-    import type {IFieldValidator, IFieldErrors} from "@interfaces"
+    
 
     //
     // Props
@@ -16,7 +16,7 @@
     /** If the field is disabled */
     export let disabled = false
     /** List of validators with errors */
-    export let fieldErrors: IFieldErrors = {}
+    export let fieldErrors: FieldErrors = {}
     /** Field name */
     export let label = "Field Label"
     /** Placeholder text */
@@ -26,7 +26,7 @@
     /** Type of the input element */
     export let type = "text"
     /** List of validators */
-    export let fieldValidator: IFieldValidator
+    export let fieldValidator: FieldValidator
     /** Field value */
     export let value = ""
     /** Field Id */

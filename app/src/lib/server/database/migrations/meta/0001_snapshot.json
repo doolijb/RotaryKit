@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "7af29956-679b-4f02-80db-2963bae501df",
-  "prevId": "d933a244-4d5f-4695-b740-393ca00764fb",
+  "id": "9d0b1ffb-081c-4674-8d69-31be29037015",
+  "prevId": "6d4cfe2c-eeb7-4e00-aee2-b5ca1dae5c43",
   "tables": {
     "emails": {
       "name": "emails",
@@ -12,7 +12,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
         },
         "email": {
           "name": "email",
@@ -51,7 +52,8 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "users": {
       "name": "users",
@@ -61,7 +63,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
         },
         "username": {
           "name": "username",
@@ -94,7 +97,8 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "user_emails": {
       "name": "user_emails",
@@ -172,7 +176,8 @@
             "email_id"
           ]
         }
-      }
+      },
+      "uniqueConstraints": {}
     },
     "passphrases": {
       "name": "passphrases",
@@ -182,11 +187,30 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
           "notNull": true
         },
-        "username": {
-          "name": "username",
-          "type": "varchar(256)",
+        "hash": {
+          "name": "hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "salt": {
+          "name": "salt",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iterations": {
+          "name": "iterations",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
@@ -204,39 +228,19 @@
           "notNull": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
-    "user_passphrases": {
-      "name": "user_passphrases",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email_id": {
-          "name": "email_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_primary": {
-          "name": "is_primary",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
+      "indexes": {
+        "unique_user_passphrases": {
+          "name": "unique_user_passphrases",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": true
         }
       },
-      "indexes": {},
       "foreignKeys": {
-        "user_passphrases_user_id_users_id_fk": {
-          "name": "user_passphrases_user_id_users_id_fk",
-          "tableFrom": "user_passphrases",
+        "passphrases_user_id_users_id_fk": {
+          "name": "passphrases_user_id_users_id_fk",
+          "tableFrom": "passphrases",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -246,30 +250,62 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "user_passphrases_email_id_passphrases_id_fk": {
-          "name": "user_passphrases_email_id_passphrases_id_fk",
-          "tableFrom": "user_passphrases",
-          "tableTo": "passphrases",
-          "columnsFrom": [
-            "email_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "user_passphrases_user_id_email_id": {
-          "name": "user_passphrases_user_id_email_id",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "userTokens": {
+      "name": "userTokens",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "unique_valid_user_tokens": {
+          "name": "unique_valid_user_tokens",
           "columns": [
             "user_id",
-            "email_id"
-          ]
+            "token"
+          ],
+          "isUnique": true
         }
-      }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {},

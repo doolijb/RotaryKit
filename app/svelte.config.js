@@ -12,20 +12,27 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 		alias: {
-			"@constants": "./src/lib/constants",
+			/**
+			 *	Client
+			 */
 			"@components": "./src/lib/client/components",
-			"@components/*": "./src/lib/client/components/*",
 			"@stores": "./src/lib/client/stores",
-			"@data": "./src/lib/data",
-			"@interfaces": "./src/lib/interfaces",
-			"@server": "./src/lib/server",
-			"@server/*": "./src/lib/server/*",
-			"@testing": "./src/lib/testing",
-			"@testing/*": "./src/lib/testing/*",
 			"@themes": "./src/lib/client/themes",
-			"@themes/*": "./src/lib/client/themes/*",
-			"@validation": "./src/lib/validation",
-			"@validation/*": "./src/lib/validation/*"
+
+			/**
+			 *	Server
+			 */
+			"@auth": "./src/lib/server/auth",
+			"@database": "./src/lib/server/database",
+
+			 /**
+			 * 	Shared
+			 */
+			"@constants": "./src/lib/shared/constants",
+			"@data": "./src/lib/shared/data",
+			"@types": "src/lib/shared/interfaces",
+			"@testing": "./src/lib/shared/testing",
+			"@validation": "src/lib/shared/validation",
 		}
 	}
 }

@@ -2,7 +2,7 @@
     import {ValidationBadges, ValidationLegend} from "@components"
     import {ValidStates} from "@constants"
     import {onMount} from "svelte"
-    import type {IFieldValidator, IFieldErrors} from "@interfaces"
+    
     import type {PopupSettings} from "@skeletonlabs/skeleton"
     import { v4 } from "uuid"
 
@@ -12,7 +12,7 @@
     /** If the field is disabled */
     export let disabled = false
     /** List of validators with errors */
-    export let fieldErrors: IFieldErrors = {}
+    export let fieldErrors: FieldErrors = {}
     /** Field name */
     export let label = "Field Label"
     /** Placeholder text */
@@ -22,7 +22,7 @@
     /** Type of the input element */
     export let type: string = "text"
     /** List of validators */
-    export let fieldValidator: IFieldValidator
+    export let fieldValidator: FieldValidator
     /** Field value */
     export let value: string = ""
     /** Field Id */
@@ -46,7 +46,7 @@
     $: validatorLength = Object.keys(fieldValidator.validators).length
     $: required = !!fieldValidator.validators.required
     $: validState = isTouched
-        ? Object.keys(fieldErrors).length
+        ? fieldErrors && Object.keys(fieldErrors).length
             ? ValidStates.INVALID
             : value 
                 ? ValidStates.VALID 
@@ -84,6 +84,10 @@
             await validate()
         }
     })
+
+    // If fieldErrors is ever null, set it to an empty object to avoid exceptions
+    $: fieldErrors == undefined ? fieldErrors = {} : null
+
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

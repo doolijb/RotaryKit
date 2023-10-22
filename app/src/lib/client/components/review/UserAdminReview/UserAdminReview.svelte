@@ -1,7 +1,6 @@
 <script lang="ts">
     import {ReviewModes} from "@constants"
     import {onMount} from "svelte"
-    import type {IUser} from "@interfaces"
 
     export let formData = {
         user: {

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {BasicTextInput} from "@components"
 	import Icon from "@iconify/svelte"
-    import type {IFieldValidator, IFieldErrors} from "@interfaces"
+    
 
     // Values
     export let label = "Passphrase"
@@ -20,8 +20,8 @@
     export let ref: HTMLInputElement | undefined = undefined
 
     // Validation
-    export let fieldValidator: IFieldValidator
-    export let fieldErrors: IFieldErrors = {}
+    export let fieldValidator: FieldValidator
+    export let fieldErrors: FieldErrors = {}
 
     // Visibility
     let showPassword = true // false

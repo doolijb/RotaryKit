@@ -1,12 +1,12 @@
 <script lang="ts">
     import {ValidStates} from "@constants"
-    import type {IFieldErrors, IFieldValidator} from "@interfaces"
+    
     import type {PopupSettings} from "@skeletonlabs/skeleton"
 
-    export let fieldErrors: IFieldErrors = {}
+    export let fieldErrors: FieldErrors = {}
     export let legendPopup: PopupSettings
     export let validState = ValidStates.NONE
-    export let fieldValidator: IFieldValidator
+    export let fieldValidator: FieldValidator
 </script>
 
 {#if Object.keys(fieldValidator.validators).length}
