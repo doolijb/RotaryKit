@@ -1,0 +1,33 @@
+###
+# Defines all aliases for the project
+# After adding a new alias, run "npm run aliases"
+###
+
+###
+# Client paths
+###
+"@components": "./src/lib/client/components"
+"@stores": "./src/lib/shared/client/stores"
+"@themes": "./src/lib/client/themes"
+
+###
+# Server paths
+###
+"@auth": "./src/lib/server/auth"
+"@controllers": "./src/lib/server/controllers"
+"@database": "./src/lib/server/database"
+"@providers": "./src/lib/server/providers"
+"@requests": "./src/lib/server/requests"
+
+###
+# Shared paths
+###
+"@constants": "src/lib/shared/constants"
+"@data": "src/lib/shared/shared/data"
+"@types": "src/lib/shared/interfaces"
+"@testing": "./src/lib/shared/testing"
+"@validation": "src/lib/shared/validation"
+
+# Do not use these for imports, only for type checking
+"$lib": "./src/lib"
+"$lib/*": "./src/lib/*"

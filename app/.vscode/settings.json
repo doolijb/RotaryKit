@@ -17,5 +17,10 @@
         "})"
     ],
     "editor.formatOnSave": false,
-    "prettier.enable": true
+    "prettier.enable": true,
+    "cSpell.words": [
+        "hardikmodha",
+        "maildev",
+        "rvest"
+    ]
 }

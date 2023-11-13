@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1697682110901,
-      "tag": "0000_awesome_praxagora",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1697714069844,
-      "tag": "0001_stormy_morlocks",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1697715835880,
-      "tag": "0002_spooky_bucky",
+      "when": 1699876860423,
+      "tag": "0000_overrated_lenny_balinger",
       "breakpoints": true
     }
   ]

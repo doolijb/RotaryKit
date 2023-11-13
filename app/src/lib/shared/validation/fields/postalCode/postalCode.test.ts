@@ -3,7 +3,7 @@ import definition from "."
 import { utils } from "@validation"
 
 
-test("postalCodeComplete field validation passes", async () => {
+test("postalCodeComplete field validation: passes", async () => {
     const extras: FieldValidatorDefinition = ({ 
         postalCodeComplete: {
             args: { getCountryCode: () => "US" }
@@ -15,7 +15,7 @@ test("postalCodeComplete field validation passes", async () => {
     expect(Object.keys(errors)).toHaveLength(0)
 })
 
-test("postalCodeComplete field validation fails", async () => {
+test("postalCodeComplete field validation: fails", async () => {
     const extras: FieldValidatorDefinition = ({ 
         postalCodeComplete: {
             args: { getCountryCode: () => "US" }

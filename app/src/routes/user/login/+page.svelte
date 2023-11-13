@@ -5,7 +5,7 @@
     let completed = false
 
     async function onSubmit () {
-        const response = await axios.post("/api/user/login", formData)
+        const response = await axios.post("?/login", formData)
         console.log("response", response)
         if (response.status === 200) {
             completed = true

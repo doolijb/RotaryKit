@@ -36,22 +36,23 @@ test("formValidator creates FormValidator", async () => {
     const expected: FormValidator = {
         fields: {
             email: expect.objectContaining({
+                test: expect.any(Function),
                 validators: expect.objectContaining({
                     required: expect.any(Object),
-                    emailAddressComplete: expect.any(Object)
+                    emailAddressComplete: expect.any(Object),
                 }),
-                test: expect.any(Function),
             }),
             passphrase: expect.objectContaining({
+                test: expect.any(Function),
                 validators: expect.objectContaining({
                     required: expect.any(Object),
                     minLength: expect.any(Object),
-                    maxLength: expect.any(Object)
+                    maxLength: expect.any(Object),
                 }),
-                test: expect.any(Function),
-            })
+            }),
         },
-        test: expect.any(Function)
+        requiredFields: expect.any(Array),
+        test: expect.any(Function),
     }
 
     const result = formValidator({definitions: definitions, extras: extras})

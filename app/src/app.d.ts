@@ -1,6 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { Request } from "express"
+import { schema } from "@database"
 
 // for information about these types
 declare global {
@@ -8,9 +9,10 @@ declare global {
 		interface Error {
 			message?: string
 			errors?: FormErrors
+            status?: number
 		}
 		interface Locals {
-            user?: User,
+            user?: SelectUser,
             userAgent?: {[key:string]: any} | null,
             userTokenId?: string,
             data?: Record<string, any>
@@ -19,10 +21,14 @@ declare global {
             title?: string
             description?: string
             keywords?: string
-            user?: User
+            user?: SelectUser
         }
 		// interface Platform {}
 	}
+
+
+    type ReturningSelect = {[key:string]: AnyPgColumn} | undefined
+    type PromisedQueryResult<Returning extends ReturningSelect> = Promise<QueryResult<Returning extends undefined ? never : {[key in keyof Returning]?: any}>>
 
 	  /**
 	   * This type is missing from the typescript definitions for the
@@ -94,6 +100,7 @@ declare global {
         fields: {
             [key: string]: FieldValidator
         }
+        requiredFields: string[]
         test: (values: Record<string, any>) => Promise<FormErrors>
     }
 
@@ -103,6 +110,39 @@ declare global {
     interface FormErrors {
         [key: string]: FieldErrors
     }
+
+    /**
+     * Database transaction
+     */
+    type DbTransaction = PgTransaction<NodePgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>
+
+    /**
+     * Select schema types
+     */
+    type SelectUser = InferSelectModel<typeof schema.users>
+    type SelectUserToken = InferSelectModel<typeof schema.userTokens>
+    type SelectEmail = InferSelectModel<typeof schema.emails>
+    type SelectEmailVerification = InferSelectModel<typeof schema.emailVerifications>
+    type SelectPassphrase = InferSelectModel<typeof schema.passphrases>
+    type SelectPassphraseReset = InferSelectModel<typeof schema.passphraseResets>
+    type SelectStaffPermission = InferSelectModel<typeof schema.staffPermissions>
+    type SelectStaffRole = InferSelectModel<typeof schema.staffRoles>
+    type SelectStaffRolePermission = InferSelectModel<typeof schema.staffRolePermissions>
+    type SelectUserStaffRole = InferSelectModel<typeof schema.userStaffRoles>
+
+    /**
+     * Insert schema types
+     */
+    type InsertUser = InferInsertModel<typeof schema.users>
+    type InsertUserToken = InferInsertModel<typeof schema.userTokens>
+    type InsertEmail = InferInsertModel<typeof schema.emails>
+    type InsertEmailVerification = InferInsertModel<typeof schema.emailVerifications>
+    type InsertPassphrase = InferInsertModel<typeof schema.passphrases>
+    type InsertPassphraseReset = InferInsertModel<typeof schema.passphraseResets>
+    type InsertStaffPermission = InferInsertModel<typeof schema.staffPermissions>
+    type InsertStaffRole = InferInsertModel<typeof schema.staffRoles>
+    type InsertStaffRolePermission = InferInsertModel<typeof schema.staffRolesToPermissions>
+    type InsertUserStaffRole = InferInsertModel<typeof schema.usersToStaffRoles>
 }
 
 export {};

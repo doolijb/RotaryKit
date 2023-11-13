@@ -1,13 +1,20 @@
-import { pgTable, uniqueIndex, varchar, uuid, timestamp } from "drizzle-orm/pg-core"
-import { userEmails, passphrases, userTokens } from "."
+import { pgTable, uniqueIndex, varchar, uuid, timestamp, boolean } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
+import { userTokens } from "./userTokens"
+import { usersToStaffRoles } from "./usersToStaffRoles"
+import { passphrases } from "./passphrases"
+import { emails } from "./emails"
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     username: varchar("username", { length: 256 }).notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    verifiedAt: timestamp("verified_at"),
+    isStaff: boolean("is_staff").notNull().default(false),
+    isSuperUser: boolean("is_super_user").notNull().default(false),
+    isActive: boolean("is_active").notNull().default(true),
 }, (obj) => {
     return {
         usernameIndex: uniqueIndex("unique_usernames").on(obj.username),
@@ -15,10 +22,13 @@ export const users = pgTable("users", {
 })
 
 export const userRelations = relations(users, ({ many, one }) => ({
-    userEmails: many(userEmails),
+    // One
     passphrase: one(passphrases,{
         fields: [users.id],
         references: [passphrases.userId],
     }),
-    tokens: many(userTokens),
+
+    // Many
+    emails: many(emails),
+    toStaffRoles: many(usersToStaffRoles)
 }))

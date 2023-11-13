@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from "uuid"
 import type { PopupSettings } from "@skeletonlabs/skeleton"
-import { browser } from "$app/environment"
+// import { browser } from "$app/environment"
 
 /**
  * Returns the popup settings for the skeleton popup component

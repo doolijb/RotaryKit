@@ -1,61 +1,61 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
-	"compilerOptions": {
-		"baseUrl": "./",
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": false,
-		"paths": {
-			/**
-			 *	Client
-			 */
-			"@components": [
-				"./src/lib/client/components"
-			],
-			"@stores": [
-				"./src/lib/shared/client/stores"
-			],
-			"@themes": [
-				"./src/lib/client/themes"
-			],
-
-			/**
-			 *	Server
-			 */
-			"@auth": [
-				"./src/lib/server/auth"
-			],
-			"@database": [
-				"./src/lib/server/database"
-			],
-
-			/**
-			 * 	Shared
-			 */
-			"@constants": [
-				"src/lib/shared/constants"
-			],
-			"@data": [
-				"src/lib/shared/shared/data"
-			],
-			"@types": [
-				"src/lib/shared/interfaces"
-			],
-			"@testing": [
-				"./src/lib/shared/testing"
-			],
-			"@validation": [
-				"src/lib/shared/validation"
-			],
-
-			// Do not use these for imports, only for type checking
-			"$lib": ["./src/lib"],
-			"$lib/*":["./src/lib/*"]
-		}
-	}
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": false,
+    "paths": {
+      "@components": [
+        "./src/lib/client/components"
+      ],
+      "@stores": [
+        "./src/lib/shared/client/stores"
+      ],
+      "@themes": [
+        "./src/lib/client/themes"
+      ],
+      "@auth": [
+        "./src/lib/server/auth"
+      ],
+      "@controllers": [
+        "./src/lib/server/controllers"
+      ],
+      "@database": [
+        "./src/lib/server/database"
+      ],
+      "@providers": [
+        "./src/lib/server/providers"
+      ],
+      "@requests": [
+        "./src/lib/server/requests"
+      ],
+      "@constants": [
+        "src/lib/shared/constants"
+      ],
+      "@data": [
+        "src/lib/shared/shared/data"
+      ],
+      "@types": [
+        "src/lib/shared/interfaces"
+      ],
+      "@testing": [
+        "./src/lib/shared/testing"
+      ],
+      "@validation": [
+        "src/lib/shared/validation"
+      ],
+      "$lib": [
+        "./src/lib"
+      ],
+      "$lib/*": [
+        "./src/lib/*"
+      ]
+    }
+  }
 }

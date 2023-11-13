@@ -16,7 +16,8 @@
                 "svelte.svelte-vscode",
                 "pivaszbs.svelte-autoimport",
                 "rvest.vs-code-prettier-eslint",
-                "hardikmodha.create-tests"
+                "hardikmodha.create-tests",
+                "streetsidesoftware.code-spell-checker"
             ],
             "settings": {
                 "remote.forwardOnOpen": false

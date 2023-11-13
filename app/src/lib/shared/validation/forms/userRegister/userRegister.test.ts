@@ -2,7 +2,7 @@ import { expect, test } from "vitest"
 import definitions from "."
 import { utils } from "@validation"
 
-test("userRegister form test passes", async () => {
+test("userRegister form test: passes", async () => {
     const data = {
         username: "jacksparrow",
         email: "jack.sparrow@example.com",

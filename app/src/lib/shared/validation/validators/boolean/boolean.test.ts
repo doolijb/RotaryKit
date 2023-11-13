@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
 import boolean from "."
 
-test("boolean validator test passes", async () => {
+test("boolean validator test: passes", async () => {
     const validator = boolean()
 
     // Validator should be truthy when empty
@@ -12,7 +12,7 @@ test("boolean validator test passes", async () => {
     expect(result).toBe(true)
 })
 
-test("boolean validator test fails", async () => {
+test("boolean validator test: fails", async () => {
     const validator = boolean()
 
     let result = await validator.test("what is love?")

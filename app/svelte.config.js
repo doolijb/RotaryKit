@@ -1,5 +1,10 @@
 import adapter from "@sveltejs/adapter-auto"
 import { vitePreprocess } from "@sveltejs/kit/vite"
+import yaml from "js-yaml"
+import fs from "fs"
+
+// Read the aliases from the YAML file
+const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8"))
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,30 +16,8 @@ const config = {
 		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
-		alias: {
-			/**
-			 *	Client
-			 */
-			"@components": "./src/lib/client/components",
-			"@stores": "./src/lib/client/stores",
-			"@themes": "./src/lib/client/themes",
-
-			/**
-			 *	Server
-			 */
-			"@auth": "./src/lib/server/auth",
-			"@database": "./src/lib/server/database",
-
-			 /**
-			 * 	Shared
-			 */
-			"@constants": "./src/lib/shared/constants",
-			"@data": "./src/lib/shared/data",
-			"@types": "src/lib/shared/interfaces",
-			"@testing": "./src/lib/shared/testing",
-			"@validation": "src/lib/shared/validation",
-		}
-	}
+		alias: aliases
+	},
 }
 
 export default config

@@ -34,7 +34,7 @@ import { utils } from "@validation"
 export default function ({
     definitions, 
     extras = null
-}: {
+}:{
     definitions: FormValidatorDefinition, 
     extras?: FormValidatorDefinition
 }): FormValidator {

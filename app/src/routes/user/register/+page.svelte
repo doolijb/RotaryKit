@@ -1,9 +1,10 @@
 <script lang="ts">
 	import {UserRegisterForm} from "@components"
+    import {page} from "$app/stores"
     import axios from "axios"
 
     async function onSubmit () {
-        const response = await axios.post("/api/user/register", formData)
+        const response = await axios.post("?/register", formData)
         console.log("response", response)
         if (response.status === 200) {
             completed = true

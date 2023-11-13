@@ -2,9 +2,9 @@ import { expect, test } from "vitest"
 import userLogin from "."
 import { utils } from "@validation"
 
-test("userLogin form test passes", async () => {
+test("userLogin form test: passes", async () => {
     const data = {
-        email: "jack.sparrow@example.com",
+        username: "jacksparrow",
         passphrase: "$password123456789",
     } 
 
@@ -14,16 +14,16 @@ test("userLogin form test passes", async () => {
     expect(result).toEqual({})
 })
 
-test("userLogin form test fails", async () => {
+test("userLogin form test: fails", async () => {
     const data = {
-        email: "jack.sparrow@example",
+        username: "",
         passphrase: "",
     } 
 
     const form = utils.formValidator({definitions: userLogin})
     const expected = {
-        email: {
-            emailAddressComplete: expect.any(String),
+        username: {
+            required: expect.any(String),
         },
         passphrase: {
             required: expect.any(String),

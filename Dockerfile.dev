@@ -26,6 +26,9 @@ RUN apt update -y \
 WORKDIR /srv/www/app
 COPY ../app .
 RUN npm i
+RUN npx playwright install
+RUN npx playwright install-deps
+RUN npx install kill-port
 
 # # # # # # # # # # # # # # # # # # #
 #  COPY UNIT CONFIG                 #

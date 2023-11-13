@@ -1,6 +1,7 @@
 import { tokens, cookies } from "@auth"
 import { redirect } from "@sveltejs/kit"
 
+
 /** @type {import('./$types').PageLoad} */
 export async function load(event) {
 

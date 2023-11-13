@@ -37,11 +37,9 @@
     $: theme ? getTheme(theme) : null
 </script>
 
-{#if Theme}
-    <svelte:component this={Theme} {theme} dark={darkMode}>
-        <slot slot="body" />
-    </svelte:component>
-{/if}
+<svelte:component this={Theme} {theme} dark={darkMode}>
+    <slot slot="body" />
+</svelte:component>
 
 <style lang="postcss">
     /* Expand full width and height */

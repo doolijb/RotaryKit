@@ -3,50 +3,68 @@ import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
 import { migrate as pgMigrate } from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
 import chalk from "chalk"
-import * as schema from "./schema"
+import { schema, relations } from "./schema"
+import { dbCredentials } from "./config"
+import seeds from "./seeds"
+
+import pgtools from "pgtools"
 
 chalk.level = 1
 
-export const databases = {
-    default: {
-        host: process.env.POSTGRES_HOST,
-        port: Number(process.env.POSTGRES_PORT),
-        database: process.env.POSTGRES_DB,
-        user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
-    }
-}
-
-export function getConnectionString(settings: typeof databases.default) {
-    const { host, port, database, user, password } = settings
+export function getConnectionString(dbCredentials: {host:string, port:number, database:string, user:string, password:string}) {
+    const { host, port, database, user, password } = dbCredentials
     return `postgres://${user}:${password}@${host}:${port}/${database}`
 }
 
-const client = new pg.Client({ connectionString: getConnectionString(databases.default) })
-await client.connect()
+export const client = new pg.Client({ connectionString: getConnectionString(dbCredentials) })
+
+/**
+ * If the client fails to connect, try to create the database and connect again.
+ * Useful for when testing, or the database has been changed.
+ */
+async function handleClientConnection() {
+    try {
+        await client.connect()
+    } catch (error) {
+        await client.end()
+        await pgtools.createdb(dbCredentials, client.database)
+        await client.connect()
+    }
+}
+
+await handleClientConnection()
+await migrate()
 
 export async function migrate() {
-    // const migrateText = "Updating database..."
-    // process.stdout.write(chalk.whiteBright('• ') + chalk.yellow(migrateText))
-    // process.stdout.cursorTo(migrateText.length + 4)
+    
+    const db = drizzle(client, {
+        schema: {
+            ...schema,
+            ...relations
+        },
+    })
 
-    const db = drizzle(client, { schema })
-
-    return pgMigrate(db, {
+    return await pgMigrate(db, {
         migrationsFolder: './src/lib/server/database/migrations',
     }).catch((err) => {
-        // process.stdout.write("❌")
-        console.log(err)
+        console.error("ERROR", err)
         process.exit(1)
     }).then(() => {
-        // process.stdout.write(chalk.green("🗸\n"))
         return
     })
 }
 
-const db: NodePgDatabase<typeof schema> = drizzle(client, { schema })
+const db = drizzle(client, {
+    schema: {
+        ...schema,
+        ...relations
+    },
+})
 
 export {
     db, 
-    schema
+    schema,
+    relations,
+    dbCredentials,
+    seeds,
 }

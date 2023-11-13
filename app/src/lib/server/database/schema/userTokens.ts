@@ -1,11 +1,12 @@
 import { pgTable, uniqueIndex, varchar, uuid, timestamp, text } from "drizzle-orm/pg-core"
-import { users } from "."
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
+import { users } from "./users"
 
-export const userTokens = pgTable("userTokens", {
+
+export const userTokens = pgTable("user_tokens", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
-    userId: uuid("user_id").notNull().references(() => users.id),
+    userId: uuid("user_id").references(() => users.id, { onDelete: 'set null' }),
     token: text("token").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     expiresAt: timestamp("expires_at").notNull().defaultNow(),
