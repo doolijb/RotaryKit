@@ -2,6 +2,7 @@
 
 import type { Request } from "express"
 import { schema } from "@database"
+import type { SelectedFields } from "drizzle-orm/pg-core"
 
 // for information about these types
 declare global {
@@ -40,7 +41,7 @@ declare global {
 
 	  interface FieldValidatorDefinition {
 			[key: string]: {
-				validator?: (args: Record<string, any>) => IValidator
+				validator?: (args: Record<string, any>) => Validator
 				args?: Record<string, any>
 			}
 		}
@@ -143,6 +144,36 @@ declare global {
     type InsertStaffRole = InferInsertModel<typeof schema.staffRoles>
     type InsertStaffRolePermission = InferInsertModel<typeof schema.staffRolesToPermissions>
     type InsertUserStaffRole = InferInsertModel<typeof schema.usersToStaffRoles>
+
+    type PermissionAction = "GET" | "POST" | "PUT" | "DELETE"
+
+    type Result<T extends InferSelectModel<PgTableWithColumns<any>>> = { 
+        [key: string]: string | boolean | number | Date | Result | Result[] 
+    }
+
+    type PaginatedResponse<T extends InferSelectModel<PgTableWithColumns<any>>> = {
+        success: true,
+        results: Result<T>[],
+        resultCount: number,
+        resultStart: number,
+        resultEnd: number,
+        totalCount: number,
+        pageLimit: number,
+        previousPage: number,
+        currentPage: number,
+        nextPage: number,
+        pageCount: number,
+        orderBy: string,
+        search?: string,
+    }
+    
+    type AvailableRelations<T extends PgTableWithColumns<any>> = {
+        [key in keyof T]?: {
+          tableName: string,
+          columns: {[key:string]: boolean},
+          where?: SQL<unknown>
+        }
+      }
 }
 
 export {};

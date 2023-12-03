@@ -3,8 +3,9 @@ import { utils } from "@validation"
 /**
  * Validates that a string contains at least one number
  * 
- * @param args { label?: string, count: number }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {number} args.count
+ * @returns Validator
  */
 
 export default function numberIncluded({ 
@@ -13,7 +14,7 @@ export default function numberIncluded({
 }: {
     label?: string; 
     count?: number
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label, count },
         badge: "Number Required",

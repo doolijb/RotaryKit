@@ -1,22 +1,39 @@
 <script lang="ts">
+    import {createEventDispatcher} from "svelte"
+    
+    const dispatch = createEventDispatcher()
+
     export let disabled = false
     export let formData: {[key: string]: any}
     export let formErrors: FormErrors = {}
     export let formValidator: FormValidator
 
-    export let onSubmit: (e: Event) => Promise<void>
-    export let onCancel: (e: Event) => Promise<void> | undefined = undefined
-
     export let submitLabel = "Submit"
     export let cancelLabel = "Cancel"
+    export let canSubmit = false
 
     $: isPopulated = !formValidator.requiredFields.some(field => !formData[field])
     $: hasErrors = Object.keys(formErrors).some(field => Object.keys(formErrors[field]).length)
-    $: canSubmit = isPopulated && !hasErrors
+    $: {canSubmit = isPopulated && !hasErrors}
 
     async function validate() {
         formErrors = await formValidator.test(formData)
     }
+
+
+    ////
+    // Event Handlers
+    ////
+
+    const onSubmit = async (e: Event) => {
+        await validate()
+        dispatch("submit", e)
+    }
+
+    const onCancel = async (e: Event) => {
+        dispatch("cancel", e)
+    }
+
 </script>
 
 <div>

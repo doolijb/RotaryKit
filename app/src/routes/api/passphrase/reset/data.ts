@@ -1,9 +1,8 @@
 import { users } from "@providers"
-import { db, schema } from "@database"
+import { db } from "@database"
 import { forms, utils } from "@validation"
 import { validateForm, messageError } from "@requests"
 import type { RequestEvent } from "@sveltejs/kit"
-import { and, eq, isNotNull } from "drizzle-orm"
 
 const form = utils.formValidator({definitions: forms.resetPassphrase})
 
@@ -37,10 +36,10 @@ async function POST (event: RequestEvent): Promise<{[key:string]: any}> {
 	 * Check if valid user exists
 	 */
 	const user = await db.query.users.findFirst({
-		where: and(
-			eq(schema.users.username, event.locals.data.username),
-			isNotNull(schema.users.verifiedAt),
-			eq(schema.users.isActive, true),
+		where: (u, {and, eq, isNotNull}) => and(
+			eq(u.username, event.locals.data.username),
+			isNotNull(u.verifiedAt),
+			eq(u.isActive, true),
 		)
 	})
 
@@ -51,9 +50,9 @@ async function POST (event: RequestEvent): Promise<{[key:string]: any}> {
 		userId = user.id
 	} else {
 		const email = await db.query.emails.findFirst({
-			where: and(
-				eq(schema.emails.address, event.locals.data.username),
-				isNotNull(schema.emails.verifiedAt),
+			where: (e, {and, eq, isNotNull}) => and(
+				eq(e.address, event.locals.data.username),
+				isNotNull(e.verifiedAt),
 			),
 			with: {
 				user: true

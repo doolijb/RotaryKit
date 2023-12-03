@@ -5,7 +5,7 @@
     
 
     export let parent: any = null
-    export let user: IUser = null
+    export let user: SelectUser = null
 
     $: tabSet = 0
 

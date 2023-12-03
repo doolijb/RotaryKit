@@ -3,8 +3,10 @@ import { utils } from "@validation"
 /**
  * Validates that a string contains at least one special character
  * 
- * @param args { count: number, choices: string[] }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {string[]} args.choices - An array of special characters to check for
+ * @param {number} args.count - The number of special characters required, defaults to 1
+ * @returns Validator
  */
 
 export default function specialCharIncluded({
@@ -45,7 +47,7 @@ export default function specialCharIncluded({
     label?: string,
     choices?: string[],
     count?: number
-  } = {}): IValidator {
+  } = {}): Validator {
 
     return {
         args: { label, choices, count },

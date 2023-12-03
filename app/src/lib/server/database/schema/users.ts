@@ -12,7 +12,7 @@ export const users = pgTable("users", {
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     verifiedAt: timestamp("verified_at"),
-    isStaff: boolean("is_staff").notNull().default(false),
+    isAdmin: boolean("is_admin").notNull().default(false),
     isSuperUser: boolean("is_super_user").notNull().default(false),
     isActive: boolean("is_active").notNull().default(true),
 }, (obj) => {

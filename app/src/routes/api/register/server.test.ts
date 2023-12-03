@@ -1,6 +1,5 @@
 import { axios, apiRoute, basicUser, queryInbox} from "@testing"
-import { db, schema } from "@database"
-import { eq, isNull, gt, or, and } from "drizzle-orm"
+import { db } from "@database"
 import { test, expect } from "vitest"
 import type { forms } from "@validation"
 import data from "./data"
@@ -28,7 +27,7 @@ test("Register POST test: passes", async () => {
      * Check the db that the user was created
      */
     const user = await db.query.users.findFirst({
-        where: eq(schema.users.username, data.username),
+        where: (u, {eq}) => eq(u.username, data.username),
         with: {
             emails: true
         }
@@ -52,12 +51,12 @@ test("Register POST test: passes", async () => {
      * Check that a verification email was sent
      */
     const emailVerification = await db.query.emailVerifications.findFirst({
-        where: and(
-            eq(schema.emailVerifications.emailId, user.emails[0].id),
-            isNull(schema.emailVerifications.verifiedAt),
+        where: (v, {and, eq, isNull, or, gt}) => and(
+            eq(v.emailId, user.emails[0].id),
+            isNull(v.verifiedAt),
             or(
-                isNull(schema.emailVerifications.expiresAt),
-                gt(schema.emailVerifications.expiresAt, new Date())
+                isNull(v.expiresAt),
+                gt(v.expiresAt, new Date())
             ),
         )
     })

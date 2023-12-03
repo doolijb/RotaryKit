@@ -1,10 +1,11 @@
 <script>
-	import {SiteFooter, SiteNavigation} from "@components"
-	import { page } from "$app/stores"
 	import "../app.postcss"
+	import { SiteFooter, SiteNavigation } from "@components"
+	import { page } from "$app/stores"
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
-	import { storePopup } from "@skeletonlabs/skeleton"
+	import { storePopup, initializeStores } from "@skeletonlabs/skeleton"
 
+	initializeStores()
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 </script>
 
@@ -13,12 +14,12 @@
 </svelte:head>
 
 User: {$page.data.user?.username}
-<br>
+<br />
 
-<SiteNavigation/>
+<SiteNavigation />
 <!-- Make main fixed width -->
-<main class="container mx-auto my-5 px-5">
-	<slot/>
+<main class="container mx-auto flex-grow my-5 px-5">
+	<slot />
 </main>
 
-<SiteFooter/>
+<SiteFooter />

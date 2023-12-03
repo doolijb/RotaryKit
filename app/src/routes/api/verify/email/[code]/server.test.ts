@@ -34,7 +34,7 @@ test("Register POST test: passes", async () => {
 
     // Check the Email and User
     const email = await db.query.emails.findFirst({
-        where: eq(schema.emails.id, emailId),
+        where: (e, {eq}) => eq(e.id, emailId),
         with: {
             user: true
         }

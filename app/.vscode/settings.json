@@ -19,8 +19,16 @@
     "editor.formatOnSave": false,
     "prettier.enable": true,
     "cSpell.words": [
+        "autohide",
+        "datetime",
+        "deepmerge",
         "hardikmodha",
+        "hoverable",
+        "ilike",
+        "jacksparrow",
         "maildev",
-        "rvest"
+        "nonpositive",
+        "rvest",
+        "skeletonlabs"
     ]
 }

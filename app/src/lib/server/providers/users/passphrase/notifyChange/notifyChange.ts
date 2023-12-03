@@ -1,5 +1,4 @@
-import { db, schema } from "@database"
-import { eq, } from "drizzle-orm"
+import { db } from "@database"
 import { PassphraseUpdatedConfirmation } from "@components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
@@ -23,10 +22,10 @@ export default async function notifyChange({
 
     // Check if there is already a code
     const user = await tx.query.users.findFirst({
-        where: eq(schema.users.id, userId),
+        where: (u, {eq}) => eq(u.id, userId),
         with: {
             emails: {
-                where: eq(schema.emails.isUserPrimary, true),
+                where: (e, {eq}) => eq(e.isUserPrimary, true),
             }
         }
     })

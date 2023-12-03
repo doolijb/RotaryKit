@@ -9,7 +9,7 @@ export const userTokens = pgTable("user_tokens", {
     userId: uuid("user_id").references(() => users.id, { onDelete: 'set null' }),
     token: text("token").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    expiresAt: timestamp("expires_at").notNull().defaultNow(),
+    expiresAt: timestamp("expires_at").notNull(),
     browser: varchar("browser", { length: 256 }).notNull(),
     os: varchar("os", { length: 256 }).notNull(),
 }, (obj) => {

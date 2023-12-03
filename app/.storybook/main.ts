@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/sveltekit"
+import path from "path"
 
 const config: StorybookConfig = {
 	stories: [
@@ -12,6 +13,7 @@ const config: StorybookConfig = {
 		"@storybook/addon-links",
 		"@storybook/addon-essentials",
 		"@storybook/addon-interactions",
+		"storybook-addon-mock"
 	],
 	framework: {
 		name: "@storybook/sveltekit",
@@ -19,6 +21,6 @@ const config: StorybookConfig = {
 	},
 	docs: {
 		autodocs: "tag"
-	}
+	},
 }
 export default config

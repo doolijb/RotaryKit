@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_action_resource" ON "staff_permissions" ("method","resource");

@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"verified_at" timestamp,
-	"is_staff" boolean DEFAULT false NOT NULL,
+	"is_admin" boolean DEFAULT false NOT NULL,
 	"is_super_user" boolean DEFAULT false NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL
 );

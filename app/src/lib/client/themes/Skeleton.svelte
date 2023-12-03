@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Toast } from "@skeletonlabs/skeleton"
+
     /**
      * This is a component that imports the skeleton theme and styles.
      */
@@ -11,6 +13,7 @@
 </script>
 
 <div class="dark:text-gray-100" data-theme={theme} class:dark>
+    <Toast />
     <slot name="body" />
 </div>
 
@@ -30,5 +33,12 @@
     /* set text color in dark mode */
     .dark {
         @apply text-gray-300;
+    }
+
+    /*
+     * Toast defaults
+     */
+    .alert-dialog {
+        @apply bg-gray-800 text-gray-100;
     }
 </style>

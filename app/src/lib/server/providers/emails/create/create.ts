@@ -1,6 +1,4 @@
 import { db, schema } from "@database"
-import type { PgInsert, PgTableWithColumns } from "drizzle-orm/pg-core"
-import type { QueryResult } from "pg"
 
 export default async function create({
     tx=db,

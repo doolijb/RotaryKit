@@ -5,7 +5,7 @@ import { utils } from "@validation"
  * Validates that a string is not empty
  * 
  * @param args { label?: string }
- * @returns IValidator
+ * @returns Validator
  */
 
 export default function matches({
@@ -14,7 +14,7 @@ export default function matches({
 }: { 
     label?: string; 
     getValue: () => string 
-}): IValidator {
+}): Validator {
     if (!getValue) {
         throw new Error(
             "matches validator requires a getValue function"

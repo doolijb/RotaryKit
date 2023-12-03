@@ -4,7 +4,7 @@ import { validators as v, utils } from "@validation"
  * Validates that a string contains at least one lowercase letter
  * 
  * @param args { label?: string, count: number }
- * @returns IValidator
+ * @returns Validator
  */
 
 export default function lowercaseRequired({ 
@@ -13,7 +13,7 @@ export default function lowercaseRequired({
  } : { 
     label?: string; 
     count?: number 
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label, count },
         badge: "Lowercase Required",

@@ -1,5 +1,4 @@
 import { db, schema } from "@database"
-import { eq, isNotNull } from "drizzle-orm"
 import { error } from "@sveltejs/kit"
 import { cookies } from "@auth"
 import type { RequestEvent } from "@sveltejs/kit"
@@ -20,31 +19,38 @@ export default async function login({
     username,
     passphrase,
 }: {
-    tx?: DbTransaction | typeof db,
+    tx?: typeof db,
     event: RequestEvent,
     username: string,
     passphrase: string,
 }): Promise<void> {
-    // Find the user
+    /**
+     * Find the user
+     */
     const user = await tx.query.users.findFirst({
+        where: (users, {eq, isNotNull, and}) => and(
+            eq(users.username, username), isNotNull(users.verifiedAt)
+        ),
         with: {
             passphrase: true,
         },
-        where: eq(schema.users.username, username) && isNotNull(schema.users.verifiedAt)
-        }
-    )
+    })
 
-    if (!user) {
+    /**
+     * Make sure we have a user and a passphrase set
+     */
+    if (!user || !user.passphrase) {
         throw error(400, {
             message: "Invalid username or passphrase",
         })
     }
-
-    // Validate the hash
+    /**
+     * Validate the hash
+     */
     const hash = await users.passphrase.encrypt({
         passphrase,
         salt: user.passphrase.salt,
-        iterations: user.passphrase.iterations,
+        iterations: Number(user.passphrase.iterations),
     })
 
     if (hash !== user.passphrase.hash) {
@@ -53,7 +59,9 @@ export default async function login({
         })
     }
 
-    // Generate token
+    /**
+     * Generate token
+     */
     const [{token}] = await users.tokens.create({
         tx,
         event,
@@ -63,6 +71,8 @@ export default async function login({
         }
     })
 
-    // return token as a secure cookie
+    /**
+     * Return token as a secure cookie
+     */
     cookies.setUserTokenCookie({event, token})
 }

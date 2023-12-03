@@ -1,5 +1,4 @@
-import { db, schema } from "@database"
-import { eq, isNull, gt, and } from "drizzle-orm"
+import { db } from "@database"
 import { messageError } from "@requests"
 
 /**
@@ -22,10 +21,10 @@ export default async function validateCode({
      * Get result
      */
     const result = await tx.query.passphraseResets.findFirst({
-        where: and(
-            eq(schema.passphraseResets.id, code),
-            isNull(schema.passphraseResets.consumedAt),
-            gt(schema.passphraseResets.expiresAt, new Date()), // TODO: Check if expired compared to now
+        where: (r, {and, eq, isNull, gt}) => and(
+            eq(r.id, code),
+            isNull(r.consumedAt),
+            gt(r.expiresAt, new Date()), // TODO: Check if expired compared to now
         ),
         with: {
             user: true,

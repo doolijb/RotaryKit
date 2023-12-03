@@ -6,6 +6,7 @@ import chalk from "chalk"
 import { schema, relations } from "./schema"
 import { dbCredentials } from "./config"
 import seeds from "./seeds"
+import utils from "./utils"
 
 import pgtools from "pgtools"
 
@@ -38,6 +39,7 @@ await migrate()
 export async function migrate() {
     
     const db = drizzle(client, {
+        logger: false,
         schema: {
             ...schema,
             ...relations
@@ -67,4 +69,5 @@ export {
     relations,
     dbCredentials,
     seeds,
+    utils,
 }

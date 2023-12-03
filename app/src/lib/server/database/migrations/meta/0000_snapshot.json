@@ -465,8 +465,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_staff": {
-          "name": "is_staff",
+        "is_admin": {
+          "name": "is_admin",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,

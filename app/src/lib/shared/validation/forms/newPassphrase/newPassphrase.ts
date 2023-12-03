@@ -1,12 +1,13 @@
 import { validators, fields } from "@validation"
+import deepmerge from "deepmerge"
 
 export default {
-    passphrase: Object.assign({}, fields.passphrase, {
+    passphrase: deepmerge(fields.passphrase, {
         required: {
             validator: validators.required
         }
     }),
-    passphraseConfirm: Object.assign({}, fields.passphraseConfirm, {
+    passphraseConfirm: deepmerge(fields.passphraseConfirm, {
         required: {
             validator: validators.required
         },

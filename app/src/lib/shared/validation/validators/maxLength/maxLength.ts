@@ -5,7 +5,7 @@ import { utils } from "@validation"
  * Defaults to 20 characters
  * 
  * @param args { label?: string, maxLen: number }
- * @returns IValidator
+ * @returns Validator
  */
 
 export default function maxLength({
@@ -14,7 +14,7 @@ export default function maxLength({
 }: { 
     label?: string; 
     maxLen?: number
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label, maxLen },
         badge: "Max length",

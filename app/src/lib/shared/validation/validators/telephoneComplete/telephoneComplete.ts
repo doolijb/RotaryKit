@@ -4,15 +4,16 @@ import { utils } from "@validation"
 /**
  * Validates that a string contains a complete phone number
  * 
- * @param args { getCountryCode: () => string }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {() => string} args.getCountryCode
+ * @returns Validator
  */
 
 export default function telephoneComplete(
     args: { label?: string; getCountryCode: () => string } = {
         getCountryCode: null as unknown as () => string
     }
-): IValidator {
+): Validator {
     if (!args.getCountryCode) {
         throw new Error(
             "telephoneComplete validator requires a getCountryCode function"

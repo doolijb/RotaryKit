@@ -1,9 +1,7 @@
 import { db, schema } from "@database"
-import { eq, isNull, gt, and } from "drizzle-orm"
 import { PassphraseResetCode } from "@components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
-import { env } from "process"
 import { messageError } from "@requests"
 
 /**
@@ -130,10 +128,10 @@ export default async function sendCode({
 
 async function getResult(tx, userId) {
     return await tx.query.passphraseResets.findFirst({
-        where: and(
-            eq(schema.passphraseResets.userId, userId), 
-            isNull(schema.passphraseResets.consumedAt),
-            gt(schema.passphraseResets.expiresAt, new Date()), // TODO: Check if expired compared to now
+        where: (r, {eq, isNull, gt, and}) => and(
+            eq(r.userId, userId), 
+            isNull(r.consumedAt),
+            gt(r.expiresAt, new Date()), // TODO: Check if expired compared to now
         ),
         with: {
             user: {

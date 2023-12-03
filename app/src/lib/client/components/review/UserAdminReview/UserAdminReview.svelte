@@ -14,7 +14,7 @@
     }
     export let mode: string = ReviewModes.CREATE
 
-    export let user: IUser | undefined | null = null
+    export let user: SelectUser | undefined | null = null
 
     const invalidFields: string[] = ["username"]
 

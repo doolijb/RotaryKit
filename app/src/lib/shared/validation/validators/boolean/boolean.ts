@@ -4,14 +4,14 @@ import { utils } from "@validation"
  * Validates that a value is a boolean, or a string that can be converted to a boolean
  * 
  * @param args { label?: string }
- * @returns IValidator
+ * @returns Validator
  */
 
 export default function boolean({
     label,
 } : { 
     label?: string 
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label },
         badge: "Boolean",
@@ -19,9 +19,15 @@ export default function boolean({
         message: "Must be a True or False value",
         popup: utils.popupSettings(),
         sticky: false,
-        test: async (value: string) => {
+        test: async (value: string | boolean ) => {
+
+            /** Is it a boolean type? Return true */
+            if (typeof value === "boolean") return true
+
+            /** It it empty? Then return true */
             if ([null, undefined, ""].includes(value)) return true
 
+            /** Is it a string that can be converted to a boolean? Return true */
             return [
                 true,
                 false,

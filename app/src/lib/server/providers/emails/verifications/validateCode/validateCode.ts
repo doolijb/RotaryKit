@@ -1,6 +1,6 @@
 import { messageError } from "@requests"
 import { db, schema } from "@database"
-import { eq, isNull, gt, or, and } from "drizzle-orm"
+import { eq, isNull, gt, and } from "drizzle-orm"
 
 /**
  * Validate an email verification code.
@@ -20,16 +20,20 @@ export default async function validateCode({
     propagate?: boolean,
 }): Promise<void> {
     const emailVerification = await tx.query.emailVerifications.findFirst({
-        where: and(
-            eq(schema.emailVerifications.id, code) ,
-            isNull(schema.emailVerifications.verifiedAt),
+        where: (v, {and, eq, isNull, or}) => and(
+            eq(v.id, code) ,
+            isNull(v.verifiedAt),
             or(
-                isNull(schema.emailVerifications.expiresAt),
-                gt(schema.emailVerifications.expiresAt, new Date())
+                isNull(v.expiresAt),
+                gt(v.expiresAt, new Date())
             ),
         ),
         with: {
-            email: true,
+            email: {
+                with: {
+                    user: true
+                }
+            },
         },
     })
 

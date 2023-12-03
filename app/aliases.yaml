@@ -9,6 +9,7 @@
 "@components": "./src/lib/client/components"
 "@stores": "./src/lib/shared/client/stores"
 "@themes": "./src/lib/client/themes"
+"@utils": "./src/lib/client/utils"
 
 ###
 # Server paths

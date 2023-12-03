@@ -4,17 +4,17 @@ import { validators as v, utils } from "@validation"
  * Validates that a string is at least a certain length,
  * Defaults to 3 characters
  * 
- * @param args { label?: string, minLen: number }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {number} args.minLen
+ * @returns Validator
  */
-
 export default function minLength({ 
     label, 
     minLen = 3 
 }: { 
     label?: string,
     minLen?: number
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label, minLen },
         badge: "Min length",

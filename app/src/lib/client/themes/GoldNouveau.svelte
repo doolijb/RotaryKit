@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Toast } from "@skeletonlabs/skeleton"
     /**
      * This is a component that imports the gold-nouveau theme and styles.
      */
@@ -8,6 +9,7 @@
 </script>
 
 <div data-theme={theme} class:dark>
+    <Toast />
     <slot name="body" />
 </div>
 

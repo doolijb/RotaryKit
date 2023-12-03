@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Toast } from "@skeletonlabs/skeleton"
     /**
      * This is a component that imports the wintry theme and styles.
      */

@@ -14,10 +14,13 @@ await startUp()
 
 /** @type {import("@sveltejs/kit").Handle} */
 export async function handle({ event, resolve }) {
+    // try {
+    //     seeds.staffPermissions()
+    // } catch (e) {
+    //     console.log(e)
+    // }
 
-    seeds.staffPermissions()
-
-    const testPerformance = event.request.method !== "HEAD" && process.env.NODE_ENV !== "production"
+    const testPerformance = false // event.request.method !== "HEAD" && process.env.NODE_ENV !== "production"
     const startTime = testPerformance ? performance.now() : undefined
 
     // Handle Authentication
@@ -40,6 +43,7 @@ export async function handle({ event, resolve }) {
         const executionTime = endTime - startTime
         console.log(chalk.green(`[${event.request.method}] ${event.request.url} - ${executionTime}ms`))
     }
+
     return resolved
 }
 
@@ -135,10 +139,6 @@ async function handleAuthentication(event: RequestEvent) {
                 userAgent: event.locals.userAgent,
                 validate: true,
             })
-
-            if (!event.locals.user) {
-                cookies.deleteUserTokenCookie({event})
-            }
         } catch (e) {
             cookies.deleteUserTokenCookie({event})
             console.log("handle: error", e)

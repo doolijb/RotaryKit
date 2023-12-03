@@ -4,14 +4,14 @@ import { utils } from "@validation"
  * Validates that a string is a valid email address
  * 
  * @param args { label?: string }
- * @returns IValidator
+ * @returns Validator
  */
 
 export default function emailAddressComplete({
     label,
 } : { 
     label?: string 
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label },
         badge: "Email",

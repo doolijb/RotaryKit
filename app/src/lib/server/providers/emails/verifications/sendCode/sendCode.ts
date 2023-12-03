@@ -1,9 +1,8 @@
 import { db, schema } from "@database"
-import { and, eq, isNull } from "drizzle-orm"
 import { EmailVerificationCode } from "@components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
-import { env } from "process"
+import { eq } from "drizzle-orm"
 
 /**
  * Creates an email validation code if one does not already exist,
@@ -34,10 +33,10 @@ export default async function sendCode({
 
     // Check if there is already a code
     const result = await tx.query.emailVerifications.findFirst({
-        where: and(
-            eq(schema.emailVerifications.emailId, emailId),
-            isNull(schema.emailVerifications.verifiedAt),
-            isNull(schema.emailVerifications.expiresAt), // TODO: Check if expired compared to now
+        where: (v, {and, eq, isNull}) => and(
+            eq(v.emailId, emailId),
+            isNull(v.verifiedAt),
+            isNull(v.expiresAt), // TODO: Check if expired compared to now
         ),
         with: {
             email: true

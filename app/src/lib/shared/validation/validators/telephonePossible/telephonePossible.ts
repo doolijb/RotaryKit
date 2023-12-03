@@ -5,14 +5,15 @@ import { utils } from "@validation"
  * Validates that a string contains a possible phone number,
  * useful for validating when a user is still typing
  * 
- * @param args { getCountryCode: () => string }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {() => string} args.getCountryCode
+ * @returns Validator
  */
 
 export default function telephonePossible(args: {
     label?: string
     getCountryCode: () => string
-}): IValidator {
+}): Validator {
     if (!args.getCountryCode) {
         throw new Error(
             "telephonePossible validator requires a getCountryCode function"

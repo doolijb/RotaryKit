@@ -31,11 +31,15 @@ export default async function create({
     tx = db,
     username,
     isVerified=false,
+    isAdmin=false,
+    isSuperUser=false,
     returning=null,
 }: {
     tx?: typeof db,
     username: string,
     isVerified?: boolean,
+    isAdmin?: boolean,
+    isSuperUser?: boolean,
     returning?: ReturningSelect
 }): PromisedQueryResult<typeof returning> {
     // Create user
@@ -43,6 +47,8 @@ export default async function create({
         .values({
             username,
             verifiedAt: isVerified ? new Date() : null,
+            isAdmin,
+            isSuperUser,
         })
 
     // Returning?

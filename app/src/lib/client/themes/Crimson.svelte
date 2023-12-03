@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Toast } from "@skeletonlabs/skeleton"
+
     /**
      * This is a component that imports the crimson theme and styles.
      */
@@ -8,6 +10,7 @@
 </script>
 
 <div class="dark:bg-gray-800" data-theme={theme} class:dark>
+    <Toast />
     <slot name="body" />
 </div>
 

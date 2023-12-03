@@ -3,13 +3,14 @@ import { utils } from "@validation"
 /**
  * Validates that a string contains at least one uppercase letter
  * 
- * @param args { count: number }
- * @returns IValidator
+ * @param {string} args.label
+ * @param {number} args.count - The number of uppercase letters required, defaults to 1
+ * @returns Validator
  */
 
 export default function uppercaseIncluded(
     args: { label?: string; count: number } = { count: 1 }
-): IValidator {
+): Validator {
     return {
         args,
         badge: "Uppercase Required",

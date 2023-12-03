@@ -15,16 +15,16 @@
     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
       {#if !$page.data.user}
         <div class="text-sm lg:flex-grow">
-          <a href="/user/register" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+          <a href="/register" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Register
           </a>
-          <a href="/user/login" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+          <a href="/login" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Login
           </a>
         </div>
       {:else}
         <div class="text-sm lg:flex-grow">
-          <a href="/user/logout" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+          <a href="/logout" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
             Logout
           </a>
         </div>

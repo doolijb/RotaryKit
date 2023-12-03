@@ -1,7 +1,8 @@
 import { sveltekit } from "@sveltejs/kit/vite"
-import { defineConfig } from "vitest/config"
+import { defineConfig, type UserConfigExport } from "vitest/config"
 import fs from "fs"
 import yaml from "js-yaml"
+import path from "path"
 
 
 // Read the aliases from the YAML file
@@ -12,7 +13,7 @@ const aliasConfig = Object.fromEntries(
   Object.entries(aliases).map(([alias, path]) => [alias.replace(/[""]/g, ""), path as string])
 )
 
-export default defineConfig({
+const config = {
 	plugins: [sveltekit()],
 	test: {
 		include: ["src/**/*.test.ts"],
@@ -26,4 +27,6 @@ export default defineConfig({
 	resolve: {
 		alias: aliasConfig
 	  },
-})
+} satisfies UserConfigExport
+
+export default defineConfig(config)

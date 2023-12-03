@@ -3,15 +3,15 @@ import { validators as v, utils } from "@validation"
 /**
  * Validates that a string does not contain spaces or special characters
  * 
- * @param args { label?: string }
- * @returns IValidator
+ * @param {string} args.label
+ * @returns Validator
  */
 
 export default function specialCharExcluded({ 
     label 
 }: {
     label?: string
-} = {} ): IValidator {
+} = {} ): Validator {
     return {
         args: { label },
         badge: "Special characters",

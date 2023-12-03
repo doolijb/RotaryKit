@@ -4,8 +4,9 @@ import { validators as v, utils } from "@validation"
 /**
  * Validates that a string is a valid postal code
  * 
- * @param args { getCountryCode: () => string | null }
- * @returns { IValidator }
+ * @param {string} args.label
+ * @param {() => string} args.getCountryCode
+ * @returns { Validator }
  */
 
 export default function postalCodeComplete({
@@ -15,7 +16,7 @@ export default function postalCodeComplete({
     label?: string,
     getCountryCode: () => string
 }
-): IValidator {
+): Validator {
     if (!getCountryCode) {
         throw new Error("getCountryCode is required")
     }
