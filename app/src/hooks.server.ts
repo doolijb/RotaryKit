@@ -5,7 +5,7 @@ import { UAParser } from "ua-parser-js"
 import type {  RequestEvent } from "@sveltejs/kit"
 import { users } from "@providers"
 import getLogger from "pino"
-import { getTableConfig } from "drizzle-orm/pg-core"
+import sanitizeHtml from "sanitize-html"
 
 chalk.level = 1
 const logger = getLogger()
@@ -15,13 +15,13 @@ await startUp()
 /** @type {import("@sveltejs/kit").Handle} */
 export async function handle({ event, resolve }) {
     // try {
-    //     seeds.staffPermissions()
+    //     seeds.adminPermissions()
     // } catch (e) {
     //     console.log(e)
     // }
 
-    const testPerformance = false // event.request.method !== "HEAD" && process.env.NODE_ENV !== "production"
-    const startTime = testPerformance ? performance.now() : undefined
+    // const testPerformance = false // event.request.method !== "HEAD" && process.env.NODE_ENV !== "production"
+    // const startTime = testPerformance ? performance.now() : undefined
 
     // Handle Authentication
     await handleAuthentication(event)
@@ -38,11 +38,11 @@ export async function handle({ event, resolve }) {
         throw error
     }
 
-    if(testPerformance) {
-        const endTime = performance.now()
-        const executionTime = endTime - startTime
-        console.log(chalk.green(`[${event.request.method}] ${event.request.url} - ${executionTime}ms`))
-    }
+    // if(testPerformance) {
+    //     const endTime = performance.now()
+    //     const executionTime = endTime - startTime
+    //     console.log(chalk.green(`[${event.request.method}] ${event.request.url} - ${executionTime}ms`))
+    // }
 
     return resolved
 }
@@ -101,19 +101,26 @@ function checkSettings() {
 }
 
 export async function requestData(request: Request): Promise<{ [key: string]: string }> {
-    let data: { [key: string]: string } = {}
+    let data: { [key: string]: any } = {}
 
     if (request.headers.get('content-type')?.includes('form')) {
         // Form Data
         const formData = await request.formData()
         for (const [key, value] of formData.entries()) {
             if (typeof value === 'string') {
-                data[key] = value.trim()
+                // Sanitize the input to prevent XSS attacks
+                data[key] = sanitizeHtml(value.trim())
             }
         }
     } else if (request.headers.get('content-type')?.includes('json')) {
         // JSON
-        data = await request.json()
+        const jsonData = await request.json()
+        // Sanitize each value in the JSON data
+        data = Object.fromEntries(
+            Object.entries(jsonData).map(([key, value]) => 
+                [key, typeof value === 'string' ? sanitizeHtml(value) : value]
+            )
+        );
     } else {
         return data
     }
@@ -127,18 +134,19 @@ async function handleAuthentication(event: RequestEvent) {
 
     // Get User Token
     const token = event.cookies.get("userToken")
-
     // Authenticate User
     if (token) {
         try {
             const validToken = await tokens.decryptLocalToken({token})
             event.locals.userTokenId = validToken.id as string
-            event.locals.user = await users.auth.authenticate({
+            const authenticatedData = await users.auth.authenticate({
                 tokenId: validToken.id as string,
                 token: token,
                 userAgent: event.locals.userAgent,
                 validate: true,
             })
+            event.locals.user = authenticatedData.user
+            event.locals.adminPermissions = authenticatedData.adminPermissions
         } catch (e) {
             cookies.deleteUserTokenCookie({event})
             console.log("handle: error", e)

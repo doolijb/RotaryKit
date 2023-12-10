@@ -104,10 +104,14 @@
 	</div>
 
 	<div class="input-group flex">
-		<slot name="prefix" />
+		{#if $$slots.prefix}
+			<div class="align-middle m-0 px-0">
+				<slot name="prefix" />
+			</div>
+		{/if}
 		<input
 			{id}
-			class="input border-0 disabled:cursor-not-allowed p-2 ps-3"
+			class="input border-0 disabled:cursor-not-allowed"
 			use:setType
 			bind:value
 			bind:this={ref}
@@ -127,11 +131,15 @@
 			aria-label={label}
 			{required}
 		/>
-		<div class="align-middle m-0 p-0">
-			<slot name="suffix" />
-		</div>
+		{#if $$slots.suffix}
+			<div class="align-middle m-0 px-0">
+				<slot name="suffix" />
+			</div>
+		{/if}
 		{#if !disabled && validatorLength}
-			<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
+			<div class="align-middle m-0 px-0">
+				<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
+			</div>
 		{/if}
 	</div>
 	{#if !disabled && validatorLength}
@@ -140,8 +148,13 @@
 </div>
 
 <style lang="postcss">
-	.input:focus-visible {
+	/* .input:focus-visible {
 		outline: none;
 		border: none;
+	} */
+
+	.input-group div.px-0 {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 	}
 </style>

@@ -1,8 +1,8 @@
-export async function load({ locals }) {
-    // Add request.user to data
-    // Add request.userAgent to data
+import { redirect } from '@sveltejs/kit'
 
+export async function load({ locals }) {
     return {
-        user: locals.user || null,
+        user: locals.user,
+        adminPermissions: locals.adminPermissions,
     }
 }

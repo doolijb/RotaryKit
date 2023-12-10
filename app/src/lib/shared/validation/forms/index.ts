@@ -3,11 +3,19 @@ import userRegister from "./userRegister"
 import newPassphrase from "./newPassphrase"
 import resetPassphrase from "./resetPassphrase"
 import adminCreateUser from "./adminCreateUser"
+import adminEditUser from "./adminEditUser"
+import adminCreateAdminRole from "./adminCreateAdminRole"
+import adminEditAdminRole from "./adminEditAdminRole"
+import adminEditAdminRolesToUser from "./adminEditAdminRolesToUser"
 
 export default {
     newPassphrase,
     resetPassphrase,
     userLogin,
     userRegister,
-    adminCreateUser
+    adminCreateUser,
+    adminEditUser,
+    adminCreateAdminRole,
+    adminEditAdminRole,
+    adminEditAdminRolesToUser
 }

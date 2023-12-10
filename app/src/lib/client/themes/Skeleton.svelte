@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toast } from "@skeletonlabs/skeleton"
+	import { Modal, Toast } from "@skeletonlabs/skeleton"
 
     /**
      * This is a component that imports the skeleton theme and styles.
@@ -14,6 +14,7 @@
 
 <div class="dark:text-gray-100" data-theme={theme} class:dark>
     <Toast />
+    <Modal />
     <slot name="body" />
 </div>
 

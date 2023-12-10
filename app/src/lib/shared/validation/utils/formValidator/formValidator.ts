@@ -35,7 +35,7 @@ import deepmerge from "deepmerge"
  * ```
  */
 
-export default function ({
+export default function formValidator({
 	definitions,
 	extras = undefined
 }: {

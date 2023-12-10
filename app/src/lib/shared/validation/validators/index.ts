@@ -12,6 +12,8 @@ import { default as specialCharIncluded } from "./specialCharIncluded"
 import { default as specialCharExcluded} from "./specialCharExcluded"
 import { default as uppercaseRequired } from "./uppercaseIncluded"
 import { default as boolean } from "./boolean"
+import { default as multiSelectOptions } from "./multiSelectOptions"
+import { default as isArray } from "./isArray"
 
 export default {
     boolean,
@@ -27,5 +29,7 @@ export default {
     required,
     specialCharIncluded,
     specialCharExcluded,
-    uppercaseRequired
+    uppercaseRequired,
+    multiSelectOptions,
+    isArray
 }

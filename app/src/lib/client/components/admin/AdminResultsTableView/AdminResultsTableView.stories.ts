@@ -83,7 +83,7 @@ export const Default = Template.bind({})
 
 Default.args = {
 	resource: "users",
-	resourceTitle: "Users",
+	displayTitle: "Users",
 	dataHandlers: {
 		emails: {
 			header: "Primary Email",

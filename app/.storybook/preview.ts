@@ -27,8 +27,8 @@ const preview: Preview = {
 				},
 				navigating: null,
 				session: null,
-				updated: false
-			}
+				updated: false,
+			},
 		}
 	},
 	decorators: [

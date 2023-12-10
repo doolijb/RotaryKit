@@ -14,6 +14,7 @@ declare global {
 		}
 		interface Locals {
             user?: SelectUser,
+            adminPermissions?: SelectAdminPermission[],
             userAgent?: {[key:string]: any} | null,
             userTokenId?: string,
             data?: Record<string, any>
@@ -126,10 +127,10 @@ declare global {
     type SelectEmailVerification = InferSelectModel<typeof schema.emailVerifications>
     type SelectPassphrase = InferSelectModel<typeof schema.passphrases>
     type SelectPassphraseReset = InferSelectModel<typeof schema.passphraseResets>
-    type SelectStaffPermission = InferSelectModel<typeof schema.staffPermissions>
-    type SelectStaffRole = InferSelectModel<typeof schema.staffRoles>
-    type SelectStaffRolePermission = InferSelectModel<typeof schema.staffRolePermissions>
-    type SelectUserStaffRole = InferSelectModel<typeof schema.userStaffRoles>
+    type SelectAdminPermission = InferSelectModel<typeof schema.adminPermissions>
+    type SelectAdminRole = InferSelectModel<typeof schema.adminRoles>
+    type SelectAdminRolePermission = InferSelectModel<typeof schema.adminRolePermissions>
+    type SelectUserAdminRole = InferSelectModel<typeof schema.useradminRoles>
 
     /**
      * Insert schema types
@@ -140,10 +141,10 @@ declare global {
     type InsertEmailVerification = InferInsertModel<typeof schema.emailVerifications>
     type InsertPassphrase = InferInsertModel<typeof schema.passphrases>
     type InsertPassphraseReset = InferInsertModel<typeof schema.passphraseResets>
-    type InsertStaffPermission = InferInsertModel<typeof schema.staffPermissions>
-    type InsertStaffRole = InferInsertModel<typeof schema.staffRoles>
-    type InsertStaffRolePermission = InferInsertModel<typeof schema.staffRolesToPermissions>
-    type InsertUserStaffRole = InferInsertModel<typeof schema.usersToStaffRoles>
+    type InsertAdminPermission = InferInsertModel<typeof schema.adminPermissions>
+    type InsertAdminRole = InferInsertModel<typeof schema.adminRoles>
+    type InsertAdminRolePermission = InferInsertModel<typeof schema.adminRolesToPermissions>
+    type InsertUserAdminRole = InferInsertModel<typeof schema.usersToAdminRoles>
 
     type PermissionAction = "GET" | "POST" | "PUT" | "DELETE"
 
@@ -174,6 +175,23 @@ declare global {
           where?: SQL<unknown>
         }
       }
+
+      type AdminEditResultViewTab = {
+		Form: ConstructorOfATypedSvelteComponent
+		handleSubmit: (data: { [key: string]: any }) => Promise<AxiosResponse>
+		getFormExtras?: () => Promise<{ [key: string]: any }>
+		formExtras?: { [key: string]: any }
+		formData?: { [key: string]: any }
+		formErrors?: FormErrors
+		populated?: boolean
+		submitted?: boolean
+		canSubmit?: boolean
+	}
+
+	type AdminEditResultViewTabs = {
+		default: AdminEditResultViewTab
+		[key: string]: AdminEditResultViewTab
+	}
 }
 
 export {};

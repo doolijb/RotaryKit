@@ -1,9 +1,161 @@
 {
-  "id": "89705d22-59c2-4e09-a65d-3b189681256e",
-  "prevId": "c555352e-f41c-456e-b719-97b6c2d62a38",
+  "id": "73faf1a1-6efa-4ea3-a7c1-9fc3dcbd719e",
+  "prevId": "aae48de7-e161-407f-976c-74ac4d95c081",
   "version": "5",
   "dialect": "pg",
   "tables": {
+    "admin_permissions": {
+      "name": "admin_permissions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
+        },
+        "method": {
+          "name": "method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource": {
+          "name": "resource",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "unique_action_resource": {
+          "name": "unique_action_resource",
+          "columns": [
+            "method",
+            "resource"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "admin_roles": {
+      "name": "admin_roles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "admin_roles_to_permissions": {
+      "name": "admin_roles_to_permissions",
+      "schema": "",
+      "columns": {
+        "admin_permission_id": {
+          "name": "admin_permission_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "admin_role_id": {
+          "name": "admin_role_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "admin_roles_to_permissions_admin_permission_id_admin_permissions_id_fk": {
+          "name": "admin_roles_to_permissions_admin_permission_id_admin_permissions_id_fk",
+          "tableFrom": "admin_roles_to_permissions",
+          "tableTo": "admin_permissions",
+          "columnsFrom": [
+            "admin_permission_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "admin_roles_to_permissions_admin_role_id_admin_roles_id_fk": {
+          "name": "admin_roles_to_permissions_admin_role_id_admin_roles_id_fk",
+          "tableFrom": "admin_roles_to_permissions",
+          "tableTo": "admin_roles",
+          "columnsFrom": [
+            "admin_role_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "admin_roles_to_permissions_admin_permission_id_admin_role_id_pk": {
+          "name": "admin_roles_to_permissions_admin_permission_id_admin_role_id_pk",
+          "columns": [
+            "admin_permission_id",
+            "admin_role_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "emails": {
       "name": "emails",
       "schema": "",
@@ -279,164 +431,6 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "staff_permissions": {
-      "name": "staff_permissions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "(gen_random_uuid ())"
-        },
-        "method": {
-          "name": "method",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "resource": {
-          "name": "resource",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "unique_action_resource": {
-          "name": "unique_action_resource",
-          "columns": [
-            "method",
-            "resource"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "staff_roles": {
-      "name": "staff_roles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "(gen_random_uuid ())"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "staff_roles_to_permissions": {
-      "name": "staff_roles_to_permissions",
-      "schema": "",
-      "columns": {
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_permission_id": {
-          "name": "user_permission_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "staff_role_id": {
-          "name": "staff_role_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "staff_roles_to_permissions_user_permission_id_staff_permissions_id_fk": {
-          "name": "staff_roles_to_permissions_user_permission_id_staff_permissions_id_fk",
-          "tableFrom": "staff_roles_to_permissions",
-          "tableTo": "staff_permissions",
-          "columnsFrom": [
-            "user_permission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "staff_roles_to_permissions_staff_role_id_staff_roles_id_fk": {
-          "name": "staff_roles_to_permissions_staff_role_id_staff_roles_id_fk",
-          "tableFrom": "staff_roles_to_permissions",
-          "tableTo": "staff_roles",
-          "columnsFrom": [
-            "staff_role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "staff_roles_to_permissions_user_permission_id_staff_role_id": {
-          "name": "staff_roles_to_permissions_user_permission_id_staff_role_id",
-          "columns": [
-            "user_permission_id",
-            "staff_role_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {}
-    },
     "users": {
       "name": "users",
       "schema": "",
@@ -509,8 +503,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users_to_staff_roles": {
-      "name": "users_to_staff_roles",
+    "users_to_admin_roles": {
+      "name": "users_to_admin_roles",
       "schema": "",
       "columns": {
         "user_id": {
@@ -535,9 +529,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "users_to_staff_roles_user_id_users_id_fk": {
-          "name": "users_to_staff_roles_user_id_users_id_fk",
-          "tableFrom": "users_to_staff_roles",
+        "users_to_admin_roles_user_id_users_id_fk": {
+          "name": "users_to_admin_roles_user_id_users_id_fk",
+          "tableFrom": "users_to_admin_roles",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -548,10 +542,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "users_to_staff_roles_role_id_staff_roles_id_fk": {
-          "name": "users_to_staff_roles_role_id_staff_roles_id_fk",
-          "tableFrom": "users_to_staff_roles",
-          "tableTo": "staff_roles",
+        "users_to_admin_roles_role_id_admin_roles_id_fk": {
+          "name": "users_to_admin_roles_role_id_admin_roles_id_fk",
+          "tableFrom": "users_to_admin_roles",
+          "tableTo": "admin_roles",
           "columnsFrom": [
             "role_id"
           ],
@@ -563,8 +557,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "users_to_staff_roles_user_id_role_id": {
-          "name": "users_to_staff_roles_user_id_role_id",
+        "users_to_admin_roles_user_id_role_id_pk": {
+          "name": "users_to_admin_roles_user_id_role_id_pk",
           "columns": [
             "user_id",
             "role_id"
@@ -607,8 +601,7 @@
           "name": "expires_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+          "notNull": true
         },
         "browser": {
           "name": "browser",
@@ -657,6 +650,9 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {}
+    "columns": {
+      "\"admin_roles_to_permissions\".\"user_permission_id\"": "\"admin_roles_to_permissions\".\"admin_permission_id\"",
+      "\"admin_roles_to_permissions\".\"staff_role_id\"": "\"admin_roles_to_permissions\".\"admin_role_id\""
+    }
   }
 }

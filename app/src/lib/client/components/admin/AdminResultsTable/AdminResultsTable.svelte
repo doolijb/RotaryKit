@@ -259,7 +259,7 @@
 									</span>
 								</button>
 								<div
-									class="card w-48 shadow-xl p-0"
+									class="card w-48 shadow-xl p-0 z-50"
 									data-popup={actionPopupSettings[String(result["id"])].target}
 								>
 									<div class="arrow bg-primary-500-backdrop-token" />
@@ -287,7 +287,7 @@
 			<tfoot>
 				<tr>
 					<!-- RESULTS DETAILS -->
-					<td colspan={finalOrderedKeys.length + 1}>
+					<td colspan={finalOrderedKeys.length + 2}>
 						<p class="text-gray-500 text-center normal-case">
 							Displaying {resultStart} - {resultEnd} of {totalCount} results
 						</p>

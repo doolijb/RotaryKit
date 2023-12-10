@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { AdminHeader, AdminResultsTableView, DetailGridItem, TextCell } from "@components"
+	import { AdminHeader, DetailGridItem, Loading, TextCell } from "@components"
 	import Icon from "@iconify/svelte"
 	import axios, { type AxiosResponse } from "axios"
-	// import { type SvelteComponent, onMount } from "svelte"
-	import { Tab, TabGroup, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "@utils"
+	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
+	import { Toast, hasAdminPermission } from "@utils"
 	import { page } from "$app/stores"
-	import humanizeString from "humanize-string"
-	import boolean from "$lib/shared/validation/validators/boolean"
-	import moment from "moment"
-	import { clipboard } from "@skeletonlabs/skeleton"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
 	import { onMount } from "svelte"
+	import { goto, invalidateAll } from "$app/navigation"
+	import { singular } from "pluralize"
+	import humanizeString from "humanize-string"
 
 	const toastStore = getToastStore()
+	const modalStore = getModalStore()
 
 	type DataHandler = {
 		header?: string
 		handler?: (result: Result<any>) => string | boolean | number
 		orderByKey?: string
 		getUrl?: (result: Result<any>) => string
+		defer?: string
 	}
 
 	type DataHandlers = {
@@ -29,17 +29,102 @@
 	////
 	// VARIABLE PROPS
 	////
+
 	export let resource: string
-	export let displayTitle: string
-	export let result: Record<string, any>
 	export let dataHandlerSet: DataHandlers = {}
 	export let naturalKey: string
+	export let resourceId: string
+	export let mutateResult: (result: Result<any>) => Result<any> | undefined = undefined
+
+	////
+	// INTERNAL VARIABLES
+	////
+
+	$: isLoaded = !!result && !!currentTab
+
+	////
+	// PERMISSIONS
+	////
+
+	const canEditResource: boolean = hasAdminPermission({
+		adminPermissions: $page.data.adminPermissions,
+		action: "PUT",
+		resources: [resource]
+	})
+
+	const canDeleteResource: boolean = hasAdminPermission({
+		adminPermissions: $page.data.adminPermissions,
+		action: "DELETE",
+		resources: [resource]
+	})
+
+	const canCreateResource: boolean = hasAdminPermission({
+		adminPermissions: $page.data.adminPermissions,
+		action: "POST",
+		resources: [resource]
+	})
 
 	function handleCancel() {
 		// TODO
 	}
 
-	async function handleEdit() {}
+	async function handleDelete() {
+		console.log("handleDelete")
+		modalStore.trigger({
+			type: "confirm",
+			title: `Delete ${singular(humanizeString(resource))}`,
+			body: `Are you sure you want to delete this ${singular(humanizeString(resource))}?`,
+			response: (r) => {
+				if (r) {
+					axios
+						.delete(`/api/admin/${resource}/${resourceId}`)
+						.then((response: AxiosResponse) => {
+							toastStore.trigger(
+								new Toast({
+									message: `${singular(humanizeString(resource))} deleted successfully`,
+									style: "success"
+								})
+							)
+							goto(`/admin/${resource}`)
+						})
+						.catch(async (error: any) => {
+							toastStore.trigger(
+								new Toast({
+									message: `Error deleting ${singular(humanizeString(resource))}`,
+									style: "error"
+								})
+							)
+							if (error.response.status === 403) {
+								await invalidateAll()
+							}
+						})
+				}
+			}
+		})
+	}
+
+	////
+	// RESULT
+	////
+
+	let result: Record<string, any>
+
+	async function getResult() {
+		try {
+			const response: AxiosResponse = await axios.get(`/api/admin/${resource}/${resourceId}`)
+			result = mutateResult ? mutateResult(response.data) : response.data
+		} catch (error) {
+			toastStore.trigger(
+				new Toast({
+					message: "There was an error getting the result.",
+					style: "error"
+				})
+			)
+			if (error.response.status === 403) {
+				await invalidateAll()
+			}
+		}
+	}
 
 	////
 	// TABS
@@ -49,27 +134,17 @@
 		default: {}
 	}
 
-	Object.entries(result).forEach(([key, value]) => {
-		if (value instanceof Object) {
-			tabs[key] = value
-		} else {
-			tabs.default[key] = value
-		}
-	})
-
-	let currentTab: string = "default"
-
-	/**
-	 * When a tab is changed, we want to set the query prams to the tab.
-	 * If the tab is the default tab, then we want to remove the query param.
-	 */
-	$: {
-		if (currentTab === "default") {
-			window.history.replaceState({}, "", $page.url.pathname)
-		} else {
-			window.history.replaceState({}, "", `${$page.url.pathname}?tab=${currentTab}`)
-		}
+	function buildTabs() {
+		Object.entries(result).forEach(([key, value]) => {
+			if (value instanceof Object) {
+				tabs[key] = value
+			} else {
+				tabs.default[key] = value
+			}
+		})
 	}
+
+	let currentTab: string
 
 	////
 	// DATA HANDLERS
@@ -101,88 +176,124 @@
 	// LIFECYCLE
 	////
 
-	onMount(() => {
+	onMount(async () => {
 		// If there is a tab query param, then we want to set the currentTab to that
-		const tabParam = $page.url.searchParams.get("tab")
-		if (!!tabParam) currentTab = tabParam
+		await getResult()
+		buildTabs()
+		currentTab = $page.url.searchParams.get("tab") || "default"
 	})
 </script>
 
 <AdminHeader>
 	<svelte:fragment slot="title">
 		<Icon icon="bx:detail" class="mr-2 mb-1 w-auto inline" />
-		Viewing {displayTitle}{result[naturalKey] ? `: ${result[naturalKey]}` : ""}
+		Viewing {singular(humanizeString(resource))}{isLoaded && result[naturalKey]
+			? `: ${result[naturalKey]}`
+			: ""}
 	</svelte:fragment>
 	<div class="flex justify-between" slot="controls">
 		<a href="/admin/{resource}" class="btn variant-filled-surface" on:click={handleCancel}>
 			<Icon icon="material-symbols:list" class="mr-2" />
 			View All
 		</a>
-		<a href="{$page.url.pathname}/edit" class="btn variant-filled-success" on:click={handleEdit}>
-			<Icon icon="mdi:plus" class="mr-2" />
-			New
-		</a>
+		{#if canCreateResource}
+			<a
+				href="admin/{resource}/create"
+				class="btn variant-filled-success"
+				class:disabled={!isLoaded}
+			>
+				<Icon icon="mdi:plus" class="mr-2" />
+				New
+			</a>
+		{/if}
 	</div>
 </AdminHeader>
 
-<section class="card variant-soft p-4 mb-4">
-	<!-- Lets nicely lay out all the details of result -->
-	<!-- svelte-ignore a11y-label-has-associated-control -->
-	<TabGroup>
-		{#each Object.keys(tabs) as key}
-			<Tab bind:group={currentTab} name={humanizeString(key)} value={key}>
-				<!-- <svelte:fragment slot="lead">(icon)</svelte:fragment> -->
-				<span>{humanizeString(key === "default" ? displayTitle : key)}</span>
-			</Tab>
-		{/each}
-		<!-- Tab Panels --->
-		<svelte:fragment slot="panel">
-			<!-- Display responsive grid for all details in the tabset -->
-			{#if Array.isArray(tabs[currentTab])}
-				<div class="table-container">
-					<table class="table w-full m-0 variant-soft">
-						<thead>
-							<tr>
-								{#each Object.keys(tabs[currentTab][0]) as key}
-									<th>{getHeader(key, getDataHandler(key))}</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each tabs[currentTab] as result}
-								<tr>
-									{#each Object.keys(result) as key}
-										{#if typeof getValue(result, key, getDataHandler(key)) === "boolean"}
-											<BoolCell value={getValue(result, key, getDataHandler(key))} />
-										{:else}
-											<TextCell text={`${getValue(result, key, getDataHandler(key))}`} />
-										{/if}
+{#if isLoaded}
+	<section class="card variant-soft p-4 mb-4">
+		<!-- Lets nicely lay out all the details of result -->
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<TabGroup>
+			{#each Object.keys(tabs) as key}
+				<Tab bind:group={currentTab} name={humanizeString(key)} value={key}>
+					<!-- <svelte:fragment slot="lead">(icon)</svelte:fragment> -->
+					<span
+						>{humanizeString(
+							key === "default" ? singular(humanizeString(resource)) : humanizeString(key)
+						)}</span
+					>
+				</Tab>
+			{/each}
+			<!-- Tab Panels --->
+			<svelte:fragment slot="panel">
+				<!-- Display responsive grid for all details in the tabset -->
+				{#if Array.isArray(tabs[currentTab])}
+					{#if tabs[currentTab].length === 0}
+						<p class="text-center">No results found.</p>
+					{:else}
+						<div class="table-container">
+							<table class="table w-full m-0 variant-soft">
+								<thead>
+									<tr>
+										{#each Object.keys(tabs[currentTab][0]) as key}
+											<th>{getHeader(key, getDataHandler(key))}</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#each tabs[currentTab] as result}
+										<tr>
+											{#each Object.keys(result) as key}
+												{#if typeof getValue(result, key, getDataHandler(key)) === "boolean"}
+													<BoolCell value={getValue(result, key, getDataHandler(key))} />
+												{:else}
+													<TextCell text={`${getValue(result, key, getDataHandler(key))}`} />
+												{/if}
+											{/each}
+										</tr>
 									{/each}
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			{:else}
-				<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-					{#each Object.keys(tabs[currentTab]) as key}
-						<DetailGridItem label={key} value={getValue(result, key, getDataHandler(key))} />
-					{/each}
-				</div>
-			{/if}
-		</svelte:fragment>
-	</TabGroup>
-</section>
+								</tbody>
+							</table>
+						</div>
+					{/if}
+				{:else}
+					<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+						{#each Object.keys(tabs[currentTab]) as key}
+							<DetailGridItem label={key} value={getValue(result, key, getDataHandler(key))} />
+						{/each}
+					</div>
+				{/if}
+			</svelte:fragment>
+		</TabGroup>
+	</section>
+{:else}
+	<Loading />
+{/if}
 
-<AdminHeader>
-	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-error" on:click={handleEdit}>
-			<Icon icon="mdi:trash-can" class="mr-2" />
-			Delete
-		</button>
-		<a href="{$page.url.pathname}/edit" class="btn variant-filled-primary" on:click={handleEdit}>
-			<Icon icon="mdi:pencil" class="mr-2" />
-			Edit
-		</a>
-	</div>
-</AdminHeader>
+{#if canDeleteResource || canEditResource}
+	<AdminHeader>
+		<div class="flex justify-between" slot="controls">
+			{#if canDeleteResource}
+				<button
+					type="button"
+					class="btn variant-filled-error"
+					on:click={handleDelete}
+					disabled={!isLoaded}
+				>
+					<Icon icon="mdi:trash-can" class="mr-2" />
+					Delete
+				</button>
+			{/if}
+			{#if canEditResource}
+				<a
+					href="{$page.url.pathname}/edit"
+					class="btn variant-filled-primary"
+					class:disabled={!isLoaded}
+				>
+					<Icon icon="mdi:pencil" class="mr-2" />
+					Edit
+				</a>
+			{/if}
+		</div>
+	</AdminHeader>
+{/if}

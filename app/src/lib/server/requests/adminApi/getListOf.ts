@@ -1,5 +1,5 @@
 import { db, schema } from "@database"
-import { hasStaffPermission } from "@requests"
+import { hasAdminPermission } from "@requests"
 import type { RequestEvent } from "@sveltejs/kit"
 import { SQL, sql, asc, desc, getTableColumns, is, Column, ilike, or, eq } from "drizzle-orm"
 import {
@@ -62,7 +62,7 @@ function getWith<T extends PgTableWithColumns<any>>(
 	Object.entries(availableRelations).forEach(([key, { tableName, columns, where = undefined }]) => {
         // TODO: Nested relation support and permissions
 		try {
-			hasStaffPermission(event, schema[tableName])
+			hasAdminPermission(event, schema[tableName])
 			retWith[key] = {
 				columns,
 				where
@@ -120,7 +120,7 @@ export default async function getListOf<T extends PgTableWithColumns<any>>({
 	 * Check if the user has permission to view this table
 	 * This will throw an exception so we don't need to check the return value
 	 */
-    hasStaffPermission(event, table)
+    hasAdminPermission(event, table)
 
 	////
 	// Get our parameters

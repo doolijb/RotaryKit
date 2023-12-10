@@ -2,7 +2,7 @@ import { pgTable, uniqueIndex, varchar, uuid, timestamp, boolean } from "drizzle
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { userTokens } from "./userTokens"
-import { usersToStaffRoles } from "./usersToStaffRoles"
+import { usersToAdminRoles } from "./usersToAdminRoles"
 import { passphrases } from "./passphrases"
 import { emails } from "./emails"
 
@@ -30,5 +30,6 @@ export const userRelations = relations(users, ({ many, one }) => ({
 
     // Many
     emails: many(emails),
-    toStaffRoles: many(usersToStaffRoles)
+    toAdminRoles: many(usersToAdminRoles),
+    userTokens: many(userTokens),
 }))

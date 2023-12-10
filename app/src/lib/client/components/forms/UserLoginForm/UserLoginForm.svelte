@@ -15,14 +15,13 @@
 		definitions: forms.userLogin
 	})
 
-	export let canSubmit: boolean
+	export let canSubmit: boolean = false
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit showCancel={false}>
 	<BasicTextInput
 		label="Username or Email"
 		id="username"
-		type="username"
 		bind:value={formData.username}
 		bind:fieldValidator={formValidator.fields.username}
 		bind:fieldErrors={formErrors.username}

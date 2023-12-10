@@ -10,7 +10,7 @@
 </script>
 
 {#if Object.keys(fieldValidator.validators).length}
-    <div class="card z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
+    <div class="card variant-filled z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
         <h4 class="h4 mb-2">Requirements</h4>
         <!-- Present the validators with name and description in a pretty layout -->
         {#each Object.values(fieldValidator.validators) as validator}
@@ -23,7 +23,7 @@
                 <span class="prose-sm">{validator.message}</span>
             </div>
         {/each}
-        <div class="arrow bg-surface-100-800-token" />
+        <!-- <div class="arrow bg-surface-100-800-token variant-filled" /> -->
     </div>
 {/if}
 

@@ -24,9 +24,10 @@
 
 {#if validatorLength}
     <!-- svelte-ignore a11y-click-events-have-key-events The event is required for event behavior to work as intended -->
-    <!-- We need to execute the attached event, and prevent popagating up on click -->
+    <!-- We need to execute the attached event, and prevent populating up on click -->
     <div
-        class="input-group-icon cursor-pointer"
+        class="cursor-pointer ps-1 {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
+        tabindex="-1"
         bind:this={legendIcon}
         on:click={e => {
             e.preventDefault()
@@ -35,7 +36,6 @@
         }}
         aria-label="Requirements Legend"
         role="button"
-        tabindex="0"
     >
         {#if validState === ValidStates.INVALID}
             <Icon
@@ -60,4 +60,7 @@
 {/if}
 
 <style lang="postcss">
+    .ps-1 {
+        padding-left: 0.5em !important;
+    }
 </style>

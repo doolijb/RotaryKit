@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Toast } from "@skeletonlabs/skeleton"
+    import { Modal, Toast } from "@skeletonlabs/skeleton"
     /**
      * This is a component that imports the seafoam theme and styles.
      */
@@ -10,6 +10,7 @@
 
 <div data-theme={theme} class:dark>
     <Toast />
+    <Modal />
     <slot name="body" />
 </div>
 

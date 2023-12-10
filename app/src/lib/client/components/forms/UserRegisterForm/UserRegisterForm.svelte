@@ -20,10 +20,17 @@
 			}
 		}
 	})
-	export let canSubmit: boolean
+	export let canSubmit: boolean = false
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase
+	bind:formValidator
+	bind:formErrors
+	bind:formData
+	bind:canSubmit
+	on:submit
+	showCancel={false}
+>
 	<BasicTextInput
 		label="Username"
 		id="username"

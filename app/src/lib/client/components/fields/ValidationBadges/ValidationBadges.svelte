@@ -6,7 +6,8 @@
     export let fieldValidator: FieldValidator
 </script>
 {#each Object.entries(fieldValidator.validators) as [validatorName, validator]}
-    {#if validator.sticky || fieldErrors[validatorName]}
+    <!-- {#if validator.sticky || fieldErrors[validatorName]} -->
+    {#if validator.sticky}
         <!-- svelte-ignore a11y-click-events-have-key-events Required to make cursor behavior work as intended-->
         <span
             class="badge ms-1 select-none"

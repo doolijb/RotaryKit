@@ -4,6 +4,7 @@ import { unauthorizedError, forbiddenError } from "@requests"
  * Must be logged in with isSuperUser or isAdmin
  */
 export async function handle({ event, resolve }) {
+
     /**
      * Must be logged in
      */

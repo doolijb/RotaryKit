@@ -1,5 +1,5 @@
-import staffPermissions from "./staffPermissions"
+import adminPermissions from "./adminPermissions"
 
 export default {
-    staffPermissions,
+    adminPermissions,
 }

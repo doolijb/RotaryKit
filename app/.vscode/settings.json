@@ -19,6 +19,7 @@
     "editor.formatOnSave": false,
     "prettier.enable": true,
     "cSpell.words": [
+        "apexcharts",
         "autohide",
         "datetime",
         "deepmerge",
@@ -28,6 +29,7 @@
         "jacksparrow",
         "maildev",
         "nonpositive",
+        "paseto",
         "rvest",
         "skeletonlabs"
     ]

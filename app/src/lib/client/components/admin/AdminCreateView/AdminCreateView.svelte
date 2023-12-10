@@ -7,6 +7,7 @@
 	import { Toast } from "@utils"
 	import { page } from "$app/stores"
 	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
+	import { goto, invalidateAll } from "$app/navigation"
 
 	const toastStore = getToastStore()
 
@@ -16,33 +17,43 @@
 	export let resource: string
 	export let displayTitle: string
 	export let Form: ConstructorOfATypedSvelteComponent
+	export let formExtras: { [key: string]: any } = {}
 
 	let formData: { [key: string]: any } = {}
 	let formErrors: FormErrors = {}
 	let canSubmit: boolean
 
-
 	function handleCancel() {
-		// TODO
+		// If history, go back, else go to /admin
+		if (window.history.length > 2) {
+			window.history.back()
+		} else {
+			goto("/admin")
+		}
 	}
 
 	async function handleSubmit() {
 		await axios
 			.post(`/api/admin/${resource}`, formData)
 			.then((response: AxiosResponse) => {
-				// toastStore.addToast(new Toast({
-				// 	title: "Success",
-				// 	message: `${displayTitle} created successfully`,
-				// 	type: "success",
-				// }))
-				// page.set("/admin")
+				toastStore.trigger(
+					new Toast({
+						message: `${displayTitle} created successfully`,
+						style: "success"
+					})
+				)
+				goto(`/admin/${resource}/${response.data.result.id}`)
 			})
-			.catch((error: any) => {
-				// toastStore.addToast(new Toast({
-				// 	title: "Error",
-				// 	message: `Error creating ${displayTitle}`,
-				// 	type: "error",
-				// }))
+			.catch(async (error: any) => {
+				toastStore.trigger(
+					new Toast({
+						message: `Error creating ${displayTitle}`,
+						style: "error"
+					})
+				)
+				if (error.response.status === 403) {
+					await invalidateAll()
+				}
 			})
 	}
 </script>
@@ -98,6 +109,7 @@
 		bind:canSubmit
 		on:submit={handleSubmit}
 		on:cancel={handleCancel}
+		{...formExtras}
 	/>
 </div>
 

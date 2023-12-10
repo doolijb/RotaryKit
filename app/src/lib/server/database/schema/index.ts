@@ -15,10 +15,10 @@ import { passphraseResets, passphraseResetRelations } from "./passphraseResets"
 /**
  * Staff permissions
  */
-import { staffPermissions, staffPermissionRelations } from "./staffPermissions"
-import { staffRoles, staffRoleRelations } from "./staffRoles"
-import { staffRolesToPermissions, staffRolesToPermissionRelations } from "./staffRolesToPermissions"
-import { usersToStaffRoles, usersToStaffRoleRelations } from "./usersToStaffRoles"
+import { adminPermissions, adminPermissionRelations } from "./adminPermissions"
+import { adminRoles, adminRoleRelations } from "./adminRoles"
+import { adminRolesToPermissions, adminRolesToPermissionRelations } from "./adminRolesToPermissions"
+import { usersToAdminRoles, usersToAdminRoleRelations } from "./usersToAdminRoles"
 
 /**
  * Tables only
@@ -30,10 +30,10 @@ export const schema = {
     emailVerifications,
     passphrases,
     passphraseResets,
-    staffPermissions,
-    staffRoles,
-    staffRolesToPermissions,
-    usersToStaffRoles,
+    adminPermissions,
+    adminRoles,
+    adminRolesToPermissions,
+    usersToAdminRoles,
 }
 
 /**
@@ -45,8 +45,8 @@ export const relations = {
     usersTokenRelations,
     emailVerificationRelations,
     passphraseResetRelations,
-    staffPermissionRelations,
-    staffRoleRelations,
-    staffRolesToPermissionRelations,
-    usersToStaffRoleRelations,
+    adminPermissionRelations,
+    adminRoleRelations,
+    adminRolesToPermissionRelations,
+    usersToAdminRoleRelations,
 }

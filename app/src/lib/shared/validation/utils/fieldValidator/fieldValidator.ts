@@ -4,7 +4,7 @@ import deepmerge from "deepmerge"
  * TODO
  */
 
-export default function ({
+export default function fieldValidator({
 	definition,
 	extras = undefined
 }: {

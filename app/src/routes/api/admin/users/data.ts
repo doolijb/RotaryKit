@@ -66,7 +66,7 @@ async function POST(event: RequestEvent): Promise<SelectUser> {
     const form = utils.formValidator({definitions})
 
     // Validate the data, this will automatically throw an error if the data is invalid
-    validateForm({ form, data: event.locals.data})
+    await validateForm({ form, data: event.locals.data})
 
     ////
     // DATABASE VALIDATION
@@ -97,7 +97,8 @@ async function POST(event: RequestEvent): Promise<SelectUser> {
     // CREATE USER
     ////
 
-    let userId: SelectUser
+    let userId: SelectUser["id"]
+    let result: SelectUser
 
     await db.transaction(async (tx) => {
 
@@ -131,13 +132,13 @@ async function POST(event: RequestEvent): Promise<SelectUser> {
                 isVerified: event.locals.data.isVerified,
             })
         }
-    })
-
-    const result = await db.query.users.findFirst({
-        where: (u, {eq}) => eq(u.id, userId),
-        with: {
-            emails: true
-        }
+    }).then(async () => {
+        result = await db.query.users.findFirst({
+            where: (u, {eq}) => eq(u.id, userId),
+            with: {
+                emails: true
+            }
+        })
     })
 
     // Return the user
