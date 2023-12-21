@@ -6,7 +6,7 @@
 
 	export let formData: { [key: string]: any } = {
 		name: "",
-		adminPermissions: [],
+		adminPermissions: []
 	}
 
 	export let formErrors: FormErrors = {}
@@ -22,23 +22,33 @@
 
 	$: adminPermissionOptions = adminPermissions.map((permission) => ({
 		key: permission.id,
-		label: permission.name,
+		label: permission.name
 	}))
 
 	$: {
 		if (!populatedFormData && result) {
 			formData.name = result.name
-			formData.adminPermissions = result.toAdminPermissions.map((toAdminPermission) => toAdminPermission.adminPermission.id)
+			formData.adminPermissions = result.toAdminPermissions.map(
+				(toAdminPermission) => toAdminPermission.adminPermission.id
+			)
 			populatedFormData = true
 			formValidator.test(formData).then((result) => {
 				formErrors = result
 			})
 		}
 	}
-
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase
+	bind:formValidator
+	bind:formErrors
+	bind:formData
+	bind:canSubmit
+	on:submit
+	on:cancel
+	showSubmit={false}
+	showCancel={false}
+>
 	<BasicTextInput
 		label="Name"
 		id="name"
@@ -46,7 +56,7 @@
 		bind:value={formData.name}
 		bind:fieldValidator={formValidator.fields.name}
 		bind:fieldErrors={formErrors.name}
-		disabled = {disabled || !populatedFormData}
+		disabled={disabled || !populatedFormData}
 	/>
 
 	<MultiSelect
@@ -57,9 +67,6 @@
 		bind:fieldValidator={formValidator.fields.adminPermissions}
 		bind:fieldErrors={formErrors.adminPermissions}
 		options={adminPermissionOptions}
-		disabled = {disabled || !populatedFormData}
+		disabled={disabled || !populatedFormData}
 	/>
-	
-	<div slot="submit" />
-	<div slot="cancel" />
 </FormBase>

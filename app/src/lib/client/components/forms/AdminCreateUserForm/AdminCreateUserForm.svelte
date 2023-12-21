@@ -33,7 +33,16 @@
 	})
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase
+	bind:formValidator
+	bind:formErrors
+	bind:formData
+	bind:canSubmit
+	on:submit
+	on:cancel
+	showSubmit={false}
+	showCancel={false}
+>
 	<BasicTextInput
 		label="Username"
 		id="username"
@@ -101,6 +110,4 @@
 			</div>
 		{/if}
 	</div>
-	<div slot="submit" />
-	<div slot="cancel" />
 </FormBase>

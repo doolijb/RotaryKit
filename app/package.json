@@ -98,6 +98,7 @@
     "drizzle-kit": "^0.20.2",
     "drizzle-orm": "^0.29.0",
     "faker-js": "^1.0.0",
+    "generate-password": "^1.7.1",
     "humanize-string": "^3.0.0",
     "i18n-iso-countries": "^7.6.0",
     "io-ts": "^2.2.20",

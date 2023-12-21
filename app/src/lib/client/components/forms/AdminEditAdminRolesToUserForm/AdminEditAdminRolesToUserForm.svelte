@@ -38,7 +38,16 @@
 	})
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase
+	bind:formValidator
+	bind:formErrors
+	bind:formData
+	bind:canSubmit
+	on:submit
+	on:cancel
+	showSubmit={false}
+	showCancel={false}
+>
 	<MultiSelect
 		label="Admin Roles"
 		id="adminRoles"
@@ -49,7 +58,4 @@
 		options={adminRoleOptions}
 		disabled={disabled || !adminRoleOptions.length}
 	/>
-
-	<div slot="submit" />
-	<div slot="cancel" />
 </FormBase>

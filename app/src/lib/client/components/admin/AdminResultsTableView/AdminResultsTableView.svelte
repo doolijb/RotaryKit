@@ -201,7 +201,7 @@
 </script>
 
 <AdminHeader>
-	<div slot="title">
+	<div slot="title" class="capitalize">
 		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
 		{plural(humanizeString(resource))}
 	</div>

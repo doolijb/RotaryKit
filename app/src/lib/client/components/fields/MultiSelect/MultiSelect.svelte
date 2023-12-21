@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "@components"
+	import { ValidationBadges } from "@components"
 	import { ValidStates } from "@constants"
 	import { onMount } from "svelte"
-
-	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import { v4 } from "uuid"
 	import Icon from "@iconify/svelte"
 
-	//
+	////
 	// Props
-	//
+	////
+
 	/** If the field is disabled */
 	export let disabled = false
 	/** List of validators with errors */
@@ -37,9 +36,10 @@
 	/** The actively selected available options that can be added */
 	export let selectedAvailable = []
 
-	//
+	////
 	// Events
-	//
+	////
+
 	/** Additional blur event handler */
 	export let onBlur: (e: Event) => void | undefined = undefined
 	/** Additional focus event handler */
@@ -47,24 +47,18 @@
 	/** Additional input event handler */
 	export let onInput: (e: Event) => void | undefined = undefined
 
-	//
+	////
 	// Variables
-	//
-	$: validatorLength = Object.keys(fieldValidator.validators).length
+	////
+
 	$: required = !!fieldValidator.validators.required
-	$: validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: value
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
 	$: canRemove = !!selectedValues.length 
 	$: canAdd = !!selectedAvailable.length
 
-	//
+	////
 	// Functions
-	//
+	////
+
 	async function validate() {
 		touch()
 		fieldErrors = await fieldValidator.test(value)
@@ -79,9 +73,10 @@
 		isTouched = true
 	}
 
-	//
+	////
 	// Lifecycle
-	//
+	////
+
 	onMount(async () => {
 		if (value) {
 			isTouched = true
@@ -139,6 +134,7 @@
 		<div class="flex flex-col w-auto">
 			<div class="flex flex-col items-center justify-center h-full">
 				<button
+					type="button"
 					class="btn btn-primary btn-sm mb-2"
 					on:click={handleAdd}
 					disabled={!canAdd || disabled}
@@ -151,6 +147,7 @@
 					<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
 				</button>
 				<button
+					type="button"
 					class="btn btn-primary btn-sm mb-3"
 					on:click={handleRemove}
 					disabled={!canRemove || disabled}

@@ -4,7 +4,7 @@
 	import { onMount } from "svelte"
 	import { format } from "date-fns"
 	import moment from "moment"
-	
+
 	export let disabled = false
 	export let result: SelectUser
 
@@ -38,7 +38,9 @@
 		try {
 			// TODO - FIX: result == undefined on remount
 			// Should be inconsequential, but still...
-			formData.verifiedAt !== !!result.verifiedAt ? (formData.verifiedAt = moment(result.verifiedAt).format("YYYY-MM-DD HH:mm:ss.SSS")) : ""
+			formData.verifiedAt !== !!result.verifiedAt
+				? (formData.verifiedAt = moment(result.verifiedAt).format("YYYY-MM-DD HH:mm:ss.SSS"))
+				: ""
 			formData.isActive !== result.isActive && (formData.isActive = result.isActive)
 			if (canEditSuperUsers) {
 				formData.isAdmin !== result.isAdmin && (formData.isAdmin = result.isAdmin)
@@ -50,7 +52,16 @@
 	})
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit on:cancel>
+<FormBase
+	bind:formValidator
+	bind:formErrors
+	bind:formData
+	bind:canSubmit
+	on:submit
+	on:cancel
+	showSubmit={false}
+	showCancel={false}
+>
 	<div class="flex">
 		<div class="flex-1">
 			<BasicTextInput
@@ -112,6 +123,4 @@
 			</div>
 		{/if}
 	</div>
-	<div slot="submit" />
-	<div slot="cancel" />
 </FormBase>

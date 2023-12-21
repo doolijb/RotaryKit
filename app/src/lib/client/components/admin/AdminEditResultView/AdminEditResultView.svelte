@@ -10,7 +10,7 @@
 	import { goto, invalidateAll } from "$app/navigation"
 	import { onMount } from "svelte"
 	import humanizeString from "humanize-string"
-	import {singular} from "pluralize"
+	import { singular } from "pluralize"
 
 	const toastStore = getToastStore()
 
@@ -28,7 +28,9 @@
 	////
 
 	let currentTab = "default"
+	const openedTabs = []
 	$: {
+		!openedTabs.includes(currentTab) && openedTabs.push(currentTab)
 		loadFormExtras()
 		if (tabs[currentTab].formData === undefined) {
 			tabs[currentTab].formData = {}
@@ -36,10 +38,6 @@
 		if (tabs[currentTab].formErrors === undefined) {
 			tabs[currentTab].formErrors = {}
 		}
-		if (tabs[currentTab].populated === undefined) {
-			tabs[currentTab].populated = false
-		}
-		
 		if (tabs[currentTab].submitted === undefined) {
 			tabs[currentTab].submitted = false
 		}
@@ -68,7 +66,7 @@
 					style: "error"
 				})
 			)
-			if(error.response.status === 403) {
+			if (error.response.status === 403) {
 				await invalidateAll()
 			}
 		}
@@ -90,7 +88,9 @@
 				toastStore.trigger(
 					new Toast({
 						message: `${
-							currentTab !== "default" ? humanizeString(currentTab) : singular(humanizeString(resource))
+							currentTab !== "default"
+								? humanizeString(currentTab)
+								: singular(humanizeString(resource))
 						} updated successfully`,
 						style: "success"
 					})
@@ -101,7 +101,9 @@
 				toastStore.trigger(
 					new Toast({
 						message: `Error updating ${
-							currentTab !== "default" ? humanizeString(currentTab) : singular(humanizeString(resource))
+							currentTab !== "default"
+								? humanizeString(currentTab)
+								: singular(humanizeString(resource))
 						}`,
 						style: "error"
 					})
@@ -121,18 +123,20 @@
 	</svelte:fragment>
 
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={handleCancel}>
+		<button type="button" class="btn variant-filled-surface capitalize" on:click={handleCancel}>
 			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 			Cancel
 		</button>
 		<button
 			type="button"
-			class="btn variant-filled-success"
+			class="btn variant-filled-success capitalize"
 			on:click={handleSubmit}
 			disabled={!tabs[currentTab].canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />
-			Update {currentTab !== "default" ? humanizeString(currentTab) : singular(humanizeString(resource))}
+			Update {currentTab !== "default"
+				? humanizeString(currentTab)
+				: singular(humanizeString(resource))}
 		</button>
 	</div>
 </AdminHeader>
@@ -159,48 +163,62 @@
 
 <div class="card variant-soft p-4 mb-4">
 	{#if Object.keys(tabs).length > 1}
-		<TabGroup class="mb-4">
+		<TabGroup class="mb-4 capitalize">
 			{#each Object.keys(tabs) as tab}
 				<Tab
 					bind:group={currentTab}
 					name={tab !== "default" ? humanizeString(tab) : singular(humanizeString(resource))}
 					value={tab}
 				>
-					<span>{tab !== "default" ? humanizeString(tab) : singular(humanizeString(resource))}</span>
+					<span>{tab !== "default" ? humanizeString(tab) : singular(humanizeString(resource))}</span
+					>
 				</Tab>
 			{/each}
 		</TabGroup>
 	{/if}
-	{#if result && (!tabs[currentTab].getFormExtras || !!tabs[currentTab].formExtras)}
-		<svelte:component
-			this={tabs[currentTab].Form}
-			bind:formData={tabs[currentTab].formData}
-			bind:formErrors={tabs[currentTab].formErrors}
-			bind:canSubmit={tabs[currentTab].canSubmit}
-			on:submit={handleSubmit}
-			on:cancel={handleCancel}
-			{...tabs[currentTab].formExtras || {}}
-			{result}
-		/>
-	{:else}
-		<Loading />
-	{/if}
+	<!-- RENDER TABS -->
+	{#each Object.entries(tabs) as [tab, tabData]}
+		<!-- Only render tab if it's open or has been opened to preserve state -->
+		{#if result && (currentTab === tab || openedTabs.includes(tab))}
+			<!-- Hide opened tabs that are not currently open -->
+			<div class:hidden={currentTab !== tab}>
+				<!-- Show loading if formExtras is not loaded -->
+				{#if !!tabData.getFormExtras && !tabData.formExtras}
+					<Loading />
+				{:else}
+					<!-- Show form if tab is populated -->
+					<svelte:component
+						this={tabData.Form}
+						bind:formData={tabData.formData}
+						bind:formErrors={tabData.formErrors}
+						bind:canSubmit={tabData.canSubmit}
+						on:submit={handleSubmit}
+						on:cancel={handleCancel}
+						{...tabData.formExtras || {}}
+						{result}
+					/>
+				{/if}
+			</div>
+		{/if}
+	{/each}
 </div>
 
 <AdminHeader>
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={handleCancel}>
+		<button type="button" class="btn variant-filled-surface capitalize" on:click={handleCancel}>
 			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 			Cancel
 		</button>
 		<button
 			type="button"
-			class="btn variant-filled-success"
+			class="btn variant-filled-success capitalize"
 			on:click={handleSubmit}
 			disabled={!tabs[currentTab].canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />
-			Update {currentTab !== "default" ? humanizeString(currentTab) : singular(humanizeString(resource))}
+			Update {currentTab !== "default"
+				? humanizeString(currentTab)
+				: singular(humanizeString(resource))}
 		</button>
 	</div>
 </AdminHeader>

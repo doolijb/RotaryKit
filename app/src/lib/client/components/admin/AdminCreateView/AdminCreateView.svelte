@@ -61,7 +61,9 @@
 <AdminHeader>
 	<svelte:fragment slot="title">
 		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
-		Create: {displayTitle}
+		<span class="capitalize">
+			Create: {displayTitle}
+		</span>
 	</svelte:fragment>
 
 	<div class="flex justify-between" slot="controls">

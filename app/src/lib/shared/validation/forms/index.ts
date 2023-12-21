@@ -7,6 +7,7 @@ import adminEditUser from "./adminEditUser"
 import adminCreateAdminRole from "./adminCreateAdminRole"
 import adminEditAdminRole from "./adminEditAdminRole"
 import adminEditAdminRolesToUser from "./adminEditAdminRolesToUser"
+import adminEditUserPassphrase from "./adminEditUserPassphrase"
 
 export default {
     newPassphrase,
@@ -17,5 +18,6 @@ export default {
     adminEditUser,
     adminCreateAdminRole,
     adminEditAdminRole,
-    adminEditAdminRolesToUser
+    adminEditAdminRolesToUser,
+    adminEditUserPassphrase
 }
