@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "ms-azuretools.vscode-docker",
+        "formulahendry.auto-rename-tag",
+        "ms-python.python",
+        "svelte.svelte-vscode",
+        "waderyan.gitblame",
+        "ms-python.isort",
+        "haugerbr.project-tasks",
+        "redhat.vscode-yaml",
+        "dbaeumer.vscode-eslint",
+        "yoavbls.pretty-ts-errors",
+        "pkief.material-icon-theme",
+        "svelte.svelte-vscode",
+        "pivaszbs.svelte-autoimport",
+        "rvest.vs-code-prettier-eslint",
+        "hardikmodha.create-tests",
+        "streetsidesoftware.code-spell-checker"
+    ]
+
+}

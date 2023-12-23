@@ -9,15 +9,15 @@
 # # # # # # # # # # # # # # # # # # #
 
 # Use the NGINX Unit image, which is based on Debian
-FROM unit:1.29.1-minimal
+FROM unit:1.31.1-node20
 
 # # # # # # # # # # # # # # # # # # # #
 # # INSTALL LINUX DEPENCENDIES        #
 # # # # # # # # # # # # # # # # # # # #
 
-RUN apt update -y \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash \
-    && apt install -y nodejs
+# RUN apt update -y \
+#     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash \
+#     && apt install -y nodejs
 
 # # # # # # # # # # # # # # # # # # #
 #  COPY APP FILES TO CONTAINER      #
@@ -26,9 +26,9 @@ RUN apt update -y \
 WORKDIR /srv/www/app
 COPY ../app .
 RUN npm i
+RUN npm i -g kill-port
 RUN npx playwright install
 RUN npx playwright install-deps
-RUN npx install kill-port
 
 # # # # # # # # # # # # # # # # # # #
 #  COPY UNIT CONFIG                 #
