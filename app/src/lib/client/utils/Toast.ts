@@ -1,7 +1,7 @@
 import type { ToastSettings } from "@skeletonlabs/skeleton"
 
 
-export default class Toast implements ToastSettings {
+export class Toast implements ToastSettings {
 
   constructor({
     message,

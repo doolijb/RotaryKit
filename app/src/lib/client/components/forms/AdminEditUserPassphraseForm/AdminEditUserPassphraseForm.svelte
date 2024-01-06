@@ -1,22 +1,17 @@
 <script lang="ts">
-	import { FormBase, PassphraseInput } from "@components"
-	import { forms, utils } from "@validation"
+	import { FormBase, PassphraseInput } from "$components"
+	import { AdminEditUserPassphrase as Form } from "$validation/forms"
 	import generator from "generate-password"
 
-	export let disabled = false
-	export let result: SelectUser
-
-	export let formData: { [key: string]: any } = {
-		passphrase: ""
-	}
-
-	export let formErrors: FormErrors = {}
+	export let disabled: boolean
 	export let canSubmit: boolean
-
-	const definitions = forms.adminEditUserPassphrase
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions
-	})
+	// export let result: SelectUser
+	export let form = new Form()
+	export let data: Form["Data"] = {
+		passphrase: "",
+		passphraseConfirm: "",
+	}
+	export let errors: FormErrors
 
 	/**
 	 * Generates a passphrase and copies it to the clipboard.
@@ -32,15 +27,15 @@
 			uppercase: true,
 		})
 		navigator.clipboard.writeText(passphrase)
-		formData.passphrase = passphrase
+		data.passphrase = passphrase
 	}
 
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	bind:form
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	on:cancel
@@ -51,8 +46,9 @@
 		<PassphraseInput
 			label="Set New Passphrase"
 			id="passphrase"
-			bind:value={formData.passphrase}
-			bind:fieldValidator={formValidator.fields.passphrase}
+			bind:value={data.passphrase}
+			bind:fieldValidator={form.fields.passphrase}
+			bind:fieldErrors={errors.passphrase}
 			{disabled}
 		/>
 		<div>

@@ -1,24 +1,43 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, MultiSelect } from "@components"
-	import { forms, utils } from "@validation"
+	import { FormBase, BasicTextInput, MultiSelect } from "$components"
+	import { AdminEditAdminRole as Form } from "$validation/forms"
 	import { onMount } from "svelte"
 	export let disabled = false
 
-	export let formData: { [key: string]: any } = {
+	////
+	// PARENT EXPORTS
+	////
+
+	export let result: SelectAdminRole & {
+		toAdminPermissions: (
+			SelectAdminRolesToPermissions & {
+				adminPermission: SelectAdminPermission
+			}
+		)[]
+	}
+	export let adminPermissions: SelectAdminPermission[]
+	
+	////
+	// LOCAL EXPORTS
+	////
+
+	export let form = new Form()
+	export let data: Form["Data"] = {
 		name: "",
 		adminPermissions: []
 	}
+	export let errors: FormErrors = {}
+	
+	////
+	// CHILD EXPORTS
+	////
 
-	export let formErrors: FormErrors = {}
 	export let canSubmit: boolean
-	export let adminPermissions: SelectAdminPermission[] = []
-	export let result: SelectAdminRole
+	export let populatedFormData: boolean
 
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions: forms.adminEditAdminRole
-	})
-
-	let populatedFormData = false
+	////
+	// COMPUTED
+	////
 
 	$: adminPermissionOptions = adminPermissions.map((permission) => ({
 		key: permission.id,
@@ -27,22 +46,22 @@
 
 	$: {
 		if (!populatedFormData && result) {
-			formData.name = result.name
-			formData.adminPermissions = result.toAdminPermissions.map(
+			data.name = result.name
+			data.adminPermissions = result.toAdminPermissions.map(
 				(toAdminPermission) => toAdminPermission.adminPermission.id
 			)
 			populatedFormData = true
-			formValidator.test(formData).then((result) => {
-				formErrors = result
+			form.validate({data}).then((result) => {
+				errors = result
 			})
 		}
 	}
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	bind:form
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	on:cancel
@@ -53,9 +72,9 @@
 		label="Name"
 		id="name"
 		type="name"
-		bind:value={formData.name}
-		bind:fieldValidator={formValidator.fields.name}
-		bind:fieldErrors={formErrors.name}
+		bind:value={data.name}
+		bind:fieldValidator={form.fields.name}
+		bind:fieldErrors={errors.name}
 		disabled={disabled || !populatedFormData}
 	/>
 
@@ -63,9 +82,9 @@
 		label="Admin Permissions"
 		id="adminPermissions"
 		size={10}
-		bind:value={formData.adminPermissions}
-		bind:fieldValidator={formValidator.fields.adminPermissions}
-		bind:fieldErrors={formErrors.adminPermissions}
+		bind:value={data.adminPermissions}
+		bind:fieldValidator={form.fields.adminPermissions}
+		bind:fieldErrors={errors.adminPermissions}
 		options={adminPermissionOptions}
 		disabled={disabled || !populatedFormData}
 	/>

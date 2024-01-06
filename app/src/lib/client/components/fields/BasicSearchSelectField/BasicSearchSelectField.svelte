@@ -2,8 +2,8 @@
     Some documentation on how to use this component
  -->
 <script lang="ts">
-    import { ValidationBadges, ValidationLegend } from "@components"
-    import { ValidStates } from "@constants"
+    import { ValidationBadges, ValidationLegend } from "$components"
+    import { ValidStates } from "$constants"
     import { Autocomplete, popup, type PopupSettings } from "@skeletonlabs/skeleton"
     import { v4 } from "uuid"
     import { onMount } from "svelte"

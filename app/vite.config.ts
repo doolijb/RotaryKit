@@ -2,8 +2,7 @@ import { sveltekit } from "@sveltejs/kit/vite"
 import { defineConfig, type UserConfigExport } from "vitest/config"
 import fs from "fs"
 import yaml from "js-yaml"
-import path from "path"
-
+import { zeroAPI } from 'sveltekit-zero-api'
 
 // Read the aliases from the YAML file
 const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8"))
@@ -14,7 +13,10 @@ const aliasConfig = Object.fromEntries(
 )
 
 const config = {
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit(),
+		zeroAPI(),
+	],
 	test: {
 		include: ["src/**/*.test.ts"],
 		setupFiles: ["./src/lib/shared/testing/setupTests.ts"],

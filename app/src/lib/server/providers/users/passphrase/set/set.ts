@@ -1,6 +1,6 @@
-import { schema, db } from "@database"
+import { schema, db } from "$database"
 import crypto from "crypto"
-import { passphrases } from "@auth"
+import { passphrases } from "$auth"
 import type { QueryResult } from "pg"
 import { eq } from "drizzle-orm"
 

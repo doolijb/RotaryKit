@@ -1,38 +1,42 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, PassphraseInput } from "@components"
-	import { forms, utils } from "$lib/shared/validation"
+	import { FormBase, BasicTextInput, PassphraseInput } from "$components"
+	import { UserLogin as Form } from "$validation/forms"
 
-	export let disabled = false
+	////
+	// PARENT EXPORTS
+	////
 
-	export let formData: { [key: string]: any } = {
+	export let disabled: boolean
+	export let canSubmit: boolean
+
+	////
+	// LOCAL EXPORTS
+	////
+	
+	export let form = new Form()
+	export let data: Form["Data"] = {
 		username: "",
-		passphrase: ""
-	}
+		passphrase: "",
+	} 
+	export let errors: FormErrors
 
-	export let formErrors: FormErrors = {}
-
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions: forms.userLogin
-	})
-
-	export let canSubmit: boolean = false
 </script>
 
-<FormBase bind:formValidator bind:formErrors bind:formData bind:canSubmit on:submit showCancel={false}>
+<FormBase bind:form bind:data bind:errors bind:canSubmit on:submit showCancel={false}>
 	<BasicTextInput
 		label="Username or Email"
 		id="username"
-		bind:value={formData.username}
-		bind:fieldValidator={formValidator.fields.username}
-		bind:fieldErrors={formErrors.username}
+		bind:value={data.username}
+		bind:fieldValidator={form.fields.username}
+		bind:fieldErrors={errors.username}
 		{disabled}
 	/>
 	<PassphraseInput
 		label="Passphrase"
 		id="passphrase"
-		bind:value={formData.passphrase}
-		bind:fieldValidator={formValidator.fields.passphrase}
-		bind:fieldErrors={formErrors.passphrase}
+		bind:value={data.passphrase}
+		bind:fieldValidator={form.fields.passphrase}
+		bind:fieldErrors={errors.passphrase}
 		{disabled}
 	/>
 </FormBase>

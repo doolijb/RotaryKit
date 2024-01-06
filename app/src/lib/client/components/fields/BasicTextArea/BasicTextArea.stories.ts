@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import Component from "."
 import type { Meta } from "@storybook/svelte"
-import { validators as v, utils, fields } from "@validation"
+import { validators as v, utils, fields } from "$validation"
 import type { ComponentType } from "svelte"
 
 const meta: Meta<typeof Component> = {

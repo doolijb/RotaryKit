@@ -1,8 +1,8 @@
-import { axios, apiRoute, basicUser } from "@testing"
-import { db, schema } from "@database"
+import { axios, apiRoute, basicUser } from "$testing"
+import { db, schema } from "$database"
 import { eq } from "drizzle-orm"
 import { test, expect } from "vitest"
-import data from "./data"
+import data from "./data.server"
 data // silence unused warning, this is needed file watch to work
 
 

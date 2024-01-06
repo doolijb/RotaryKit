@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte"
 	import { clipboard, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "@utils"
+	import { Toast } from "$utils"
 	import humanizeString from "humanize-string"
 	import moment from "moment"
 

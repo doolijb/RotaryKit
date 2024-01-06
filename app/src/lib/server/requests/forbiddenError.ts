@@ -1,4 +1,4 @@
-import { error } from "@requests"
+import { error } from "$requests"
 
 /**
  * Returns a forbidden error. Useful for insufficient permissions.

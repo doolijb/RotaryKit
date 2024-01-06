@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { AdminHeader, DetailGridItem, Loading, TextCell } from "@components"
+	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$components"
 	import Icon from "@iconify/svelte"
 	import axios, { type AxiosResponse } from "axios"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, hasAdminPermission } from "@utils"
+	import { Toast, hasAdminPermission } from "$utils"
 	import { page } from "$app/stores"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
 	import { onMount } from "svelte"

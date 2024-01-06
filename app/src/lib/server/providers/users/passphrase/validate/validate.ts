@@ -1,5 +1,5 @@
-import { schema, db } from "@database"
-import { passphrases } from "@auth"
+import { schema, db } from "$database"
+import { passphrases } from "$auth"
 
 /**
  * Create a new passphrase for a user and store it in the database

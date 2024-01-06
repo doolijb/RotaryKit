@@ -1,4 +1,4 @@
-import { db, schema } from "@database"
+import { db, schema } from "$database"
 
 export default async function create({
     tx=db,

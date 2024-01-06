@@ -2,7 +2,7 @@ import Component from "."
 import { faker } from "@faker-js/faker"
 import type { Meta } from "@storybook/svelte"
 import type { RequestEvent } from "@sveltejs/kit"
-import { AdminCreateUserForm } from "@components"
+import { AdminCreateUserForm } from "$components"
 
 const meta: Meta<typeof Component> = {
 	component: Component as any,

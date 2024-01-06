@@ -11,53 +11,95 @@
     "sourceMap": true,
     "strict": false,
     "paths": {
-      "@components": [
+      "$components": [
         "./src/lib/client/components"
       ],
-      "@stores": [
+      "$components/*": [
+        "./src/lib/client/components/*"
+      ],
+      "$stores": [
         "./src/lib/shared/client/stores"
       ],
-      "@themes": [
+      "$stores/*": [
+        "./src/lib/shared/client/stores/*"
+      ],
+      "$themes": [
         "./src/lib/client/themes"
       ],
-      "@utils": [
-        "./src/lib/client/utils"
+      "$themes/*": [
+        "./src/lib/client/themes/*"
       ],
-      "@auth": [
+      "$client": [
+        "./src/lib/client"
+      ],
+      "$client/*": [
+        "./src/lib/client/*"
+      ],
+      "$auth": [
         "./src/lib/server/auth"
       ],
-      "@controllers": [
+      "$auth/*": [
+        "./src/lib/server/auth/*"
+      ],
+      "$controllers": [
         "./src/lib/server/controllers"
       ],
-      "@database": [
+      "$controllers/*": [
+        "./src/lib/server/controllers/*"
+      ],
+      "$database": [
         "./src/lib/server/database"
       ],
-      "@providers": [
+      "$database/*": [
+        "./src/lib/server/database/*"
+      ],
+      "$providers": [
         "./src/lib/server/providers"
       ],
-      "@requests": [
+      "$providers/*": [
+        "./src/lib/server/providers/*"
+      ],
+      "$requests": [
         "./src/lib/server/requests"
       ],
-      "@constants": [
-        "src/lib/shared/constants"
+      "$requests/*": [
+        "./src/lib/server/requests/*"
       ],
-      "@data": [
-        "src/lib/shared/shared/data"
+      "$constants": [
+        "./src/lib/shared/constants"
       ],
-      "@types": [
-        "src/lib/shared/interfaces"
+      "$constants/*": [
+        "./src/lib/shared/constants/*"
       ],
-      "@testing": [
+      "$data": [
+        "./src/lib/shared/shared/data"
+      ],
+      "$data/*": [
+        "./src/lib/shared/shared/data/*"
+      ],
+      "$testing": [
         "./src/lib/shared/testing"
       ],
-      "@validation": [
-        "src/lib/shared/validation"
+      "$testing/*": [
+        "./src/lib/shared/testing/*"
+      ],
+      "$validation": [
+        "./src/lib/shared/validation"
+      ],
+      "$validation/*": [
+        "./src/lib/shared/validation/*"
       ],
       "$lib": [
         "./src/lib"
       ],
       "$lib/*": [
         "./src/lib/*"
+      ],
+      "$src": [
+        "./src"
+      ],
+      "$src/*": [
+        "./src/*"
       ]
     }
   }

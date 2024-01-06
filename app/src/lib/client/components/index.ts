@@ -1,5 +1,5 @@
 /**
- * @components
+ * $components
  * Export all components
  * @example
  * export * from './presentation'

@@ -2,7 +2,7 @@ import Component from "."
 import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
-import { validators as v, utils, fields } from "@validation"
+import { validators as v, utils, fields } from "$validation"
 
 
 const meta: Meta<typeof Component> = {

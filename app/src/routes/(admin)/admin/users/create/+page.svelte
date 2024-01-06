@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminCreateView, AdminCreateUserForm} from "@components"
+    import {AdminCreateView, AdminCreateUserForm} from "$components"
     import { page } from "$app/stores"
 
     const resource = "users"

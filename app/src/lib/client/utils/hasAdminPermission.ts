@@ -7,7 +7,7 @@ import { snakeCase } from "lodash"
  * @param {string[]} args.resources
  * @returns 
  */
-export default function hasAdminPermission({
+export function hasAdminPermission({
     adminPermissions,
     action,
     resources,

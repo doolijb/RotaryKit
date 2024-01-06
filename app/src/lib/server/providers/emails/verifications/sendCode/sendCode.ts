@@ -1,5 +1,5 @@
-import { db, schema } from "@database"
-import { EmailVerificationCode } from "@components"
+import { db, schema } from "$database"
+import { EmailVerificationCode } from "$components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
 import { eq } from "drizzle-orm"
@@ -13,7 +13,7 @@ import { eq } from "drizzle-orm"
  * @returns {Promise<void>} The results of args.returning, or void.
  * 
  * @example
- * import { emails } from "@providers"
+ * import { emails } from "$providers"
  * 
  * await emails.verification.sendCode({ emailId: emailId })
  */

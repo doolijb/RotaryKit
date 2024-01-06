@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {ValidStates} from "@constants"
+    import {ValidStates} from "$constants"
     // @ts-ignore 
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"

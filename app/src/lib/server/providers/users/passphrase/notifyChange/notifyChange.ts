@@ -1,5 +1,5 @@
-import { db } from "@database"
-import { PassphraseUpdatedConfirmation } from "@components"
+import { db } from "$database"
+import { PassphraseUpdatedConfirmation } from "$components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
 

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { ValidationBadges } from "@components"
-	import { ValidStates } from "@constants"
+	import { ValidationBadges } from "$components"
+	import { ValidStates } from "$constants"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import Icon from "@iconify/svelte"
+	import type { Primitive } from "$validation/base"
 
 	////
 	// Props
@@ -20,9 +21,9 @@
 	/** Type of the input element */
 	export let type: string = "text"
 	/** List of validators */
-	export let fieldValidator: FieldValidator
+	export let fieldValidator: Primitive<unknown[]>
 	/** Chosen options */
-	export let value: (string | number)[] = []
+	export let value: unknown[] = []
 	/** Field Id */
 	export let id: string = v4()
 	/** Touched state */

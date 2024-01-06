@@ -1,13 +1,13 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Request } from "express"
-import { schema } from "@database"
-import type { SelectedFields } from "drizzle-orm/pg-core"
+import { schema } from "$database"
+import type { FormSchema, Primitive } from "$validation/base"
+import { schema } from "$database"
 
 // for information about these types
 declare global {
 	namespace App {
-		interface Error {
+        interface Error {
 			message?: string
 			errors?: FormErrors
             status?: number
@@ -16,8 +16,7 @@ declare global {
             user?: SelectUser,
             adminPermissions?: SelectAdminPermission[],
             userAgent?: {[key:string]: any} | null,
-            userTokenId?: string,
-            data?: Record<string, any>
+            userTokenId?: string
         }
 		interface PageData {
             title?: string
@@ -25,7 +24,6 @@ declare global {
             keywords?: string
             user?: SelectUser
         }
-		// interface Platform {}
 	}
 
 
@@ -40,111 +38,65 @@ declare global {
 		(event: RequestEvent): MaybePromise<Response>
 	  }
 
-	  interface FieldValidatorDefinition {
-			[key: string]: {
-				validator?: (args: Record<string, any>) => Validator
-				args?: Record<string, any>
-			}
-		}
+    ////
+    // FORMS
+    ////
 
-	  /**
-     * Validator for a single field
-     */
-	  interface Validator {
-        args: object
-        key: string
-        badge: string
-        sticky: boolean
-        message: string
-        popup: PopupSettings
-        //Async
-        test: (value: any) => Promise<boolean>
+    type ValidatorData<K extends string, T> = {
+        [key: K]: T
     }
 
-    /**
-     * Definition for an unstubstiated field validator
-     */
-	interface FieldValidatorDefinition {
-		[key: string]: {
-			validator?: (args: Record<string, any>) => Validator
-			args?: Record<string, any>
-		}
-	}
+    // type ValidatorTest<T> = ({key, data}:{key:string, data:ValidatorData<key, T>}) => Promise<boolean>
 
-    /**
-     * Output of fieldValidator
-     */
-    interface FieldValidator {
-        validators: {
-            [key: string]: Validator
-        }
-        test: (value: any) => Promise<FieldErrors>
-    }
+    type ValidatorTest = ({key, data}:{key:string, data:Record<string, unknown>}) => Promise<boolean>;
 
-    /**
-     * Field validation errors
-     */
+	type GenericOfPrimitive<T extends Primitive> = T["type"];
+    
     interface FieldErrors {
         [key: string]: string
     }
 
-    /**
-     * Definition for an unstubstiated form validator
-     */
-    interface FormValidatorDefinition {
-        [key: string]: FieldValidatorDefinition
-    }
-
-    /**
-     * Ouytput of fieldValidator
-     */
-    interface FormValidator {
-        fields: {
-            [key: string]: FieldValidator
-        }
-        requiredFields: string[]
-        test: (values: Record<string, any>) => Promise<FormErrors>
-    }
-
-    /**
-     * Form validation errors
-     */
     interface FormErrors {
         [key: string]: FieldErrors
     }
 
-    /**
-     * Database transaction
-     */
+    type FormDataOf<T extends FormSchema> = {
+        [K in keyof Required<Pick<T["fields"], Exclude<keyof T["fields"], keyof T["optional"]>>>]: GenericOfPrimitive<T["fields"][K]>
+    } & {
+        [K in keyof Pick<T["fields"], keyof T["optional"]>]?: GenericOfPrimitive<T["fields"][K]>
+    }
+
+    ////
+    // DATABASE AND SCHEMA
+    ////
+
     type DbTransaction = PgTransaction<NodePgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>
 
-    /**
-     * Select schema types
-     */
-    type SelectUser = InferSelectModel<typeof schema.users>
-    type SelectUserToken = InferSelectModel<typeof schema.userTokens>
-    type SelectEmail = InferSelectModel<typeof schema.emails>
-    type SelectEmailVerification = InferSelectModel<typeof schema.emailVerifications>
-    type SelectPassphrase = InferSelectModel<typeof schema.passphrases>
-    type SelectPassphraseReset = InferSelectModel<typeof schema.passphraseResets>
-    type SelectAdminPermission = InferSelectModel<typeof schema.adminPermissions>
-    type SelectAdminRole = InferSelectModel<typeof schema.adminRoles>
-    type SelectAdminRolePermission = InferSelectModel<typeof schema.adminRolePermissions>
-    type SelectUserAdminRole = InferSelectModel<typeof schema.useradminRoles>
+    type SelectUser = typeof schema.users.$inferSelect
+    type SelectUserToken = typeof schema.userTokens.$inferSelect
+    type SelectEmail = typeof schema.emails.$inferSelect
+    type SelectEmailVerification = typeof schema.emailVerifications.$inferSelect
+    type SelectPassphrase = typeof schema.passphrases.$inferSelect
+    type SelectPassphraseReset = typeof schema.passphraseResets.$inferSelect
+    type SelectAdminPermission = typeof schema.adminPermissions.$inferSelect
+    type SelectAdminRole = typeof schema.adminRoles.$inferSelect
+    type SelectAdminRolesToPermissions = typeof schema.adminRolesToPermissions.$inferSelect
+    type SelectUsersToAdminRoles = typeof schema.usersToAdminRoles.$inferSelect
 
-    /**
-     * Insert schema types
-     */
-    type InsertUser = InferInsertModel<typeof schema.users>
-    type InsertUserToken = InferInsertModel<typeof schema.userTokens>
-    type InsertEmail = InferInsertModel<typeof schema.emails>
-    type InsertEmailVerification = InferInsertModel<typeof schema.emailVerifications>
-    type InsertPassphrase = InferInsertModel<typeof schema.passphrases>
-    type InsertPassphraseReset = InferInsertModel<typeof schema.passphraseResets>
-    type InsertAdminPermission = InferInsertModel<typeof schema.adminPermissions>
-    type InsertAdminRole = InferInsertModel<typeof schema.adminRoles>
-    type InsertAdminRolePermission = InferInsertModel<typeof schema.adminRolesToPermissions>
-    type InsertUserAdminRole = InferInsertModel<typeof schema.usersToAdminRoles>
+    type InsertUser = typeof schema.users.$inferInsert
+    type InsertUserToken = typeof schema.userTokens.$inferInsert
+    type InsertEmail = typeof schema.emails.$inferInsert
+    type InsertEmailVerification = typeof schema.emailVerifications.$inferInsert
+    type InsertPassphrase = typeof schema.passphrases.$inferInsert
+    type InsertPassphraseReset = typeof schema.passphraseResets.$inferInsert
+    type InsertAdminPermission = typeof schema.adminPermissions.$inferInsert
+    type InsertAdminRole = typeof schema.adminRoles.$inferInsert
+    type InsertAdminRolesToPermissions = typeof schema.adminRolesToPermissions.$inferInsert
+    type InsertUsersToAdminRoles = typeof schema.usersToAdminRoles.$inferInsert
+
+    ////
+    // UNORGANIZED
+    ////
 
     type PermissionAction = "GET" | "POST" | "PUT" | "DELETE"
 
@@ -192,6 +144,7 @@ declare global {
 		default: AdminEditResultViewTab
 		[key: string]: AdminEditResultViewTab
 	}
+
 }
 
 export {};

@@ -1,42 +1,46 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, PassphraseInput, CheckboxInput } from "@components"
-	import { forms, utils } from "@validation"
-	export let disabled = false
+	import { page, } from "$app/stores"
+	import { FormBase, BasicTextInput, PassphraseInput, CheckboxInput } from "$components"
+	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$validation/forms"
+	
+	////
+	// PARENT EXPORTS
+	////
 
-	const canEditSuperUsers = true // TODO
+	export let canEditSuperUsers: boolean
 
-	export let formData: { [key: string]: any } = {
+	////
+	// LOCAL EXPORTS
+	////
+
+	const form: Form | FormWithPermissions = canEditSuperUsers ? new FormWithPermissions() : new Form()
+	export let data: typeof form["Data"] = {
 		username: "",
 		email: "",
 		passphrase: "",
 		isVerified: false,
-		isAdmin: false,
-		isSuperUser: false
+		isAdmin: canEditSuperUsers ? false : undefined,
+		isSuperUser: canEditSuperUsers ? false : undefined,
 	}
+	export let errors: FormErrors = {}
 
-	export let formErrors: FormErrors = {}
+	////
+	// DOWNSTREAM EXPORTS
+	////
+
+	export let disabled:boolean
 	export let canSubmit: boolean
 
-	/**
-	 * TODO: This is a hack to remove the isAdmin and isSuperUser fields if the user is not allowed to edit them
-	 */
-	const definitions = forms.adminCreateUser
-	if (!canEditSuperUsers) {
-		delete definitions["isAdmin"]
-		delete formData["isAdmin"]
-		delete definitions["isSuperUser"]
-		delete formData["isSuperUser"]
-	}
-
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions
-	})
+	////
+	// COMPUTED
+	////
+	
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	{form}
+	bind:data
+	bind:errors
 	bind:canSubmit
 	on:submit
 	on:cancel
@@ -47,9 +51,9 @@
 		label="Username"
 		id="username"
 		type="username"
-		bind:value={formData.username}
-		bind:fieldValidator={formValidator.fields.username}
-		bind:fieldErrors={formErrors.username}
+		bind:value={data.username}
+		bind:fieldValidator={form.fields.username}
+		bind:fieldErrors={errors.username}
 		{disabled}
 	/>
 
@@ -57,18 +61,18 @@
 		label="Email"
 		id="email"
 		type="email"
-		bind:value={formData.email}
-		bind:fieldValidator={formValidator.fields.email}
-		bind:fieldErrors={formErrors.email}
+		bind:value={data.email}
+		bind:fieldValidator={form.fields.email}
+		bind:fieldErrors={errors.email}
 		{disabled}
 	/>
 
 	<PassphraseInput
 		label="Passphrase"
 		id="passphrase"
-		bind:value={formData.passphrase}
-		bind:fieldValidator={formValidator.fields.passphrase}
-		bind:fieldErrors={formErrors.passphrase}
+		bind:value={data.passphrase}
+		bind:fieldValidator={form.fields.passphrase}
+		bind:fieldErrors={errors.passphrase}
 		{disabled}
 	/>
 
@@ -78,33 +82,34 @@
 				label="Is Verified"
 				type="checkbox"
 				id="isVerified"
-				bind:checked={formData.isVerified}
-				bind:fieldValidator={formValidator.fields.isVerified}
+				bind:checked={data.isVerified}
+				bind:fieldValidator={form.fields.isVerified}
 				{disabled}
 			/>
 		</div>
 
-		{#if formValidator.fields.isAdmin}
+		{#if canEditSuperUsers}
 			<div class="card px-3 py-2">
 				<CheckboxInput
 					label="Is Admin"
 					type="checkbox"
 					id="isAdmin"
-					bind:checked={formData.isAdmin}
-					bind:fieldValidator={formValidator.fields.isAdmin}
+					bind:fieldErrors={errors.isAdmin}
+					bind:checked={data["isAdmin"]}
+					bind:fieldValidator={form.fields["isAdmin"]}
 					{disabled}
 				/>
 			</div>
 		{/if}
 
-		{#if formValidator.fields.isSuperUser}
+		{#if canEditSuperUsers}
 			<div class="card px-3 py-2">
 				<CheckboxInput
 					label="Is Super User"
 					type="checkbox"
 					id="isSuperUser"
-					bind:checked={formData.isSuperUser}
-					bind:fieldValidator={formValidator.fields.isSuperUser}
+					bind:checked={data["isSuperUser"]}
+					bind:fieldValidator={form.fields["isSuperUser"]}
 					{disabled}
 				/>
 			</div>

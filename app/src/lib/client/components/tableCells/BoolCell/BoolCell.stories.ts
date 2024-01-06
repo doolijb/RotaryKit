@@ -1,5 +1,5 @@
 import Component from "."
-import { TableDataDecorator } from "@components"
+import { TableDataDecorator } from "$components"
 import type {Meta} from "@storybook/svelte"
 
 

@@ -1,5 +1,5 @@
-import { db } from "@database"
-import { messageError } from "@requests"
+import { db } from "$database"
+import { messageError } from "$requests"
 
 /**
  * Checks if a passphrase reset code is valid and if the user is eligible.

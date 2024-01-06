@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { AdminHeader } from "@components"
+	import { AdminHeader } from "$components"
 	import Icon from "@iconify/svelte"
 	import axios, { type AxiosResponse } from "axios"
 	// import { type SvelteComponent, onMount } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "@utils"
+	import { Toast } from "$utils"
 	import { page } from "$app/stores"
 	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
 	import { goto, invalidateAll } from "$app/navigation"

@@ -1,5 +1,5 @@
-import { db, schema } from "@database"
-import { hasAdminPermission } from "@requests"
+import { db, schema } from "$database"
+import { hasAdminPermission } from "$requests"
 import type { RequestEvent } from "@sveltejs/kit"
 import { SQL, sql, asc, desc, getTableColumns, is, Column, ilike, or, eq } from "drizzle-orm"
 import {

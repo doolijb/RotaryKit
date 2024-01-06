@@ -1,7 +1,7 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "@testing"
-import { db, schema } from "@database"
+import { axios, apiRoute, basicUser, superUser, loginUser } from "$testing"
+import { db, schema } from "$database"
 import { test, expect, vi } from "vitest"
-import data from "."
+import data from "./data.server"
 import { eq } from "drizzle-orm"
 data // silence unused warning, we need this to watch the file
 

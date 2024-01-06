@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminResultDetailView} from "@components"
+    import {AdminResultDetailView} from "$components"
     import { page } from "$app/stores"
 
     const resource = "adminRoles"

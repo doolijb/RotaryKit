@@ -1,8 +1,8 @@
-import { db, schema } from "@database"
-import { PassphraseResetCode } from "@components"
+import { db, schema } from "$database"
+import { PassphraseResetCode } from "$components"
 import { render } from "svelte-email"
 import nodemailer from "nodemailer"
-import { messageError } from "@requests"
+import { messageError } from "$requests"
 
 /**
  * Creates a passphrase reset code if a valid one does not already exist,
@@ -15,7 +15,7 @@ import { messageError } from "@requests"
  * @returns {Promise<string>} Email address the code was sent to.
  * 
  * @example
- * import { emails } from "@providers"
+ * import { emails } from "$providers"
  * 
  * await emails.verification.sendCode({ emailId: emailId })
  */

@@ -1,8 +1,8 @@
-import { axios, apiRoute, basicUser, queryInbox} from "@testing"
-import { db } from "@database"
+import { axios, apiRoute, basicUser, queryInbox} from "$testing"
+import { db } from "$database"
 import { test, expect } from "vitest"
-import type { forms } from "@validation"
-import data from "./data"
+import type { forms } from "$validation"
+import data from "./data.server"
 data // silence unused warning, this is needed file watch to work
 
 

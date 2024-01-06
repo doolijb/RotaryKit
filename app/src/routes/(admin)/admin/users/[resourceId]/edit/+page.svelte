@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditUserForm} from "@components"
+    import {AdminEditResultView, AdminEditUserForm} from "$components"
     import { page } from "$app/stores"
     import axios from "axios"
 	import AdminEditAdminRolesToUserForm from "$lib/client/components/forms/AdminEditAdminRolesToUserForm/AdminEditAdminRolesToUserForm.svelte"

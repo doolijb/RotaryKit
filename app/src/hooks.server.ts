@@ -1,9 +1,9 @@
 import chalk from "chalk"
-import { schema, migrate, db, seeds } from "@database"
-import { tokens, cookies } from "@auth"
+import { migrate } from "$database"
+import { tokens, cookies } from "$auth"
 import { UAParser } from "ua-parser-js"
 import type {  RequestEvent } from "@sveltejs/kit"
-import { users } from "@providers"
+import { users } from "$providers"
 import getLogger from "pino"
 import sanitizeHtml from "sanitize-html"
 
@@ -26,8 +26,8 @@ export async function handle({ event, resolve }) {
     // Handle Authentication
     await handleAuthentication(event)
 
-    // Get Request Data
-    event.locals.data = await requestData(event.request)
+    // // Get Request Data
+    // event.locals.data = await requestData(event.request) # Deprecated with zero api
     
     let resolved
 

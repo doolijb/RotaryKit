@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "@components"
+	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$components"
 	import Icon from "@iconify/svelte"
 	import { type PopupSettings, popup, getModalStore } from "@skeletonlabs/skeleton"
 	import axios, { type AxiosResponse } from "axios"
 	import { onMount, setContext } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, hasAdminPermission } from "@utils"
+	import { Toast, hasAdminPermission } from "$utils"
 	import { page } from "$app/stores"
 	import { goto, invalidateAll } from "$app/navigation"
 	import humanizeString from "humanize-string"

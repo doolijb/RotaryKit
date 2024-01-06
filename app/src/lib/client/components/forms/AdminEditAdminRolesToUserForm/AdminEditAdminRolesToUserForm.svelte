@@ -1,20 +1,37 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, MultiSelect } from "@components"
-	import { forms, utils } from "@validation"
+	import { FormBase, MultiSelect } from "$components"
+	import { AdminEditAdminRolesToUser as Form } from "$validation/forms"
 	import { onMount } from "svelte"
 
-	export let disabled = false
-	export let formData: { [key: string]: any } = {
-		adminRoles: []
-	}
-	export let formErrors: FormErrors = {}
-	export let canSubmit: boolean
-	export let adminRoles: SelectAdminRole[] = []
-	export let result: SelectUser
+	////
+	// PARENT EXPORTS
+	////
 
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions: forms.adminEditAdminRolesToUser
-	})
+	export let adminRoles: SelectAdminRole[]
+	export let result: SelectUser & {
+		toAdminRoles: (
+			SelectUsersToAdminRoles & { adminRole: SelectAdminRole }
+		)[]
+	}
+
+	////
+	// LOCAL EXPORTS
+	////
+
+	export let form = new Form()
+	export let data: Form["Data"] = { adminRoles: [] }
+	export let errors: FormErrors = {}
+
+	////
+	// CHILD EXPORTS
+	////
+
+	export let disabled: boolean
+	export let canSubmit: boolean
+
+	////
+	// COMPUTED
+	////
 
 	let adminRoleOptions = []
 
@@ -26,22 +43,23 @@
 		if (result) {
 			Object.values(result.toAdminRoles).forEach(
 				({ adminRole }: { adminRole: SelectAdminRole }) => {
-					formData.adminRoles.push(adminRole.id)
+					data.adminRoles.push(adminRole.id)
 				}
 			)
 		}
-		if (!formData) {
-			formValidator.test(formData).then((result) => {
-				formErrors = result
+		if (!data) {
+			form.validate({data}).then((result) => {
+				errors = result
 			})
 		}
 	})
+
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	{form}
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	on:cancel
@@ -52,9 +70,9 @@
 		label="Admin Roles"
 		id="adminRoles"
 		size={10}
-		bind:value={formData.adminRoles}
-		bind:fieldValidator={formValidator.fields.adminRoles}
-		bind:fieldErrors={formErrors.adminRoles}
+		bind:value={data.adminRoles}
+		bind:fieldValidator={form.fields.adminRoles}
+		bind:fieldErrors={errors.adminRoles}
 		options={adminRoleOptions}
 		disabled={disabled || !adminRoleOptions.length}
 	/>

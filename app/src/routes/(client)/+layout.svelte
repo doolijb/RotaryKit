@@ -1,5 +1,5 @@
 <script>
-	import { SiteFooter, SiteNavigation } from "@components"
+	import { SiteFooter, SiteNavigation } from "$components"
 	import { AppShell } from "@skeletonlabs/skeleton"
 </script>
 

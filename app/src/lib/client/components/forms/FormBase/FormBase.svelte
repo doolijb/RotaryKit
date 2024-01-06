@@ -1,32 +1,45 @@
 <script lang="ts">
+	import type { FormSchema } from "$validation/base"
 	import { createEventDispatcher } from "svelte"
 
 	const dispatch = createEventDispatcher()
 
-	export let disabled = false
-	export let formData: { [key: string]: any }
-	export let formErrors: FormErrors = {}
-	export let formValidator: FormValidator
+	////
+	// PARENT EXPORTS
+	////
+
+	export let form: FormSchema
+	export let data: typeof form["Data"]
+	export let errors: FormErrors
+
+	////
+	// LOCAL EXPORTS
+	////
 
 	export let submitLabel = "Submit"
 	export let cancelLabel = "Cancel"
 	export let canSubmit = false
 	export let showCancel = true
 	export let showSubmit = true
+	export let disabled = false
 
-	$: isPopulated = !formValidator.requiredFields.some((field) => !formData[field])
-	$: hasErrors = Object.keys(formErrors).some((field) => Object.keys(formErrors[field]).length)
+	////
+	// COMPUTED
+	////
+
+	$: isPopulated = !!Object.values(data).find((value) => !!value)
+	$: hasErrors = Object.keys(errors).some((field) => Object.keys(errors[field]).length)
 	$: {
 		canSubmit = isPopulated && !hasErrors
-	}
-
-	async function validate() {
-		formErrors = await formValidator.test(formData)
 	}
 
 	////
 	// Event Handlers
 	////
+
+	async function validate() {
+		errors = await form.validate({data})
+	}
 
 	const onSubmit = async (e: Event) => {
 		disabled = true

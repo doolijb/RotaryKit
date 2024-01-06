@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {ValidStates} from "@constants"
+    import {ValidStates} from "$constants"
     
     import type {PopupSettings} from "@skeletonlabs/skeleton"
 

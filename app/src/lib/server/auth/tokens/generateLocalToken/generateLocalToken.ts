@@ -1,4 +1,4 @@
-import { tokens } from "@auth"
+import { tokens } from "$auth"
 
 export default async function generateLocalToken({
     payload,

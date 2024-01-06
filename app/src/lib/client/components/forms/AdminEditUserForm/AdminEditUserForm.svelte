@@ -1,123 +1,103 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, PassphraseInput, CheckboxInput } from "@components"
-	import { forms, utils } from "@validation"
+	import { FormBase, BasicTextInput, PassphraseInput, CheckboxInput } from "$components"
+	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$validation/forms"
 	import { onMount } from "svelte"
-	import { format } from "date-fns"
-	import moment from "moment"
 
-	export let disabled = false
+	////
+	// PARENT EXPORTS
+	////
+
 	export let result: SelectUser
+	export let canEditSuperUsers: boolean
 
-	const canEditSuperUsers = true // TODO
-
-	export let formData: { [key: string]: any } = {
-		verifiedAt: null,
-		isAdmin: false,
-		isSuperUser: false
+	////
+	// LOCAL EXPORTS
+	////
+	
+	export const form = canEditSuperUsers ? new FormWithPermissions() : new Form()
+	export let data: typeof form["Data"] = {
+		username: "",
+		isVerified: false,
+		isActive: false,
+		isAdmin: canEditSuperUsers ? false : undefined,
+		isSuperUser: canEditSuperUsers ? false : undefined,
 	}
+	export let errors: FormErrors = {}
 
-	export let formErrors: FormErrors = {}
+	////
+	// CHILD EXPORTS
+	////
+
+	export let disabled: boolean
 	export let canSubmit: boolean
 
-	/**
-	 * TODO: This is a hack to remove the isAdmin and isSuperUser fields if the user is not allowed to edit them
-	 */
-	const definitions = forms.adminEditUser
-	if (!canEditSuperUsers) {
-		delete definitions["isAdmin"]
-		delete formData["isAdmin"]
-		delete definitions["isSuperUser"]
-		delete formData["isSuperUser"]
-	}
-
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions
-	})
+	////
+	// COMPUTED
+	////
 
 	onMount(() => {
-		try {
-			// TODO - FIX: result == undefined on remount
-			// Should be inconsequential, but still...
-			formData.verifiedAt !== !!result.verifiedAt
-				? (formData.verifiedAt = moment(result.verifiedAt).format("YYYY-MM-DD HH:mm:ss.SSS"))
-				: ""
-			formData.isActive !== result.isActive && (formData.isActive = result.isActive)
-			if (canEditSuperUsers) {
-				formData.isAdmin !== result.isAdmin && (formData.isAdmin = result.isAdmin)
-				formData.isSuperUser !== result.isSuperUser && (formData.isSuperUser = result.isSuperUser)
-			}
-		} catch (error) {
-			// console.log(error)
+		data.username = result.username
+		data.isVerified = !!result.verifiedAt
+		data.isActive = result.isActive
+		if (canEditSuperUsers) {
+			data["isAdmin"] = result.isAdmin
+			data["isSuperUser"] = result.isSuperUser
 		}
 	})
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	{form}
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	on:cancel
 	showSubmit={false}
 	showCancel={false}
 >
-	<div class="flex">
-		<div class="flex-1">
-			<BasicTextInput
-				label="Verified At"
-				id="verifiedAt"
-				type="datetime-local"
-				bind:value={formData.verifiedAt}
-				bind:fieldValidator={formValidator.fields.verifiedAt}
-				{disabled}
-			>
-				<button
-					slot="suffix"
-					type="button"
-					class="btn btn-sm variant-filled-surface inline-block align-bottom inline"
-					on:click={() => (formData.verifiedAt = null)}
-					disabled={disabled || !formData.verifiedAt}
-				>
-					Clear
-				</button>
-			</BasicTextInput>
-		</div>
-	</div>
-
 	<div class="flex space-x-3 my-4">
+		<div class="card px-3 py-2">
+			<CheckboxInput
+				label="Is Verified"
+				type="checkbox"
+				id="isVerified"
+				bind:checked={data.isVerified}
+				bind:fieldValidator={form.fields.isVerified}
+				{disabled}
+			/>
+		</div>
+
 		<div class="card px-3 py-2">
 			<CheckboxInput
 				label="Is Active"
 				type="checkbox"
 				id="isActive"
-				bind:checked={formData.isActive}
-				bind:fieldValidator={formValidator.fields.isActive}
+				bind:checked={data.isActive}
+				bind:fieldValidator={form.fields.isActive}
 				{disabled}
 			/>
 		</div>
 
-		{#if formValidator.fields.isAdmin}
+		{#if canEditSuperUsers}
 			<div class="card px-3 py-2">
 				<CheckboxInput
 					label="Is Admin"
 					type="checkbox"
 					id="isAdmin"
-					bind:checked={formData.isAdmin}
-					bind:fieldValidator={formValidator.fields.isAdmin}
+					bind:checked={data["isAdmin"]}
+					bind:fieldValidator={form.fields["isAdmin"]}
 					{disabled}
 				/>
 			</div>
-		{/if}
 
-		{#if formValidator.fields.isSuperUser}
 			<div class="card px-3 py-2">
 				<CheckboxInput
 					label="Is Super User"
 					type="checkbox"
 					id="isSuperUser"
-					bind:checked={formData.isSuperUser}
-					bind:fieldValidator={formValidator.fields.isSuperUser}
+					bind:checked={data["isSuperUser"]}
+					bind:fieldValidator={form.fields["isSuperUser"]}
 					{disabled}
 				/>
 			</div>

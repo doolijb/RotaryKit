@@ -1,4 +1,4 @@
-import { error } from "@requests"
+import { error } from "$requests"
 
 /**
  * Helper function to create a custom field error to display a custom message on the client

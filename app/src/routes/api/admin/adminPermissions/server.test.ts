@@ -1,7 +1,7 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "@testing"
-import { db } from "@database"
+import { axios, apiRoute, basicUser, superUser, loginUser } from "$testing"
+import { db } from "$database"
 import { test, expect, vi } from "vitest"
-import data from "."
+import data from "./data.server"
 data // silence unused warning, we need this to watch the file
 
 test("admin users GET: passes", async () => {

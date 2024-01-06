@@ -1,4 +1,4 @@
-import { db, schema } from "@database"
+import { db, schema } from "$database"
 import { eq } from "drizzle-orm"
 import type { QueryResult } from "pg"
 

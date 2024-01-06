@@ -1,11 +1,30 @@
-import { createHandlers } from "@requests"
-import type { RequestHandler } from "@sveltejs/kit"
-import data from "."
+import type { RequestEvent } from "@sveltejs/kit"
+import { adminApi } from "$requests"
+import { Ok } from "sveltekit-zero-api/http"
 
-const handlers: {[key:string]: RequestHandler} = createHandlers(data)
+/**
+ * Admin view for a list of admin permissions
+ */
+export async function GET (event: RequestEvent) {
+    // Check if user is authorized to view users
+    // TODO
 
-export const POST = handlers["POST"]
-export const GET = handlers["GET"]
-export const PUT = handlers["PUT"]
-export const PATCH = handlers["PATCH"]
-export const DELETE = handlers["DELETE"]
+    const columns: {[key:string]: boolean}  = {
+        "id":true,
+        "name":true,
+        "action":true,
+        "resource":true,
+    }
+
+    const availableRelations: AvailableRelations<SelectAdminPermission>  = {}
+
+    const body = await adminApi.getListOf<SelectAdminPermission>({
+        event,
+        tableName: "adminPermissions",
+        columns,
+        availableRelations,
+        defaultOrderByString: "name:asc"
+    })
+
+    return Ok({body})
+}

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "@components"
-	import { ValidStates } from "@constants"
+	import { ValidationBadges, ValidationLegend } from "$components"
+	import { ValidStates } from "$constants"
 	import { onMount } from "svelte"
 
 	import type { PopupSettings } from "@skeletonlabs/skeleton"

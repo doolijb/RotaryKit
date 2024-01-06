@@ -1,4 +1,4 @@
-import { tokens, cookies } from "@auth"
+import { tokens, cookies } from "$auth"
 import { redirect } from "@sveltejs/kit"
 
 

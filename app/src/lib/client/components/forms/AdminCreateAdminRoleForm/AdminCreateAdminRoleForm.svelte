@@ -1,41 +1,31 @@
 <script lang="ts">
 	import { page } from "$app/stores"
-	import { FormBase, BasicTextInput, MultiSelect } from "@components"
-	import { forms, utils } from "@validation"
+	import { FormBase, BasicTextInput, MultiSelect } from "$components"
+	import { AdminCreateAdminRole as Form } from "$validation/forms"
 	export let disabled = false
 
 	////
-	// EXPORTS
+	// PARENT EXPORTS
 	////
 
-	export let formData: { [key: string]: any } = {
+	export let adminPermissions: SelectAdminPermission[]
+
+	////
+	// LOCAL EXPORTS
+	////
+
+	export let form = new Form()
+	export let data: Form["Data"] = { 
 		name: "",
-		adminPermissions: []
+		adminPermissions: [] 
 	}
-	export let formErrors: FormErrors = {}
+	export let errors: FormErrors = {}
+
+	////
+	// CHILD EXPORTS
+	////
+
 	export let canSubmit: boolean
-	export let adminPermissions: SelectAdminPermission[] = []
-
-	////
-	// FORM DEFINITIONS
-	////
-
-	const definitions = forms.adminCreateAdminRole
-
-	/**
-	 * Remove the isAdmin and isSuperUser fields if the user is not allowed to edit them
-	*/
-	const canEditSuperUsers = !!$page.data.user.isSuperUser
-	if (!canEditSuperUsers) {
-		delete definitions["isAdmin"]
-		delete formData["isAdmin"]
-		delete definitions["isSuperUser"]
-		delete formData["isSuperUser"]
-	}
-
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions
-	})
 
 	////
 	// COMPUTED
@@ -45,12 +35,13 @@
 		key: permission.id,
 		label: permission.name
 	}))
+
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	bind:form
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	on:cancel
@@ -61,9 +52,9 @@
 		label="Name"
 		id="name"
 		type="name"
-		bind:value={formData.name}
-		bind:fieldValidator={formValidator.fields.name}
-		bind:fieldErrors={formErrors.name}
+		bind:value={data.name}
+		bind:fieldValidator={form.fields.name}
+		bind:fieldErrors={errors.name}
 		{disabled}
 	/>
 
@@ -71,9 +62,9 @@
 		label="Admin Permissions"
 		id="adminPermissions"
 		size={10}
-		bind:value={formData.adminPermissions}
-		bind:fieldValidator={formValidator.fields.adminPermissions}
-		bind:fieldErrors={formErrors.adminPermissions}
+		bind:value={data.adminPermissions}
+		bind:fieldValidator={form.fields.adminPermissions}
+		bind:fieldErrors={errors.adminPermissions}
 		options={adminPermissionOptions}
 		{disabled}
 	/>

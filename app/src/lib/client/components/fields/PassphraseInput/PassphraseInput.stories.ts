@@ -1,5 +1,5 @@
 import Component from "."
-import { validators as v, utils, fields } from "@validation"
+import { validators as v, utils, fields } from "$validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
 import { faker } from "@faker-js/faker"

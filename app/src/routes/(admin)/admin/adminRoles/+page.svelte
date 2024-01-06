@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminResultsTableView} from "@components"
+    import {AdminResultsTableView} from "$components"
 
     const resource = "adminRoles"
     const displayTitle = "Admin Roles"

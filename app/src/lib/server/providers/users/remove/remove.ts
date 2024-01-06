@@ -1,5 +1,5 @@
-import { db, schema } from "@database"
-import { users } from "@providers"
+import { db, schema } from "$database"
+import { users } from "$providers"
 import { eq } from "drizzle-orm"
 import type { QueryResult } from "pg"
 

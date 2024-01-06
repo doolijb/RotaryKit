@@ -1,5 +1,5 @@
-import { users } from "@providers"
-import { axios } from "@testing"
+import { users } from "$providers"
+import { axios } from "$testing"
 
 export default async function loginUser({
     username,

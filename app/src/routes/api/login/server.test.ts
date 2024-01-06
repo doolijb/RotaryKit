@@ -1,7 +1,7 @@
-import { axios, apiRoute, basicUser, superUser } from "@testing"
-import { db } from "@database"
+import { axios, apiRoute, basicUser, superUser } from "$testing"
+import { db } from "$database"
 import { test, expect } from "vitest"
-import type { forms } from "@validation"
+import type { forms } from "$validation"
 
 
 test("login POST : passes with basicUser", async () => {

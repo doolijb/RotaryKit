@@ -1,4 +1,4 @@
-import { unauthorizedError, forbiddenError } from "@requests"
+import { unauthorizedError, forbiddenError } from "$requests"
 
 /**
  * Must be logged in with isSuperUser or isAdmin

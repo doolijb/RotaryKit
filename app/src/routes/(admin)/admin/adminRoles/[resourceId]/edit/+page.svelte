@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditAdminRoleForm} from "@components"
+    import {AdminEditResultView, AdminEditAdminRoleForm} from "$components"
     import { page } from "$app/stores"
     import axios from "axios"
 

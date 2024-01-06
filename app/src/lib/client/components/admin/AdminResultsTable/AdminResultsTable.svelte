@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BoolCell, TextCell } from "@components"
+	import { BoolCell, TextCell } from "$components"
 	import Icon from "@iconify/svelte"
 	import { popup } from "@skeletonlabs/skeleton"
 	import { createEventDispatcher } from "svelte"

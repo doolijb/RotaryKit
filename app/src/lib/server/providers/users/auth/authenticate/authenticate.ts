@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm"
-import { db, schema } from "@database"
+import { db, schema } from "$database"
 
 interface AuthenticateAndValidate {
 	tx?: typeof db

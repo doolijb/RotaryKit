@@ -2,8 +2,8 @@
 	import { page } from "$app/stores"
 	import Icon from "@iconify/svelte"
 	import { AppShell } from "@skeletonlabs/skeleton"
-	import { hasAdminPermission } from "@utils"
-	import { SiteNavigation } from "@components"
+	import { hasAdminPermission } from "$utils"
+	import { SiteNavigation } from "$components"
 	import type { ComponentEvents } from 'svelte';
 
 	function scrollHandler(event: ComponentEvents<AppShell>['scroll']) {

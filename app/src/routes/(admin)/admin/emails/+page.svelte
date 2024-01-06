@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminResultsTableView} from "@components"
+    import {AdminResultsTableView} from "$components"
     import { page } from "$app/stores"
 
     const resource = "emails"

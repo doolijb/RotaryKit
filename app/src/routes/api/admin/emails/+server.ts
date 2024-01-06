@@ -1,11 +1,37 @@
-import { createHandlers } from "@requests"
-import type { RequestHandler } from "@sveltejs/kit"
-import data from "."
+import type { RequestEvent } from "@sveltejs/kit"
+import { adminApi } from "$requests"
+import { Ok } from "sveltekit-zero-api/http"
 
-const handlers: {[key:string]: RequestHandler} = createHandlers(data)
+/**
+ * Admin view for a list of users
+ */
+export async function GET (event: RequestEvent) {
 
-export const POST = handlers["POST"]
-export const GET = handlers["GET"]
-export const PUT = handlers["PUT"]
-export const PATCH = handlers["PATCH"]
-export const DELETE = handlers["DELETE"]
+    const columns: {[key:string]: boolean}  = {
+        "id":true,
+        "address":true,
+        "createdAt":true,
+        "updatedAt":true,
+        "verifiedAt":true,
+        "isUserPrimary":true,
+    }
+
+    const availableRelations: AvailableRelations<SelectEmail>  = {
+        "user": {
+            tableName: "emails",
+            columns: {
+                "id":true,
+                "username": true,
+            },
+        }
+    }
+
+    const body = await adminApi.getListOf<SelectEmail>({
+        event,
+        tableName: "emails",
+        columns,
+        availableRelations
+    })
+
+    return Ok({body})
+}

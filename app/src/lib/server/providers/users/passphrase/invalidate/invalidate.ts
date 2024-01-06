@@ -1,4 +1,4 @@
-import { schema, db } from "@database"
+import { schema, db } from "$database"
 
 /**
  * Invalidate a user's passphrase

@@ -1,7 +1,7 @@
-import { db, schema } from "@database"
+import { db, schema } from "$database"
 import type { RequestEvent } from "@sveltejs/kit"
 import { v4 as uuid } from "uuid"
-import { tokens } from "@auth"
+import { tokens } from "$auth"
 import type { QueryResult } from "pg"
 
 /**

@@ -1,11 +1,33 @@
-import { createHandlers } from "@requests"
-import type { RequestHandler } from "@sveltejs/kit"
-import data from "."
+import { db } from "$database"
+import { emails } from "$providers"
+import { Ok } from "sveltekit-zero-api/http"
+import type { RequestEvent } from "@sveltejs/kit"
+import type { KitEvent } from "sveltekit-zero-api"
 
-const handlers: {[key:string]: RequestHandler} = createHandlers(data)
+interface Get {
+    body: undefined,
+    params: {
+        code: string,
+    }
+}
 
-export const POST = handlers["POST"]
-export const GET = handlers["GET"]
-export const PUT = handlers["PUT"]
-export const PATCH = handlers["PATCH"]
-export const DELETE = handlers["DELETE"]
+/**
+ * Validate the email verification code and mark the email as verified
+ * with propagation to the user.
+ */
+export async function GET (event: KitEvent<Get, RequestEvent>) {
+    /** 
+     * Get the verification code
+     */
+    await db.transaction(async (tx) => {
+        await emails.verifications.validateCode({
+            tx,
+            code: event.params.code,
+        })
+    })
+    
+    /**
+	 * Return the response
+	 */
+	return Ok({ body: { success: true }})
+}

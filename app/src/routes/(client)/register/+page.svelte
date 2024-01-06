@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Main, UserRegisterForm } from "@components"
+	import { Main, UserRegisterForm } from "$components"
 	import { page } from "$app/stores"
 	import axios from "axios"
 

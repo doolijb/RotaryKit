@@ -1,5 +1,5 @@
-import { db } from "@database"
-import { schema } from "@database"
+import { db } from "$database"
+import { schema } from "$database"
 
 /**
  * Creates a new user.
@@ -10,8 +10,8 @@ import { schema } from "@database"
  * @returns {PromisedQueryResult<typeof params.returning>} The results of args.returning, or void.
  * 
  * @example
- *  import { db, schema } from "@database"
- *  import { users } from "@providers"
+ *  import { db, schema } from "$database"
+ *  import { users } from "$providers"
  * 
  * // Start a transaction
  *  db.transaction(async tx => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminCreateView, AdminCreateAdminRoleForm} from "@components"
+    import {AdminCreateView, AdminCreateAdminRoleForm} from "$components"
     import { page } from "$app/stores"
     import axios from "axios"
 	import { onMount } from "svelte"

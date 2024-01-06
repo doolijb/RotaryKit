@@ -1,5 +1,5 @@
-import { users, emails } from "@providers"
-import { db, schema } from "@database"
+import { users, emails } from "$providers"
+import { db, schema } from "$database"
 
 export const data = {
     username: "superUser",

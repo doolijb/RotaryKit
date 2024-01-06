@@ -1,7 +1,7 @@
-import { users } from "@providers"
-import { db } from "@database"
+import { users } from "$providers"
+import { db } from "$database"
 import type { RequestEvent } from "@sveltejs/kit"
-import { cookies } from "@auth"
+import { cookies } from "$auth"
 
 export default async function logout({
     tx=db,

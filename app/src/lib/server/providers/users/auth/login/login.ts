@@ -1,8 +1,8 @@
-import { db, schema } from "@database"
+import { db, schema } from "$database"
 import { error } from "@sveltejs/kit"
-import { cookies } from "@auth"
+import { cookies } from "$auth"
 import type { RequestEvent } from "@sveltejs/kit"
-import { users } from "@providers"
+import { users } from "$providers"
 
 /**
  * Validates user credentials and generates a token and cookie.

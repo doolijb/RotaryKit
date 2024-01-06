@@ -1,4 +1,4 @@
-import { db, schema } from "@database";
+import { db, schema } from "$database";
 import { getTableConfig, AnyPgColumn } from "drizzle-orm/pg-core";
 
 interface InsertAdminPermission {

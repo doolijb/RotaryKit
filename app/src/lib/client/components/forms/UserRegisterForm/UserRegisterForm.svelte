@@ -1,32 +1,33 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, PassphraseInput } from "@components"
-	import { forms, utils } from "$lib/shared/validation"
+	import { FormBase, BasicTextInput, PassphraseInput } from "$components"
+	import { UserRegister as Form } from "$validation/forms"
 
-	export let disabled = false
+	////
+	// LOCAL EXPORTS
+	////
 
-	export let formData: { [key: string]: any } = {}
+	export let data: Form["Data"] = {
+		username: "",
+		email: "",
+		passphrase: "",
+		passphraseConfirm: ""
+	}
+	export let errors = {} as FormErrors
+	export let form = new Form()
 
-	export let formErrors: FormErrors = {}
+	////
+	// CHILD EXPORTS
+	////
 
-	export let formValidator: FormValidator = utils.formValidator({
-		definitions: forms.userRegister,
-		extras: {
-			passphraseConfirm: {
-				matches: {
-					args: {
-						getValue: () => formData.passphrase
-					}
-				}
-			}
-		}
-	})
-	export let canSubmit: boolean = false
+	export let disabled: boolean
+	export let canSubmit: boolean
+	
 </script>
 
 <FormBase
-	bind:formValidator
-	bind:formErrors
-	bind:formData
+	bind:form
+	bind:errors
+	bind:data
 	bind:canSubmit
 	on:submit
 	showCancel={false}
@@ -35,34 +36,34 @@
 		label="Username"
 		id="username"
 		type="text"
-		bind:value={formData.username}
-		bind:fieldValidator={formValidator.fields.username}
-		bind:fieldErrors={formErrors.username}
+		bind:value={data.username}
+		bind:fieldValidator={form.fields.username}
+		bind:fieldErrors={errors.username}
 		{disabled}
 	/>
 	<BasicTextInput
 		label="Email"
 		id="email"
 		type="email"
-		bind:value={formData.email}
-		bind:fieldValidator={formValidator.fields.email}
-		bind:fieldErrors={formErrors.email}
+		bind:value={data.email}
+		bind:fieldValidator={form.fields.email}
+		bind:fieldErrors={errors.email}
 		{disabled}
 	/>
 	<PassphraseInput
 		label="Passphrase"
 		id="passphrase"
-		bind:value={formData.passphrase}
-		bind:fieldValidator={formValidator.fields.passphrase}
-		bind:fieldErrors={formErrors.passphrase}
+		bind:value={data.passphrase}
+		bind:fieldValidator={form.fields.passphrase}
+		bind:fieldErrors={errors.passphrase}
 		{disabled}
 	/>
 	<PassphraseInput
 		label="Confirm Passphrase"
 		id="passphraseConfirm"
-		bind:value={formData.passphraseConfirm}
-		bind:fieldValidator={formValidator.fields.passphraseConfirm}
-		bind:fieldErrors={formErrors.passphraseConfirm}
+		bind:value={data.passphraseConfirm}
+		bind:fieldValidator={form.fields.passphraseConfirm}
+		bind:fieldErrors={errors.passphraseConfirm}
 		{disabled}
 	/>
 </FormBase>

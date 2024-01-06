@@ -1,29 +1,33 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
-	import { Main, UserLoginForm } from "@components"
-	import axios from "axios"
+	import { Main, UserLoginForm } from "$components"
 	import { invalidateAll } from "$app/navigation"
-	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "@utils"
+	import { Toast, handleClientError, handleServerError, handleException } from "$client/utils"
 	import { page } from "$app/stores"
+	import api from "$src/api"
+	import { getToastStore } from "@skeletonlabs/skeleton"
 
 	const toastStore = getToastStore()
 
 	let completed = false
 
 	async function handleSubmit() {
-		await axios.post("/api/login", formData).then(async (res) => {
-			completed = true
-			await invalidateAll()
-			toastStore.trigger(
-				new Toast({ message: `Welcome back, ${$page.data.user.username}`, style: "success" })
-			)
-			await goto("/")
-		})
+		await api.login.POST({body: formData})
+			.Success(async (res) => {
+				completed = true
+				await invalidateAll()
+				toastStore.trigger(
+					new Toast({ message: `Welcome back, ${$page.data.user.username}`, style: "success" })
+				)
+				await goto("/")
+			})
+			.ClientError(handleClientError({ formErrors, toastStore}))
+			.ServerError(handleServerError({ toastStore }))
+			.catch(handleException({ toastStore }))
 	}
 
-	let formData = {}
-	let formErrors = {}
+	let formData
+	let formErrors
 </script>
 
 <Main>

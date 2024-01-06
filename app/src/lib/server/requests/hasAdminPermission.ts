@@ -1,8 +1,8 @@
 import type { RequestEvent } from "@sveltejs/kit"
 import { getTableName } from "drizzle-orm"
 import { getTableConfig, type PgTableWithColumns } from "drizzle-orm/pg-core"
-import { utils } from "@database"
-import { forbiddenError } from "@requests"
+import { utils } from "$database"
+import { forbiddenError } from "$requests"
 
 /**
  * Checks if the user has the permission to do the action.

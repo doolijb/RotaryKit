@@ -27,11 +27,13 @@
         "hoverable",
         "ilike",
         "jacksparrow",
+        "libphonenumber",
         "maildev",
         "nonpositive",
         "paseto",
         "rvest",
         "skeletonlabs",
+        "tailwindcss",
         "trcp",
         "trpc"
     ],

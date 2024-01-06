@@ -1,5 +1,5 @@
-import { messageError } from "@requests"
-import { db, schema } from "@database"
+import { messageError } from "$requests"
+import { db, schema } from "$database"
 import { eq, isNull, gt, and } from "drizzle-orm"
 
 /**

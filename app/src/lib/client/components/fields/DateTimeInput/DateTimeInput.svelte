@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BasicTextInput } from "@components"
+	import { BasicTextInput } from "$components"
 	import Icon from "@iconify/svelte"
 
 	// Values
