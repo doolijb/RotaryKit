@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores"
-	import { FormBase, BasicTextInput, MultiSelect } from "$components"
+	import { FormBase, TextInput, MultiSelect } from "$components"
 	import { AdminCreateAdminRole as Form } from "$validation/forms"
 	export let disabled = false
 
@@ -14,7 +14,7 @@
 	// LOCAL EXPORTS
 	////
 
-	export let form = new Form()
+	export let form = Form.init()
 	export let data: Form["Data"] = { 
 		name: "",
 		adminPermissions: [] 
@@ -48,23 +48,24 @@
 	showSubmit={false}
 	showCancel={false}
 >
-	<BasicTextInput
+	<TextInput
 		label="Name"
 		id="name"
-		type="name"
-		bind:value={data.name}
-		bind:fieldValidator={form.fields.name}
-		bind:fieldErrors={errors.name}
+		field="name"
+		{form}
 		{disabled}
+		bind:data
+		bind:errors
 	/>
 
 	<MultiSelect
 		label="Admin Permissions"
 		id="adminPermissions"
 		size={10}
-		bind:value={data.adminPermissions}
-		bind:fieldValidator={form.fields.adminPermissions}
-		bind:fieldErrors={errors.adminPermissions}
+		field="adminPermissions"
+		{form}
+		bind:data
+		bind:errors
 		options={adminPermissionOptions}
 		{disabled}
 	/>

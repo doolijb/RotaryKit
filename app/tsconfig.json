@@ -1,5 +1,8 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
+  "include": [
+    "src/**/*"
+  ],
   "compilerOptions": {
     "baseUrl": "./",
     "allowJs": true,
@@ -64,6 +67,9 @@
       ],
       "$requests/*": [
         "./src/lib/server/requests/*"
+      ],
+      "$api": [
+        "./src/lib/shared/api"
       ],
       "$constants": [
         "./src/lib/shared/constants"

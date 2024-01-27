@@ -3,35 +3,55 @@
     import { page } from "$app/stores"
     import axios from "axios"
 	import AdminEditAdminRolesToUserForm from "$lib/client/components/forms/AdminEditAdminRolesToUserForm/AdminEditAdminRolesToUserForm.svelte"
+    import api from "$api"
+	import { hasAdminPermission } from "$client/utils"
+	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { forms as f } from "$validation"
+    const toastStore = getToastStore()
 
     const resource = "users"
     const resourceId = $page.params.resourceId
     const naturalKey = "username"
+    const resourceApi = api.admin.users as ResourceApi
 
     const tabs: AdminEditResultViewTabs = {
         default: {
-            Form: AdminEditUserForm,
-            handleSubmit: async (data) => {
-                return await axios.put(`/api/admin/${resource}/${resourceId}`, data)
+            FormComponent: AdminEditUserForm,
+            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditUser> | FormDataOf<f.AdminEditUserWithPermissions> }) => {
+                return api.admin.users.resourceId$(resourceId).PUT({body: data})
             }
         },
-        adminRoles: {
-            Form: AdminEditAdminRolesToUserForm,
-            handleSubmit: async (data) => {
-                return await axios.put(`/api/admin/${resource}/${resourceId}/adminRoles`, data)
+    }
+
+    ////
+    // TAB: ADMIN ROLES
+    ////
+
+    if (hasAdminPermission({
+        user: $page.data.user,
+        adminPermissions: $page.data.permissions,
+        action: "PUT",
+        resources: ["user", "admin_roles"],
+    })) {
+        tabs["adminRoles"] = {
+            FormComponent: AdminEditAdminRolesToUserForm,
+            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditAdminRolesToUser>}) => {
+                return api.admin.users.resourceId$(resourceId).adminRoles.PUT({body: data})
             },
-            getFormExtras: async () => {
-                return {
-                    adminRoles: (await axios.get("/api/admin/adminRoles?pageLimit=1000")).data.results
-                }
+            getExtras: async () => {
+                let adminRoles
+                await api.admin.adminRoles.GET({query: {pageLimit: 1000}}).Ok((res) => {
+                        adminRoles = res.body.results
+                    })
+                return { adminRoles }
             }
-        },
+        }
     }
 </script>
 
 <AdminEditResultView
+    {resourceApi}
     {resource}
-    {resourceId}
     {tabs}
     {naturalKey}
 />

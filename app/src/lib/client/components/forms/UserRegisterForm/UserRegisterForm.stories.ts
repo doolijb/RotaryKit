@@ -26,10 +26,11 @@ export const Default = {
 
 export const Filled = {
     args: {
-        formData: {
-            email: faker.internet.email(),
-            passphrase: "This is a valid passphrase$",
-            passphraseConfirm: "This is a valid passphrase$",
+        data: {
+            username: "jack_sparrow",
+            email: "jack.sparrow@example.com",
+            passphrase: "Th1s is a valid passphrase$",
+            passphraseConfirm: "Th1s is a valid passphrase$",
         }
     },
     render: Template
@@ -37,10 +38,11 @@ export const Filled = {
 
 export const WithErrors = {
     args: {
-        formData: {
-            email: "bad@email",
-            passphrase: "some passphrase",
-            passphraseConfirm: "does not match",
-        },
+        data: {
+            username: "jack.sparrow",
+            email: "jack.sparrow@example",
+            passphrase: "Th1s is a valid passphrase",
+            passphraseConfirm: "Th1s is a valid passphrase$",
+        }
     },
 }

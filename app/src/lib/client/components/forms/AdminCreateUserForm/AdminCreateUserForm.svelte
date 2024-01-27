@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page, } from "$app/stores"
-	import { FormBase, BasicTextInput, PassphraseInput, CheckboxInput } from "$components"
+	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$components"
 	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$validation/forms"
 	
 	////
@@ -28,12 +28,8 @@
 	// DOWNSTREAM EXPORTS
 	////
 
-	export let disabled:boolean
-	export let canSubmit: boolean
-
-	////
-	// COMPUTED
-	////
+	export let disabled: boolean = undefined
+	export let canSubmit: boolean = undefined
 	
 </script>
 
@@ -42,77 +38,83 @@
 	bind:data
 	bind:errors
 	bind:canSubmit
+	bind:disabled
 	on:submit
 	on:cancel
 	showSubmit={false}
 	showCancel={false}
 >
-	<BasicTextInput
+	<TextInput
 		label="Username"
 		id="username"
-		type="username"
-		bind:value={data.username}
-		bind:fieldValidator={form.fields.username}
-		bind:fieldErrors={errors.username}
+		field="username"
+		bind:data
+		bind:errors
+		{form}
 		{disabled}
 	/>
 
-	<BasicTextInput
+	<TextInput
 		label="Email"
 		id="email"
-		type="email"
-		bind:value={data.email}
-		bind:fieldValidator={form.fields.email}
-		bind:fieldErrors={errors.email}
+		field="email"
+		bind:data
+		bind:errors
+		{form}
 		{disabled}
 	/>
 
 	<PassphraseInput
 		label="Passphrase"
 		id="passphrase"
-		bind:value={data.passphrase}
-		bind:fieldValidator={form.fields.passphrase}
-		bind:fieldErrors={errors.passphrase}
+		field="passphrase"
+		bind:data
+		bind:errors
+		{form}
 		{disabled}
 	/>
 
-	<div class="flex space-x-3 my-4">
-		<div class="card px-3 py-2">
+	<div class="flex space-x-3 my-5">
+		<div class="card px-3 pt-3 w-full">
 			<CheckboxInput
 				label="Is Verified"
-				type="checkbox"
 				id="isVerified"
-				bind:checked={data.isVerified}
-				bind:fieldValidator={form.fields.isVerified}
+				field="isVerified"
+				bind:data
+				bind:errors
+				{form}
 				{disabled}
 			/>
 		</div>
+	</div>
 
-		{#if canEditSuperUsers}
-			<div class="card px-3 py-2">
+	{#if canEditSuperUsers}
+		<div class="flex space-x-3 my-5">
+			<div class="card px-3 pt-3 w-full">
 				<CheckboxInput
 					label="Is Admin"
-					type="checkbox"
 					id="isAdmin"
-					bind:fieldErrors={errors.isAdmin}
-					bind:checked={data["isAdmin"]}
-					bind:fieldValidator={form.fields["isAdmin"]}
+					field="isAdmin"
+					bind:data
+					bind:errors
+					{form}
 					{disabled}
 				/>
 			</div>
-		{/if}
+		</div>
 
-		{#if canEditSuperUsers}
-			<div class="card px-3 py-2">
+		<div class="flex space-x-3 my-5">
+			<div class="card px-3 pt-3 w-full">
 				<CheckboxInput
 					label="Is Super User"
-					type="checkbox"
 					id="isSuperUser"
-					bind:checked={data["isSuperUser"]}
-					bind:fieldValidator={form.fields["isSuperUser"]}
+					field="isSuperUser"
+					bind:data
+					bind:errors
+					{form}
 					{disabled}
 				/>
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </FormBase>

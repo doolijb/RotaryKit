@@ -3,9 +3,11 @@
 import { schema } from "$database"
 import type { FormSchema, Primitive } from "$validation/base"
 import { schema } from "$database"
+import type { offset } from "@floating-ui/dom"
 
 // for information about these types
 declare global {
+
 	namespace App {
         interface Error {
 			message?: string
@@ -66,12 +68,19 @@ declare global {
         [K in keyof Pick<T["fields"], keyof T["optional"]>]?: GenericOfPrimitive<T["fields"][K]>
     }
 
+    interface FormFieldAttributes {
+        label?: string
+        placeholder?: string
+        defaultValue?: any
+        description?: string
+    }
+
     ////
     // DATABASE AND SCHEMA
     ////
 
     type DbTransaction = PgTransaction<NodePgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>
-
+    
     type SelectUser = typeof schema.users.$inferSelect
     type SelectUserToken = typeof schema.userTokens.$inferSelect
     type SelectEmail = typeof schema.emails.$inferSelect
@@ -120,25 +129,74 @@ declare global {
         search?: string,
     }
     
-    type AvailableRelations<T extends PgTableWithColumns<any>> = {
-        [key in keyof T]?: {
+    type AvailableRelations = {
+        [key: string]: {
           tableName: string,
           columns: {[key:string]: boolean},
           where?: SQL<unknown>
         }
       }
 
-      type AdminEditResultViewTab = {
-		Form: ConstructorOfATypedSvelteComponent
-		handleSubmit: (data: { [key: string]: any }) => Promise<AxiosResponse>
-		getFormExtras?: () => Promise<{ [key: string]: any }>
-		formExtras?: { [key: string]: any }
-		formData?: { [key: string]: any }
-		formErrors?: FormErrors
+    interface SvelteResponse<T> {
+        status: number;
+        ok: boolean;
+        body: T;
+    }
+    
+    type Callback<T> = (response: SvelteResponse<T>) => any
+
+    type ApiRequest = Promise<any> & {
+        Success: (cb: Callback<KitResponse>) => ApiRequest;
+        ClientError?: (cb: Callback<KitResponse>) => ApiRequest;
+        ServerError?: (cb: Callback<KitResponse>) => ApiRequest;
+    }
+
+    interface ApiMethods {
+        GET?: ({query}: {
+            query?: {[key:string]: any}
+        }) => ApiRequest
+        POST?: ({body, query}: {
+            body?: {[key:string]: any}
+            query: {[key:string]: any}
+        }) => ApiRequest
+        PUT?: ({body, query}: {
+            body?: any
+            query: {[key:string]: any}
+        }) => ApiRequest
+        DELETE?: ({query}: {
+            query?: {[key:string]: any}
+        }) => ApiRequest
+    }
+
+    interface ResourceApi {
+        POST?: ApiMethods.POST
+        GET?: ApiMethods.GET
+        PUT?: ApiMethods.PUT
+        DELETE?: ApiMethods.DELETE
+        resourceId$?: (uuid: string) => ApiMethods
+    }
+
+    type AdminEditResultViewTab = {
+		FormComponent: ConstructorOfATypedSvelteComponent
+		onSubmit: ({data}) => ApiRequest
+		getExtras?: () => Promise<{ [key: string]: any }>
+		extras?: { [key: string]: any }
+		data?: { [key: string]: any }
+		errors?: FormErrors
+        disabled?: boolean
 		populated?: boolean
 		submitted?: boolean
 		canSubmit?: boolean
+        isLoaded?: boolean
 	}
+
+    interface GetListQueryParameters {
+        currentPage?: number,
+        pageLimit?: number,
+        orderBy?: string,
+        offset?: number,
+        search?: string,
+    }
 
 	type AdminEditResultViewTabs = {
 		default: AdminEditResultViewTab

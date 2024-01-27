@@ -5,11 +5,10 @@ import { Validator, Primitive } from "$validation/base"
  * Validates that a value is a string
  */
 class Root extends Validator {
-    args = {}
     key = "string"
     badge = "String"
     message = "Must be a string"
-    hidden = true
+    isHidden = true
     test = async ({key, data}) => {
         const value = data[key]
         if (value == null || value == undefined) return true
@@ -18,9 +17,7 @@ class Root extends Validator {
 }
 
 export class String extends Primitive<string> {
-    constructor() {
-        super({Root})
-    }
+    Root = Root
     emailAddressComplete = this.stageValidator(c.EmailAddressComplete)
     lowerCaseIncluded = this.stageValidator(c.LowerCaseIncluded)
     matches = this.stageValidator(c.Matches)

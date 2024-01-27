@@ -1,14 +1,23 @@
 <script lang="ts">
     import {ValidStates} from "$constants"
-    // @ts-ignore 
+	import type { Primitive } from "$validation/base"
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
     import {onMount} from "svelte"
-    
-    export let fieldErrors: FieldErrors = {}
+
+    ////
+    // PARENT EXPORTS
+    ////
+
+    export let fieldErrors: FieldErrors
+    export let fieldValidator: Primitive<unknown>
     export let legendPopup: PopupSettings
-    export let validState = ValidStates.NONE
-    export let fieldValidator: FieldValidator
+    export let validState: ValidStates
+
+    ////
+    // CALCULATED
+    ////
+
     let legendIcon: HTMLDivElement
 
     $: validatorLength = Object.keys(fieldValidator).length
@@ -26,7 +35,7 @@
     <!-- svelte-ignore a11y-click-events-have-key-events The event is required for event behavior to work as intended -->
     <!-- We need to execute the attached event, and prevent populating up on click -->
     <div
-        class="cursor-pointer ps-1 {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
+        class="legendIconWrapper cursor-pointer {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
         tabindex="-1"
         bind:this={legendIcon}
         on:click={e => {
@@ -34,7 +43,8 @@
             // @ts-ignore
             e.target.event = "click"
         }}
-        aria-label="Requirements Legend"
+        aria-label="Legend"
+        title="Legend"
         role="button"
     >
         {#if validState === ValidStates.INVALID}
@@ -60,7 +70,7 @@
 {/if}
 
 <style lang="postcss">
-    .ps-1 {
-        padding-left: 0.5em !important;
+    .legendIconWrapper {
+        padding: 0;
     }
 </style>

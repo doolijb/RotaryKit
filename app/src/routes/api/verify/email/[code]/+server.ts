@@ -1,13 +1,13 @@
 import { db } from "$database"
 import { emails } from "$providers"
-import { Ok } from "sveltekit-zero-api/http"
+import { BadRequest, Created, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 
-interface Get {
-    body: undefined,
+interface Post {
+    body?: undefined
     params: {
-        code: string,
+        code: string
     }
 }
 
@@ -15,19 +15,37 @@ interface Get {
  * Validate the email verification code and mark the email as verified
  * with propagation to the user.
  */
-export async function GET (event: KitEvent<Get, RequestEvent>) {
-    /** 
-     * Get the verification code
-     */
-    await db.transaction(async (tx) => {
-        await emails.verifications.validateCode({
-            tx,
-            code: event.params.code,
+export async function POST (event: KitEvent<Post, RequestEvent>) {
+
+    try {
+        
+        /** 
+         * Get the verification code
+         */
+        let verification: SelectEmailVerification | void
+        await db.transaction(async (tx) => {
+            verification = await emails.verifications.validateCode({
+                tx,
+                code: event.params.code,
+                propagate: true,
+            })
         })
-    })
-    
-    /**
-	 * Return the response
-	 */
-	return Ok({ body: { success: true }})
+
+        /**
+         * Check if the verification code was valid
+         */
+        if (!verification) {
+            return BadRequest()
+        }
+        
+        /**
+         * Return the response
+         */
+	    return Created({ body: { success: true }})
+
+    } catch (e) {
+        console.error(e)
+        return InternalServerError()
+    }
+
 }

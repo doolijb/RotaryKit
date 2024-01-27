@@ -81,9 +81,9 @@ const Template = ({ ...args }) => ({
 export const Default = Template.bind({})
 
 Default.args = {
-	resource: "users",
+	// resource: "users",
 	displayTitle: "User",
-	Form: AdminCreateUserForm
+	FormComponent: AdminCreateUserForm
 }
 
 // for range of 10, lets add examples.example to emailAddresses with fake ids

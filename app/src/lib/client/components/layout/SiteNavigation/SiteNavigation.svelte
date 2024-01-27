@@ -26,13 +26,15 @@
 		<!-- <a href="/settings" class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap">
       Settings
     </a> -->
-		<a
-			href="/admin"
-			class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
-		>
-			<Icon icon="mdi:shield" class="mr-2 inline-block" />
-			Admin
-		</a>
+		{#if $page.data.user && ($page.data.user.isAdmin || $page.data.user.isSuperUser)}
+			<a
+				href="/admin"
+				class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
+			>
+				<Icon icon="mdi:shield" class="mr-2 inline-block" />
+				Admin
+			</a>
+		{/if}
 		<a
 			href="/logout"
 			class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"

@@ -12,9 +12,6 @@ const types = "string"
  */
 
 export class TelephonePossible extends Validator {
-    constructor(args: { countryCodeKey: string }) {
-        super(args)
-    }
     declare args: { countryCodeKey: string }
     badge = "Partial"
     key = "telephonePossible"

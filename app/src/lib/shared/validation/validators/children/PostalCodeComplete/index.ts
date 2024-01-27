@@ -8,9 +8,6 @@ import { Validator } from "$validation/base"
  */
 
 export class PostalCodeComplete extends Validator {
-    constructor(args: { countryCodeKey: string }) {
-        super(args)
-        }
     declare args: { countryCodeKey: string }
     badge = "Complete"
     key = "postalCode"

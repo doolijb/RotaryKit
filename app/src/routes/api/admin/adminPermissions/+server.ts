@@ -1,30 +1,41 @@
 import type { RequestEvent } from "@sveltejs/kit"
 import { adminApi } from "$requests"
-import { Ok } from "sveltekit-zero-api/http"
+import { InternalServerError, Ok } from "sveltekit-zero-api/http"
+import type { KitEvent } from "sveltekit-zero-api"
+
+interface Get {
+    query?: GetListQueryParameters
+}
 
 /**
  * Admin view for a list of admin permissions
  */
-export async function GET (event: RequestEvent) {
-    // Check if user is authorized to view users
-    // TODO
+export async function GET (event: KitEvent<Get, RequestEvent>) {
+    try {
+        // Check if user is authorized to view users
+        // TODO
 
-    const columns: {[key:string]: boolean}  = {
-        "id":true,
-        "name":true,
-        "action":true,
-        "resource":true,
+        const columns: {[key:string]: boolean}  = {
+            "id":true,
+            "name":true,
+            "action":true,
+            "resource":true,
+        }
+
+        const availableRelations: AvailableRelations = {}
+
+        return await adminApi.getListOf<SelectAdminPermission>({
+            event,
+            tableName: "adminPermissions",
+            columns,
+            availableRelations,
+            defaults: {
+                orderBy: "name:asc"
+            }
+        })
+
+    } catch (err) {
+        console.log(err)
+        return InternalServerError()
     }
-
-    const availableRelations: AvailableRelations<SelectAdminPermission>  = {}
-
-    const body = await adminApi.getListOf<SelectAdminPermission>({
-        event,
-        tableName: "adminPermissions",
-        columns,
-        availableRelations,
-        defaultOrderByString: "name:asc"
-    })
-
-    return Ok({body})
 }

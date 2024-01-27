@@ -1,7 +1,8 @@
 import Component from "."
-import { validators as v, utils, fields } from "$validation"
+import { validators as v } from "$validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
+import { FormSchema } from "$validation/base"
 import { faker } from "@faker-js/faker"
 
 
@@ -9,134 +10,80 @@ const meta: Meta<typeof Component> = {
     component: Component as ComponentType,
     tags: ["autodocs"],
     decorators: [],
-    argTypes: {
-        label: {
-            type: {
-                name: "string",
-                required: false
-            }
-        },
-        type: {
-            type: {
-                name: "string",
-                required: false
-            },
-            control: {
-                type: "select",
-                options: ["text", "password", "email", "number"]
-            }
-        },
-        fieldValidator: {
-            type: {
-                name: "object",
-                required: true
-            }
-        },
-        value: {
-            type: {
-                name: "string",
-                required: false
-            }
-        },
-        placeholder: {
-            type: {
-                name: "string",
-                required: false
-            }
-        },
-        disabled: {
-            type: {
-                name: "boolean",
-                required: false
-            }
-        },
-        fieldErrors: {
-            type: {
-                name: "object",
-                required: false
-            }
-        },
-        isTouched: {
-            type: {
-                name: "boolean",
-                required: false
-            }
-        },
-        onInput: {
-            action: "onInput",
-            table: {
-                disable: true
-            }
-        },
-        onFocus: {
-            action: "onFocus",
-            table: {
-                disable: true
-            }
-        },
-        onBlur: {
-            action: "onBlur",
-            table: {
-                disable: true
-            }
-        }
-    } as any
 }
 
 export default meta
 
-const Template = (args: { value: boolean }) => ({
-    Component,
-    props: args
-})
+class DefaultForm extends FormSchema {
+    fields = {
+        passphrase: v.String.init(),
+    }
+    optional = {passphrase: true}
+    fieldAttributes = {
+        passphrase: {
+            label: "Passphrase",
+        }
+    }
+}
 
 export const Default = {
-    render: Template,
     args: {
-        // Component Props Here
-        fieldValidator: utils.fieldValidator({
-            definition: fields.passphrase,
-        }),
+        field: "passphrase",
+        form: DefaultForm.init(),
+        data: { passphrase: "" },
+        errors: {},
     }
 }
 
 export const Disabled = {
-    render: Template,
     args: {
-        value: faker.internet.password(),
+        ...Default.args,
+        data: { passphrase: faker.internet.password()},
         disabled: true,
-        fieldValidator: utils.fieldValidator({
-            definition: fields.passphrase,
-        }),
     }
 }
 
 export const Filled = {
-    render: Template,
     args: {
-        value: faker.internet.password(),
-        fieldValidator: utils.fieldValidator({
-            definition: fields.passphrase,
-        }),
+        ...Disabled.args,
+        disabled: false,
+    }
+}
+
+class WithValidatorsForm extends FormSchema {
+    fields = {
+        passphrase: v.String.init().lowerCaseIncluded().upperCaseIncluded().minLength({minLen:10}).maxLength({maxLen:100}).specialCharIncluded(),
+    }
+    optional = {}
+    fieldAttributes = {
+        passphrase: {
+            label: "Passphrase",
+            description: "Provide a secure password to access your account, you may use spaces and special characters to create a complex phrase."
+        }
     }
 }
 
 export const FilledWithValidators = {
-    render: Template,
     args: {
-        value: faker.internet.password(),
-        fieldValidator: utils.fieldValidator({
-            definition: fields.passphrase,
-        })
+        form: WithValidatorsForm.init(),
+        field: "passphrase",
+        data: {passphrase: faker.internet.password()},
+        errors: {}
+    }
+}
+
+export const WithValidators = {
+    args: {
+        form: WithValidatorsForm.init(),
+        field: "passphrase",
+        data: {passphrase: ""},
+        errors: {}
     }
 }
 
 export const WithPlaceholder = {
-    render: Template,
     args: {
-        placeholder: "Enter a password or passphrase",
-        fieldValidator: utils.fieldValidator({
-            definition: fields.passphrase,
-        }),
+        ...Default.args,
+        placeholder: "Enter a passphrase..."
     }
 }

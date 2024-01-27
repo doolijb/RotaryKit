@@ -13,12 +13,12 @@ import { eq, isNull, gt, and } from "drizzle-orm"
 export default async function validateCode({
     tx=db,
     code,
-    propagate=true,
+    propagate=false,
 }: {
     tx?: typeof db,
     code: string,
     propagate?: boolean,
-}): Promise<void> {
+}): Promise<SelectEmailVerification | void> {
     const emailVerification = await tx.query.emailVerifications.findFirst({
         where: (v, {and, eq, isNull, or}) => and(
             eq(v.id, code) ,
@@ -38,7 +38,7 @@ export default async function validateCode({
     })
 
     if (!emailVerification) {
-        throw messageError("Invalid code")
+        return
     }
 
     const verifiedAt = new Date()
@@ -65,4 +65,6 @@ export default async function validateCode({
             ))
         }
     }
+
+    return emailVerification
 }

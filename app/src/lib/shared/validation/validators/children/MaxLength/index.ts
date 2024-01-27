@@ -7,10 +7,7 @@ import { Validator } from "$validation/base"
  */
 
 export class MaxLength extends Validator {
-    constructor(args: { maxLen: number } = { maxLen: 20 }) {
-        super(args)
-    }
-    declare args: { maxLen: number }
+    args: { maxLen: number } = { maxLen: 20 }
     badge = "Max length"
     key = "maxLength"
     message = () => `Must be at most ${this.args.maxLen} characters long`

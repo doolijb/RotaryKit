@@ -1,8 +1,9 @@
 <script lang="ts">
+	import api from "$api"
     import {AdminResultsTableView} from "$components"
 
     const resource = "adminRoles"
-    const displayTitle = "Admin Roles"
+    const resourceApi = api.admin.adminRoles as unknown as ResourceApi
     const orderedKeys = ["id","name","createdAt","updatedAt"]
     const dataHandlers = {
         toAdminPermissions: {
@@ -18,7 +19,7 @@
 
 <AdminResultsTableView 
     {resource}
-    {displayTitle}
+    {resourceApi}
     {orderedKeys}
     {dataHandlers}
 />

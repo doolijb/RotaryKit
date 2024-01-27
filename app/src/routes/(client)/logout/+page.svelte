@@ -2,7 +2,7 @@
     import { goto, invalidateAll } from "$app/navigation"
 	import { Loading } from "$components"
     import { getToastStore } from "@skeletonlabs/skeleton"
-    import { Toast } from "$utils"
+    import { Toast } from "$client/utils"
 	import { onMount } from "svelte"
 
     const toastStore = getToastStore()

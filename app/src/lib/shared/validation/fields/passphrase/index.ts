@@ -1,3 +1,3 @@
 import { validators as v } from "$validation"
 
-export const passphrase = () => new v.String().minLength(8).maxLength(100).specialCharIncluded()
+export const passphrase = () => v.String.init().minLength({minLen:8}).maxLength({maxLen:100}).specialCharIncluded()

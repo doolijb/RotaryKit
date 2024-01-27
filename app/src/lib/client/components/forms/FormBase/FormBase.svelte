@@ -22,6 +22,8 @@
 	export let showCancel = true
 	export let showSubmit = true
 	export let disabled = false
+	export const submit = (e: Event) => onSubmit(e)
+	export const cancel = (e: Event) => onCancel(e)
 
 	////
 	// COMPUTED
@@ -30,8 +32,9 @@
 	$: isPopulated = !!Object.values(data).find((value) => !!value)
 	$: hasErrors = Object.keys(errors).some((field) => Object.keys(errors[field]).length)
 	$: {
-		canSubmit = isPopulated && !hasErrors
+		canSubmit = !hasErrors
 	}
+	$: console.log("errors", errors)
 
 	////
 	// Event Handlers
@@ -128,7 +131,7 @@
 				<button
 					type="button"
 					class="btn variant-filled ms-auto"
-					disabled={!canSubmit || disabled}
+					disabled={disabled || !canSubmit}
 					on:click={async (e) => {
 						disabled = true
 						validate()

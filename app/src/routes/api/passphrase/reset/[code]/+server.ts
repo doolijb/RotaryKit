@@ -6,7 +6,7 @@ import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { Ok } from "sveltekit-zero-api/http"
 
-const postForm = new PostForm()
+const postForm = PostForm.init()
 
 interface Post {
 	body: PostForm["Data"],

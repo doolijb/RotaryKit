@@ -8,9 +8,6 @@ import { Validator } from "$validation/base"
  */
 
 export class Matches extends Validator {
-    constructor(args: { matchingLabel?: string, matchingField: string }) {
-        super(args)
-    }
     declare args: { matchingLabel?: string, matchingField: string }
     badge = "Matches"
     key = "matches"

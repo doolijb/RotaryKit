@@ -1,7 +1,10 @@
 import { db, schema } from "$database"
-import { EmailVerificationCode } from "$components"
-import { render } from "svelte-email"
-import nodemailer from "nodemailer"
+// import { EmailVerificationCode } from "$components"
+// // TODO: Switch to react-email, this lib is dead
+// /// https://github.com/carstenlebek/svelte-email/issues/25
+// // import { render } from "svelte-email"
+// const render = undefined
+// import nodemailer from "nodemailer"
 import { eq } from "drizzle-orm"
 
 /**
@@ -29,7 +32,7 @@ export default async function sendCode({
 
     let code: string
     const expiresAt = null // TODO
-    const subject: string = "Email Verification"
+    const subject= "Email Verification"
 
     // Check if there is already a code
     const result = await tx.query.emailVerifications.findFirst({
@@ -74,29 +77,29 @@ export default async function sendCode({
     }
 
     // Send the code
-    const transporter = nodemailer.createTransport(transportConfig)
+    // const transporter = nodemailer.createTransport(transportConfig)
 
-    const url = process.env.APP_URL + "/verify/email/" + code
+    // const url = process.env.APP_URL + "/verify/email/" + code
 
-    const html = render({
-        template: EmailVerificationCode, 
-        props: {
-            url,
-            name: username,
-            expiresAt,
-            subject
-        } 
-    })
+    // const html = render({
+    //     template: EmailVerificationCode, 
+    //     props: {
+    //         url,
+    //         name: username,
+    //         expiresAt,
+    //         subject
+    //     } 
+    // })
 
     const options = {
         from: `"${process.env.SMTP_DISPLAY_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`,
         to: toAddress,
         subject,
-        html,
+        html:"" // html,
     }
 
-    await transporter.sendMail(options).catch((error) => {
-        console.error(error)
-        throw error
-    })
+    // await transporter.sendMail(options).catch((error) => {
+    //     console.error(error)
+    //     throw error
+    // })
 }

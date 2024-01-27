@@ -9,17 +9,20 @@ export * from "./hasAdminPermission"
  * toasts (if toastStore is provided), before executing an optional callback function
  */
 export function handleClientError({
-    formErrors,
+    errors,
     toastStore,
 }:{
-    formErrors?: FormErrors,
+    errors?: FormErrors,
     toastStore?: ToastStore,
-}, callback?: <T = void>(res: DefaultResponse) => Promise<T>) {
+}, callback?: (res: DefaultResponse) => Promise<any>) {
     return (res: DefaultResponse) => {
-        if (formErrors && res.body["errors"]) {
-            formErrors = res.body["errors"] || formErrors
+        if (errors && res.body["errors"]) {
+            errors = res.body["errors"] || errors
         }
-        if (toastStore && res.body["message"]) {
+        if (toastStore) {
+            if (!res.body["message"]) {
+                res.body["message"] = "An unknown error occurred"
+            }
             toastStore.trigger(
                 new Toast({ message: res.body['message'], style: "warning" })
             )
@@ -40,7 +43,7 @@ export function handleServerError({
     toastStore,
 }: {
     toastStore?: ToastStore,
-}, callback?: <T = void>(res: DefaultResponse) => Promise<T>) {
+}, callback?: (res: DefaultResponse) => Promise<any>) {
     return (res: DefaultResponse) => {
         if (toastStore) {
             const message = res.body["message"] || "An internal error occurred"
@@ -49,9 +52,8 @@ export function handleServerError({
             )
         }
         if (callback) {
-            return callback(res)
-        } else {
-            return res
+            callback(res)
+            return
         }
     }
 }
@@ -64,7 +66,7 @@ export function handleException({
     toastStore,
 }: {
     toastStore?: ToastStore,
-}, callback?: <T = void>(err: any) => Promise<T>) {
+}, callback?: (err: any) => Promise<any>) {
     return (err: any) => {
         if (toastStore) {
             const message = "An unexpected error occurred"
@@ -73,9 +75,8 @@ export function handleException({
             )
         }
         if (callback) {
-            return callback(res)
-        } else {
-            return res
+            callback(err)
+            return 
         }
     }
 }

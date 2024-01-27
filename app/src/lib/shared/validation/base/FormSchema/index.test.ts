@@ -4,10 +4,10 @@ import { validators as v } from "$validation"
 
 class TestForm extends FormSchema {
     fields = {
-        someString: new v.String().minLength(3).maxLength(10),
-        // someNumber: new v.Number(),
-        someBoolean: new v.Boolean(),
-        someArray: new v.Array(),
+        someString: v.String.init().minLength(3).maxLength(10),
+        // someNumber: v.Number.init(),
+        someBoolean: v.Boolean.init(),
+        someArray: v.Array.init(),
         optionalString: new v.String(),
     }
     optional = {
@@ -16,7 +16,7 @@ class TestForm extends FormSchema {
 }
 
 test("FormSchema: passes", async () => {
-    const form = new TestForm()
+    const form = TestForm.init()
 
     const data = {
         someString: "test",

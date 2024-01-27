@@ -1,30 +1,39 @@
 <script lang="ts">
 	import { AdminHeader } from "$components"
 	import Icon from "@iconify/svelte"
-	import axios, { type AxiosResponse } from "axios"
-	// import { type SvelteComponent, onMount } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "$utils"
-	import { page } from "$app/stores"
 	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
-	import { goto, invalidateAll } from "$app/navigation"
+	import { goto } from "$app/navigation"
+	import humanizeString from "humanize-string"
+	import pluralize from "pluralize"
+	import { Toast, handleClientError, handleServerError } from "$client/utils"
 
 	const toastStore = getToastStore()
 
 	////
-	// VARIABLE PROPS
+	// PARENT EXPORTS
 	////
-	export let resource: string
+
 	export let displayTitle: string
-	export let Form: ConstructorOfATypedSvelteComponent
-	export let formExtras: { [key: string]: any } = {}
+	export let resource: string
+	export let resourceApi: ResourceApi
+	export let FormComponent: ConstructorOfATypedSvelteComponent
+	export let primaryKey: string = "id"
+	export let extras: Record<string, any> = {}
 
-	let formData: { [key: string]: any } = {}
-	let formErrors: FormErrors = {}
-	let canSubmit: boolean
+	////
+	// CHILD EXPORTS
+	////
 
-	function handleCancel() {
-		// If history, go back, else go to /admin
+	let canSubmit: boolean = undefined
+	let formComponent: ATypedSvelteComponent = undefined
+	let data: Record<string, any> = undefined
+
+	////
+	// EVENTS
+	////
+
+	async function onCancel(e: Event) {
 		if (window.history.length > 2) {
 			window.history.back()
 		} else {
@@ -32,30 +41,20 @@
 		}
 	}
 
-	async function handleSubmit() {
-		await axios
-			.post(`/api/admin/${resource}`, formData)
-			.then((response: AxiosResponse) => {
+	async function onSubmit(e?: Event) {
+		await resourceApi.POST({body: data})
+			.Success(async (r) => {
 				toastStore.trigger(
 					new Toast({
-						message: `${displayTitle} created successfully`,
+						message: `${pluralize.singular(humanizeString(resource))} created successfully.`,
 						style: "success"
 					})
 				)
-				goto(`/admin/${resource}/${response.data.result.id}`)
+				goto(`/admin/${resource}/${r.body.result[primaryKey]}`)
 			})
-			.catch(async (error: any) => {
-				toastStore.trigger(
-					new Toast({
-						message: `Error creating ${displayTitle}`,
-						style: "error"
-					})
-				)
-				if (error.response.status === 403) {
-					await invalidateAll()
-				}
-			})
-	}
+			.ClientError(handleClientError({ toastStore}))
+			.ServerError(handleServerError({ toastStore }))
+}
 </script>
 
 <AdminHeader>
@@ -67,14 +66,14 @@
 	</svelte:fragment>
 
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={handleCancel}>
+		<button type="button" class="btn variant-filled-surface" on:click={onCancel}>
 			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 			Cancel
 		</button>
 		<button
 			type="button"
 			class="btn variant-filled-success"
-			on:click={handleSubmit}
+			on:click={onSubmit}
 			disabled={!canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />
@@ -83,13 +82,11 @@
 	</div>
 </AdminHeader>
 
-<!-- Display help text -->
 {#if $$slots.help}
 	<div class="card variant-soft p-4 m-0 mb-4">
 		<Accordion>
 			<AccordionItem title="Help">
 				<svelte:fragment slot="lead">
-					<!-- Help Icon -->
 					<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
 				</svelte:fragment>
 				<svelte:fragment slot="summary">
@@ -105,26 +102,26 @@
 
 <div class="card variant-soft p-4 mb-4">
 	<svelte:component
-		this={Form}
-		bind:formData
-		bind:formErrors
+		this={FormComponent}
+		bind:this={formComponent}
 		bind:canSubmit
-		on:submit={handleSubmit}
-		on:cancel={handleCancel}
-		{...formExtras}
+		bind:data
+		on:submit={onSubmit}
+		on:cancel={onCancel}
+		{...extras}
 	/>
 </div>
 
 <AdminHeader>
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={handleCancel}>
+		<button type="button" class="btn variant-filled-surface" on:click={onCancel}>
 			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 			Cancel
 		</button>
 		<button
 			type="button"
 			class="btn variant-filled-success"
-			on:click={handleSubmit}
+			on:click={onSubmit}
 			disabled={!canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />

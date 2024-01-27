@@ -1,19 +1,44 @@
 import deepmerge from "deepmerge"
 import type { Primitive } from "../Primitive"
 import { children as c } from "$validation/validators"
+// import { browser } from "$app/environment"
 
-export abstract class FormSchema {
-    abstract fields: Record<string, Primitive<unknown>>
-    abstract optional: Record<string, boolean>
+type FieldAttributes = () => {
+    label?: string
+    placeholder?: string
+    defaultValue?: any
+}
+
+export class FormSchema {
+    fields: Record<string, Primitive<unknown>>
+    optional: Record<string, boolean>
+    fieldAttributes: {
+        [key in keyof this["fields"]]?: FormFieldAttributes
+    }
     Data: FormDataOf<this> = null
 
-    constructor() {
-        const required = new c.Required()
-        Object.entries(this["fields"]).forEach(([key, field]) => {
-            if (!this["optional"][key]) {
+    static init() {
+        const form = new this()
+        const required = c.Required.init()
+        Object.entries(form.fields).forEach(([key, field]) => {
+            if (!form.optional[key]) {
                 field.addValidator(required)
             }
         })
+        // // Dev only server side validation
+        // if (!import.meta.env.PROD && this.fieldAttributes) {
+        //     const missingField = Object.keys(this.fieldAttributes).find((key) => {
+        //         return !(key in this.fields)
+        //     })
+        //     if (missingField) {
+        //         throw new Error(`Field "${missingField}" is missing from fields, but is present in fieldAttributes.`)
+        //     }
+        // }
+        // Try to save some server side memory
+        // if (!browser) {
+        //     delete(this.fieldAttributes)
+        // }
+        return form
     }
 
     async validate({data}:{data: Record<string, unknown>}): Promise<FormErrors> {

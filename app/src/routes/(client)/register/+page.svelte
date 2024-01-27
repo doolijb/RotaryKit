@@ -1,26 +1,32 @@
 <script lang="ts">
 	import { Main, UserRegisterForm } from "$components"
 	import { page } from "$app/stores"
-	import axios from "axios"
+	import { invalidateAll } from "$app/navigation"
+	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
+	import { getToastStore } from "@skeletonlabs/skeleton"
+	import api from "$api"
 
-	async function handleSubmit() {
-		const response = await axios.post("/api/register", formData)
-		if (response.status === 200) {
-			completed = true
-		}
+	const toastStore = getToastStore()
+
+	async function onSubmit() {
+		await api.register.POST({body: data})
+			.Success(async (res) => {
+				completed = true
+				await invalidateAll()
+				toastStore.trigger(
+					new Toast({ message: "Your account has been created", style: "success" })
+				)
+				completed = true
+			})
+			.ClientError(handleClientError({ errors, toastStore}))
+			.ServerError(handleServerError({ toastStore }))
+			.catch(handleException({ toastStore }))
 	}
 
 	let completed = false
-	let formData = {
-		email: "",
-		passphrase: "",
-		passphraseConfirm: ""
-	}
-	let formErrors = {
-		email: {},
-		passphrase: {},
-		passphraseConfirm: {}
-	}
+	let data: UserRegisterForm["Data"]
+	let errors: FormErrors
+
 </script>
 
 <!-- Nice rounded wrapper, centered, fixed width at full screen, responsive -->
@@ -35,12 +41,12 @@
 		<div class="card p-4 w-full mb-4">
 			<container class="container">
 				{#if !completed}
-					<UserRegisterForm on:submit={handleSubmit} bind:formData bind:formErrors />
+					<UserRegisterForm on:submit={onSubmit} bind:data bind:errors />
 				{:else}
 					<div class="flex flex-col items-center justify-center space-y-4">
 						<h1 class="text-2xl font-bold">Thank you for registering!</h1>
 						<p class="text-lg">
-							A confirmation link will be sent to <u>{formData.email || "your email"}</u>.
+							A confirmation link will be sent to <u>{data.email || "your email"}</u>.
 						</p>
 					</div>
 				{/if}

@@ -47,47 +47,47 @@
 			/>
 	</div>
 	<div class="card p-4 overflow-hidden">
-			<Chart
-			  options={{
-				series: [
-					{
-				  name: "Unique Visitors",
-				  data: [10, 41, 35, 51, 49, 62, 91]
-			  },
-			  {
-				  name: "Page Visits",
-				  data: [20, 51, 47, 100, 60, 86, 145]
-			  }
-			],
-				chart: {
-				height: 350,
-				type: "line",
-				zoom: {
-				  enabled: false
-				}
-			  },
-			  dataLabels: {
+		<Chart
+			options={{
+			series: [
+				{
+				name: "Unique Visitors",
+				data: [10, 41, 35, 51, 49, 62, 91]
+			},
+			{
+				name: "Page Visits",
+				data: [20, 51, 47, 100, 60, 86, 145]
+			}
+		],
+			chart: {
+			height: 350,
+			type: "line",
+			zoom: {
 				enabled: false
-			  },
-			  stroke: {
-				curve: "smooth"
-			  },
-			  title: {
-				text: "Daily Visitors",
-				align: "left"
-			  },
-			  grid: {
-				row: {
-				  colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-				  opacity: 0.5
-				},
-			  },
-			  xaxis: {
-				categories: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-			  }
-			  }}
-			/>
-		  </div>
+			}
+			},
+			dataLabels: {
+			enabled: false
+			},
+			stroke: {
+			curve: "smooth"
+			},
+			title: {
+			text: "Daily Visitors",
+			align: "left"
+			},
+			grid: {
+			row: {
+				colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+				opacity: 0.5
+			},
+			},
+			xaxis: {
+			categories: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+			}
+			}}
+		/>
+	</div>
 </div>
 
 <!-- Fancy admin log placeholder -->

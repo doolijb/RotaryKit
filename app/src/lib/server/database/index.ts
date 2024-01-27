@@ -6,7 +6,7 @@ import chalk from "chalk"
 import { schema, relations } from "./schema"
 import { dbCredentials } from "./config"
 import seeds from "./seeds"
-import utils from "./utils"
+import utils from "$database/utils"
 
 import pgtools from "pgtools"
 

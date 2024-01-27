@@ -1,25 +1,36 @@
 <script lang="ts">
     import {AdminEditResultView, AdminEditAdminRoleForm} from "$components"
     import { page } from "$app/stores"
-    import axios from "axios"
+	import api from "$api"
 
     const resource = "adminRoles"
+    const resourceApi = api.admin.adminRoles as unknown as ResourceApi
     const resourceId = $page.params.resourceId
     const naturalKey = "name"
     const tabs = {
         default: {
-            Form: AdminEditAdminRoleForm,
-            getFormExtras: async () => ({
-                adminPermissions: (await axios.get("/api/admin/adminPermissions")).data.results,
+            FormComponent: AdminEditAdminRoleForm,
+            getExtras: async () => ({
+                adminPermissions: await getAdminPermissions(),
             }),
-            handleSubmit: async (data: {[key:string]: any}) => (await axios.put(`/api/admin/${resource}/${resourceId}`, data)).data,
+            onSubmit: ({data}) => api.admin.adminRoles.resourceId$(resourceId).PUT({body: data}),
         }
+    }
+
+    async function getAdminPermissions() {
+        let adminPermissions
+        await api.admin.adminPermissions.GET({query: {pageLimit:1000}})
+            .Success((r) => {
+                adminPermissions = r.body.results as SelectAdminPermission[]
+            })
+        return adminPermissions
     }
 
 </script>
 
 <AdminEditResultView
     {resource}
+    {resourceApi}
     {resourceId}
     {naturalKey}
     {tabs}

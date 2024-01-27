@@ -1,6 +1,11 @@
 import { db } from "$database"
-import { PassphraseUpdatedConfirmation } from "$components"
-import { render } from "svelte-email"
+// import { PassphraseUpdatedConfirmation } from "$components"
+
+    // TODO: Switch to react-email, this lib is dead
+    /// https://github.com/carstenlebek/svelte-email/issues/25
+    // import { render } from "svelte-email"
+    // const render = undefined
+
 import nodemailer from "nodemailer"
 
 /**
@@ -18,7 +23,7 @@ export default async function notifyChange({
     userId: string,
 }): Promise<void> {
 
-    const subject: string = "Passphrase Updated"
+    const subject = "Passphrase Updated"
 
     // Check if there is already a code
     const user = await tx.query.users.findFirst({
@@ -41,19 +46,19 @@ export default async function notifyChange({
     // Send the code
     const transporter = nodemailer.createTransport(transportConfig)
 
-    const html = render({
-        template: PassphraseUpdatedConfirmation, 
-        props: {
-            name,
-            subject
-        } 
-    })
+    // const html = render({
+    //     template: PassphraseUpdatedConfirmation, 
+    //     props: {
+    //         name,
+    //         subject
+    //     } 
+    // })
 
     const options = {
         from: `"${process.env.SMTP_DISPLAY_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`,
         to: toAddress,
         subject,
-        html,
+        html: ""// html,
     }
 
     await transporter.sendMail(options).catch((error) => {

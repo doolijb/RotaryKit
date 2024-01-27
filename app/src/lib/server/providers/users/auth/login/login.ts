@@ -23,7 +23,7 @@ export default async function login({
     event: RequestEvent,
     username: string,
     passphrase: string,
-}): Promise<void> {
+}): Promise<SelectUser | void> {
     /**
      * Find the user
      */
@@ -40,10 +40,9 @@ export default async function login({
      * Make sure we have a user and a passphrase set
      */
     if (!user || !user.passphrase) {
-        throw error(400, {
-            message: "Invalid username or passphrase",
-        })
+        return
     }
+    
     /**
      * Validate the hash
      */
@@ -54,9 +53,7 @@ export default async function login({
     })
 
     if (hash !== user.passphrase.hash) {
-        throw error(400, {
-            message: "Invalid username or passphrase",
-        })
+        return
     }
 
     /**
@@ -75,4 +72,5 @@ export default async function login({
      * Return token as a secure cookie
      */
     cookies.setUserTokenCookie({event, token})
+    return user
 }

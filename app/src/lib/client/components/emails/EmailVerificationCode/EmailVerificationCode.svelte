@@ -2,7 +2,10 @@
 	/**
 	 * Verification email
 	*/
-	import { Text } from "svelte-email"
+	// TODO: Switch to react-email, this lib is dead
+    /// https://github.com/carstenlebek/svelte-email/issues/25
+    // import { Text } from "svelte-email"
+	const Text = undefined
 	import EmailBase from "../EmailBase"
 
 	export let subject: string

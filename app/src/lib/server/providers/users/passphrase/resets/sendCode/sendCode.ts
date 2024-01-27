@@ -1,6 +1,9 @@
 import { db, schema } from "$database"
-import { PassphraseResetCode } from "$components"
-import { render } from "svelte-email"
+// import { PassphraseResetCode } from "$components"
+// TODO: Switch to react-email, this lib is dead
+/// https://github.com/carstenlebek/svelte-email/issues/25
+// import { render } from "svelte-email"
+const render = undefined
 import nodemailer from "nodemailer"
 import { messageError } from "$requests"
 
@@ -29,7 +32,7 @@ export default async function sendCode({
     toAddress: string,
 }): Promise<string> {
 
-    const subject: string = "Passphrase Reset"
+    const subject = "Passphrase Reset"
 
     // Check if there is already a code
     let result = await getResult(tx, userId)
@@ -101,21 +104,21 @@ export default async function sendCode({
 
     const url = process.env.APP_URL + "/passphrase/reset/" + code
 
-    const html = render({
-        template: PassphraseResetCode, 
-        props: {
-            url,
-            username,
-            expiresAt,
-            subject
-        } 
-    })
+    // const html = render({
+    //     template: PassphraseResetCode, 
+    //     props: {
+    //         url,
+    //         username,
+    //         expiresAt,
+    //         subject
+    //     } 
+    // })
 
     const options = {
         from: `"${process.env.SMTP_DISPLAY_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`,
         to: toAddress,
         subject,
-        html,
+        html: "", // html,
     }
 
     await transporter.sendMail(options).catch((error) => {

@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import { migrate } from "$database"
+import { migrate, seeds } from "$database"
 import { tokens, cookies } from "$auth"
 import { UAParser } from "ua-parser-js"
 import type {  RequestEvent } from "@sveltejs/kit"
@@ -14,11 +14,11 @@ await startUp()
 
 /** @type {import("@sveltejs/kit").Handle} */
 export async function handle({ event, resolve }) {
-    // try {
-    //     seeds.adminPermissions()
-    // } catch (e) {
-    //     console.log(e)
-    // }
+    try {
+        seeds.adminPermissions()
+    } catch (e) {
+        console.log(e)
+    }
 
     // const testPerformance = false // event.request.method !== "HEAD" && process.env.NODE_ENV !== "production"
     // const startTime = testPerformance ? performance.now() : undefined
@@ -26,17 +26,12 @@ export async function handle({ event, resolve }) {
     // Handle Authentication
     await handleAuthentication(event)
 
-    // // Get Request Data
-    // event.locals.data = await requestData(event.request) # Deprecated with zero api
-    
-    let resolved
-
-    try {
-        resolved = await resolve(event)
-    } catch (error) {
-        logger.error(error)
-        throw error
-    }
+    // try {
+    const resolved = await resolve(event)
+    // } catch (error) {
+    //     logger.error(error)
+    //     throw error
+    // }
 
     // if(testPerformance) {
     //     const endTime = performance.now()

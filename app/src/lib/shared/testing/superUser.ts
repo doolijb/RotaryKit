@@ -1,13 +1,13 @@
 import { users, emails } from "$providers"
 import { db, schema } from "$database"
 
-export const data = {
+const data = {
     username: "superUser",
     email: "super.user@example.com",
     passphrase: "$Om3p4$$phr4$3",
 }
 
-export async function create({
+async function create({
     tx=db,
     isVerified=true,
 }:{
@@ -37,4 +37,9 @@ export async function create({
         isVerified,
         isUserPrimary: true,
     })
+}
+
+export const superUser = {
+    data,
+    create,
 }

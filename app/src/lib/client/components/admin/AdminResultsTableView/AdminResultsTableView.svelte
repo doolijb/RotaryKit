@@ -5,11 +5,12 @@
 	import axios, { type AxiosResponse } from "axios"
 	import { onMount, setContext } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, hasAdminPermission } from "$utils"
+	import { Toast, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/stores"
 	import { goto, invalidateAll } from "$app/navigation"
 	import humanizeString from "humanize-string"
-	import { plural } from "pluralize"
+	import pluralize from "pluralize"
+	import { load } from "js-yaml"
 
 	setContext("page", page)
 
@@ -30,6 +31,7 @@
 	export let orderedKeys: string[] = []
 	export let getResourceId: (result: Result<any>) => string = (result: Result<any>) => result.id
 	export let resource: string
+	export let resourceApi: ResourceApi
 
 	////
 	// INTERNAL VARIABLES
@@ -44,26 +46,46 @@
 	let pageLimitParam: number | undefined = parseInt($page.url.searchParams.get("pageLimit"))
 
 	// RESULTS
-	let response: AxiosResponse | undefined | void // TODO
+	let response: undefined | void | Response & {
+		body: {
+			success: boolean,
+			results: Result<any>[],
+			resultCount: number,
+			resultStart: number,
+			resultEnd: number,
+			totalCount: number,
+			pageLimit: number,
+			previousPage: number | null,
+			currentPage: number,
+			nextPage: number | null,
+			pageCount: number,
+			orderBy: string,
+			search?: string,
+		}
+	}
 	let searchTimeoutId: NodeJS.Timeout | undefined
 
 	// PERMISSIONS
 	const canCreateResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
 	})
 	const canViewResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "GET",
 		resources: [resource]
 	})
 	const canEditResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "PUT",
 		resources: [resource]
 	})
 	const canDeleteResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
@@ -75,10 +97,10 @@
 
 	function updateUrlParams(): void {
 		if (!!response) {
-			searchParam = response.data.search
-			orderByParam = response.data.orderBy
-			pageParam = response.data.currentPage
-			pageLimitParam = response.data.pageLimit
+			searchParam = response.body.search
+			orderByParam = response.body.orderBy
+			pageParam = response.body.currentPage
+			pageLimitParam = response.body.pageLimit
 		}
 		let paramString = ""
 		if (!!searchParam) paramString += `search=${searchParam}&`
@@ -91,29 +113,22 @@
 	}
 
 	async function loadResults(): Promise<void> {
-		errorLoading = false
-		response = await axios
-			.get(`/api/admin/${resource}`, {
-				params: {
-					search: searchParam || undefined,
-					orderBy: orderByParam || undefined,
-					page: pageParam || undefined,
-					pageLimit: pageLimitParam || undefined
-				}
-			})
-			.catch(async (error) => {
-				errorLoading = true
-				toastStore.trigger(
-					new Toast({
-						message: "Failed to load results.",
-						style: "error"
-					})
-				)
-				if (error.response.status === 403) {
-					await invalidateAll()
-				}
-				return undefined
-			})
+		await resourceApi.GET({
+			query: {
+				search: searchParam || undefined,
+				orderBy: orderByParam || undefined,
+				page: pageParam || undefined,
+				pageLimit: pageLimitParam || undefined
+			}
+		}).Success((r: Response) => {
+			response = r as any // TODO: Fix types
+		})
+		.ServerError((r: Response) => {
+			errorLoading = true
+			handleServerError({toastStore})
+			return undefined
+		})
+
 		updateUrlParams()
 	}
 
@@ -150,34 +165,35 @@
 		const resourceId = getResourceId(event.detail)
 		modalStore.trigger({
 			type: "confirm",
-			title: `Delete ${plural(humanizeString(resource))}`,
-			body: `Are you sure you want to delete this ${plural(humanizeString(resource))}?`,
-			response: (r) => {
+			title: `Delete ${pluralize.plural(humanizeString(resource))}`,
+			body: `Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`,
+			response: async (r) => {
 				if (r) {
-					axios
-						.delete(`/api/admin/${resource}/${resourceId}`)
-						.then((response: AxiosResponse) => {
-							toastStore.trigger(
-								new Toast({
-									message: `${plural(humanizeString(resource))} deleted successfully`,
-									style: "success"
-								})
-							)
-							loadResults()
-						})
-						.catch(async (error: any) => {
-							toastStore.trigger(
-								new Toast({
-									message: `Error deleting ${plural(humanizeString(resource))}`,
-									style: "error"
-								})
-							)
-							if (error.response.status === 403) {
-								await invalidateAll()
-							}
-							loadResults()
-						})
+					await resourceApi.resourceId$(resourceId).DELETE({}).Success((r: Response) => {
+						toastStore.trigger(
+							new Toast({
+								message: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
+								style: "success"
+							})
+						)
+						loadResults()
+					}).ClientError((r: Response) => {
+						toastStore.trigger(
+							new Toast({
+								message: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
+								style: "error"
+							})
+						)
+					}).ServerError((r: Response) => {
+						toastStore.trigger(
+							new Toast({
+								message: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
+								style: "error"
+							})
+						)
+					})
 				}
+				loadResults()
 			}
 		})
 	}
@@ -203,7 +219,7 @@
 <AdminHeader>
 	<div slot="title" class="capitalize">
 		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
-		{plural(humanizeString(resource))}
+		{pluralize.plural(humanizeString(resource))}
 	</div>
 
 	<div class="flex justify-between" slot="controls">
@@ -236,9 +252,9 @@
 </AdminHeader>
 
 <!-- RESULTS TABLE -->
-{#if response && response.data && response.data}
+{#if response && response.body && response.body}
 	<AdminResultsTable
-		{...response.data}
+		{...response.body}
 		{dataHandlers}
 		{orderedKeys}
 		{canViewResource}
@@ -249,15 +265,17 @@
 		on:editResult={handleEditResult}
 		on:deleteResult={handleDeleteResult}
 	/>
-	<AdminHeader>
-		<svelte:fragment slot="controls">
-			<Pagination
-				{...response.data}
-				on:pageLimitChange={(pageLimit) => handlePageLimitChange(pageLimit)}
-				on:pageChange={(page) => handlePageChange(page)}
-			/>
-		</svelte:fragment>
-	</AdminHeader>
+	{#if response && response.body && response.body.results.length}
+		<AdminHeader>
+			<svelte:fragment slot="controls">
+				<Pagination
+					{...response.body}
+					on:pageLimitChange={(pageLimit) => handlePageLimitChange(pageLimit)}
+					on:pageChange={(page) => handlePageChange(page)}
+				/>
+			</svelte:fragment>
+		</AdminHeader>
+	{/if}
 {:else if errorLoading}
 	<div class="flex items-center justify-center mb-2">
 		<Icon icon="mdi:alert-circle-outline" class="mr-2" />

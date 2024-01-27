@@ -7,6 +7,14 @@ export class NewPassphrase extends FormSchema {
         passphraseConfirm: fields.passphraseConfirm(),
     }
     optional = {}
+    fieldAttributes = {
+        passphrase: {
+            label: "Passphrase",
+        },
+        passphraseConfirm: {
+            label: "Confirm Passphrase",
+        },
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

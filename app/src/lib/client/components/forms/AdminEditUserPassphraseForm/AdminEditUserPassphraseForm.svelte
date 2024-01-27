@@ -6,7 +6,7 @@
 	export let disabled: boolean
 	export let canSubmit: boolean
 	// export let result: SelectUser
-	export let form = new Form()
+	export let form = Form.init()
 	export let data: Form["Data"] = {
 		passphrase: "",
 		passphraseConfirm: "",

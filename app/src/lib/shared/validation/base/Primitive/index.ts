@@ -3,14 +3,16 @@ import type { Validator } from "../Validator"
 /**
  * Chains a series of child validators together
  */
-export abstract class Primitive<T> {
+export class Primitive<T> {
     public type: T
     validators: Validator[] = []
     isRequired = false
+    Root: typeof Validator
 
-    constructor({Root}: {Root: typeof Validator}) {   
-        // Add the root validator to the chain
-        this.addValidator(new Root())
+    static init<T extends Primitive<unknown>>(this: new () => T): T {
+        const primitive = new this()
+        primitive.addValidator(primitive.Root.init())
+        return primitive
     }
 
     /**
@@ -27,10 +29,11 @@ export abstract class Primitive<T> {
         return this
     }
 
-    stageValidator(validator: typeof Validator) {
-        type Args = ConstructorParameters<typeof Validator>
+    stageValidator(ValidatorClass: typeof Validator) {
+        type Args = Parameters<typeof Validator.init>
         return (...args: Args) => {
-            return this.addValidator(new validator(...args))
+            const v = ValidatorClass.init(...args)
+            return this.addValidator(v)
         }
     }
 
@@ -38,10 +41,9 @@ export abstract class Primitive<T> {
         const errors: FieldErrors = {}
         // Validators are async, so we can run them all in parallel
         await Promise.all(this.validators.map(async validator => {
-            if (validator.hidden) return
             const valid = await validator.test({key, data})
             if (!valid) {
-                errors[key] = validator.message as string
+                errors[validator.key] = validator.message as string
             }
         }))
         return errors

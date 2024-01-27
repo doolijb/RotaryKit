@@ -4,15 +4,17 @@
 	import { invalidateAll } from "$app/navigation"
 	import { Toast, handleClientError, handleServerError, handleException } from "$client/utils"
 	import { page } from "$app/stores"
-	import api from "$src/api"
+	import api from "$lib/shared/api"
 	import { getToastStore } from "@skeletonlabs/skeleton"
+	import type { FormSchema } from "$validation/base"
+	import type { UserLogin } from "$validation/forms"
 
 	const toastStore = getToastStore()
 
 	let completed = false
 
-	async function handleSubmit() {
-		await api.login.POST({body: formData})
+	async function onSubmit() {
+		await api.login.POST({body: data})
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
@@ -21,13 +23,15 @@
 				)
 				await goto("/")
 			})
-			.ClientError(handleClientError({ formErrors, toastStore}))
+			.ClientError(handleClientError({ errors, toastStore}))
 			.ServerError(handleServerError({ toastStore }))
 			.catch(handleException({ toastStore }))
 	}
 
-	let formData
-	let formErrors
+	let form: FormSchema
+	let data: FormDataOf<UserLogin>
+	let errors: FormErrors
+
 </script>
 
 <Main>
@@ -38,7 +42,7 @@
 			</h1>
 		</div>
 		<div class="card border-0 p-4 mb-4">
-			<UserLoginForm on:submit={handleSubmit} bind:formData bind:formErrors />
+			<UserLoginForm on:submit={onSubmit} bind:form bind:data bind:errors />
 		</div>
 		<div class="card p-4">
 			<p class="text-center">

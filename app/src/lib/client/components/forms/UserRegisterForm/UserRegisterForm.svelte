@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, BasicTextInput, PassphraseInput } from "$components"
+	import { FormBase, TextInput, PassphraseInput } from "$components"
 	import { UserRegister as Form } from "$validation/forms"
 
 	////
@@ -13,57 +13,61 @@
 		passphraseConfirm: ""
 	}
 	export let errors = {} as FormErrors
-	export let form = new Form()
+	export const form = Form.init()
 
 	////
 	// CHILD EXPORTS
 	////
 
-	export let disabled: boolean
-	export let canSubmit: boolean
+	export let disabled: boolean = undefined
+	export let canSubmit: boolean = undefined
 	
 </script>
 
 <FormBase
-	bind:form
+	{form}
 	bind:errors
 	bind:data
 	bind:canSubmit
+	bind:disabled
 	on:submit
 	showCancel={false}
 >
-	<BasicTextInput
+	<TextInput
 		label="Username"
 		id="username"
-		type="text"
-		bind:value={data.username}
-		bind:fieldValidator={form.fields.username}
-		bind:fieldErrors={errors.username}
+		field="username"
+		{form}
+		bind:data
+		bind:errors
 		{disabled}
 	/>
-	<BasicTextInput
+	<TextInput
 		label="Email"
 		id="email"
 		type="email"
-		bind:value={data.email}
-		bind:fieldValidator={form.fields.email}
-		bind:fieldErrors={errors.email}
+		field="email"
+		{form}
+		bind:data
+		bind:errors
 		{disabled}
 	/>
 	<PassphraseInput
 		label="Passphrase"
 		id="passphrase"
-		bind:value={data.passphrase}
-		bind:fieldValidator={form.fields.passphrase}
-		bind:fieldErrors={errors.passphrase}
+		field="passphrase"
+		{form}
+		bind:data
+		bind:errors
 		{disabled}
 	/>
 	<PassphraseInput
 		label="Confirm Passphrase"
 		id="passphraseConfirm"
-		bind:value={data.passphraseConfirm}
-		bind:fieldValidator={form.fields.passphraseConfirm}
-		bind:fieldErrors={errors.passphraseConfirm}
+		field="passphraseConfirm"
+		{form}
+		bind:data
+		bind:errors
 		{disabled}
 	/>
 </FormBase>

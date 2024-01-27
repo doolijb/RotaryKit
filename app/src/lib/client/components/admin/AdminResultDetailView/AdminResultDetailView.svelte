@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$components"
+	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$components" 
 	import Icon from "@iconify/svelte"
-	import axios, { type AxiosResponse } from "axios"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, hasAdminPermission } from "$utils"
+	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/stores"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
 	import { onMount } from "svelte"
-	import { goto, invalidateAll } from "$app/navigation"
-	import { singular } from "pluralize"
+	import { goto } from "$app/navigation"
+	import pluralize from "pluralize"
 	import humanizeString from "humanize-string"
 
 	const toastStore = getToastStore()
@@ -31,6 +30,7 @@
 	////
 
 	export let resource: string
+	export let resourceApi: ResourceApi
 	export let dataHandlerSet: DataHandlers = {}
 	export let naturalKey: string
 	export let resourceId: string
@@ -47,57 +47,46 @@
 	////
 
 	const canEditResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "PUT",
 		resources: [resource]
 	})
 
 	const canDeleteResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
 	})
 
 	const canCreateResource: boolean = hasAdminPermission({
+		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
 	})
 
-	function handleCancel() {
-		// TODO
-	}
-
 	async function handleDelete() {
 		console.log("handleDelete")
 		modalStore.trigger({
 			type: "confirm",
-			title: `Delete ${singular(humanizeString(resource))}`,
-			body: `Are you sure you want to delete this ${singular(humanizeString(resource))}?`,
+			title: `Delete ${pluralize.singular(humanizeString(resource))}`,
+			body: `Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`,
 			response: (r) => {
 				if (r) {
-					axios
-						.delete(`/api/admin/${resource}/${resourceId}`)
-						.then((response: AxiosResponse) => {
+					resourceApi.resourceId$(resourceId).DELETE({})
+						.Success((r) => {
 							toastStore.trigger(
 								new Toast({
-									message: `${singular(humanizeString(resource))} deleted successfully`,
+									message: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
 									style: "success"
 								})
 							)
 							goto(`/admin/${resource}`)
 						})
-						.catch(async (error: any) => {
-							toastStore.trigger(
-								new Toast({
-									message: `Error deleting ${singular(humanizeString(resource))}`,
-									style: "error"
-								})
-							)
-							if (error.response.status === 403) {
-								await invalidateAll()
-							}
-						})
+						.ClientError(handleClientError({ toastStore }))
+						.ServerError(handleServerError({ toastStore }))
 				}
 			}
 		})
@@ -110,20 +99,12 @@
 	let result: Record<string, any>
 
 	async function getResult() {
-		try {
-			const response: AxiosResponse = await axios.get(`/api/admin/${resource}/${resourceId}`)
-			result = mutateResult ? mutateResult(response.data) : response.data
-		} catch (error) {
-			toastStore.trigger(
-				new Toast({
-					message: "There was an error getting the result.",
-					style: "error"
-				})
-			)
-			if (error.response.status === 403) {
-				await invalidateAll()
-			}
-		}
+		await resourceApi.resourceId$(resourceId).GET({})
+			.Success((r) => {
+				result = mutateResult ? mutateResult(r.body) : r.body
+			})
+			.ClientError(handleClientError({ toastStore }))
+			.ServerError(handleServerError({ toastStore }))
 	}
 
 	////
@@ -160,16 +141,17 @@
 	function getValue(
 		result: Result<any>,
 		key: string,
-		dataHandler: DataHandler | DataHandlers | undefined
 	): any {
+		const dataHandler = getDataHandler(key)
 		const value = result[key]
-		const handler = !!dataHandler ? dataHandler[key]?.handler : undefined
-		const retVal = !!handler ? handler(value) : value
+		const handler = dataHandler && dataHandler[key] ? dataHandler[key].handler : undefined
+		const retVal = handler ? handler(value) : value
 		return ![undefined, null].includes(retVal) ? retVal : ""
 	}
 
-	function getHeader(key: string, dataHandler: DataHandler | DataHandlers | undefined): string {
-		return dataHandler?.[key]?.header ?? humanizeString(key)
+	function getHeader(key: string): string {
+		const dataHandler = getDataHandler(key)
+		return dataHandler ? dataHandler.header || humanizeString(key) : humanizeString(key)
 	}
 
 	////
@@ -187,18 +169,18 @@
 <AdminHeader>
 	<svelte:fragment slot="title">
 		<Icon icon="bx:detail" class="mr-2 mb-1 w-auto inline" />
-		Viewing {singular(humanizeString(resource))}{isLoaded && result[naturalKey]
+		Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
 			? `: ${result[naturalKey]}`
 			: ""}
 	</svelte:fragment>
 	<div class="flex justify-between" slot="controls">
-		<a href="/admin/{resource}" class="btn variant-filled-surface" on:click={handleCancel}>
+		<a href="/admin/{resource}" class="btn variant-filled-surface">
 			<Icon icon="material-symbols:list" class="mr-2" />
 			View All
 		</a>
 		{#if canCreateResource}
 			<a
-				href="admin/{resource}/create"
+				href="/admin/{resource}/create"
 				class="btn variant-filled-success"
 				class:disabled={!isLoaded}
 			>
@@ -211,7 +193,6 @@
 
 {#if isLoaded}
 	<section class="card variant-soft p-4 mb-4">
-		<!-- Lets nicely lay out all the details of result -->
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<TabGroup>
 			{#each Object.keys(tabs) as key}
@@ -219,24 +200,26 @@
 					<!-- <svelte:fragment slot="lead">(icon)</svelte:fragment> -->
 					<span
 						>{humanizeString(
-							key === "default" ? singular(humanizeString(resource)) : humanizeString(key)
+							key === "default" ? pluralize.singular(humanizeString(resource)) : humanizeString(key)
 						)}</span
 					>
 				</Tab>
 			{/each}
 			<!-- Tab Panels --->
 			<svelte:fragment slot="panel">
-				<!-- Display responsive grid for all details in the tabset -->
+				<!-- If array of items, display a table -->
 				{#if Array.isArray(tabs[currentTab])}
+					<!-- No results found -->
 					{#if tabs[currentTab].length === 0}
 						<p class="text-center">No results found.</p>
 					{:else}
+					<!-- Display a table -->
 						<div class="table-container">
 							<table class="table w-full m-0 variant-soft">
 								<thead>
 									<tr>
 										{#each Object.keys(tabs[currentTab][0]) as key}
-											<th>{getHeader(key, getDataHandler(key))}</th>
+											<th>{getHeader(key)}</th>
 										{/each}
 									</tr>
 								</thead>
@@ -244,10 +227,10 @@
 									{#each tabs[currentTab] as result}
 										<tr>
 											{#each Object.keys(result) as key}
-												{#if typeof getValue(result, key, getDataHandler(key)) === "boolean"}
-													<BoolCell value={getValue(result, key, getDataHandler(key))} />
+												{#if typeof getValue(result, key,) === "boolean"}
+													<BoolCell value={getValue(result, key)} />
 												{:else}
-													<TextCell text={`${getValue(result, key, getDataHandler(key))}`} />
+													<TextCell text={`${getValue(result, key)}`} />
 												{/if}
 											{/each}
 										</tr>
@@ -257,9 +240,10 @@
 						</div>
 					{/if}
 				{:else}
+					<!-- If object, display a grid of details -->
 					<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 						{#each Object.keys(tabs[currentTab]) as key}
-							<DetailGridItem label={key} value={getValue(result, key, getDataHandler(key))} />
+							<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
 						{/each}
 					</div>
 				{/if}

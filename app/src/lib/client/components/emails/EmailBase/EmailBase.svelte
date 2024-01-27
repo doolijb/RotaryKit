@@ -4,7 +4,11 @@
 	 * Email Base Component
 	*/
 	import "../../../../../app.postcss"
-	import { Html, Text } from "svelte-email"
+	// TODO: Switch to react-email, this lib is dead
+    /// https://github.com/carstenlebek/svelte-email/issues/25
+    // import { Html, Text } from "svelte-email"
+    const Html = undefined
+	const Text = undefined
 
 	export let subject: string = "System Message"
 

@@ -5,11 +5,11 @@ export async function load({ locals }) {
     // Add request.userAgent to data
 
     if (!locals.user) {
-        throw redirect(302, "/login")
+        redirect(302, "/login");
     }
 
     if (!locals.user.isAdmin && !locals.user.isSuperUser) {
-        throw redirect(302, "/")
+        redirect(302, "/");
     }
 
     return {}

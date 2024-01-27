@@ -40,11 +40,8 @@ const defaultChoices = [
  */
 
 export class SpecialCharIncluded extends Validator {
-    constructor(args: { choices: string[], count: number } = { choices: defaultChoices, count: 1 }) {
-      super(args)
-    }
-    declare args: { choices: string[], count: number }
-    badge = () => `Special Character${this.args.count > 1 ? "s" : ""} Required`
+    args: { choices: string[], count: number } = { choices: defaultChoices, count: 1 }
+    badge = () => `Special character${this.args.count > 1 ? "s" : ""}`
     key = "specialCharIncluded"
     message = () => `Must have at least ${this.args.count} special character${this.args.count > 1 ? "s" : ""}, such as ${this.args.choices.join(", ")}`
     test = async ({key, data}) => {

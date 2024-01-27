@@ -4,13 +4,13 @@
 	import axios, { type AxiosResponse } from "axios"
 	// import { type SvelteComponent, onMount } from "svelte"
 	import { Tab, TabGroup, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "$utils"
+	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
 	import { page } from "$app/stores"
 	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
 	import { goto, invalidateAll } from "$app/navigation"
 	import { onMount } from "svelte"
 	import humanizeString from "humanize-string"
-	import { singular } from "pluralize"
+	import pluralize from "pluralize"
 
 	const toastStore = getToastStore()
 
@@ -20,8 +20,9 @@
 
 	export let resource: string
 	export let naturalKey: string | undefined
-	export let resourceId: string
+	export let primaryKey = "id"
 	export let tabs: AdminEditResultViewTabs
+	export let resourceApi: ResourceApi
 
 	////
 	// TABS
@@ -30,23 +31,24 @@
 	let currentTab = "default"
 	const openedTabs = []
 	$: {
-		!openedTabs.includes(currentTab) && openedTabs.push(currentTab)
-		loadFormExtras()
-		if (tabs[currentTab].formData === undefined) {
-			tabs[currentTab].formData = {}
-		}
-		if (tabs[currentTab].formErrors === undefined) {
-			tabs[currentTab].formErrors = {}
-		}
-		if (tabs[currentTab].submitted === undefined) {
-			tabs[currentTab].submitted = false
+		if (!openedTabs.includes(currentTab)) {
+			openedTabs.push(currentTab) 
+			loadTab(currentTab)
 		}
 	}
 
-	async function loadFormExtras() {
-		if (tabs[currentTab].getFormExtras !== undefined && tabs[currentTab].formExtras === undefined) {
-			tabs[currentTab].formExtras = await tabs[currentTab].getFormExtras()
+	async function loadTab(tab) {
+		tabs[tab].isLoaded = false
+		if (tabs[tab].getExtras !== undefined) {
+			tabs[tab].extras = {...tabs[tab].extras, ...(await tabs[tab].getExtras())}
 		}
+		if (tabs[tab].submitted === undefined) {
+			tabs[tab].submitted = false
+		}
+		if (tabs[tab].extras === undefined) {
+			tabs[tab].extras = {}
+		}
+		tabs[tab].isLoaded = true
 	}
 
 	////
@@ -54,25 +56,9 @@
 	////
 
 	let result: Record<string, any>
+	$: resultId = result ? result[primaryKey] : undefined
 
-	async function getResult() {
-		try {
-			const response: AxiosResponse = await axios.get(`/api/admin/${resource}/${resourceId}`)
-			result = response.data
-		} catch (error) {
-			toastStore.trigger(
-				new Toast({
-					message: "There was an error getting the result.",
-					style: "error"
-				})
-			)
-			if (error.response.status === 403) {
-				await invalidateAll()
-			}
-		}
-	}
-
-	function handleCancel() {
+	function onCancel() {
 		// If history, go back, else go to /admin
 		if (window.history.length > 2) {
 			window.history.back()
@@ -81,34 +67,32 @@
 		}
 	}
 
-	async function handleSubmit() {
-		await tabs[currentTab]
-			.handleSubmit(tabs[currentTab].formData)
-			.then((response: AxiosResponse) => {
+	async function onSubmit(e?: Event) {
+		tabs[currentTab].onSubmit({ data: tabs[currentTab].data })
+			.Success(async () => {
 				toastStore.trigger(
 					new Toast({
-						message: `${
-							currentTab !== "default"
-								? humanizeString(currentTab)
-								: singular(humanizeString(resource))
-						} updated successfully`,
+						message: `${pluralize.singular(humanizeString(resource))} updated successfully.`,
 						style: "success"
 					})
 				)
-				tabs[currentTab].submitted = true
+				await getResult()
 			})
-			.catch((error: any) => {
-				toastStore.trigger(
-					new Toast({
-						message: `Error updating ${
-							currentTab !== "default"
-								? humanizeString(currentTab)
-								: singular(humanizeString(resource))
-						}`,
-						style: "error"
-					})
-				)
+			.ClientError(handleClientError({ toastStore}))
+			.ServerError(handleServerError({ toastStore }))
+	}
+
+	////
+	// FUNCTIONS
+	////
+
+	async function getResult() {
+		resourceApi.resourceId$($page.params.resourceId).GET({})
+			.Success(async (res) => {
+				result = res.body
 			})
+			.ClientError(handleClientError({ toastStore}))
+			.ServerError(handleServerError({ toastStore }))
 	}
 
 	onMount(async () => {
@@ -118,25 +102,25 @@
 
 <AdminHeader>
 	<svelte:fragment slot="title">
-		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
-		Edit {singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
+		<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
+		Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
 	</svelte:fragment>
 
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface capitalize" on:click={handleCancel}>
-			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
-			Cancel
-		</button>
+		<a href="/admin/{resource}/{resultId}" class="btn variant-filled-surface capitalize">
+			<Icon icon="bx:detail" class="mr-2" />
+			View
+		</a>
 		<button
 			type="button"
 			class="btn variant-filled-success capitalize"
-			on:click={handleSubmit}
+			on:click={onSubmit}
 			disabled={!tabs[currentTab].canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />
 			Update {currentTab !== "default"
 				? humanizeString(currentTab)
-				: singular(humanizeString(resource))}
+				: pluralize.singular(humanizeString(resource))}
 		</button>
 	</div>
 </AdminHeader>
@@ -151,7 +135,7 @@
 					<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
 				</svelte:fragment>
 				<svelte:fragment slot="summary">
-					About editing a {singular(resource)}
+					About editing a {pluralize.singular(resource)}
 				</svelte:fragment>
 				<svelte:fragment slot="content">
 					<slot name="help" />
@@ -167,34 +151,35 @@
 			{#each Object.keys(tabs) as tab}
 				<Tab
 					bind:group={currentTab}
-					name={tab !== "default" ? humanizeString(tab) : singular(humanizeString(resource))}
+					name={tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}
 					value={tab}
 				>
-					<span>{tab !== "default" ? humanizeString(tab) : singular(humanizeString(resource))}</span
+					<span>{tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}</span
 					>
 				</Tab>
 			{/each}
 		</TabGroup>
 	{/if}
 	<!-- RENDER TABS -->
-	{#each Object.entries(tabs) as [tab, tabData]}
+	{#each Object.keys(tabs) as tab}
 		<!-- Only render tab if it's open or has been opened to preserve state -->
 		{#if result && (currentTab === tab || openedTabs.includes(tab))}
 			<!-- Hide opened tabs that are not currently open -->
 			<div class:hidden={currentTab !== tab}>
 				<!-- Show loading if formExtras is not loaded -->
-				{#if !!tabData.getFormExtras && !tabData.formExtras}
+				{#if !tabs[tab].isLoaded}
 					<Loading />
 				{:else}
 					<!-- Show form if tab is populated -->
 					<svelte:component
-						this={tabData.Form}
-						bind:formData={tabData.formData}
-						bind:formErrors={tabData.formErrors}
-						bind:canSubmit={tabData.canSubmit}
-						on:submit={handleSubmit}
-						on:cancel={handleCancel}
-						{...tabData.formExtras || {}}
+						this={tabs[tab].FormComponent}
+						bind:data={tabs[tab].data}
+						bind:errors={tabs[tab].errors}
+						bind:canSubmit={tabs[tab].canSubmit}
+						bind:disabled={tabs[tab].disabled}
+						on:submit={onSubmit}
+						on:cancel={onCancel}
+						{...tabs[tab].extras}
 						{result}
 					/>
 				{/if}
@@ -205,20 +190,20 @@
 
 <AdminHeader>
 	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface capitalize" on:click={handleCancel}>
+		<button type="button" class="btn variant-filled-surface capitalize" on:click={onCancel}>
 			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 			Cancel
 		</button>
 		<button
 			type="button"
 			class="btn variant-filled-success capitalize"
-			on:click={handleSubmit}
+			on:click={onSubmit}
 			disabled={!tabs[currentTab].canSubmit}
 		>
 			<Icon icon="mdi:floppy" class="mr-2" />
 			Update {currentTab !== "default"
 				? humanizeString(currentTab)
-				: singular(humanizeString(resource))}
+				: pluralize.singular(humanizeString(resource))}
 		</button>
 	</div>
 </AdminHeader>

@@ -1,50 +1,82 @@
 <script lang="ts">
-	import { BasicTextInput } from "$components"
+	import { TextInput } from "$components"
 	import Icon from "@iconify/svelte"
+	import { createEventDispatcher, onMount } from "svelte"
+	import { v4 } from "uuid"
+	import type { FormSchema } from "$validation/base"
 
-	// Values
-	export let label = "Passphrase"
-	export let value = ""
-	export let placeholder: string | undefined = undefined
-	export let disabled = false
-	export let type = "password"
-	export let id: string | undefined = undefined
+	const dispatch = createEventDispatcher()
 
-	// Events
-	export let onInput: (e: Event) => void | undefined = undefined
-	export let onBlur: (e: Event) => void | undefined = undefined
-	export let onFocus: (e: Event) => void | undefined = undefined
+	////
+	// UPSTREAM EXPORTS
+	////
 
-	// Refs
-	export let ref: HTMLInputElement | undefined = undefined
+	export let field: string
+	export let form: FormSchema
+	export let data: typeof form["Data"]
+	export let errors: FormErrors
+	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
 
-	// Validation
-	export let fieldValidator: FieldValidator
-	export let fieldErrors: FieldErrors = {}
+	////
+	// LOCAL EXPORTS
+	////
 
-	// Visibility
-	let showPassword = true // false
+	export let ref: HTMLInputElement = undefined
+	export let placeholder = attrs?.placeholder
+	export let label:string = attrs?.label
+	export let disabled: boolean = false
+	export let id: string = v4()
+	export let isTouched = false
+	export let showPassword = false
 
-	// Methods
+	////
+	// CALCULATED
+	////
+
+	$: type = showPassword ? "text" : "password"
+	$: ref && (ref.type = type)
+
+	////
+	// FUNCTIONS
+	////
+
 	function togglePasswordVisibility() {
 		showPassword = !showPassword
-		ref.type = showPassword ? "password" : "text"
 	}
+
+	////
+	// EVENTS
+	////
+
+	function handleOnBlur(e: Event) {
+		dispatch("blur", e)
+	}
+
+	function handleOnFocus(e: Event) {
+		dispatch("focus", e)
+	}
+
+	function handleOnInput(e: Event) {
+		dispatch("input", e)
+	}
+
 </script>
 
-<BasicTextInput
+<TextInput
 	bind:label
 	bind:id
-	bind:type
-	bind:fieldValidator
-	bind:value
-	bind:fieldErrors
 	bind:disabled
 	bind:ref
 	bind:placeholder
-	bind:onFocus
-	bind:onBlur
-	bind:onInput
+	bind:isTouched
+	bind:type
+	{field}
+	{form}
+	{errors}
+	{data}
+	on:input={handleOnInput}
+	on:focus={handleOnFocus}
+	on:blur={handleOnBlur}
 >
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -53,13 +85,14 @@
 		on:click={togglePasswordVisibility}
 		class="text-surface-500 cursor-pointer"
 		title="Show Password"
-	>	{#if !showPassword}
-		<Icon icon="mdi:eye-outline" width="2em" />
+	>	
+		{#if !showPassword}
+			<Icon icon="mdi:eye-outline" width="2em" />
 		{:else}
-		<Icon class="opacity-50 hover:opacity-100" icon="mdi:eye-off-outline" width="2em" />
+			<Icon class="opacity-50 hover:opacity-100" icon="mdi:eye-off-outline" width="2em" />
 		{/if}
 	</span>
-</BasicTextInput>
+</TextInput>
 
 <style lang="postcss">
 </style>

@@ -1,8 +1,9 @@
 <script lang="ts">
     import {AdminResultsTableView} from "$components"
+	import api from '$api'
 
     const resource = "users"
-    const displayTitle = "Users"
+    const resourceApi = api.admin.users as ResourceApi
     const orderedKeys = ["id","username","emails","verifiedAt","isAdmin","isSuperUser"]
     const dataHandlers = {
         "emails": {
@@ -14,7 +15,7 @@
 
 <AdminResultsTableView 
     {resource}
-    {displayTitle}
+    {resourceApi}
     {orderedKeys}
     {dataHandlers}
 />

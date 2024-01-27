@@ -1,3 +1,3 @@
 import { validators as v } from "$validation"
 
-export const username = () => new v.String().minLength(5).maxLength(20).specialCharExcluded()
+export const username = () => v.String.init().minLength({ minLen: 5 }).maxLength({maxLen: 20}).specialCharExcluded()

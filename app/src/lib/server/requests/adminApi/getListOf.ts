@@ -8,6 +8,12 @@ import {
 	PgTimestamp,
 	PgBoolean,
 } from "drizzle-orm/pg-core"
+import { querySpread, type KitEvent } from "sveltekit-zero-api"
+import { Ok } from "sveltekit-zero-api/http"
+
+interface Get {
+    query?: GetListQueryParameters
+}
 
 function getOrderBySQL(orderBy: string, schema: PgTableWithColumns<any>): SQL<unknown>[] {
 	const directions = {
@@ -32,18 +38,6 @@ function getOrderBySQL(orderBy: string, schema: PgTableWithColumns<any>): SQL<un
 	})
 
 	return orderByList
-}
-
-function getLimit(searchParams: URLSearchParams, defaultLimit: number = 25): number {
-	return parseInt(searchParams.get("pageLimit")) || defaultLimit
-}
-
-function getPage(searchParams: URLSearchParams, defaultPage: number = 1): number {
-	const page = searchParams.get("page")
-	if (!page) {
-		return defaultPage
-	}
-	return parseInt(page)
 }
 
 function getWith<T extends PgTableWithColumns<any>>(
@@ -98,18 +92,24 @@ function canEqColumn(column: Column<any>, value: string) {
  * 
  * @returns {PaginatedResponse<T>}
  */
-export default async function getListOf<T extends PgTableWithColumns<any>>({
+export async function getListOf<T>({
     event,
     tableName,
     columns,
-	defaultOrderByString = "createdAt:asc",
-    availableRelations = undefined
+    availableRelations = undefined,
+	defaults = {
+		pageLimit: 25,
+		orderBy: "createdAt:asc"
+	}
 }: {
-    event: RequestEvent
+    event: KitEvent<Get, RequestEvent>
     tableName: string,
     columns: {[key:string]: boolean},
-	defaultOrderByString?: string,
-    availableRelations?: AvailableRelations<T>
+    availableRelations?: AvailableRelations
+	defaults?: {
+		pageLimit?: number,
+		orderBy?: string
+	}
 }) {
 	/**
 	 * Get the schema for the table
@@ -126,16 +126,17 @@ export default async function getListOf<T extends PgTableWithColumns<any>>({
 	// Get our parameters
 	////
 	
+	const query = querySpread(event)
 	/** The page we are querying */
-    const currentPage = getPage(event.url.searchParams)
+    const currentPage = query.currentPage || 1
 	/** The number of results per page */
-    const pageLimit = getLimit(event.url.searchParams)
+    const pageLimit = query.pageLimit || defaults.pageLimit
 	/** The order by parameter */
-    const orderBy = event.url.searchParams.get("orderBy") || defaultOrderByString
+    const orderBy = query.orderBy || defaults.orderBy
 	/** The offset for the query */
     const offset = (currentPage - 1) * pageLimit
 	/** The search parameter */
-    const search = event.url.searchParams.get("search")
+    const search = query.search
 
 	/**
 	 * Build the query
@@ -156,6 +157,7 @@ export default async function getListOf<T extends PgTableWithColumns<any>>({
 	 */
     if (search) {
         const tableColumns = getTableColumns(table)
+        // eslint-disable-next-line @typescript-eslint/ban-types
         const getColumns = (predicate: Function) => Object.keys(columns).filter(key => predicate(tableColumns[key], search))
 
 		/** Columns that support ilike */
@@ -211,5 +213,5 @@ export default async function getListOf<T extends PgTableWithColumns<any>>({
         search
     }
 
-    return response
+    return Ok({body:response})
 }

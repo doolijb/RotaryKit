@@ -3,9 +3,14 @@ import { FormSchema } from "$validation/base"
 
 export class AdminEditAdminRolesToUser extends FormSchema {
     fields = {
-        adminRoles: new v.Array(),
+        adminRoles: v.Array.init(),
     }
     optional = {}
+    fieldAttributes = {
+        adminRoles: {
+            label: "Admin Roles",
+        }
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

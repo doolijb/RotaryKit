@@ -6,10 +6,24 @@ export class AdminCreateUser extends FormSchema {
         username: fields.username(),
         email: fields.email(),
         passphrase: fields.passphrase(),
-        isVerified: new v.Boolean(),
+        isVerified: v.Boolean.init(),
     }
     optional = {
         email: true,
+    }
+    fieldAttributes = {
+        username: {
+            label: "Username",
+        },
+        email: {
+            label: "Email",
+        },
+        passphrase: {
+            label: "Passphrase",
+        },
+        isVerified: {
+            label: "Is Verified",
+        }
     }
 }
 

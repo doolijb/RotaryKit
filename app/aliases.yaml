@@ -32,6 +32,7 @@
 ###
 # Shared paths
 ###
+"$api": "./src/lib/shared/api"
 "$constants": "./src/lib/shared/constants"
 "$constants/*": "./src/lib/shared/constants/*"
 "$data": "./src/lib/shared/shared/data"

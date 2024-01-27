@@ -1,4 +1,4 @@
-import { snakeCase } from "lodash"
+import lodash from "lodash"
 
 /**
  * 
@@ -8,14 +8,24 @@ import { snakeCase } from "lodash"
  * @returns 
  */
 export function hasAdminPermission({
+    user,
     adminPermissions,
     action,
     resources,
 }:{
+    user: SelectUser,
     adminPermissions: SelectAdminPermission[],
     action: PermissionAction,
     resources: string[],
 }): boolean {
+
+    if (!user || (!user.isSuperUser && !user.isAdmin)) {
+        return false
+    }
+
+    if (user.isSuperUser) {
+        return true
+    }
 
     /**
      * Loop through each resource and check if the user has the required permission
@@ -28,7 +38,7 @@ export function hasAdminPermission({
             /**
              * If the action and resource match, then the user has permission
              */
-            if (adminPermission.action === action && adminPermission.resource === snakeCase(resource)) {
+            if (adminPermission.action === action && adminPermission.resource === lodash.snakeCase(resource)) {
                 return true
             }
         }

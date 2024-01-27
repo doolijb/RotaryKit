@@ -1,72 +1,74 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { messageError, validateData } from "$requests"
+import { messageError, validateData, hasAdminPermission } from "$requests"
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { db, schema } from "$database"
 import { eq } from "drizzle-orm"
-import { Ok } from "sveltekit-zero-api/http"
+import { Ok, InternalServerError, Forbidden, BadRequest, NotFound } from "sveltekit-zero-api/http"
 import { AdminEditUser as PutForm, AdminEditUserWithPermissions as PutFormWithPermissions } from "$validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
 
-const putForm = new PutForm()
+const putForm = PutForm.init()
 const putFormWithPermissions = new PutFormWithPermissions()
 
 interface Put {
-    body: PutForm["Data"] | PutFormWithPermissions["Data"]
-    params: {
-        resourceId: string
-    }
+    body: PutFormWithPermissions["Data"] | PutForm["Data"]
 }
 
-/**
- * Admin view for a list of users
- */
 export async function GET(event: RequestEvent) {
-	// Check if user is authorized to view users
-	// TODO
+	try {
 
-	const columns: { [key: string]: boolean } = {
-		id: true,
-		username: true,
-		createdAt: true,
-		updatedAt: true,
-		verifiedAt: true,
-		isAdmin: true,
-		isSuperUser: true
-	}
+		if(!hasAdminPermission(
+			event,
+			schema.users,
+		)) {
+			return Forbidden()
+		}
 
-	const availableRelations: AvailableRelations<SelectUser> = {
-		emails: {
-			tableName: "emails",
-			columns: {
-				id: true,
-				address: true,
-				isUserPrimary: true,
-				verifiedAt: true,
-				createdAt: true,
-				updatedAt: true
+		const columns: { [key: string]: boolean } = {
+			id: true,
+			username: true,
+			createdAt: true,
+			updatedAt: true,
+			verifiedAt: true,
+			isActive: true,
+			isAdmin: true,
+			isSuperUser: true
+		}
+
+		const availableRelations: AvailableRelations = {
+			emails: {
+				tableName: "emails",
+				columns: {
+					id: true,
+					address: true,
+					isUserPrimary: true,
+					verifiedAt: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+				where: (e: PgTableWithColumns<any>, { eq }) => eq(e["isUserPrimary"], true)
 			},
-			where: (e: PgTableWithColumns<any>, { eq }) => eq(e["isUserPrimary"], true)
-		},
-		toAdminRoles: {
-			columns: {},
-			with: {
-				adminRole: {
-					columns: {
-						id: true,
-						name: true,
-						createdAt: true,
-						updatedAt: true
-					},
-					with: {
-						toAdminPermissions: {
-							columns: {},
-							with: {
-								adminPermission: {
-									columns: {
-										id: true,
-										name: true,
-										action: true,
-										resource: true
+			toAdminRoles: {
+				columns: {},
+				with: {
+					adminRole: {
+						columns: {
+							id: true,
+							name: true,
+							createdAt: true,
+							updatedAt: true
+						},
+						with: {
+							toAdminPermissions: {
+								columns: {},
+								with: {
+									adminPermission: {
+										columns: {
+											id: true,
+											name: true,
+											action: true,
+											resource: true
+										}
 									}
 								}
 							}
@@ -75,95 +77,128 @@ export async function GET(event: RequestEvent) {
 				}
 			}
 		}
+
+		const result = await db.query.users.findFirst({
+			columns,
+			where: (u, { eq }) => eq(u.id, event.params.resourceId),
+			with: availableRelations
+		})
+
+		if (!result) {
+			return NotFound()
+		}
+
+		return Ok({body:result})
+
+	} catch (error) {
+		console.log(error)
+		return InternalServerError()
 	}
-
-	const body: SelectUser = await db.query.users.findFirst({
-		columns,
-		where: (u, { eq }) => eq(u.id, event.params.resourceId),
-		with: availableRelations
-	})
-
-	return Ok({body})
 }
 
-/**
- * @param event
- */
+
 export async function PUT(event: KitEvent<Put, RequestEvent>) {
-	// Check if user is authorized to create a user
-	// TODO
+	try {
 
-	/**
-	 * Validate the data
-	 */
-    let useForm: PutForm | PutFormWithPermissions = putForm
-	// Check if user is superuser
-	if (event.locals.user.isSuperUser) {
-		useForm = putFormWithPermissions
-	}
-	const data = await event.request.json()
-	await validateData({
-		form: useForm,
-		data, 
-	})
+		////
+		// CHECK PERMISSIONS
+		////
 
-	////
-	// UPDATE USER
-	////
-
-	const setUserData = {}
-
-	const setUserMap = {
-		isVerified: (user: SelectUser) => {
-			if (!!user.verifiedAt !== !!data.isVerified) {
-				if (data.isVerified) {
-					setUserData["verifiedAt"] = new Date()
-				} else {
-					setUserData["verifiedAt"] = null
-				}
-			}
-		},
-		isActive: (user: SelectUser) => {
-			if (!!user.verifiedAt !== !!data.isActive) {
-				if (data.isActive) {
-					setUserData["verifiedAt"] = new Date()
-				} else {
-					setUserData["verifiedAt"] = null
-				}
-			}
-		},
-		isAdmin: (user: SelectUser) => {
-			if (user.isAdmin !== data.isAdmin) {
-				setUserData["isAdmin"] = data.isAdmin
-			}
-		},
-		isSuperUser: (user: SelectUser) => {
-			if (user.isSuperUser !== data.isSuperUser) {
-				setUserData["isSuperUser"] = data.isSuperUser
-			}
+		if(!hasAdminPermission(
+			event,
+			schema.users,
+		)) {
+			return Forbidden()
 		}
-	}
 
-	Object.keys(data).forEach((key) => {
-		if (setUserMap[key]) {
-			setUserMap[key](event.locals.user)
+		////
+		// Validate the data
+		////
+
+		const canEditSuperUsers = event.locals.user.isSuperUser
+		const { data, errors } = await validateData({
+			form: canEditSuperUsers ? putFormWithPermissions : putForm,
+			event, 
+		})
+
+		if (errors.keys) {
+			return BadRequest({ body: { errors } })
 		}
-	})
 
-	if (Object.keys(setUserData).length === 0) {
-		throw messageError("No changes to save", 400)
-	}
+		////
+		// UPDATE USER
+		////
 
-	await db
-		.transaction(async (tx) => {
-			const user = await tx.query.users.findFirst({
-				where: (u, { eq }) => eq(u.id, event.params.resourceId)
+		const user = await db.query.users.findFirst({
+			where: (u, { eq }) => eq(u.id, event.params.resourceId)
+		})
+		
+		if (!user) {
+			return NotFound()
+		}
+
+		const setUserData: {
+			username?: string
+			isVerified?: boolean
+			isActive?: boolean
+			isAdmin?: boolean
+			isSuperUser?: boolean
+		} = {}
+
+		const setUserMap = {
+			username: () => {
+				if (user.username !== data.username) {
+					setUserData["username"] = data.username
+				}
+			},
+			isVerified: () => {
+				if (!!user.verifiedAt !== data.isVerified) {
+					if (data.isVerified) {
+						console.log("verifiedAt", data.isVerified)
+						setUserData["verifiedAt"] = new Date()
+					} else {
+						setUserData["verifiedAt"] = null
+					}
+				}
+			},
+			isActive: () => {
+				if (user.isActive !== data.isActive) {
+					setUserData["isActive"] = data.isActive
+				}
+			},
+			isAdmin: canEditSuperUsers ? () => {
+				if (user.isAdmin !== data["isAdmin"]) {
+					setUserData["isAdmin"] = data["isAdmin"]
+				}
+			} : undefined,
+			isSuperUser: canEditSuperUsers ? () => {
+				if (user.isSuperUser !== data["isSuperUser"]) {
+					setUserData["isSuperUser"] = data["isSuperUser"]
+				}
+			} : undefined,
+		}
+
+		Object.keys(data).forEach((key) => {
+			if (setUserMap[key]) {
+				setUserMap[key]()
+			}
+		})
+
+		if (Object.keys(setUserData).length === 0) {
+			return BadRequest({body:{message:"No changes to save"}})
+		}
+
+		if(setUserData.username) {
+			const user = await db.query.users.findFirst({
+				where: (u, { eq }) => eq(u.username, setUserData.username)
 			})
 
-			if (!user) {
-				throw messageError("Not found", 404)
+			if (user) {
+				return BadRequest({body:{errors:{username:{Taken:"The username is unavailable"}}}})
 			}
+		}
 
+		await db.transaction(async (tx) => {
 			// Update the user
 			await tx
 				.update(schema.users)
@@ -171,28 +206,52 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 				.where(eq(schema.users.id, event.params.resourceId))
 		})
 
-    // TODO: Return result
+		////
+		// RESPONSE
+		////
 
-	// Return the user
-	return Ok({ body: { success: true }})
+		return Ok({ body: { success: true }})
+
+	} catch (err) {
+		console.log(err)
+		return InternalServerError()
+	}
 }
 
 /**
  * @param event
  */
 export async function DELETE(event: RequestEvent) {
-	// Check if user is authorized to delete a user
-	// TODO
+	try {
 
-	////
-	// DELETE USER
-	////
+		////
+		// CHECK PERMISSIONS
+		////
+		
+		if(!hasAdminPermission(
+			event,
+			schema.users,
+		)) {
+			return Forbidden()
+		}
 
-	await db.transaction(async (tx) => {
-		// Delete the user
-		await tx.delete(schema.users).where(eq(schema.users.id, event.params.resourceId))
-	})
+		////
+		// DELETE USER
+		////
 
-	// Return the user
-	return Ok({ body: { success: true }})
+		await db.transaction(async (tx) => {
+			// Delete the user
+			await tx.delete(schema.users).where(eq(schema.users.id, event.params.resourceId))
+		})
+
+		////
+		// RESPONSE
+		////
+
+		return Ok({ body: { success: true }})
+	
+	} catch (error) {
+		console.log(error)
+		return InternalServerError()
+	}
 }

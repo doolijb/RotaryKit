@@ -1,12 +1,16 @@
 <script lang="ts">
     import {AdminResultDetailView} from "$components"
     import { page } from "$app/stores"
+    import api from "$api"
 
     const resource = "adminRoles"
-    const displayTitle = "Admin Role"
+    const resourceApi = api.admin.adminRoles as ResourceApi
     const dataHandlerSet = {}
 
-    const mutateResult = (result) => {   
+    const mutateResult = (result: SelectAdminPermission & { 
+        toAdminPermissions: {adminPermission: SelectAdminPermission}[]
+        toUsers: {user: SelectUser}[]
+    }) => {   
         const newResult = {
             ...result,
             adminPermissions: result.toAdminPermissions.map((toAdminPermission) => toAdminPermission.adminPermission),
@@ -23,7 +27,7 @@
 
 <AdminResultDetailView
     {resource}
-    {displayTitle}
+    {resourceApi}
     {dataHandlerSet}
     {naturalKey}
     {resourceId}

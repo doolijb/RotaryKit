@@ -4,12 +4,29 @@ import { FormSchema } from "$validation/base"
 export class AdminEditUserWithPermissions extends FormSchema {
     fields = {
         username: fields.username(),
-        isVerified: new v.Boolean(),
-        isActive: new v.Boolean(),
-        isAdmin: new v.Boolean(),
-        isSuperUser: new v.Boolean(),
+        isVerified: v.Boolean.init(),
+        isActive: v.Boolean.init(),
+        isAdmin: v.Boolean.init(),
+        isSuperUser: v.Boolean.init(),
     }
     optional = {}
+    fieldAttributes = {
+        username: {
+            label: "Username",
+        },
+        isVerified: {
+            label: "Is Verified",
+        },
+        isActive: {
+            label: "Is Active",
+        },
+        isAdmin: {
+            label: "Is Admin",
+        },
+        isSuperUser: {
+            label: "Is Super User",
+        }
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -8,9 +8,6 @@ import { Validator } from "$validation/base"
  */
 
 export class TelephoneComplete extends Validator {
-    constructor(args: { countryCodeKey: string }) {
-        super(args)
-    }
     declare args: { countryCodeKey: string }
     badge = "Invalid"
     key = "telephoneComplete"

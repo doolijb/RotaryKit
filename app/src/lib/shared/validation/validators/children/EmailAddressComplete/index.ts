@@ -5,8 +5,8 @@ import { Validator} from "$validation/base"
  */
 export class EmailAddressComplete extends Validator {
     args = {}
-    badge = "Email"
-    key = "email"
+    badge = "Email Complete"
+    key = "emailAddressComplete"
     message = "Must be a valid email address"
     test = async ({key, data}) => {
         const value = data[key]

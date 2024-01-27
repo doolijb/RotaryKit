@@ -1,10 +1,10 @@
 
-import {default as Icon} from "./Icon.svelte"
-import {default as Popup} from "./Popup.svelte"
+import Icon from "./Icon.svelte"
+import Popup from "./Popup.svelte"
 import {v4 as uuidv4} from "uuid"
 import type {PopupSettings} from "@skeletonlabs/skeleton"
 
-function popupSettingsSettings(): PopupSettings {
+function popupSettings(): PopupSettings {
     return {
         // Represents the type of event that opens/closed the popup
         event: "click",
@@ -18,5 +18,5 @@ function popupSettingsSettings(): PopupSettings {
 export default {
     Icon,
     Popup,
-    popupSettingsSettings
+    popupSettings
 }

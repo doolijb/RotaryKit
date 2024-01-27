@@ -1,120 +1,128 @@
 <script lang="ts">
-	import { ValidationBadges } from "$components"
+
+import { ValidationBadges, ValidationLegend } from "$components"
 	import { ValidStates } from "$constants"
-	import { onMount } from "svelte"
+	import { createEventDispatcher, onMount } from "svelte"
 	import { v4 } from "uuid"
+	import type { PopupSettings } from "@skeletonlabs/skeleton"
+	import type { FormSchema } from "$validation/base"
 	import Icon from "@iconify/svelte"
-	import type { Primitive } from "$validation/base"
+
+	const dispatch = createEventDispatcher()
 
 	////
-	// Props
+	// UPSTREAM EXPORTS
 	////
 
-	/** If the field is disabled */
-	export let disabled = false
-	/** List of validators with errors */
-	export let fieldErrors: FieldErrors = {}
-	/** Field name */
-	export let label = "Field Label"
-	/** Reference to the input element */
-	export let ref: HTMLSelectElement | undefined = undefined
-	/** Type of the input element */
-	export let type: string = "text"
-	/** List of validators */
-	export let fieldValidator: Primitive<unknown[]>
-	/** Chosen options */
-	export let value: unknown[] = []
-	/** Field Id */
+	export let field: string
+	export let form: FormSchema
+	export let data: typeof form["Data"]
+	export let errors: FormErrors
+	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	export let options: MultiSelectOption[]
+	interface MultiSelectOption { [key: string]: string | number, label: string }
+
+	////
+	// LOCAL EXPORTS
+	////
+
+	export let ref: HTMLSelectElement = undefined
+	export let label:string = attrs?.label
+	export let disabled: boolean = false
 	export let id: string = v4()
-	/** Touched state */
 	export let isTouched = false
-	/** The height of the field */
 	export let size: number = 4
-	/** The available key:title options that can be selected */
-	export let options: { [key: string]: string | number, label: string }[] = []
-	/** Actively selected values that can be removed */
 	export let selectedValues = []
-	/** The actively selected available options that can be added */
 	export let selectedAvailable = []
 
 	////
-	// Events
+	// CALCULATED
 	////
 
-	/** Additional blur event handler */
-	export let onBlur: (e: Event) => void | undefined = undefined
-	/** Additional focus event handler */
-	export let onFocus: (e: Event) => void | undefined = undefined
-	/** Additional input event handler */
-	export let onInput: (e: Event) => void | undefined = undefined
-
-	////
-	// Variables
-	////
-
-	$: required = !!fieldValidator.validators.required
+	$: fieldValidator = form.fields[field]
+	$: fieldErrors = errors[field] || {}
+	// $: validatorLength = form.fields[field].validators.length
+	$: required = fieldValidator.isRequired
+	// $: validState = isTouched
+	// 	? fieldErrors && Object.keys(fieldErrors).length
+	// 		? ValidStates.INVALID
+	// 		: data[field]
+	// 		  ? ValidStates.VALID
+	// 		  : ValidStates.NONE
+	// 	: ValidStates.NONE
 	$: canRemove = !!selectedValues.length 
 	$: canAdd = !!selectedAvailable.length
+	$: { console.log(data[field])}
 
 	////
-	// Functions
+	// CONSTANTS
+	////
+
+	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+
+	////
+	// FUNCTIONS
 	////
 
 	async function validate() {
-		touch()
-		fieldErrors = await fieldValidator.test(value)
+		errors[field] = await form.fields[field].validate({key:field, data})
 	}
 
-	function setType(node: HTMLInputElement) {
-		// Can not set dynamic type directly in the input element
-		node.type = type
-	}
-
-	function touch() {
+	async function touch() {
 		isTouched = true
+		validate()
 	}
-
-	////
-	// Lifecycle
-	////
-
-	onMount(async () => {
-		if (value) {
-			isTouched = true
-			await validate()
-		}
-	})
 
 	function handleAdd() {
-		// Add selected options in availableOptions to selectedOptions
-		value = value.concat(selectedAvailable)
+		data[field] = [... new Set([...Object.values(data[field]), ...selectedAvailable])]
 		selectedAvailable = []
-		validate()
+		touch()
 	}
 
 	function handleRemove() {
-		// Remove selected options in selectedOptions
-		Object.values(selectedValues).forEach((option) => {
-			value = value.filter((chosenOption) => chosenOption !== option)
-		})
-		validate()
+		console.log("selectedValues", selectedValues)
+		data[field] = Object.values(data[field]).filter( value => !selectedValues.includes(value))
+		selectedValues = []
+		touch()
 	}
 
-	// If fieldErrors is ever null, set it to an empty object to avoid exceptions
-	$: fieldErrors == undefined ? (fieldErrors = {}) : null
+	////
+	// EVENTS
+	////
+
+	function handleOnBlur(e: Event) {
+		touch()
+		dispatch("blur", e)
+	}
+
+	function handleOnFocus(e: Event) {
+		dispatch("focus", e)
+	}
+
+	function handleOnInput(e: Event) {
+		touch()
+		dispatch("input", e)
+	}
+
+	////
+	// LIFECYCLE
+	////
+
+	onMount(() => {
+		if (data[field]) touch()
+	})
+
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div class="mb-2">
-	<div>
-		<label class="label inline-flex mb-1" for={id}>
+	<div class="flex items-center">
+		<label class="label inline-flex pb-2" for={id}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
 				{label}
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} />
+			<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
 		{/if}
 	</div>
 	<!-- Side by side select, with arrows to add, remove from left to right -->
@@ -122,13 +130,13 @@
 		<div class="flex flex-col col-span-2">
 			<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
 				{#each Object.values(options) as {key, label}}
-					{#if !value.includes(key)}
+					{#if !Object.values(data[field]).includes(key)}
 						<option value={key}>{label}</option>
 					{/if}
 				{/each}
 			</select>
 			<span class="text-surface-300 text-sm">
-				Available options: {Object.keys(options).length - value.length}
+				Available options: {Object.keys(options).length - Object.values(data[field]).length}
 				</span>
 		</div>
 
@@ -172,27 +180,19 @@
 				{size}
 				bind:this={ref}
 				{disabled}
-				on:input={(e) => {
-					validate()
-					onInput && onInput(e)
-				}}
-				on:focus={(e) => {
-					onFocus && onFocus(e)
-				}}
-				on:blur={(e) => {
-					validate()
-					onblur && onBlur(e)
-				}}
+				on:input={handleOnInput}
+				on:focus={handleOnFocus}
+				on:blur={handleOnBlur}
 				aria-label={label}
 				{required}
 			>
 				{#each Object.values(options) as {key, label}}
-					{#if value.includes(key)}
+					{#if Object.values(data[field]).includes(key)}
 						<option value={key}>{label}</option>
 					{/if}
 				{/each}
 			</select>
-			<span class="text-surface-300 text-sm">Selected options: {value.length}</span>
+			<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
 		</div>
 	</div>
 </div>

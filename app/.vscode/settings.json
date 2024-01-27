@@ -19,12 +19,15 @@
     "editor.formatOnSave": false,
     "prettier.enable": true,
     "cSpell.words": [
+        "akar",
         "apexcharts",
+        "autodocs",
         "autohide",
         "datetime",
         "deepmerge",
         "hardikmodha",
         "hoverable",
+        "iconify",
         "ilike",
         "jacksparrow",
         "libphonenumber",
@@ -39,5 +42,8 @@
     ],
     "search.exclude": {
         "**/*.svelte-kit": true
-    }
+    },
+    "[svelte]": {
+        "editor.defaultFormatter": "svelte.svelte-vscode"
+    },
 }

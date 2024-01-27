@@ -6,13 +6,32 @@ export class AdminCreateUserWithPermissions extends FormSchema {
         username: fields.username(),
         email: fields.email(),
         passphrase: fields.passphrase(),
-        isVerified: new v.Boolean(),
-        isAdmin: new v.Boolean(),
-        isSuperUser: new v.Boolean(),
-        adminPermissions: new v.Array(),
+        isVerified: v.Boolean.init(),
+        isAdmin: v.Boolean.init(),
+        isSuperUser: v.Boolean.init(),
     }
     optional = {
         email: true
+    }
+    fieldAttributes = {
+        username: {
+            label: "Username",
+        },
+        email: {
+            label: "Email",
+        },
+        passphrase: {
+            label: "Passphrase",
+        },
+        isVerified: {
+            label: "Is Verified",
+        },
+        isAdmin: {
+            label: "Is Admin",
+        },
+        isSuperUser: {
+            label: "Is Super User",
+        },
     }
 }
 

@@ -11,14 +11,16 @@ class Root extends Validator {
     message = "An array is required"
     test = async ({key, data}) => {
         const value: unknown[] = data[key]
-        return global.Array.isArray(value)
+        return Array.isArray(value)
     }
 }
 
-export class Array extends Primitive<unknown[]> {
-    constructor() {
-        super({Root})
-    }
+class ArrayPrimitive extends Primitive<unknown[]> {
+    Root = Root
     maxLength = this.stageValidator(c.MaxLength)
     minLength = this.stageValidator(c.MinLength)
+}
+
+export {
+    ArrayPrimitive as Array
 }

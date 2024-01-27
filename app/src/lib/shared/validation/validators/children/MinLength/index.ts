@@ -7,13 +7,10 @@ import { Validator } from "$validation/base"
  * @param args: {number} args.minLen - defaults to 3
  */
 export class MinLength extends Validator { 
-    constructor(args: { minLen?: number } = { minLen: 3 }) {
-        super(args)
-    }
-    declare args: { minLen: number }
+    args: { minLen: number } = { minLen: 3 }
     badge = "Min length"
     key = "minLength"
-    message = () => `Must be at least ${this.args.minLen} long`
+    message = () => `Must be at least ${this.args.minLen} in length`
     test = async ({key, data}) => {
         const value: string | unknown[] = data[key]
         return value ? value.length >= this.args.minLen : true

@@ -1,37 +1,44 @@
 import type { RequestEvent } from "@sveltejs/kit"
 import { adminApi } from "$requests"
-import { Ok } from "sveltekit-zero-api/http"
+import { InternalServerError } from "sveltekit-zero-api/http"
 
 /**
  * Admin view for a list of users
  */
 export async function GET (event: RequestEvent) {
 
-    const columns: {[key:string]: boolean}  = {
-        "id":true,
-        "address":true,
-        "createdAt":true,
-        "updatedAt":true,
-        "verifiedAt":true,
-        "isUserPrimary":true,
-    }
+    try {
 
-    const availableRelations: AvailableRelations<SelectEmail>  = {
-        "user": {
-            tableName: "emails",
-            columns: {
-                "id":true,
-                "username": true,
-            },
+        // TODO CHECK PERMISSIONS
+
+        const columns: {[key:string]: boolean}  = {
+            "id":true,
+            "address":true,
+            "createdAt":true,
+            "updatedAt":true,
+            "verifiedAt":true,
+            "isUserPrimary":true,
         }
+
+        const availableRelations: AvailableRelations = {
+            "user": {
+                tableName: "emails",
+                columns: {
+                    "id":true,
+                    "username": true,
+                },
+            }
+        }
+
+        return await adminApi.getListOf<SelectEmail>({
+            event,
+            tableName: "emails",
+            columns,
+            availableRelations
+        })
+
+    } catch (err) {
+        console.log(err)
+        return InternalServerError()
     }
-
-    const body = await adminApi.getListOf<SelectEmail>({
-        event,
-        tableName: "emails",
-        columns,
-        availableRelations
-    })
-
-    return Ok({body})
 }

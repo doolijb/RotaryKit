@@ -5,12 +5,9 @@ import { Validator } from "$validation/base"
  * @param args { count: number }
  */
 export class LowerCaseIncluded extends Validator {
-    constructor(args: { count: number } = { count: 1 }) {
-        super(args)
-    }
-    declare args: { count: number }
-    badge = "Lowercase Required"
-    key = "lowercaseRequired"
+    args: { count: number } = { count: 1 }
+    badge = "Lowercase Included"
+    key = "lowercaseIncluded"
     message: ()=> string | undefined = () => `Must have at least ${this.args.count} lowercase letter${this.args.count > 1 ? "s" : ""}`
     test = async ({key, data}) => {
         const value: string = data[key]

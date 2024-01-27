@@ -2,7 +2,6 @@ import type { ToastSettings } from "@skeletonlabs/skeleton"
 
 
 export class Toast implements ToastSettings {
-
   constructor({
     message,
     style="surface",

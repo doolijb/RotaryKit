@@ -8,8 +8,20 @@ export class UserRegister extends FormSchema {
         passphrase: fields.passphrase(),
         passphraseConfirm: fields.passphraseConfirm(),
     }
-    optional = {
-        username: true,
+    optional = {}
+    fieldAttributes = {
+        username: {
+            label: "Username",
+        },
+        email: {
+            label: "Email",
+        },
+        passphrase: {
+            label: "Passphrase",
+        },
+        passphraseConfirm: {
+            label: "Confirm Passphrase",
+        },
     }
 }
 

@@ -2,7 +2,7 @@
 	import { page } from "$app/stores"
 	import Icon from "@iconify/svelte"
 	import { AppShell } from "@skeletonlabs/skeleton"
-	import { hasAdminPermission } from "$utils"
+	import { hasAdminPermission } from "$client/utils"
 	import { SiteNavigation } from "$components"
 	import type { ComponentEvents } from 'svelte';
 
@@ -69,7 +69,7 @@
 						</a>
 					</li>
 					{#each Object.entries(sidebarOptions) as [resource, option]}
-						{#if hasAdminPermission( { adminPermissions: $page.data.adminPermissions, action: "GET", resources: [resource] } )}
+						{#if hasAdminPermission( { user: $page.data.user, adminPermissions: $page.data.adminPermissions, action: "GET", resources: [resource] } )}
 							<li>
 								<a
 									href={`/admin/${resource}`}

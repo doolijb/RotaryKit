@@ -1,21 +1,21 @@
 <script lang="ts">
     import {AdminCreateView, AdminCreateAdminRoleForm} from "$components"
-    import { page } from "$app/stores"
-    import axios from "axios"
 	import { onMount } from "svelte"
+	import api from "$api"
 
     const resource = "adminRoles"
+    const resourceApi = api.admin.adminRoles as unknown as ResourceApi
     const displayTitle = "Admin Role"
-    const formExtras = {
+    const FormComponent = AdminCreateAdminRoleForm
+    const extras = {
         adminPermissions: [] as SelectAdminPermission[],
     }
 
     async function loadAdminPermissions() {
-        const { data } = await axios.get("/api/admin/adminPermissions?pageLimit=1000").catch((error) => {
-            console.log(error)
-            return { data: { results: [] } }
-        })
-        formExtras.adminPermissions = data.results
+        api.admin.adminPermissions.GET({query: {pageLimit:1000}})
+            .Success((r) => {
+                extras.adminPermissions = r.body.results as SelectAdminPermission[]
+            })
     }
 
     onMount(async () => {
@@ -25,7 +25,8 @@
 
 <AdminCreateView
     {resource}
+    {resourceApi}
     {displayTitle}
-    Form={AdminCreateAdminRoleForm}
-    {formExtras}
+    {FormComponent}
+    {extras}
 />

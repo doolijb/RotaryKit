@@ -2,13 +2,17 @@ import { adminApi, error, validateData } from "$requests"
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { db, schema } from "$database"
 import { emails, users } from "$providers"
-import { Ok } from "sveltekit-zero-api/http"
+import { BadRequest, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import { AdminCreateUser as PostForm, AdminCreateUserWithPermissions as PostFormWithPermissions } from "$validation/forms"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 
-const postForm = new PostForm()
+const postForm = PostForm.init()
 const postFormWithPermissions = new PostFormWithPermissions()
+
+interface Get {
+    query?: GetListQueryParameters
+}
 
 interface Post {
     body: PostFormWithPermissions['Data'] | PostForm['Data']
@@ -17,138 +21,149 @@ interface Post {
 /**
  * Admin view for a list of users
  */
-export async function GET (event: RequestEvent) {
+export async function GET (event: KitEvent<Get, RequestEvent>) {
     // Check if user is authorized to view users
     // TODO
 
-    const columns: {[key:string]: boolean}  = {
-        "id":true,
-        "username":true,
-        "createdAt":true,
-        "updatedAt":true,
-        "verifiedAt":true,
-        "isAdmin":true,
-        "isSuperUser":true,
-    }
-
-    const availableRelations: AvailableRelations<SelectUser>  = {
-        "emails": {
-            tableName: "emails",
-            columns: {
-                "id":true,
-                "address":true,
-                "isUserPrimary":true
-            },
-            where: (e: PgTableWithColumns<any>, {eq}) => eq(e["isUserPrimary"], true)
+    try {
+        const columns: {[key:string]: boolean}  = {
+            "id":true,
+            "username":true,
+            "createdAt":true,
+            "updatedAt":true,
+            "verifiedAt":true,
+            "isAdmin":true,
+            "isSuperUser":true,
         }
+    
+        const availableRelations: AvailableRelations = {
+            "emails": {
+                tableName: "emails",
+                columns: {
+                    "id":true,
+                    "address":true,
+                    "isUserPrimary":true
+                },
+                where: (e: PgTableWithColumns<any>, {eq}) => eq(e["isUserPrimary"], true)
+            }
+        }
+    
+        
+        return await adminApi.getListOf<SelectUser>({
+            event,
+            tableName: "users",
+            columns,
+            availableRelations
+        })
+        
+    } catch (err) {
+        console.log(err)
+        return InternalServerError()
     }
 
-    const body = await adminApi.getListOf<SelectUser>({
-        event,
-        tableName: "users",
-        columns,
-        availableRelations
-    })
-
-    return Ok({body})
 }
 
 /**
  * @param event 
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
-    // Check if user is authorized to create a user
-    // TODO
-
-    /**
-	 * Validate the data
-	 */
-    let useForm: PostForm | PostFormWithPermissions = postForm
-    // Check if user is superuser
-    if(event.locals.user.isSuperUser) {
-        useForm = postFormWithPermissions
-    }
-	const data = await event.request.json()
-	await validateData({
-		form: useForm,
-		data, 
-	})
-
-    ////
-    // DATABASE VALIDATION
-    ////
-
-    const errors = {}
-
-    // Check if username is already taken
-    if (await users.exists({username: data.username})) {
-        errors["username"] = {"Taken": "This username is already in use"}
-    }
-
-    // If email, check if email is already taken
-    if (data.email) {
-        if (await emails.exists({address: data.email})) {
-            errors["email"] = {"Taken": "This email is already in use"}
-        }
-    }
-
-    // If errors, throw an error
-    if (Object.entries(errors).length > 0) {
-        throw error(400, {
-			errors
-		})
-    }
+    try {
     
-    ////
-    // CREATE USER
-    ////
+        // Check if user is authorized to create a user
+        // TODO
 
-    let userId: SelectUser["id"]
-    let result: SelectUser
-
-    await db.transaction(async (tx) => {
-
-        // Create the user
-        [{userId}] = await users.create({
-            tx,
-            username: data.username,
-            isVerified: data.isVerified,
-            isAdmin: data["isAdmin"] || false,
-            isSuperUser: data["isSuperUser"] || false,
-            returning: {userId: schema.users.id}
+        /**
+         * Validate the data
+         */
+        let useForm: PostForm | PostFormWithPermissions = postForm
+        // Check if user is superuser
+        if(event.locals.user.isSuperUser) {
+            useForm = postFormWithPermissions
+        }
+        const { data, errors } = await validateData({
+            form: useForm, 
+            event
         })
 
-        // If passphrase, create the passphrase
-        if (data.passphrase) {
-            await users.passphrase.set({
-                tx,
-                userId,
-                passphrase: data.passphrase,
-                createOnly: true
-            })
+        if (errors.keys) return BadRequest({body:{errors}})
+
+        ////
+        // DATABASE VALIDATION
+        ////
+
+        // Check if username is already taken
+        if (await users.exists({username: data.username})) {
+            errors["username"] = {"Taken": "This username is already in use"}
         }
 
-        // If email, create the email
+        // If email, check if email is already taken
         if (data.email) {
-            await emails.create({
-                tx,
-                userId,
-                address: data.email,
-                isUserPrimary: true,
-                isVerified: data.isVerified,
+            if (await emails.exists({address: data.email})) {
+                errors["email"] = {"Taken": "This email is already in use"}
+            }
+        }
+
+        // If errors, throw an error
+        if (Object.entries(errors).length > 0) {
+            throw error(400, {
+                errors
             })
         }
-    }).then(async () => {
-        result = await db.query.users.findFirst({
-            where: (u, {eq}) => eq(u.id, userId),
-            with: {
-                emails: true
-            }
-        })
-    })
+        
+        ////
+        // CREATE USER
+        ////
 
-    // Return the user
-    return Ok({
-        body:{ success: true, result }
-    })
+        let userId: SelectUser["id"]
+        let result: SelectUser
+
+        await db.transaction(async (tx) => {
+
+            // Create the user
+            [{userId}] = await users.create({
+                tx,
+                username: data.username,
+                isVerified: data.isVerified,
+                isAdmin: data["isAdmin"] || false,
+                isSuperUser: data["isSuperUser"] || false,
+                returning: {userId: schema.users.id}
+            })
+
+            // If passphrase, create the passphrase
+            if (data.passphrase) {
+                await users.passphrase.set({
+                    tx,
+                    userId,
+                    passphrase: data.passphrase,
+                    createOnly: true
+                })
+            }
+
+            // If email, create the email
+            if (data.email) {
+                await emails.create({
+                    tx,
+                    userId,
+                    address: data.email,
+                    isUserPrimary: true,
+                    isVerified: data.isVerified,
+                })
+            }
+        }).then(async () => {
+            result = await db.query.users.findFirst({
+                where: (u, {eq}) => eq(u.id, userId),
+                with: {
+                    emails: true
+                }
+            })
+        })
+
+        // Return the user
+        return Ok({
+            body:{ success: true, result }
+        })
+    } catch (err) {
+        console.log(err)
+        return InternalServerError()
+    }
 }
