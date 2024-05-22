@@ -1,5 +1,7 @@
 import type { Preview } from "@storybook/svelte"
 import { ThemeProvider, themeMap } from "../src/lib/client/themes"
+import { EmptyDecorator } from "../src/lib/client/components/_decorators"
+import { SvelteComponent } from "svelte";
 
 const themes = new Array<{ value: string; title: string }>()
 // loop over theme values
@@ -32,13 +34,21 @@ const preview: Preview = {
 		}
 	},
 	decorators: [
-		(args, story) => ({
-			Component: ThemeProvider,
-			props: {
-				theme: story.globals.theme,
-				darkMode: story.globals.darkMode
+		(args, story) => { 
+			if (!story.parameters?.skipThemeProvider) {
+				return {
+					Component: ThemeProvider,
+					props: {
+						theme: story.globals.theme,
+						darkMode: story.globals.darkMode
+					}
+				}
+			} else {
+				return {
+					Component: EmptyDecorator
+				}
 			}
-		})
+		}
 	],
 	globalTypes: {
 		theme: {

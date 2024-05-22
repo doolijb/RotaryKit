@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {ValidStates} from "$constants"
-	import type { Primitive } from "$validation/base"
+    import {ValidStates} from "$shared/constants"
+	import type { Primitive } from "$shared/validation/base"
     import Icon from "@iconify/svelte"
     import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
     import {onMount} from "svelte"

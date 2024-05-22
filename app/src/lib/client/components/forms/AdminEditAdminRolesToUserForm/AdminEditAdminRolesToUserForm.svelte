@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores"
-	import { FormBase, MultiSelect } from "$components"
-	import { AdminEditAdminRolesToUser as Form } from "$validation/forms"
+	import { FormBase, MultiSelect } from "$client/components"
+	import { AdminEditAdminRolesToUser as Form } from "$shared/validation/forms"
 	import { onMount } from "svelte"
 
 	////

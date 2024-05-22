@@ -1,5 +1,5 @@
-import { children as c } from "$validation/validators"
-import { Validator, Primitive } from "$validation/base"
+import { children as c } from "$shared/validation/validators"
+import { Validator, Primitive } from "$shared/validation/base"
 
 class Root extends Validator {
     badge = "Boolean"

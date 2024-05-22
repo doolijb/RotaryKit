@@ -3,7 +3,7 @@
 	import Icon from "@iconify/svelte"
 	import { AppShell } from "@skeletonlabs/skeleton"
 	import { hasAdminPermission } from "$client/utils"
-	import { SiteNavigation } from "$components"
+	import { SiteNavigation } from "$client/components"
 	import type { ComponentEvents } from 'svelte';
 
 	function scrollHandler(event: ComponentEvents<AppShell>['scroll']) {

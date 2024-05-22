@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { FormBase, TextInput, PassphraseInput } from "$components"
-	import { UserLogin as Form } from "$validation/forms"
+	import { FormBase, TextInput, PassphraseInput } from "$client/components"
+	import { UserLogin as Form } from "$shared/validation/forms"
 
 	////
 	// PARENT EXPORTS

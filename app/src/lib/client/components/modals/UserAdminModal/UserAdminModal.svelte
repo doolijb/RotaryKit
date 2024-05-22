@@ -1,6 +1,6 @@
 <script lang="ts">
     import UserAdminReview from "$components/review/UserAdminReview/UserAdminReview.svelte"
-    import {ReviewModes} from "$constants"
+    import {ReviewModes} from "$shared/constants"
     import {AppShell, Tab, TabGroup} from "@skeletonlabs/skeleton"
     
 

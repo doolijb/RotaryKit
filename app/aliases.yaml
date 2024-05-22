@@ -4,44 +4,12 @@
 # - svelte.config.js will import this file automatically
 ###
 
-###
-# Client paths
-###
-"$components": "./src/lib/client/components"
-"$components/*": "./src/lib/client/components/*"
-"$stores": "./src/lib/shared/client/stores"
-"$stores/*": "./src/lib/shared/client/stores/*"
-"$themes": "./src/lib/client/themes"
-"$themes/*": "./src/lib/client/themes/*"
 "$client": "./src/lib/client"
 "$client/*": "./src/lib/client/*"
-
-# Server paths
-###
-"$auth": "./src/lib/server/auth"
-"$auth/*": "./src/lib/server/auth/*"
-"$controllers": "./src/lib/server/controllers"
-"$controllers/*": "./src/lib/server/controllers/*"
-"$database": "./src/lib/server/database"
-"$database/*": "./src/lib/server/database/*"
-"$providers": "./src/lib/server/providers"
-"$providers/*": "./src/lib/server/providers/*"
-"$requests": "./src/lib/server/requests"
-"$requests/*": "./src/lib/server/requests/*"
-
-###
-# Shared paths
-###
-"$api": "./src/lib/shared/api"
-"$constants": "./src/lib/shared/constants"
-"$constants/*": "./src/lib/shared/constants/*"
-"$data": "./src/lib/shared/shared/data"
-"$data/*": "./src/lib/shared/shared/data/*"
-"$testing": "./src/lib/shared/testing"
-"$testing/*": "./src/lib/shared/testing/*"
-"$validation": "./src/lib/shared/validation"
-"$validation/*": "./src/lib/shared/validation/*"
-
+"$server": "./src/lib/server"
+"$server/*": "./src/lib/server/*"
+"$shared": "./src/lib/shared"
+"$shared/*": "./src/lib/shared/*"
 "$lib": "./src/lib"
 "$lib/*": "./src/lib/*"
 "$src": "./src"

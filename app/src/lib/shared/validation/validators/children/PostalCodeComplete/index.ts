@@ -1,5 +1,5 @@
 import postalCodes from "postal-codes-js"
-import { Validator } from "$validation/base"
+import { Validator } from "$shared/validation/base"
 
 /**
  * Validates that a string is a valid postal code

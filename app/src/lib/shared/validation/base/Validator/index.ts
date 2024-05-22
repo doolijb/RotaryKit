@@ -1,8 +1,8 @@
 // import { browser } from "$app/environment"
-import { popupSettings } from "$validation/utils"
+import { popupSettings } from "$shared/validation/utils"
 import type { PopupSettings } from "@skeletonlabs/skeleton"
 
-export class Validator {
+class Validator {
     static init(args = {}) {
         const validator = new this()
         validator.args = { ...validator.args, ...args }
@@ -24,3 +24,5 @@ export class Validator {
     message: string | (() => string)
     test: ValidatorTest
 }
+
+export { Validator }

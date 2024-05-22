@@ -1,6 +1,6 @@
 // import { expect, test } from "vitest"
 // import definition from "."
-// import { utils } from "$validation"
+// import { utils } from "$shared/validation"
 
 
 // test("postalCodeComplete field validation: passes", async () => {

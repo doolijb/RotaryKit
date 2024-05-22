@@ -1,15 +1,9 @@
-import tokens from "./tokens"
-import auth from "./auth"
-import passphrase from "./passphrase"
-import exists from "./exists"
-import create from "./create"
-import remove from "./remove"
+export * from "./exists"
+export * from "./create"
+export * from "./remove"
+export * from "./authenticate"
+export * from "./login"
+export * from "./logout"
 
-export default {
-    auth,
-    create,
-    exists,
-    passphrase,
-    remove,
-    tokens,
-}
+export * as passphrase from "./passphrase"
+export * as tokens from "./tokens"

@@ -69,7 +69,7 @@
     let Theme = null
 
     async function getTheme(theme: string) {
-        await import("$themes").then(module => {
+        await import("$client/themes").then(module => {
             Theme = module[theme]
         })
     }

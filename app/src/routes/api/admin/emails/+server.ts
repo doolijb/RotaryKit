@@ -1,5 +1,5 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { adminApi } from "$requests"
+import { adminApi } from "$server/requests"
 import { InternalServerError } from "sveltekit-zero-api/http"
 
 /**
@@ -38,7 +38,7 @@ export async function GET (event: RequestEvent) {
         })
 
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 }

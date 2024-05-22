@@ -1,8 +1,8 @@
-import { axios, apiRoute, basicUser, queryInbox } from "$testing"
-import { db, schema } from "$database"
+import { axios, apiRoute, basicUser, queryInbox } from "$shared/testing"
+import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { test, expect } from "vitest"
-import type { forms } from "$validation"
+import type { forms } from "$shared/validation"
 import data from "./data.server"
 data // silence unused warning, this is needed file watch to work
 

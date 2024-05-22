@@ -1,5 +1,5 @@
-import { users, emails } from "$providers"
-import { db, schema } from "$database"
+import { users, emails } from "$server/providers"
+import { db, schema } from "$server/database"
 
 const data = {
     username: "superUser",

@@ -1,5 +1,5 @@
-import { fields } from "$validation"
-import { FormSchema } from "$validation/base"
+import { fields } from "$shared/validation"
+import { FormSchema } from "$shared/validation/base"
 
 export class NewPassphrase extends FormSchema {
     fields = {

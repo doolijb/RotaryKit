@@ -1,4 +1,4 @@
-import { Validator } from "$validation/base"
+import { Validator } from "$shared/validation/base"
 
 const defaultChoices = [
     "!",

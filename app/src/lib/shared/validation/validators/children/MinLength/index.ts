@@ -1,4 +1,4 @@
-import { Validator } from "$validation/base"
+import { Validator } from "$shared/validation/base"
 
 /**
  * Validates that a string is at least a certain length,

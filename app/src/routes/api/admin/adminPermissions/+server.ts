@@ -1,7 +1,8 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { adminApi } from "$requests"
-import { InternalServerError, Ok } from "sveltekit-zero-api/http"
+import { adminApi } from "$server/requests"
+import { InternalServerError } from "sveltekit-zero-api/http"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 interface Get {
     query?: GetListQueryParameters
@@ -35,7 +36,7 @@ export async function GET (event: KitEvent<Get, RequestEvent>) {
         })
 
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 }

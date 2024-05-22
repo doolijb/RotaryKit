@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {AdminResultsTableView} from "$components"
-	import api from '$api'
+    import {AdminResultsTableView} from "$client/components"
+	import api from "$shared/api"
 
     const resource = "users"
     const resourceApi = api.admin.users as ResourceApi

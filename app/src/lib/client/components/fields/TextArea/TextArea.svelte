@@ -1,10 +1,10 @@
 <script lang="ts">
-    import {ValidationBadges, ValidationLegend} from "$components"
-    import {ValidStates} from "$constants"
+    import {ValidationBadges, ValidationLegend} from "$client/components"
+    import {ValidStates} from "$shared/constants"
     import {createEventDispatcher, onMount} from "svelte"
     import type {PopupSettings} from "@skeletonlabs/skeleton"
     import { v4 } from "uuid"
-	import type { FormSchema } from "$validation/base"
+	import type { FormSchema } from "$shared/validation/base"
 
     const dispatch = createEventDispatcher()
 

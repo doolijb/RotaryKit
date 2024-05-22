@@ -1,6 +1,6 @@
 import Component from "./UserAdminModal.svelte"
 import {ReviewModes} from "$lib/shared/constants"
-import {ModalDecorator} from "$components"
+import {ModalDecorator} from "$client/components"
 import type {ModalSettings} from "@skeletonlabs/skeleton"
 
 

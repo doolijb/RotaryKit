@@ -3,6 +3,11 @@
   "include": [
     "src/**/*"
   ],
+  "resolve": [
+    ".svelte",
+    ".ts",
+    ".tsx",
+  ],
   "compilerOptions": {
     "baseUrl": "./",
     "allowJs": true,
@@ -13,87 +18,26 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": false,
+    "jsx": "react",
+    "allowImportingTsExtensions": true,
     "paths": {
-      "$components": [
-        "./src/lib/client/components"
-      ],
-      "$components/*": [
-        "./src/lib/client/components/*"
-      ],
-      "$stores": [
-        "./src/lib/shared/client/stores"
-      ],
-      "$stores/*": [
-        "./src/lib/shared/client/stores/*"
-      ],
-      "$themes": [
-        "./src/lib/client/themes"
-      ],
-      "$themes/*": [
-        "./src/lib/client/themes/*"
-      ],
       "$client": [
         "./src/lib/client"
       ],
       "$client/*": [
         "./src/lib/client/*"
       ],
-      "$auth": [
-        "./src/lib/server/auth"
+      "$server": [
+        "./src/lib/server"
       ],
-      "$auth/*": [
-        "./src/lib/server/auth/*"
+      "$server/*": [
+        "./src/lib/server/*"
       ],
-      "$controllers": [
-        "./src/lib/server/controllers"
+      "$shared": [
+        "./src/lib/shared"
       ],
-      "$controllers/*": [
-        "./src/lib/server/controllers/*"
-      ],
-      "$database": [
-        "./src/lib/server/database"
-      ],
-      "$database/*": [
-        "./src/lib/server/database/*"
-      ],
-      "$providers": [
-        "./src/lib/server/providers"
-      ],
-      "$providers/*": [
-        "./src/lib/server/providers/*"
-      ],
-      "$requests": [
-        "./src/lib/server/requests"
-      ],
-      "$requests/*": [
-        "./src/lib/server/requests/*"
-      ],
-      "$api": [
-        "./src/lib/shared/api"
-      ],
-      "$constants": [
-        "./src/lib/shared/constants"
-      ],
-      "$constants/*": [
-        "./src/lib/shared/constants/*"
-      ],
-      "$data": [
-        "./src/lib/shared/shared/data"
-      ],
-      "$data/*": [
-        "./src/lib/shared/shared/data/*"
-      ],
-      "$testing": [
-        "./src/lib/shared/testing"
-      ],
-      "$testing/*": [
-        "./src/lib/shared/testing/*"
-      ],
-      "$validation": [
-        "./src/lib/shared/validation"
-      ],
-      "$validation/*": [
-        "./src/lib/shared/validation/*"
+      "$shared/*": [
+        "./src/lib/shared/*"
       ],
       "$lib": [
         "./src/lib"

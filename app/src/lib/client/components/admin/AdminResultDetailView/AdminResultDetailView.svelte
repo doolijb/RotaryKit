@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$components" 
+	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$client/components" 
 	import Icon from "@iconify/svelte"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
 	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"

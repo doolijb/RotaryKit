@@ -1,8 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import { schema } from "$database"
-import type { FormSchema, Primitive } from "$validation/base"
-import { schema } from "$database"
+import { schema } from "$server/database"
+import type { FormSchema, Primitive } from "$shared/validation/base"
 import type { offset } from "@floating-ui/dom"
 
 // for information about these types
@@ -17,7 +16,14 @@ declare global {
 		interface Locals {
             user?: SelectUser,
             adminPermissions?: SelectAdminPermission[],
-            userAgent?: {[key:string]: any} | null,
+            userAgent?: {
+                browser: {
+                    name: string
+                }
+                os: {
+                    name: string
+                }
+            },
             userTokenId?: string
         }
 		interface PageData {
@@ -84,6 +90,7 @@ declare global {
     type SelectUser = typeof schema.users.$inferSelect
     type SelectUserToken = typeof schema.userTokens.$inferSelect
     type SelectEmail = typeof schema.emails.$inferSelect
+    type SelectEmailLog = typeof schema.emailLogs.$inferSelect
     type SelectEmailVerification = typeof schema.emailVerifications.$inferSelect
     type SelectPassphrase = typeof schema.passphrases.$inferSelect
     type SelectPassphraseReset = typeof schema.passphraseResets.$inferSelect
@@ -95,6 +102,7 @@ declare global {
     type InsertUser = typeof schema.users.$inferInsert
     type InsertUserToken = typeof schema.userTokens.$inferInsert
     type InsertEmail = typeof schema.emails.$inferInsert
+    type InsertEmailLog = typeof schema.emailLogs.$inferInsert
     type InsertEmailVerification = typeof schema.emailVerifications.$inferInsert
     type InsertPassphrase = typeof schema.passphrases.$inferInsert
     type InsertPassphraseReset = typeof schema.passphraseResets.$inferInsert
@@ -202,6 +210,14 @@ declare global {
 		default: AdminEditResultViewTab
 		[key: string]: AdminEditResultViewTab
 	}
+
+    type EnvDefaults = {
+        [key: string]: string
+    } & {
+        USER_TOKEN_EXPIRATION_HOURS: string
+    }
+
+    type Middleware = (event: RequestEvent) => Promise<void>
 
 }
 

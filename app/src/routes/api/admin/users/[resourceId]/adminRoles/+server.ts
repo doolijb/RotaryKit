@@ -1,8 +1,8 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { hasAdminPermission, validateData } from "$requests"
-import { db, schema } from "$database"
+import { hasAdminPermission, validateData } from "$server/requests"
+import { db, schema } from "$server/database"
 import { and, eq, or } from "drizzle-orm"
-import { AdminEditAdminRolesToUser as PutForm } from "$validation/forms"
+import { AdminEditAdminRolesToUser as PutForm } from "$shared/validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
 import { Ok, InternalServerError, BadRequest, Forbidden, NotFound } from "sveltekit-zero-api/http"
 

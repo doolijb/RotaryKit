@@ -1,10 +1,11 @@
-import { users, emails } from "$providers"
-import { db, schema } from "$database"
-import { UserRegister as PostForm } from "$validation/forms"
-import { validateData } from "$requests"
+import { users, emails } from "$server/providers"
+import { db, schema } from "$server/database"
+import { UserRegister as PostForm } from "$shared/validation/forms"
+import { validateData } from "$server/requests"
 import type { RequestEvent } from "@sveltejs/kit"
 import { BadRequest, Created, InternalServerError, Forbidden } from "sveltekit-zero-api/http"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 const postForm = PostForm.init()
 
@@ -73,7 +74,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 			})
 
 		}).then(async () => {
-			await emails.verifications.sendCode({
+			await emails.sendCode({
 				emailId,
 				username: data.username
 			})
@@ -85,7 +86,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		return Created({ status: 201, body: { success: true }})
 		
 	} catch (e) {
-		console.error(e)
+		logger.exception(e, event)
 		return InternalServerError()
 	}
 }

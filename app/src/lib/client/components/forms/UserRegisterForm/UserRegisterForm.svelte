@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { FormBase, TextInput, PassphraseInput } from "$components"
-	import { UserRegister as Form } from "$validation/forms"
+	import { FormBase, TextInput, PassphraseInput } from "$client/components"
+	import { UserRegister as Form } from "$shared/validation/forms"
 
 	////
 	// LOCAL EXPORTS

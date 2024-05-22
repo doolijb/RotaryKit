@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { TextInput } from "$components"
+	import { TextInput } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import { createEventDispatcher, onMount } from "svelte"
 	import { v4 } from "uuid"
-	import type { FormSchema } from "$validation/base"
+	import type { FormSchema } from "$shared/validation/base"
 
 	const dispatch = createEventDispatcher()
 

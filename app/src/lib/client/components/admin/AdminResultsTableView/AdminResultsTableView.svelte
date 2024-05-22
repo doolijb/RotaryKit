@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$components"
+	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import { type PopupSettings, popup, getModalStore } from "@skeletonlabs/skeleton"
 	import axios, { type AxiosResponse } from "axios"

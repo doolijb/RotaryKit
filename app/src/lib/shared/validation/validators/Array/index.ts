@@ -1,5 +1,6 @@
-import { children as c } from "$validation/validators"
-import { Validator, Primitive } from "$validation/base"
+import { children as c } from "$shared/validation/validators"
+import { Validator, Primitive } from "$shared/validation/base"
+
 
 /**
  * Validates that a value is an array
@@ -24,3 +25,4 @@ class ArrayPrimitive extends Primitive<unknown[]> {
 export {
     ArrayPrimitive as Array
 }
+ 

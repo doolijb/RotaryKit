@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AdminHeader, Loading } from "$components"
+	import { AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import axios, { type AxiosResponse } from "axios"
 	// import { type SvelteComponent, onMount } from "svelte"

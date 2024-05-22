@@ -1,5 +1,5 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "$testing"
-import { db } from "$database"
+import { axios, apiRoute, basicUser, superUser, loginUser } from "$shared/testing"
+import { db } from "$server/database"
 import { test, expect } from "vitest"
 import data from "./data.server"
 data // silence unused warning, we need this to watch the file

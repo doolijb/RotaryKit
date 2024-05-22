@@ -22,6 +22,13 @@
       "when": 1702159977304,
       "tag": "0002_silly_speed_demon",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1707130129082,
+      "tag": "0003_curly_magma",
+      "breakpoints": true
     }
   ]
 }

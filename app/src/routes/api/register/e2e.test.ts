@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test"
-import { axios, clearDB, basicUser } from "$testing"
-import type { UserRegister } from "$validation/forms"
-import { db } from "$database"
+import { axios, clearDB, basicUser } from "$shared/testing"
+import type { UserRegister } from "$shared/validation/forms"
+import { db } from "$server/database"
 
 test("API Register POST: 201 with good credentials", async ({ page }) => {
     await clearDB()

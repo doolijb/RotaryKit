@@ -1,13 +1,7 @@
 import deepmerge from "deepmerge"
 import type { Primitive } from "../Primitive"
-import { children as c } from "$validation/validators"
+import { children as c } from "$shared/validation/validators"
 // import { browser } from "$app/environment"
-
-type FieldAttributes = () => {
-    label?: string
-    placeholder?: string
-    defaultValue?: any
-}
 
 export class FormSchema {
     fields: Record<string, Primitive<unknown>>

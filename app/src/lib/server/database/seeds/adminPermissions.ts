@@ -1,5 +1,6 @@
-import { db, schema } from "$database";
-import { getTableConfig, AnyPgColumn } from "drizzle-orm/pg-core";
+import { db, schema } from "$server/database";
+import { logger } from "$server/logging";
+import { getTableConfig, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 interface InsertAdminPermission {
   action: string;
@@ -58,7 +59,7 @@ export default async function adminPermissions(tx = db): Promise<void> {
     try {
       await tx.insert(schema.adminPermissions).values(insertPermissions);
     } catch (e) {
-      console.error(e);
+      logger.error({ message: e.message, stack: e.stack });
     }
   }
 }

@@ -2,7 +2,7 @@
  * Collection of testing utilities
  */
 
-import { client } from "$database"
+import { client } from "$server/database"
 
 // export { default as deepCompare } from "./deepCompare"
 export * from "./axios"

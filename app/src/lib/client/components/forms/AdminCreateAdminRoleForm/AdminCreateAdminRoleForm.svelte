@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores"
-	import { FormBase, TextInput, MultiSelect } from "$components"
-	import { AdminCreateAdminRole as Form } from "$validation/forms"
+	import { FormBase, TextInput, MultiSelect } from "$client/components"
+	import { AdminCreateAdminRole as Form } from "$shared/validation/forms"
 	export let disabled = false
 
 	////

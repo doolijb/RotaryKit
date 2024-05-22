@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
-import { axios, clearDB, basicUser } from "$testing"
-import type { UserLogin } from "$validation/forms"
+import { axios, clearDB, basicUser } from "$shared/testing"
+import type { UserLogin } from "$shared/validation/forms"
 
 test("API Login: 400 with bad credentials", async ({ page }) => {
 

@@ -2,8 +2,8 @@ import Component from "."
 import type {AutocompleteOption} from "@skeletonlabs/skeleton"
 import type {Meta} from "@storybook/svelte"
 import type {ComponentType} from "svelte"
-import { validators as v, utils, fields } from "$validation"
-import { FormSchema } from "$validation/base"
+import { validators as v, utils, fields } from "$shared/validation"
+import { FormSchema } from "$shared/validation/base"
 
 
 const meta: Meta<typeof Component> = {

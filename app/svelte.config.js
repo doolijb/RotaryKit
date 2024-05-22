@@ -2,7 +2,7 @@ import adapter from "@sveltejs/adapter-auto"
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte"
 import yaml from "js-yaml"
 import fs from "fs"
-import glob from 'fast-glob'
+import glob from "fast-glob"
 
 // Read the aliases from the YAML file
 const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8"))

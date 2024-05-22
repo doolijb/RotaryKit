@@ -1,11 +1,12 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { messageError, validateData, hasAdminPermission } from "$requests"
+import { validateData, hasAdminPermission } from "$server/requests"
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
-import { db, schema } from "$database"
+import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { Ok, InternalServerError, Forbidden, BadRequest, NotFound } from "sveltekit-zero-api/http"
-import { AdminEditUser as PutForm, AdminEditUserWithPermissions as PutFormWithPermissions } from "$validation/forms"
+import { AdminEditUser as PutForm, AdminEditUserWithPermissions as PutFormWithPermissions } from "$shared/validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 const putForm = PutForm.init()
 const putFormWithPermissions = new PutFormWithPermissions()
@@ -91,7 +92,7 @@ export async function GET(event: RequestEvent) {
 		return Ok({body:result})
 
 	} catch (error) {
-		console.log(error)
+		logger.exception(error, event)
 		return InternalServerError()
 	}
 }
@@ -213,7 +214,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		return Ok({ body: { success: true }})
 
 	} catch (err) {
-		console.log(err)
+		logger.exception(err, event)
 		return InternalServerError()
 	}
 }
@@ -251,7 +252,7 @@ export async function DELETE(event: RequestEvent) {
 		return Ok({ body: { success: true }})
 	
 	} catch (error) {
-		console.log(error)
+		logger.exception(error, event)
 		return InternalServerError()
 	}
 }

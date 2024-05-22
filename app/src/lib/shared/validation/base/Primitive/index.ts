@@ -1,4 +1,4 @@
-import type { Validator } from "../Validator"
+import type { Validator } from "$shared/validation/base/Validator"
 
 /**
  * Chains a series of child validators together

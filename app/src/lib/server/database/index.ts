@@ -1,16 +1,13 @@
-// import { exists } from "drizzle-orm"
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres"
+import { drizzle } from "drizzle-orm/node-postgres"
 import { migrate as pgMigrate } from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
-import chalk from "chalk"
 import { schema, relations } from "./schema"
 import { dbCredentials } from "./config"
 import seeds from "./seeds"
-import utils from "$database/utils"
+import utils from "./utils"
 
 import pgtools from "pgtools"
-
-chalk.level = 1
+import { logger } from "$server/logging"
 
 export function getConnectionString(dbCredentials: {host:string, port:number, database:string, user:string, password:string}) {
     const { host, port, database, user, password } = dbCredentials
@@ -48,8 +45,8 @@ export async function migrate() {
 
     return await pgMigrate(db, {
         migrationsFolder: './src/lib/server/database/migrations',
-    }).catch((err) => {
-        console.error("ERROR", err)
+    }).catch((e) => {
+        logger.error({ message: e.message, stack: e.stack })
         process.exit(1)
     }).then(() => {
         return

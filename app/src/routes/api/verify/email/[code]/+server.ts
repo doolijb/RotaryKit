@@ -1,6 +1,6 @@
-import { db } from "$database"
-import { emails } from "$providers"
-import { BadRequest, Created, InternalServerError, Ok } from "sveltekit-zero-api/http"
+import { db } from "$server/database"
+import { emails } from "$server/providers"
+import { BadRequest, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 
@@ -41,7 +41,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
         /**
          * Return the response
          */
-	    return Created({ body: { success: true }})
+	    return Ok({ body: { success: true }})
 
     } catch (e) {
         console.error(e)

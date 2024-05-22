@@ -1,7 +1,7 @@
 import Component from "."
 import type { Meta } from "@storybook/svelte"
-import { FormSchema } from "$validation/base"
-import { validators as v } from "$validation"
+import { FormSchema } from "$shared/validation/base"
+import { validators as v } from "$shared/validation"
 import type { ComponentType } from "svelte"
 
 

@@ -1,9 +1,9 @@
-import { adminApi, error, validateData } from "$requests"
+import { adminApi, error, validateData } from "$server/requests"
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
-import { db, schema } from "$database"
-import { emails, users } from "$providers"
+import { db, schema } from "$server/database"
+import { emails, users } from "$server/providers"
 import { BadRequest, InternalServerError, Ok } from "sveltekit-zero-api/http"
-import { AdminCreateUser as PostForm, AdminCreateUserWithPermissions as PostFormWithPermissions } from "$validation/forms"
+import { AdminCreateUser as PostForm, AdminCreateUserWithPermissions as PostFormWithPermissions } from "$shared/validation/forms"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 
@@ -57,7 +57,7 @@ export async function GET (event: KitEvent<Get, RequestEvent>) {
         })
         
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 
@@ -163,7 +163,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
             body:{ success: true, result }
         })
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 }

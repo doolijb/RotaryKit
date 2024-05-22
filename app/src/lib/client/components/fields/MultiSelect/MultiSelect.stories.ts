@@ -1,8 +1,8 @@
 import Component from "."
-import { validators as v, utils, fields, validators } from "$validation"
+import { validators as v, utils, fields, validators } from "$shared/validation"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
-import { FormSchema } from "$validation/base"
+import { FormSchema } from "$shared/validation/base"
 
 const meta: Meta<typeof Component> = {
 	component: Component as ComponentType,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {ReviewModes} from "$constants"
+    import {ReviewModes} from "$shared/constants"
     import {onMount} from "svelte"
 
     export let formData = {

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { FormBase, PassphraseInput } from "$components"
-	import { AdminEditUserPassphrase as Form } from "$validation/forms"
+	import { FormBase, PassphraseInput } from "$client/components"
+	import { AdminEditUserPassphrase as Form } from "$shared/validation/forms"
 	import generator from "generate-password"
 
 	export let disabled: boolean

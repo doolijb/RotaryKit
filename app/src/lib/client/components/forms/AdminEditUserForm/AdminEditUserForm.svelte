@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores"
-	import { FormBase, CheckboxInput, TextInput } from "$components"
-	import type { FormSchema } from "$validation/base"
-	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$validation/forms"
+	import { FormBase, CheckboxInput, TextInput } from "$client/components"
+	import type { FormSchema } from "$shared/validation/base"
+	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
 	import { onMount } from "svelte"
 
 	////

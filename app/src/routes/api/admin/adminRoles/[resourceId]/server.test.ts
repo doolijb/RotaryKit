@@ -1,5 +1,5 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "$testing"
-import { db, schema } from "$database"
+import { axios, apiRoute, basicUser, superUser, loginUser } from "$shared/testing"
+import { db, schema } from "$server/database"
 import { test, expect, vi } from "vitest"
 import data from "./data.server"
 import { eq } from "drizzle-orm"

@@ -1,4 +1,4 @@
-export default function deepCompare(obj1: any, obj2: any, path: string[] = []): boolean {
+export function deepCompare(obj1: any, obj2: any, path: string[] = []): boolean {
     if (Array.isArray(obj1) && Array.isArray(obj2)) {
         if (obj1.length !== obj2.length) {
             console.error(`Array length mismatch at ${path.join(".")}: expected ${obj2.length}, got ${obj1.length}`);

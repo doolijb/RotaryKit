@@ -1,11 +1,11 @@
-import { adminApi, error, messageError, validateData } from "$requests"
-import type { PgTableWithColumns } from "drizzle-orm/pg-core"
-import { db, schema } from "$database"
+import { validateData } from "$server/requests"
+import { db, schema } from "$server/database"
 import { and, eq, inArray } from "drizzle-orm"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
-import { InternalServerError, Ok, BadRequest } from "sveltekit-zero-api/http"
-import { AdminCreateAdminRole as PostForm } from "$validation/forms"
+import { InternalServerError, Ok, BadRequest, NotFound } from "sveltekit-zero-api/http"
+import { AdminCreateAdminRole as PostForm } from "$shared/validation/forms"
+import { logger } from "$server/logging"
 
 const postForm = PostForm.init()
 
@@ -76,12 +76,12 @@ export async function GET(event: KitEvent<Get, RequestEvent>) {
 		})
 
 		if (!result) {
-			throw messageError("Not found", 404)
+			return NotFound()
 		}
 
 		return Ok({ body: result })
 	} catch (err) {
-		console.log(err)
+		logger.exception(err, event)
 		return InternalServerError()
 	}
 }
@@ -171,7 +171,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// Return
 		return Ok({ body: { success: true } })
 	} catch (err) {
-		console.log(err)
+		logger.exception(err, event)
 		return InternalServerError()
 	}
 }
@@ -193,7 +193,7 @@ export async function DELETE(event: KitEvent<Delete, RequestEvent>) {
 		// Return
 		return Ok({ body: { success: true } })
 	} catch (err) {
-		console.log(err)
+		logger.exception(err, event)
 		return InternalServerError()
 	}
 }

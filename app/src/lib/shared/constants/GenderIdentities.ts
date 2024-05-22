@@ -1,5 +1,5 @@
 
-class GenderIdentities {
+export class GenderIdentities {
     static readonly WOMAN = "Woman"
     static readonly MAM = "Man"
     static readonly NON_BINARY = "Non-Binary"
@@ -7,5 +7,3 @@ class GenderIdentities {
     static readonly NONE = "Prefer not to say"
     static readonly OTHER = "Other"
 }
-
-export default GenderIdentities

@@ -1,7 +1,7 @@
-import { users } from "$providers"
-import { db } from "$database"
-import { UserLogin as PostForm } from "$validation/forms"
-import { validateData } from "$requests"
+import { users } from "$server/providers"
+import { db } from "$server/database"
+import { UserLogin as PostForm } from "$shared/validation/forms"
+import { validateData } from "$server/requests"
 import { BadRequest, InternalServerError, Forbidden, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
@@ -34,7 +34,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		 */
 		let user: SelectUser | void
 		await db.transaction(async tx => {
-			user = await users.auth.login({
+			user = await users.login({
 				tx,
 				event,
 				username: data.username,

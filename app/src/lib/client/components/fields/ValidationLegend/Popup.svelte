@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Primitive } from "$validation/base"
+	import type { Primitive } from "$shared/validation/base"
     import type { PopupSettings } from "@skeletonlabs/skeleton"
 
     ////

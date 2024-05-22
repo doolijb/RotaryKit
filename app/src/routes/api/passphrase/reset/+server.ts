@@ -1,8 +1,8 @@
-import { users } from "$providers"
-import { db } from "$database"
-import { ResetPassphraseByUsername as PostForm } from "$validation/forms"
-import { validateData, messageError } from "$requests"
-import { Ok } from "sveltekit-zero-api/http"
+import { users } from "$server/providers"
+import { db } from "$server/database"
+import { ResetPassphraseByUsername as PostForm } from "$shared/validation/forms"
+import { validateData } from "$server/requests"
+import { BadRequest, Forbidden, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 
@@ -20,17 +20,16 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 	 * Check if user is already logged in
 	 */
 	if (event.locals.user) {
-		throw messageError("You are already logged in.")
+		return Forbidden({ body: { message: "You are already logged in" }})
 	}
 
 	/**
 	 * Validate the data
 	 */
-	const data = await event.request.json()
-	await validateData({
-		form: postForm,
-		data, 
-	})
+	const { data, errors } = await validateData({ form: postForm, event })
+	if (Object.keys(errors).length) {
+		return BadRequest({ body: { errors }})
+	}
 
 	/**
 	 * Get our variables ready
@@ -74,7 +73,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 	 * If no user, throw error
 	 */
 	if (!userId) {
-		throw messageError("Invalid username or email address")
+		return BadRequest({ body: { message: "Invalid username or email address" }})
 	}
 
 	/**
@@ -85,7 +84,6 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 			tx,
 			userId,
 			toAddress,
-		
 		})
 	})
 

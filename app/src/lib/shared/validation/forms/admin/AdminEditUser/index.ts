@@ -1,5 +1,5 @@
-import { validators as v, fields } from "$validation"
-import { FormSchema } from "$validation/base"
+import { validators as v, fields } from "$shared/validation"
+import { FormSchema } from "$shared/validation/base"
 
 export class AdminEditUser extends FormSchema {
     fields = {

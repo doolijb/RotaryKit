@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FormSchema } from "$validation/base"
+	import type { FormSchema } from "$shared/validation/base"
 	import { createEventDispatcher } from "svelte"
 
 	const dispatch = createEventDispatcher()
@@ -34,7 +34,6 @@
 	$: {
 		canSubmit = !hasErrors
 	}
-	$: console.log("errors", errors)
 
 	////
 	// Event Handlers

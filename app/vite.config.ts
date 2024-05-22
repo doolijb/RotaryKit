@@ -5,7 +5,7 @@ import yaml from "js-yaml"
 import { zeroAPI } from 'sveltekit-zero-api'
 
 // Read the aliases from the YAML file
-const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8"))
+const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8")) as {[key: string]: unknown}
 
 // Create the alias configuration
 const aliasConfig = Object.fromEntries(

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {AdminResultDetailView} from "$components"
+    import {AdminResultDetailView} from "$client/components"
     import { page } from "$app/stores"
-    import api from "$api"
+    import api from "$shared/api"
 
     const resource = "adminRoles"
     const resourceApi = api.admin.adminRoles as ResourceApi

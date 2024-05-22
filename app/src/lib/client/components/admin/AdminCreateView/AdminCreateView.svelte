@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AdminHeader } from "$components"
+	import { AdminHeader } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"

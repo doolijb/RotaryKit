@@ -1,9 +1,10 @@
-import { adminApi, error, validateData } from "$requests"
-import { db, schema } from "$database"
+import { adminApi, validateData } from "$server/requests"
+import { db, schema } from "$server/database"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { Ok, BadRequest, InternalServerError } from "sveltekit-zero-api/http"
-import { AdminCreateAdminRole as PostForm } from "$validation/forms"
+import { AdminCreateAdminRole as PostForm } from "$shared/validation/forms"
+import { logger } from "$server/logging"
 
 console.log("getListOf", adminApi.getListOf)
 
@@ -72,7 +73,7 @@ export async function GET (event: KitEvent<GET, RequestEvent>) {
             availableRelations
         })
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 }
@@ -88,9 +89,8 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
         /**
          * Validate the data
          */
-        const data = await event.request.json()
-        const errors = await postForm.validate({data})
-        if (Object.entries(errors).length > 0) return BadRequest({errors})
+        const { data, errors } = await validateData<PostForm["Data"]>({ form: postForm, event })
+        if (Object.entries(errors).length > 0) return BadRequest({body: errors})
 
         ////
         // DATABASE VALIDATION
@@ -103,9 +103,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 
         // If errors, throw an error
         if (Object.entries(errors).length > 0) {
-            throw error(400, {
-                errors
-            })
+            return BadRequest({body: errors})
         }
         
         ////
@@ -129,7 +127,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
         // Return the user
         return Ok({ status: 201, body: { success: true, result }})
     } catch (err) {
-        console.log(err)
+        logger.exception(err, event)
         return InternalServerError()
     }
 }

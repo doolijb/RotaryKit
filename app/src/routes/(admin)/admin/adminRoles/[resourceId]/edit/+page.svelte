@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditAdminRoleForm} from "$components"
+    import {AdminEditResultView, AdminEditAdminRoleForm} from "$client/components"
     import { page } from "$app/stores"
-	import api from "$api"
+	import api from "$shared/api"
 
     const resource = "adminRoles"
     const resourceApi = api.admin.adminRoles as unknown as ResourceApi

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page, } from "$app/stores"
-	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$components"
-	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$validation/forms"
+	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$client/components"
+	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
 	
 	////
 	// PARENT EXPORTS

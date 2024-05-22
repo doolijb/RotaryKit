@@ -16,7 +16,8 @@
         "rvest.vs-code-prettier-eslint",
         "hardikmodha.create-tests",
         "streetsidesoftware.code-spell-checker",
-        "ms-playwright.playwright"
+        "ms-playwright.playwright",
+        "esbenp.prettier-vscode"
     ]
 
 }

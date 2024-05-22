@@ -1,6 +1,6 @@
 // import { expect, test } from "vitest"
 // import definitions from "."
-// import { utils } from "$validation"
+// import { utils } from "$shared/validation"
 
 // test("userRegister form test: passes", async () => {
 //     const data = {

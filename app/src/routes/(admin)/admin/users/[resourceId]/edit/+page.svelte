@@ -1,12 +1,12 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditUserForm} from "$components"
+    import {AdminEditResultView, AdminEditUserForm} from "$client/components"
     import { page } from "$app/stores"
     import axios from "axios"
-	import AdminEditAdminRolesToUserForm from "$lib/client/components/forms/AdminEditAdminRolesToUserForm/AdminEditAdminRolesToUserForm.svelte"
-    import api from "$api"
+	import AdminEditAdminRolesToUserForm from "$client/components/forms/AdminEditAdminRolesToUserForm/AdminEditAdminRolesToUserForm.svelte"
+    import api from "$shared/api"
 	import { hasAdminPermission } from "$client/utils"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { forms as f } from "$validation"
+	import { forms as f } from "$shared/validation"
     const toastStore = getToastStore()
 
     const resource = "users"

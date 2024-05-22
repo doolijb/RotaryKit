@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {AdminCreateView, AdminCreateAdminRoleForm} from "$components"
+    import {AdminCreateView, AdminCreateAdminRoleForm} from "$client/components"
 	import { onMount } from "svelte"
-	import api from "$api"
+	import api from "$shared/api"
 
     const resource = "adminRoles"
     const resourceApi = api.admin.adminRoles as unknown as ResourceApi

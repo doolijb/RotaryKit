@@ -1,5 +1,5 @@
 import parsePhoneNumber, { type CountryCode } from "libphonenumber-js"
-import { Validator } from "$validation/base"
+import { Validator } from "$shared/validation/base"
 
 /**
  * Validates that a string contains a complete phone number

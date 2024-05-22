@@ -1,10 +1,9 @@
-import { users } from "$providers"
-import { messageError } from "$requests"
-import { NewPassphrase as PostForm } from "$validation/forms"
-import { validateData } from "$requests"
+import { users } from "$server/providers"
+import { NewPassphrase as PostForm } from "$shared/validation/forms"
+import { validateData } from "$server/requests"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
-import { Ok } from "sveltekit-zero-api/http"
+import { BadRequest, Forbidden, Ok } from "sveltekit-zero-api/http"
 
 const postForm = PostForm.init()
 
@@ -23,18 +22,17 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 	 * Must not be logged in
 	 */
 	if (event.locals.user) {
-		throw messageError("You are already logged in.")
+		return Forbidden({ body: { message: "You are already logged in" }})
 	}
 
 	/**
 	 * Validate the data
 	 */
-	const data = await event.request.json()
-	await validateData({
-		form: postForm,
-		data, 
-	})
-
+	const { data, errors } = await validateData({ form: postForm, event })
+	if (Object.keys(errors).length) {
+		return BadRequest({ body: { errors }})
+	}
+	
 	/**
 	 * Validate the code
 	 */
@@ -43,7 +41,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 	})
 
 	if (!reset) {
-		throw messageError("Invalid passphrase reset code.")
+		return BadRequest({ body: { message: "Invalid code" }})
 	}
 
 	const userId = reset.userId
