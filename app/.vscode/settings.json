@@ -34,6 +34,7 @@
         "maildev",
         "nonpositive",
         "paseto",
+        "pino",
         "rvest",
         "skeletonlabs",
         "tailwindcss",

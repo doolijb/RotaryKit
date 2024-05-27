@@ -1,4 +1,4 @@
-export {default as SearchSelectField} from "./SearchSelectField"
+export {default as Autocomplete} from "./Autocomplete"
 export {default as TextArea} from "./TextArea"
 export {default as TextInput} from "./TextInput"
 export {default as PassphraseInput} from "./PassphraseInput"

@@ -24,7 +24,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
          */
         let verification: SelectEmailVerification | void
         await db.transaction(async (tx) => {
-            verification = await emails.verifications.validateCode({
+            verification = await emails.validateCode({
                 tx,
                 code: event.params.code,
                 propagate: true,

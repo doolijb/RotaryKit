@@ -22,21 +22,21 @@ const options: AutocompleteOption[] = [
 
 class DefaultForm extends FormSchema {
     fields = {
-        searchSelect: v.String.init(),
+        autocomplete: v.String.init(),
     }
-    optional = {searchSelect: true}
+    optional = {autocomplete: true}
     fieldAttributes = {
-        searchSelect: {
-            label: "Search Select",
+        autocomplete: {
+            label: "Autocomplete",
         }
     }
 }
 
 export const Default = {
     args: {
-        field: "searchSelect",
+        field: "autocomplete",
         form: DefaultForm.init(),
-        data: { searchSelect: "" },
+        data: { autocomplete: "" },
         errors: {},
         options,
     }
@@ -45,7 +45,7 @@ export const Default = {
 export const Disabled = {
     args: {
         ...Default.args,
-        data: { searchSelect: "Value 2"},
+        data: { autocomplete: "Value 2"},
         disabled: true,
     },
 }
@@ -53,18 +53,18 @@ export const Disabled = {
 export const Filled = {
     args: {
         ...Default.args,
-        data: { searchSelect: "Value 2"},
+        data: { autocomplete: "Value 2"},
     },
 }
 
 class WithValidatorsForm extends FormSchema {
     fields = {
-        searchSelect: v.String.init(),
+        autocomplete: v.String.init(),
     }
     optional = {}
     fieldAttributes = {
-        searchSelect: {
-            label: "Search Select",
+        autocomplete: {
+            label: "Autocomplete",
         }
     }
 }
@@ -73,6 +73,6 @@ export const WithValidators = {
     args: {
         ...Default.args,
         form: WithValidatorsForm.init(),
-        data: { searchSelect: ""},
+        data: { autocomplete: ""},
     },
 }

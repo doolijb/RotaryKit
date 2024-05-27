@@ -5,6 +5,7 @@ import { validateData } from "$server/requests"
 import { BadRequest, InternalServerError, Forbidden, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 const postForm = PostForm.init()
 
@@ -59,7 +60,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		return Ok({ body: { success: true } })
 
 	} catch (e) {
-		console.error(e)
+		logger.error(e)
 		return InternalServerError()
 	}
 }

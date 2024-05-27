@@ -1,7 +1,6 @@
 import { boot } from "$server/boot"
 import { logger } from "$server/logging"
 import { userAuthentication } from "$server/middleware"
-import chalk from 'chalk';
 
 ////
 // BOOT
@@ -27,7 +26,7 @@ const middleware: Middleware[] = [
 
 /** @type {import("@sveltejs/kit").Handle} */
 export async function handle({ event, resolve }) {
-    Object.values(middleware).forEach(async (handler) => await handler(event))
+    await Promise.all(Object.values(middleware).map(handler => handler(event)));
     const response = await resolve(event)
     logger.resolvedRequest(event, response)
     return response

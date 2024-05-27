@@ -3,10 +3,10 @@ import path from "path"
 
 const config: StorybookConfig = {
 	stories: [
-		// {
-		// 	directory: "../src/lib/client/components",
-		// 	titlePrefix: "Components"
-		// },
+		{
+			directory: "../src/lib/client/components",
+			titlePrefix: "Components"
+		},
 		{
 			directory: "../src/lib/client/emailTemplates",
 			titlePrefix: "Email Templates"

@@ -1,27 +1,26 @@
-// import { expect, test } from "vitest"
-// import boolean from "."
+import { expect, test } from "vitest"
+import { Boolean } from "."
 
-// const data = {
-//     a: "",
-//     b: "true",
-//     c: "what is love?",
-// }
+const data = {
+    a: true,
+    b: false,
+    c: "what is love?",
+}
 
-// test("boolean validator test: passes", async () => {
-//     const validator = boolean()
+test("boolean primitive validator test: passes", async () => {
+    const validator = Boolean.init()
 
-//     // Validator should be truthy when empty
-//     let result = await validator.test({key:"a", data})
-//     expect(result).toBe(true)
+    let result = await validator.validate({key:"a", data})
+    expect(Object.keys(result)).toHaveLength(0)
 
-//     result = await validator.test({key:"b", data})
-//     expect(result).toBe(true)
-// })
+    result = await validator.validate({key:"b", data})
+    expect(Object.keys(result)).toHaveLength(0)
+})
 
-// test("boolean validator test: fails", async () => {
-//     const validator = boolean()
+test("boolean primitive validator test: fails", async () => {
+    const validator = Boolean.init()
 
-//     const result = await validator.test({key:"c", data})
+    const result = await validator.validate({key:"c", data})
 
-//     expect(result).toBe(false)
-// })
+    expect(Object.keys(result)).toHaveLength(1)
+})

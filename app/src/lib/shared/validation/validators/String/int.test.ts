@@ -1,14 +1,14 @@
 import { expect, test } from "vitest"
-import { Array } from "."
+import { String } from "."
 
 const data = {
-    a: [],
-    b: [1],
-    c: "what is love?",
+    a: "",
+    b: "what is love?",
+    c: 1,
 }
 
-test("array validator test: passes", async () => {
-    const validator = Array.init()
+test("string primitive validator test: passes", async () => {
+    const validator = String.init()
 
     let result = await validator.validate({key:"a", data})
     expect(Object.keys(result)).toHaveLength(0)
@@ -17,8 +17,8 @@ test("array validator test: passes", async () => {
     expect(Object.keys(result)).toHaveLength(0)
 })
 
-test("array validator test: fails", async () => {
-    const validator = Array.init()
+test("string primitive validator test: fails", async () => {
+    const validator = String.init()
 
     const result = await validator.validate({key:"c", data})
 

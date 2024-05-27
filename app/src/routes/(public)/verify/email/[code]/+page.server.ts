@@ -1,6 +1,6 @@
 
 /** @type {import('./$types').PageLoad} */
-export function load(event) {
+export function load() {
 	return {
 		title: "Verify Email"
 	}

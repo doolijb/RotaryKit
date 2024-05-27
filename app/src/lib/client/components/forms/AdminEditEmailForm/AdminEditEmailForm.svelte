@@ -2,7 +2,7 @@
 	import { page } from "$app/stores"
 	import { FormBase, CheckboxInput, TextInput } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
-	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
+	import { AdminEditEmail as Form } from "$shared/validation/forms"
 	import { onMount } from "svelte"
 
 	////
@@ -15,7 +15,7 @@
 	// PARENT EXPORTS
 	////
 
-	export let result: SelectUser
+	export let result: SelectEmail
 
 	////
 	// LOCAL EXPORTS
@@ -38,25 +38,15 @@
 
 	onMount(() => {
 		console.log("canEditSuperUsers", canEditSuperUsers)
-		if (canEditSuperUsers) {
-			form = FormWithPermissions.init()
-		} else {
-			form = Form.init()
-		}
+		form = Form.init()
 		data = {
-			username: "",
+			address: "",
 			isVerified: false,
-			isActive: false,
-			isAdmin: canEditSuperUsers ? false : undefined,
-			isSuperUser: canEditSuperUsers ? false : undefined,
+			isUserPrimary: false,
 		}
-		data.username = result.username
+		data.address = result.address
 		data.isVerified = !!result.verifiedAt
-		data.isActive = result.isActive
-		if (canEditSuperUsers) {
-			data["isAdmin"] = result.isAdmin
-			data["isSuperUser"] = result.isSuperUser
-		}
+		data.isUserPrimary = result.isUserPrimary
 		isLoaded = true
 	})
 </script>
@@ -84,9 +74,8 @@
 		{/if}
 
 		<TextInput
-			label="Username"
-			id="username"
-			field="username"
+			id="address"
+			field="address"
 			{form}
 			bind:errors
 			bind:data
@@ -95,7 +84,6 @@
 
 		<div class="card px-3 pt-2 w-100">
 			<CheckboxInput
-				label="Is Verified"
 				id="isVerified"
 				field="isVerified"
 				{form}
@@ -107,40 +95,13 @@
 
 		<div class="card px-3 pt-2 w-100">
 			<CheckboxInput
-				label="Is Active"
-				id="isActive"
-				field="isActive"
+				id="isUserPrimary"
+				field="isUserPrimary"
 				{form}
 				bind:errors
 				bind:data
 				{disabled}
 			/>
 		</div>
-
-		{#if canEditSuperUsers}
-			<div class="card px-3 pt-2 w-100">
-				<CheckboxInput
-					label="Is Admin"
-					id="isAdmin"
-					field="isAdmin"
-					{form}
-					bind:errors
-					bind:data
-					{disabled}
-				/>
-			</div>
-
-			<div class="card px-3 pt-2 w-100">
-				<CheckboxInput
-					label="Is Super User"
-					id="isSuperUser"
-					field="isSuperUser"
-					{form}
-					bind:errors
-					bind:data
-					{disabled}
-				/>
-			</div>
-		{/if}
 	</FormBase>
 {/if}

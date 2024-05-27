@@ -24,6 +24,8 @@ export  async function create({
 
     const id = uuid()
 
+    const expiresAt = new Date(Date.now() + (parseInt(process.env.USER_TOKEN_EXPIRATION_HOURS) * 60 * 60 * 1000))
+
     const query = tx.insert(schema.userTokens).values({
         id,
         userId: userId,
@@ -36,8 +38,10 @@ export  async function create({
         }),
         browser: event.locals.userAgent.browser.name,
         os: event.locals.userAgent.os.name,
-        expiresAt: new Date(Date.now() + (parseInt(process.env.USER_TOKEN_EXPIRATION_HOURS) * 60 * 60 * 1000))
+        expiresAt
     })
+
+    console.log('expires at', expiresAt)
 
     // Returning?
     if (returning) {

@@ -1,15 +1,11 @@
-import type { RequestEvent } from "@sveltejs/kit"
-import { forms, utils } from "$shared/validation"
-import { users } from "$server/providers"
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageLoad} */
 export function load({locals}) {
 
+	// Redirect if user is already logged in
 	if (locals.user) {
-		return {
-			status: 302,
-			redirect: "/"
-		}
+		return redirect(302, '/');
 	}
 
 	return {

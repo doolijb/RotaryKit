@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import {PostalCodeComplete} from "."
+import { PostalCodeComplete } from "."
 
 const data = {
     a: "",
@@ -8,13 +8,13 @@ const data = {
     d: "US",
 }
 
-test("postalCode validator test: passes", async () => {
-    const validator = new PostalCodeComplete({ countryCodeKey: "d" })
+test("postal code complete validator test: passes", async () => {
+    const validator = PostalCodeComplete.init({ countryCodeKey: "d" })
     expect(await validator.test({key:"a", data})).toBe(true) // Should pass when empty
     expect(await validator.test({key:"b", data})).toBe(true)
 })
 
-test("postalCode validator test: fails", async () => {
-    const validator = new PostalCodeComplete({ countryCodeKey: "d" })
+test("postal code complete validator test: fails", async () => {
+    const validator = PostalCodeComplete.init({ countryCodeKey: "d" })
     expect(await validator.test({key:"c", data})).toBe(false)
 })

@@ -14,6 +14,7 @@
 			toAdminPermissions: { adminPermission: SelectAdminPermission }[]
 		}}[]
 		toAdminPermissions: { adminPermission: SelectAdminPermission }[]
+		emails: SelectEmail[]
 	}
 
 	const mutateResult = (result:Result) => {
@@ -23,6 +24,7 @@
 			adminRoles: [],
 			adminPermissions: [],
 		}
+		console.log("retResult", retResult)
 
 		Object.values(retResult.toAdminRoles).forEach(({ adminRole }) => {
 			retResult.permissions = adminRole.toAdminPermissions.length
@@ -32,12 +34,10 @@
 				}
 			)
             retResult.adminRoles.push(adminRole)
-            
 		})
 
         delete retResult.toAdminRoles
 		delete retResult.toAdminPermissions
-		console.log("retResult", retResult)
         return retResult
 	}
 </script>
