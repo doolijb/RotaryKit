@@ -37,9 +37,9 @@ function getMockUser(resourceId: string): SelectUser {
 		isActive: faker.datatype.boolean(),
 		isAdmin: faker.datatype.boolean(),
 		isSuperUser: faker.datatype.boolean(),
-		createdAt: format(faker.date.past(), 'yyyy-MM-dd HH:mm:ss.SSS'),
-		updatedAt: format(faker.date.past(), 'yyyy-MM-dd HH:mm:ss.SSS'),
-		verifiedAt: format(faker.date.past(), 'yyyy-MM-dd HH:mm:ss.SSS'),
+		createdAt: format(faker.date.past(), "yyyy-MM-dd HH:mm:ss.SSS"),
+		updatedAt: format(faker.date.past(), "yyyy-MM-dd HH:mm:ss.SSS"),
+		verifiedAt: format(faker.date.past(), "yyyy-MM-dd HH:mm:ss.SSS"),
 		emails: [
 			{
 				id: faker.string.uuid(),

@@ -28,4 +28,4 @@ export class AdminCreateUser extends FormSchema {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ObserveForm = AdminCreateUser["Data"]
+type ObserveForm = AdminCreateUser["Data"] 

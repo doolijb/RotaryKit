@@ -1,17 +1,20 @@
-// import { expect, test } from "vitest"
-// import definition from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { email } from "."
 
-// test("email field validation: passes", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "jack.sparrow@example.com"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(0)
-// })
+const field = email()
 
-// test("Email fField validation: fails", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "jack.sparrow@example"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(1)
-// })
+test("email field validation: passes", async () => {
+    const data = {
+        email: "jack.sparrow@example.com",
+    }
+    const errors = await field.validate({ key: "email", data })
+    expect(errors).toEqual({})
+})
+
+test("Email field validation: fails", async () => {
+    const data = {
+        email: "jack.sparrow",
+    }
+    const errors = await field.validate({ key: "email", data })
+    expect(errors).toHaveProperty("emailAddressValid")
+}) 

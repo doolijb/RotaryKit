@@ -23,4 +23,4 @@ test("number primitive validator test: fails", async () => {
     const result = await validator.validate({key:"c", data})
 
     expect(Object.keys(result)).toHaveLength(1)
-})
+}) 

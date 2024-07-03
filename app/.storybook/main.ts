@@ -14,17 +14,17 @@ const config: StorybookConfig = {
 	],
 
 	addons: [
-		"@storybook/addon-links",
-		"@storybook/addon-essentials",
-		"@storybook/addon-interactions",
-		"storybook-addon-mock"
-	],
+        "@storybook/addon-links",
+        "@storybook/addon-essentials",
+        "@storybook/addon-interactions",
+        "storybook-addon-mock",
+        "@chromatic-com/storybook",
+        "@storybook/addon-styling-webpack"
+    ],
 	framework: {
 		name: "@storybook/sveltekit",
 		options: {}
 	},
-	docs: {
-		autodocs: "tag"
-	},
+	docs: {},
 }
 export default config

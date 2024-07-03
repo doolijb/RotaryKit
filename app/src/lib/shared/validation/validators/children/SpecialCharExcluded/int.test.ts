@@ -7,13 +7,13 @@ const data = {
     c: "Hello World!",
 }
 
-test("specialCharExcluded validator test: passes", async () => {
+test("SpecialCharExcluded validator test: passes", async () => {
     const validator = SpecialCharExcluded.init()
     expect(await validator.test({key:"a", data})).toBe(true) // Should pass when empty
-    expect(await validator.test({key:"a", data})).toBe(true)
+    expect(await validator.test({key:"b", data})).toBe(true)
 })
 
-test("specialCharExcluded validator test: fails", async () => {
+test("SpecialCharExcluded validator test: fails", async () => {
     const validator = SpecialCharExcluded.init()
-    expect(await validator.test({key:"a", data})).toBe(false)
+    expect(await validator.test({key:"c", data})).toBe(false)
 })

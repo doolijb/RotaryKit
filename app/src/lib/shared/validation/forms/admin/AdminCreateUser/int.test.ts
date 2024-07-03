@@ -1,37 +1,69 @@
-// import { expect, test } from "vitest"
-// import {default as definitions} from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { AdminCreateUser } from "."
 
-// test("adminCreateUser form: passes", async () => {
-//     const data = {
-//         username: "jacksparrow",
-//         email: "jack.sparrow@example.com",
-//         passphrase: "$password123456789",
-//         isVerified: true,
-//         isAdmin: true,
-//         isSuperUser: true
-//     }
+const form = AdminCreateUser.init()
 
-//     const expected = {}
- 
-//     // Test single field
-//     const form = utils.formValidator({definitions})
-//     let result = await form.test({username: data.username})
-//     expect(result).toEqual(expected)
+test("AdminCreateUser form test: passes", async () => {
+    const data: FormDataOf<AdminCreateUser> = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "securePassphrase123!", // added special character
+        isVerified: true,
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})
 
-//     // Test all fields
-//     result = await form.test(data)
-//     expect(result).toEqual(expected)
-// })
+test("AdminCreateUser form test: fails when username is not valid", async () => {
+    const data = {
+        username: "test user", // username is not valid
+        email: "test@example.com",
+        passphrase: "securePassphrase123",
+        isVerified: true,
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("username")
+})
 
-// test("admiNCreateUser form: username is required", async () => {
-//     const data = {}
-//     const form = utils.formValidator({definitions})
-//     const expected = {
-//         username: {
-//             "required": expect.any(String),
-//         }
-//     }
-//     const result = await form.test(data)
-//     expect(result).toStrictEqual(expected)
-// })
+test("AdminCreateUser form test: fails when email is not valid", async () => {
+    const data = {
+        username: "testuser",
+        email: "not an email", // email is not valid
+        passphrase: "securePassphrase123",
+        isVerified: true,
+    }
+    const result = await form.validate({data}) 
+    expect(result).toHaveProperty("email")
+})
+
+test("AdminCreateUser form test: fails when passphrase is not valid", async () => {
+    const data = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "pass", // passphrase is not valid
+        isVerified: true,
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("passphrase")
+})
+
+test("AdminCreateUser form test: fails when isVerified is not a boolean", async () => {
+    const data = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "securePassphrase123",
+        isVerified: "true", // isVerified is not a boolean
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("isVerified")
+})
+
+test("AdminCreateUser form test: passes when email is not provided", async () => {
+    const data = {
+        username: "testuser",
+        passphrase: "securePassphrase123!", // added special character
+        isVerified: true,
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})

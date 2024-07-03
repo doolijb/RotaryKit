@@ -217,7 +217,7 @@ declare global {
         USER_TOKEN_EXPIRATION_HOURS: string
     }
 
-    type Middleware = (event: RequestEvent) => Promise<void>
+    type Middleware = (event: RequestEvent) => Promise<void | Response>
 
 }
 

@@ -19,13 +19,13 @@ const config = {
 	],
 	test: {
 		include: ["src/**/*.int.test.ts", "src/**/int.test.ts"],
-		setupFiles: ["./src/lib/shared/testing/setupTests.ts"],
-			testTimeout: 60_000,
-			hookTimeout: 60_000,
-			browser: {
-			  name: 'firefox', // or 'chrome', 'safari', etc.
-			  headless: true,
-			},
+		setupFiles: ["./src/lib/shared/testing/setupIntegrationTests.ts"],
+		testTimeout: 60_000,
+		hookTimeout: 60_000,
+		browser: {
+			name: 'firefox', // or 'chrome', 'safari', etc.
+			headless: true,
+		},
 	},
 	build: {
 		rollupOptions: {

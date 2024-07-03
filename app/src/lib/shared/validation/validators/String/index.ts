@@ -18,17 +18,17 @@ class Root extends Validator {
 
 export class String extends Primitive<string> {
     Root = Root
-    emailAddressComplete = this.stageValidator(c.EmailAddressComplete)
+    emailAddressValid = this.stageValidator(c.EmailAddressValid)
     lowerCaseIncluded = this.stageValidator(c.LowerCaseIncluded)
     matches = this.stageValidator(c.Matches)
     maxLength = this.stageValidator(c.MaxLength)
     minLength = this.stageValidator(c.MinLength)
     multiSelectOptions = this.stageValidator(c.MultiSelectOptions)
     numbersIncluded = this.stageValidator(c.NumbersIncluded)
-    postalCodeComplete = this.stageValidator(c.PostalCodeComplete)
+    postalCodeValid = this.stageValidator(c.PostalCodeValid)
     specialCharExcluded = this.stageValidator(c.SpecialCharExcluded)
     specialCharIncluded = this.stageValidator(c.SpecialCharIncluded)
-    telephoneComplete = this.stageValidator(c.TelephoneComplete)
-    telephonePossible = this.stageValidator(c.TelephonePossible)
+    telephoneValid = this.stageValidator(c.TelephoneValid)
+   
     upperCaseIncluded = this.stageValidator(c.UpperCaseIncluded)
 }

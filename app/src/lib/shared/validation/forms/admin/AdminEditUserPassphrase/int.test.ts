@@ -1,89 +1,40 @@
-// import { expect, test } from "vitest"
-// import definitions from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { AdminEditUserPassphrase } from "."
 
-// test("userRegister form test: passes", async () => {
-//     const data = {
-//         username: "jacksparrow",
-//         email: "jack.sparrow@example.com",
-//         passphrase: "$password123456789",
-//         passphraseConfirm: "$password123456789"
-//     }
- 
-//     const extras: FormValidatorDefinition = {
-//         passphraseConfirm: { 
-//             matches: {
-//                 args: {
-//                     getValue: () => data.passphrase
-//                 }
-//             }
-//         }
-//     } 
- 
-//     const form = utils.formValidator({definitions, extras})
-//     const result = await form.test(data)
-//     const expected = {}
-//     expect(result).toEqual(expected)
-// })
+const form = AdminEditUserPassphrase.init()
 
-// test("userRegister form fields are required", async () => {
-//     const data = {}
+test("AdminEditUserPassphrase form test: passes", async () => {
+    const data: FormDataOf<AdminEditUserPassphrase> = {
+        passphrase: "testpassphrase!",
+        passphraseConfirm: "testpassphrase!",
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+}) 
 
-//     const extras: FormValidatorDefinition = {
-//         passphraseConfirm: {
-//             matches: {
-//                 args: {
-//                     getValue: () => data["passphrase"]
-//                 }
-//             }
-//         }
-//     }
+test("AdminEditUserPassphrase form test: fails when passphrase and passphraseConfirm do not match", async () => {
+    const data = {
+        passphrase: "testpassphrase",
+        passphraseConfirm: "differentpassphrase", // passphraseConfirm does not match passphrase
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("passphraseConfirm")
+})
 
-//     const form = utils.formValidator({definitions, extras})
-//     const expected = {
-//         username: {
-//             "required": expect.any(String),
-//         },
-//         email: {
-//             "required": expect.any(String),
-//         },
-//         passphrase: {
-//             "required": expect.any(String),
-//         },
-//         passphraseConfirm: {
-//             "required": expect.any(String),
-//         },
-//     }
-//     const result = await form.test(data)
-//     expect(result).toStrictEqual(expected)
-// })
+test("AdminEditUserPassphrase form test: fails when passphrase is not a valid passphrase", async () => {
+    const data = {
+        passphrase: "short", // passphrase is not a valid passphrase
+        passphraseConfirm: "short",
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("passphrase")
+})
 
-// test("userRegister form passphrases must match", async () => {
-//     const data = {
-//         username: "jacksparrow",
-//         email: "jack.sparrow@example.com",
-//         passphrase: "$password123456789",
-//         passphraseConfirm: "$password1234567890"
-//     }
-
-//     const extras: FormValidatorDefinition = {
-//         passphraseConfirm: {
-//             matches: {
-//                 args: {
-//                     getValue: () => data["passphrase"]
-//                 }
-//             }
-//         }
-//     }
-
-//     const form = utils.formValidator({definitions, extras})
-//     const expected = {
-//         passphraseConfirm: {
-//             "matches": expect.any(String),
-//         }
-//     }
-
-//     const result = await form.test(data)
-
-//     expect(result).toStrictEqual(expected)
-// })
+test("AdminEditUserPassphrase form test: fails when passphraseConfirm is not a valid passphrase", async () => {
+    const data = {
+        passphrase: "testpassphrase",
+        passphraseConfirm: "short", // passphraseConfirm is not a valid passphrase
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("passphraseConfirm")
+})

@@ -1,24 +1,24 @@
 import { faker } from "@faker-js/faker"
 import type { Meta } from "@storybook/svelte"
-import ReactComponent from 'svelte-react'
-import { PassphraseUpdatedConfirmation } from '.'
+import ReactComponent from "svelte-react"
+import { PassphraseUpdatedConfirmation } from "."
 
 const meta: Meta<typeof ReactComponent> = {
 	component: ReactComponent as any,
 	tags: ["autodocs"],
 	argTypes: {},
 	parameters: {
-		skipThemeProvider: true,
+		skipThemeProvider: true
 	}
 }
 
 export default meta
 
-const Template = (args:Parameters<typeof PassphraseUpdatedConfirmation>) => ({
+const Template = (args: Parameters<typeof PassphraseUpdatedConfirmation>) => ({
 	Component: ReactComponent,
 	props: {
 		...args,
-		this: PassphraseUpdatedConfirmation,
+		this: PassphraseUpdatedConfirmation
 	}
 })
 
@@ -28,5 +28,5 @@ export const Default = Template.bind({})
 
 Default.args = {
 	subject: "Your Passphrase Has Been Updated",
-	name: faker.internet.userName(),
+	name: faker.internet.userName()
 } as Args

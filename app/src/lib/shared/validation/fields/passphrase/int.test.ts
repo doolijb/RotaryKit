@@ -1,17 +1,36 @@
-// import { expect, test } from "vitest"
-// import definition from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { passphrase } from "."
 
-// test("Passphrase field validation: passes", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "$some 5tr0ng p4ssphr4se!"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(0)
-// })
+const field = passphrase()
 
-// test("Passphrase field validation: fails", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "password"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(1)
-// })
+test("passphrase field validation: passes", async () => {
+    const data = {
+        passphrase: "ValidPassphrase1!",
+    }
+    const errors = await field.validate({ key: "passphrase", data })
+    expect(errors).toEqual({})
+})
+
+test("passphrase field validation: fails when length is less than 8", async () => {
+    const data = {
+        passphrase: "Short1!",
+    }
+    const errors = await field.validate({ key: "passphrase", data })
+    expect(errors).toHaveProperty("minLength")
+})
+
+test("passphrase field validation: fails when length is more than 100", async () => {
+    const data = {
+        passphrase: "a".repeat(101),
+    }
+    const errors = await field.validate({ key: "passphrase", data })
+    expect(errors).toHaveProperty("maxLength")
+})
+
+test("passphrase field validation: fails when no special character is included", async () => {
+    const data = {
+        passphrase: "NoSpecialChar1",
+    }
+    const errors = await field.validate({ key: "passphrase", data })
+    expect(errors).toHaveProperty("specialCharIncluded")
+})

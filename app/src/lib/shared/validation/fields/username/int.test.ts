@@ -1,17 +1,37 @@
-// import { expect, test } from "vitest"
-// import definition from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { username } from "."
 
-// test("username field validation: passes", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "SparrowJack"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(0)
-// })
+const field = username()
 
-// test("username field validation: fails", async () => {
-//     const field = utils.fieldValidator({definition})
-//     const input = "$parrowJack"
-//     const errors = await field.test(input)
-//     expect(Object.keys(errors)).toHaveLength(1)
-// })
+test("username field validation: passes", async () => {
+    const data = {
+        username: "ValidUser",
+    }
+    const errors = await field.validate({ key: "username", data })
+    expect(errors).toEqual({})
+})
+
+test("username field validation: fails when length is less than 5", async () => {
+    const data = {
+        username: "User",
+    }
+    const errors = await field.validate({ key: "username", data })
+    expect(errors).toHaveProperty("minLength")
+})
+
+test("username field validation: fails when length is more than 20", async () => {
+    const data = {
+        username: "a".repeat(21),
+    }
+    const errors = await field.validate({ key: "username", data })
+    expect(errors).toHaveProperty("maxLength")
+})
+
+test("username field validation: fails when special character is included", async () => {
+    const data = {
+        username: "InvalidUser!",
+    }
+    const errors = await field.validate({ key: "username", data })
+    console.log(errors)
+    expect(errors).toHaveProperty("specialCharExcluded")
+})  

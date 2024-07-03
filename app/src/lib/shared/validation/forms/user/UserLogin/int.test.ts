@@ -1,35 +1,31 @@
-// import { expect, test } from "vitest"
-// import userLogin from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { UserLogin } from "."
 
-// test("userLogin form test: passes", async () => {
-//     const data = {
-//         username: "jacksparrow",
-//         passphrase: "$password123456789",
-//     } 
+const form = UserLogin.init()
 
-//     const form = utils.formValidator({definitions: userLogin})
-//     const result = await form.test(data)
+test("UserLogin form test: passes", async () => {
+    const data: FormDataOf<UserLogin> = {
+        username: "usr",
+        passphrase: "pass",
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})
 
-//     expect(result).toEqual({})
-// })
+test("UserLogin form test: fails when username is less than 3 characters", async () => {
+    const data = {
+        username: "us", // username is less than 3 characters
+        passphrase: "pass",
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("username")
+})
 
-// test("userLogin form test: fails", async () => {
-//     const data = {
-//         username: "",
-//         passphrase: "",
-//     } 
-
-//     const form = utils.formValidator({definitions: userLogin})
-//     const expected = {
-//         username: {
-//             required: expect.any(String),
-//         },
-//         passphrase: {
-//             required: expect.any(String),
-//         },
-//     }
-//     const result = await form.test(data)
-
-//     expect(result).toStrictEqual(expected)
-// })
+test("UserLogin form test: fails when passphrase is less than 3 characters", async () => {
+    const data = {
+        username: "usr",
+        passphrase: "pa", // passphrase is less than 3 characters
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("passphrase")
+})  

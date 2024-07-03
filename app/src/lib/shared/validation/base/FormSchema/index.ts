@@ -1,7 +1,7 @@
 import deepmerge from "deepmerge"
 import type { Primitive } from "../Primitive"
 import { children as c } from "$shared/validation/validators"
-// import { browser } from "$app/environment"
+
 
 export class FormSchema {
     fields: Record<string, Primitive<unknown>>
@@ -19,19 +19,6 @@ export class FormSchema {
                 field.addValidator(required)
             }
         })
-        // // Dev only server side validation
-        // if (!import.meta.env.PROD && this.fieldAttributes) {
-        //     const missingField = Object.keys(this.fieldAttributes).find((key) => {
-        //         return !(key in this.fields)
-        //     })
-        //     if (missingField) {
-        //         throw new Error(`Field "${missingField}" is missing from fields, but is present in fieldAttributes.`)
-        //     }
-        // }
-        // Try to save some server side memory
-        // if (!browser) {
-        //     delete(this.fieldAttributes)
-        // }
         return form
     }
 
@@ -42,10 +29,15 @@ export class FormSchema {
         })
 
         await Promise.all(Object.keys(this.fields).map(async (key) => {
-            const field = this.fields[key]
-            const result = await field.validate({key, data})
-            if (Object.keys(result).length ) {
-                errors[key] = deepmerge(errors[key], result)
+            try {
+                const field = this.fields[key]
+                const result = await field.validate({key, data})
+                if (Object.keys(result).length ) {
+                    errors[key] = deepmerge(errors[key], result)
+                }
+            } catch (error) {
+                console.error(`Error validating field ${key}:`, error)
+                errors[key] = {EXCEPTION: "An error occurred while validating this field."}
             }
         }))
 

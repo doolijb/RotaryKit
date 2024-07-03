@@ -28,7 +28,7 @@ const Template = ({ ...args }) => ({
 })
 
 function getMockUser() {
-    const ret = {
+	const ret = {
 		id: faker.string.uuid(),
 		username: faker.internet.userName(),
 		isAdmin: faker.datatype.boolean(),
@@ -47,7 +47,7 @@ function getMockUser() {
 			id: faker.string.uuid(),
 			address: faker.internet.email(),
 			isUserPrimary: !hasPrimary,
-			verifiedAt: faker.date.past().toISOString(),
+			verifiedAt: faker.date.past().toISOString()
 		}
 		ret.emails.push(email)
 		hasPrimary = true
@@ -62,7 +62,7 @@ Default.args = {
 	resource: "users",
 	displayTitle: "User",
 	result: getMockUser(),
-	naturalKey: "username",
+	naturalKey: "username"
 }
 
 // for range of 10, lets add examples.example to emailAddresses with fake ids

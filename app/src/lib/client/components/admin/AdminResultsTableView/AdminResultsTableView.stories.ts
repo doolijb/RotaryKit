@@ -15,7 +15,7 @@ const meta: Meta<typeof Component> = {
 				status: 200,
 				response: handleGetUsersResponse
 			}
-		],
+		]
 	}
 }
 

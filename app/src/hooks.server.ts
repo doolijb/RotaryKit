@@ -1,6 +1,8 @@
 import { boot } from "$server/boot"
 import { logger } from "$server/logging"
-import { userAuthentication } from "$server/middleware"
+import { userAuthentication, routeGuard } from "$server/middleware"
+import { redirect, type RequestEvent } from "@sveltejs/kit"
+import { request } from "http"
 
 ////
 // BOOT
@@ -18,6 +20,7 @@ await boot({
 
 const middleware: Middleware[] = [
     userAuthentication,
+    routeGuard,
 ]
 
 ////
@@ -26,7 +29,9 @@ const middleware: Middleware[] = [
 
 /** @type {import("@sveltejs/kit").Handle} */
 export async function handle({ event, resolve }) {
-    await Promise.all(Object.values(middleware).map(handler => handler(event)));
+    for (const handler of middleware) {
+        await handler(event)
+    }
     const response = await resolve(event)
     logger.resolvedRequest(event, response)
     return response

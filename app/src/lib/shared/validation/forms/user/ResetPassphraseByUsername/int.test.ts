@@ -1,27 +1,20 @@
-// import { expect, test } from "vitest"
-// import definitions from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { ResetPassphraseByUsername } from "."
 
-// test("resetPassphrase form test: passes", async () => {
-//     const data = {
-//         username: "test",
-//     }
- 
-//     const form = utils.formValidator({definitions})
-//     const result = await form.test(data)
-//     const expected = {}
-//     expect(result).toEqual(expected)
-// })
+const form = ResetPassphraseByUsername.init()
 
-// test("resetPassphrase form fields are required", async () => {
-//     const data = {}
+test("ResetPassphraseByUsername form test: passes", async () => {
+    const data: ResetPassphraseByUsername["Data"] = {
+        username: "testuser",
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})
 
-//     const form = utils.formValidator({definitions})
-//     const expected = {
-//         username: {
-//             "required": expect.any(String),
-//         },
-//     }
-//     const result = await form.test(data)
-//     expect(result).toStrictEqual(expected)
-// })
+test("ResetPassphraseByUsername form test: fails when username is empty", async () => {
+    const data = {
+        username: "", // username is less than 5 characters
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("username")
+}) 

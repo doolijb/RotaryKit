@@ -1,7 +1,7 @@
 import { Validator } from "$shared/validation/base"
 
 /**
- * Validates that a string is not empty
+ * Validates that a value is true or a positive number
  */
 export class Truthy extends Validator {
     badge = "Must Check"
@@ -9,7 +9,14 @@ export class Truthy extends Validator {
     message = "This field must be checked"
     isSticky = true
     test = async ({key, data}) => {
-        const value: boolean = data[key]
-        return value
+        const value: boolean | number = data[key]
+        if (value == null || value == undefined) return true // Empty is valid
+        if (typeof value === "number") {
+            return value > 0
+        }
+        if (typeof value === "boolean") {
+            return value
+        }
+        return false
     }
 }

@@ -22,28 +22,28 @@ const Template = (args: { value: boolean }) => ({
 const adminRoles: SelectAdminRole = [
 	{
 		id: "bf08df7a-8711-4e7b-9fe5-87529dfbe556",
-		name: "Editor",
+		name: "Editor"
 	},
 	{
 		id: "f42a3ed3-1133-413f-8829-536a23167fa0",
-		name: "Contributor",
+		name: "Contributor"
 	},
 	{
 		id: "182ae78c-4801-44a1-b329-cf751d09a1be",
-		name: "Customer Support",
+		name: "Customer Support"
 	},
 	{
 		id: "c997baf2-bded-4835-82ba-536ccecf0bfa",
-		name: "Administrator",
+		name: "Administrator"
 	},
 	{
 		id: "f06cd6c9-f812-4518-a231-83839393c70c",
-		name: "Security",
+		name: "Security"
 	},
 	{
 		id: "fa81a230-6588-4915-b392-06bdd5d4a7b1",
-		name: "Data Engineer",
-	},
+		name: "Data Engineer"
+	}
 ]
 
 export const Default = {
@@ -72,16 +72,16 @@ export const Filled = {
 				{
 					adminRole: {
 						id: "bf08df7a-8711-4e7b-9fe5-87529dfbe556",
-						name: "Editor",
+						name: "Editor"
 					}
 				},
 				{
 					adminRole: {
 						id: "f42a3ed3-1133-413f-8829-536a23167fa0",
-						name: "Contributor",
-					},
+						name: "Contributor"
+					}
 				}
-			],
+			]
 		}
 	},
 	render: Template

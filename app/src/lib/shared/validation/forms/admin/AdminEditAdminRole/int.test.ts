@@ -1,89 +1,40 @@
 import { expect, test } from "vitest"
-import definitions from "."
-import { utils } from "$shared/validation"
+import { AdminEditAdminRole } from "."
 
-test("userRegister form test: passes", async () => {
+const form = AdminEditAdminRole.init()
+
+test("AdminEditAdminRole form test: passes", async () => {
+    const data: FormDataOf<AdminEditAdminRole> = {
+        name: "AdminRole",
+        adminPermissions: ["permission1", "permission2"],
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})
+
+test("AdminEditAdminRole form test: fails when name is too short", async () => {
     const data = {
-        username: "jacksparrow",
-        email: "jack.sparrow@example.com",
-        passphrase: "$password123456789",
-        passphraseConfirm: "$password123456789"
+        name: "Ad", // name is too short
+        adminPermissions: ["permission1", "permission2"],
     }
- 
-    const extras: FormValidatorDefinition = {
-        passphraseConfirm: { 
-            matches: {
-                args: {
-                    getValue: () => data.passphrase
-                }
-            }
-        }
-    } 
- 
-    const form = utils.formValidator({definitions, extras})
-    const result = await form.test(data)
-    const expected = {}
-    expect(result).toEqual(expected)
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("name")
 })
 
-test("userRegister form fields are required", async () => {
-    const data = {}
-
-    const extras: FormValidatorDefinition = {
-        passphraseConfirm: {
-            matches: {
-                args: {
-                    getValue: () => data["passphrase"]
-                }
-            }
-        }
-    }
-
-    const form = utils.formValidator({definitions, extras})
-    const expected = {
-        username: {
-            "required": expect.any(String),
-        },
-        email: {
-            "required": expect.any(String),
-        },
-        passphrase: {
-            "required": expect.any(String),
-        },
-        passphraseConfirm: {
-            "required": expect.any(String),
-        },
-    }
-    const result = await form.test(data)
-    expect(result).toStrictEqual(expected)
-})
-
-test("userRegister form passphrases must match", async () => {
+test("AdminEditAdminRole form test: fails when name is too long", async () => {
     const data = {
-        username: "jacksparrow",
-        email: "jack.sparrow@example.com",
-        passphrase: "$password123456789",
-        passphraseConfirm: "$password1234567890"
+        name: "A".repeat(21), // name is too long
+        adminPermissions: ["permission1", "permission2"],
     }
-
-    const extras: FormValidatorDefinition = {
-        passphraseConfirm: {
-            matches: {
-                args: {
-                    getValue: () => data["passphrase"]
-                }
-            }
-        }
-    }
-
-    const form = utils.formValidator({definitions, extras})
-    const expected = {
-        passphraseConfirm: {
-            "matches": expect.any(String),
-        }
-    }
-
-    const result = await form.test(data)
-
-    expect(result).toStrictEqual(expected)
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("name")
 })
+
+test("AdminEditAdminRole form test: fails when adminPermissions is not an array", async () => {
+    const data = {
+        name: "AdminRole",
+        adminPermissions: "permission1", // adminPermissions is not an array
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("adminPermissions")
+}) 

@@ -6,7 +6,7 @@ const data = {
 	b: "TEST",
 }
 
-test("matches validator test: passes", async () => {
+test("Mtches validator test: passes", async () => {
 	const validator = Matches.init({matchingField:"a"})
 
 	const result = await validator.test({key:"a", data})
@@ -14,7 +14,7 @@ test("matches validator test: passes", async () => {
 	expect(result).toBe(true)
 })
 
-test("matches validator test: fails", async () => {
+test("Matches validator test: fails", async () => {
 	const validator = Matches.init({matchingField:"a"})
 
 	const result = await validator.test({key:"b", data})

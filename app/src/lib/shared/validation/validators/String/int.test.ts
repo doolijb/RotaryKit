@@ -7,7 +7,7 @@ const data = {
     c: 1,
 }
 
-test("string primitive validator test: passes", async () => {
+test("String primitive validator test: passes", async () => {
     const validator = String.init()
 
     let result = await validator.validate({key:"a", data})
@@ -17,10 +17,10 @@ test("string primitive validator test: passes", async () => {
     expect(Object.keys(result)).toHaveLength(0)
 })
 
-test("string primitive validator test: fails", async () => {
+test("String primitive validator test: fails", async () => {
     const validator = String.init()
 
     const result = await validator.validate({key:"c", data})
 
     expect(Object.keys(result)).toHaveLength(1)
-})
+}) 

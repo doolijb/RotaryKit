@@ -3,10 +3,10 @@ import { Validator } from "$shared/validation/base"
 /**
  * Validates that a string is a valid email address
  */
-export class EmailAddressComplete extends Validator {
+export class EmailAddressValid extends Validator {
     args = {}
-    badge = "Email Complete"
-    key = "emailAddressComplete"
+    badge = "Valid"
+    key = "emailAddressValid"
     message = "Must be a valid email address"
     test = async ({key, data}) => {
         const value = data[key]

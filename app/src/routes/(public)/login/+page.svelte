@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { redirect } from '@sveltejs/kit';
 	import { goto } from "$app/navigation"
 	import { Main, UserLoginForm } from "$client/components"
 	import { invalidateAll } from "$app/navigation"
@@ -11,17 +12,20 @@
 
 	const toastStore = getToastStore()
 
-	let completed = false
+	let completed: boolean = false
+	
 
 	async function onSubmit() {
 		await api.login.POST({body: data})
 			.Success(async (res) => {
+				console.log(res)
 				completed = true
+				const nextPage: string = $page.url.searchParams.get("next") || "/"
 				await invalidateAll()
 				toastStore.trigger(
-					new Toast({ message: `Welcome back, ${$page.data.user.username}`, style: "success" })
+					new Toast({ message: `Welcome back`, style: "success" })
 				)
-				await goto("/")
+				await goto(nextPage)
 			})
 			.ClientError(handleClientError({ errors, toastStore}))
 			.ServerError(handleServerError({ toastStore }))

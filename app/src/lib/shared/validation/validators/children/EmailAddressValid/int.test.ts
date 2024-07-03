@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { EmailAddressComplete } from "."
+import { EmailAddressValid } from "."
 
 const data = {
     a: "",
@@ -8,7 +8,7 @@ const data = {
 }
 
 test("email address complete validator test: passes", async () => {
-    const validator = EmailAddressComplete.init()
+    const validator = EmailAddressValid.init()
 
     let result = await validator.test({key:"a", data})
     expect(Object.keys(result)).toHaveLength(0)
@@ -18,7 +18,7 @@ test("email address complete validator test: passes", async () => {
 })
 
 test("email address complete validator test: fails", async () => {
-    const validator = EmailAddressComplete.init()
+    const validator = EmailAddressValid.init()
 
     const result = await validator.test({key:"c", data})
 

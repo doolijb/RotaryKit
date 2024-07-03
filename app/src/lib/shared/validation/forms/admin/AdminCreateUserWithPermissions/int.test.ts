@@ -1,37 +1,55 @@
-// import { expect, test } from "vitest"
-// import {default as definitions} from "."
-// import { utils } from "$shared/validation"
+import { expect, test } from "vitest"
+import { AdminCreateUserWithPermissions } from "."
 
-// test("adminCreateUser form: passes", async () => {
-//     const data = {
-//         username: "jacksparrow",
-//         email: "jack.sparrow@example.com",
-//         passphrase: "$password123456789",
-//         isVerified: true,
-//         isAdmin: true,
-//         isSuperUser: true
-//     }
+const form = AdminCreateUserWithPermissions.init()
 
-//     const expected = {}
- 
-//     // Test single field
-//     const form = utils.formValidator({definitions})
-//     let result = await form.test({username: data.username})
-//     expect(result).toEqual(expected)
+test("AdminCreateUserWithPermissions form test: passes", async () => {
+    const data: FormDataOf<AdminCreateUserWithPermissions> = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "securePassphrase123!",
+        isVerified: true,
+        isAdmin: false,
+        isSuperUser: false,
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})
 
-//     // Test all fields
-//     result = await form.test(data)
-//     expect(result).toEqual(expected)
-// })
+test("AdminCreateUserWithPermissions form test: fails when isAdmin is not a boolean", async () => {
+    const data = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "securePassphrase123!",
+        isVerified: true,
+        isAdmin: "false", // isAdmin is not a boolean
+        isSuperUser: false,
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("isAdmin")
+})
 
-// test("admiNCreateUser form: username is required", async () => {
-//     const data = {}
-//     const form = utils.formValidator({definitions})
-//     const expected = {
-//         username: {
-//             "required": expect.any(String),
-//         }
-//     }
-//     const result = await form.test(data)
-//     expect(result).toStrictEqual(expected)
-// })
+test("AdminCreateUserWithPermissions form test: fails when isSuperUser is not a boolean", async () => {
+    const data = {
+        username: "testuser",
+        email: "test@example.com",
+        passphrase: "securePassphrase123!",
+        isVerified: true,
+        isAdmin: false,
+        isSuperUser: "false", // isSuperUser is not a boolean
+    }
+    const result = await form.validate({data})
+    expect(result).toHaveProperty("isSuperUser")
+})
+
+test("AdminCreateUserWithPermissions form test: passes when email is not provided", async () => {
+    const data = {
+        username: "testuser",
+        passphrase: "securePassphrase123!",
+        isVerified: true,
+        isAdmin: false,
+        isSuperUser: false,
+    }
+    const result = await form.validate({data})
+    expect(result).toEqual({})
+})

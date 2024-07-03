@@ -3,7 +3,7 @@ import { FormSchema } from "$shared/validation/base"
 
 export class ResetPassphraseByUsername extends FormSchema {
     fields = {
-        username: v.String.init().minLength(5),
+        username: v.String.init(),
     }
     optional = {}
     fieldAttributes = {

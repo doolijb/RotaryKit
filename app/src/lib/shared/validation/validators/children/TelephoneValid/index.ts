@@ -7,11 +7,11 @@ import { Validator } from "$shared/validation/base"
  * @param {string} args.countryCodeKey
  */
 
-export class TelephoneComplete extends Validator {
+export class TelephoneValid extends Validator {
     declare args: { countryCodeKey: string }
     badge = "Invalid"
-    key = "telephoneComplete"
-    message = "Must be a complete phone number"
+    key = "telephoneValid"
+    message = "Must be a complete and valid phone number"
     test = async ({key, data}) => {
         const value: string = data[key]
         const countryCode: CountryCode = data[this.args.countryCodeKey]
@@ -25,12 +25,6 @@ export class TelephoneComplete extends Validator {
 
         const parsedNumber = parsePhoneNumber(numOnly, countryCode)
 
-        if (!parsedNumber) {
-            return false
-        }
-
-        return value && parsedNumber.isPossible()
-            ? parsedNumber && parsedNumber.isValid()
-            : true
+        return parsedNumber && parsedNumber.isValid()
     }
-}
+} 
