@@ -22,8 +22,7 @@ export const Filled = {
 	args: {
 		...Default.args,
 		data: {
-			username: "jack_sparrow",
-			passphrase: "some passphrase"
+			email: "jack.sparrow@example.com",
 		}
 	}
 }

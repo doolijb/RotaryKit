@@ -15,7 +15,7 @@ import { users } from "$server/providers"
 export async function login({
     tx=db,
     event,
-    username,
+    userId,
     passphrase,
 }: {
     tx?: typeof db,
@@ -28,7 +28,7 @@ export async function login({
      */
     const user = await tx.query.users.findFirst({
         where: (users, {eq, isNotNull, and}) => and(
-            eq(users.username, username), isNotNull(users.verifiedAt)
+            eq(users.id, userId), isNotNull(users.verifiedAt)
         ),
         with: {
             passphrase: true,

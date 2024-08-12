@@ -3,6 +3,7 @@ import { emails } from "$server/providers"
 import { BadRequest, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 interface Post {
     body?: undefined
@@ -44,7 +45,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 	    return Ok({ body: { success: true }})
 
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         return InternalServerError()
     }
 

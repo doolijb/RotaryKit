@@ -12,7 +12,7 @@ export class Matches extends Validator {
     badge = "Matches"
     key = "matches"
     message = () => `The ${this.args.matchingLabel ? this.args.matchingLabel.toLowerCase() + "s" : "values"
-        } entered do not match, please try again`
+        } entered must match.`
     test = async ({key, data })=> {
         const value = data[key]
         const matchingValue = data[this.args.matchingField]

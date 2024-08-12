@@ -1,10 +1,8 @@
 import { db, schema } from "$server/database"
-// import { PassphraseResetCode } from "$client/components"
-// TODO: Switch to react-email, this lib is dead
-/// https://github.com/carstenlebek/svelte-email/issues/25
-// import { render } from "svelte-email"
-// const render = undefined
+import { send } from "$server/emails"
+import { EmailLogTypes } from "$shared/constants"
 import nodemailer from "nodemailer"
+import { PassphraseResetCode } from "$client/emailTemplates"
 
 /**
  * Creates a passphrase reset code if a valid one does not already exist,
@@ -25,6 +23,7 @@ export async function sendCode({
     tx=db,
     userId,
     toAddress,
+    // TODO: Add validation options to save on db queries
 }: {
     tx?: typeof db,
     userId: string,
@@ -35,13 +34,14 @@ export async function sendCode({
 
     // Check if there is already a code
     let result = await getResult(tx, userId)
+    // 1 hour from now
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
 
     // If there is a code, use it or create a new one
     if (!result) {
         await tx.insert(schema.passphraseResets).values({
             userId,
-            // 1 hour from now
-            expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+            expiresAt
         }).returning({
             code: schema.passphraseResets.id,
         })
@@ -52,8 +52,6 @@ export async function sendCode({
 
     // Get our variables ready
     const code = result.id
-    // const username = result.user.username
-    // const expiresAt = result.expiresAt
 
     // If emailAddress is not provided, find one
     if (!toAddress) {
@@ -85,44 +83,19 @@ export async function sendCode({
         }
     }
 
-    const transportConfig = {
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT),
-        secure: process.env.NODE_ENV === "production",
-    }
+    const url = process.env.APP_URL + "/reset/passphrase/" + code
 
-    if (process.env.SMTP_USER || process.env.SMTP_PASSWORD) {
-        transportConfig["auth"] = {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-        }
-    }
-
-    // Send the code
-    const transporter = nodemailer.createTransport(transportConfig)
-
-    const url = process.env.APP_URL + "/passphrase/reset/" + code
-
-    // const html = render({
-    //     template: PassphraseResetCode, 
-    //     props: {
-    //         url,
-    //         username,
-    //         expiresAt,
-    //         subject
-    //     } 
-    // })
-
-    const options = {
-        from: `"${process.env.SMTP_DISPLAY_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`,
-        to: toAddress,
+    await send({
         subject,
-        html: "", // html,
-    }
-
-    await transporter.sendMail(options).catch((error) => {
-        console.error(error)
-        throw error
+        to: toAddress,
+        template: PassphraseResetCode,
+        args: {
+            url,
+            name: result.user.username,
+            expiresAt: expiresAt ?  Number.parseInt(expiresAt.getTime().toString()) : undefined,
+            subject
+        },
+        type: EmailLogTypes.PASSWORD_RESET
     })
 
     return toAddress

@@ -1,6 +1,7 @@
+
 /** @type {import('./$types').PageLoad} */
 export function load() {
 	return {
-		title: "Profile"
-	};
+		title: "Reset Passphrase"
+	}
 }

@@ -95,14 +95,14 @@
 	 * This directive will autofocus the first input field in the form
 	 */
 	function autofocus(node: HTMLFormElement) {
-		// Get the first input field in the form
-		const firstField: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =
-			node.querySelector('input, select, textarea [type="radio"], [type="checkbox"]')
+		// // Get the first input field in the form
+		// const firstField: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =
+		// 	node.querySelector('input, select, textarea [type="radio"], [type="checkbox"]')
 
-		// Focus on the first field when the action is mounted
-		if (firstField) {
-			firstField.focus()
-		}
+		// // Focus on the first field when the action is mounted
+		// if (firstField) {
+		// 	firstField.focus()
+		// }
 
 		return {
 			// No cleanup necessary

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { FormBase, TextInput, PassphraseInput } from "$client/components"
-	import { UserLogin as Form } from "$shared/validation/forms"
+	import { FormBase, TextInput } from "$client/components"
+	import { RecoverPassphraseByEmail as Form } from "$shared/validation/forms"
 
 	////
 	// PARENT EXPORTS
@@ -16,7 +16,6 @@
 	export const form = Form.init()
 	export let data: Form["Data"] = {
 		email: "",
-		passphrase: "",
 	} 
 	export let errors: FormErrors = {}
 
@@ -26,14 +25,6 @@
 	<TextInput
 		id="email"
 		field="email"
-		bind:data
-		{form}
-		bind:errors
-		{disabled}
-	/>
-	<PassphraseInput
-		id="passphrase"
-		field="passphrase"
 		bind:data
 		{form}
 		bind:errors

@@ -1,8 +1,8 @@
 import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { send } from "$server/emails"
-import { EmailVerificationCode } from "$client/emailTemplates"
 import { EmailLogTypes } from "$shared/constants"
+import { EmailVerificationCode } from "$client/emailTemplates"
 
 /**
  * Creates an email validation code if one does not already exist,

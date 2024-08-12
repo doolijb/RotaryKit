@@ -11,11 +11,11 @@ const authRoutes = {
 const unauthRoutes = {
     "/login": "/",
     "/register": "/",
+    "/forgot-password": "/",
 }
 
 function checkGuardedRoute(requestedPath: string, routes: Record<string, string>) {
     const guardedRoute: string | undefined = Object.keys(routes).find(route => requestedPath.startsWith(route))
-    console.log("Guarded route:", guardedRoute)
     if (guardedRoute) {
         return redirect(302, `${routes[guardedRoute]}?next=${requestedPath}`)
     }
@@ -23,6 +23,9 @@ function checkGuardedRoute(requestedPath: string, routes: Record<string, string>
 
 export async function routeGuard(event: RequestEvent) {
     const requestedPath = new URL(event.request.url).pathname
+    if (requestedPath.startsWith("/api")) {
+        return
+    }
     const user = event.locals.user
     let routesToCheck = []
 

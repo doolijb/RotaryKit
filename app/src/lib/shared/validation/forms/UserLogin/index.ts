@@ -3,13 +3,13 @@ import { FormSchema } from "$shared/validation/base"
 
 export class UserLogin extends FormSchema {
     fields = {
-        username: v.String.init().minLength(3),
+        email: v.String.init().emailAddressValid(),
         passphrase: v.String.init().minLength(3),
     }
     optional = {}
     fieldAttributes = {
-        username: {
-            label: "Username",
+        email: {
+            label: "Email",
         },
         passphrase: {
             label: "Passphrase",

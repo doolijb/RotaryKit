@@ -1,31 +1,23 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
-	import { goto } from "$app/navigation"
-	import { Main, UserLoginForm } from "$client/components"
-	import { invalidateAll } from "$app/navigation"
-	import { Toast, handleClientError, handleServerError, handleException } from "$client/utils"
+	import { Main, RecoverPassphraseByEmailForm } from "$client/components"
+	import { handleClientError, handleServerError, handleException } from "$client/utils"
 	import { page } from "$app/stores"
 	import api from "$shared/api"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
-	import type { UserLogin } from "$shared/validation/forms"
+	import type { RecoverPassphraseByEmail } from "$shared/validation/forms"
 
 	const toastStore = getToastStore()
 
 	let completed: boolean = false
-	
+	let email: string = "jack.sparrow@example.com"
 
 	async function onSubmit() {
-		await api.login.POST({body: data})
+		await api.passphrase.reset.POST({body: data})
 			.Success(async (res) => {
 				console.log(res)
 				completed = true
 				const nextPage: string = $page.url.searchParams.get("next") || "/"
-				await invalidateAll()
-				toastStore.trigger(
-					new Toast({ message: `Welcome back`, style: "success" })
-				)
-				await goto(nextPage)
 			})
 			.ClientError(handleClientError({ errors, toastStore}))
 			.ServerError(handleServerError({ toastStore }))
@@ -33,7 +25,7 @@
 	}
 
 	let form: FormSchema
-	let data: FormDataOf<UserLogin>
+	let data: FormDataOf<RecoverPassphraseByEmail>
 	let errors: FormErrors
 
 </script>
@@ -45,8 +37,19 @@
 				{$page.data.title}
 			</h1>
 		</div>
+		{#if completed}
+			<div class="card p-4 mb-4">
+				<h2 class="h3 mb-2">Check your email</h2>
+				<p class="mb-2 text-success">
+					You may receive an email to <u>{email}</u> with instructions to reset your passphrase if it is associated with an existing account.
+				</p>
+				<p>
+					If you don't receive an email within a few minutes, please check your spam folder.
+				</p>
+			</div>
+		{:else}
 		<div class="card border-0 p-4 mb-4">
-			<UserLoginForm on:submit={onSubmit} bind:form bind:data bind:errors />
+			<RecoverPassphraseByEmailForm on:submit={onSubmit} bind:form bind:data bind:errors />
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">
@@ -56,9 +59,10 @@
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">
-				Forgot your passphrase?
-				<a href="/reset/passphrase" class="btn btn-sm variant-filled-secondary">Reset</a>
+				Change your mind?
+				<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
 			</p>
 		</div>
+		{/if}
 	</div>
 </Main>
