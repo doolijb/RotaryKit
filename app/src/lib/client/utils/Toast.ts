@@ -28,7 +28,7 @@ export class Toast implements ToastSettings {
     // Fixed settings
     this.hoverable = true
     this.classes = "rounded-container-token variant-filled text-surface-50"
-    this.background = `bg-${style}-500`
+    this.background = `variant-filled-${style}`
   }
     message: ToastSettings["message"]
     background?: ToastSettings["background"]

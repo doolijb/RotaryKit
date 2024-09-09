@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Main, UserRegisterForm } from "$client/components"
+	import { Main, ChangePassphraseForm } from "$client/components"
 	import { page } from "$app/stores"
 	import { invalidateAll } from "$app/navigation"
 	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
@@ -9,12 +9,12 @@
 	const toastStore = getToastStore()
 
 	async function onSubmit() {
-		await api.register.POST({body: data})
+		await api.profile.passphrase.PUT({body: data})
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
 				toastStore.trigger(
-					new Toast({ message: "Your account has been created", style: "success" })
+					new Toast({ message: "Your passphrase has been updated", style: "success" })
 				)
 				completed = true
 			})
@@ -27,7 +27,7 @@
 	}
 
 	let completed = false
-	let data: UserRegisterForm["Data"]
+	let data: ChangePassphraseForm["Data"]
 	let errors: FormErrors
 
 </script>
@@ -44,12 +44,12 @@
 		<div class="card p-4 w-full mb-4">
 			<container class="container">
 				{#if !completed}
-					<UserRegisterForm on:submit={onSubmit} bind:data bind:errors />
+					<ChangePassphraseForm on:submit={onSubmit} bind:data bind:errors />
 				{:else}
 					<div class="flex flex-col items-center justify-center space-y-4">
-						<h1 class="text-2xl font-bold">Thank you for registering!</h1>
+						<h1 class="text-2xl font-bold">Success</h1>
 						<p class="text-lg">
-							A confirmation link will be sent to <u>{data.email || "your email"}</u>.
+							<a href="/profile">Click here to return to your profile.</a>
 						</p>
 					</div>
 				{/if}

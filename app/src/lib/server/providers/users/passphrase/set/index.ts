@@ -30,7 +30,7 @@ export async function set({
     // Iterations is a random number within 1000 + or - of 100,000
     // Store hash, salt, and iterations in database
     const salt = crypto.randomBytes(256 - process.env.SECRET_SALT.length).toString("hex");
-    const iterations = Math.floor(Math.random() * 200000) + 100000;
+    const iterations: number = Math.floor(Math.random() * 200000) + 100000;
   
     const hashedPassphrase = await users.passphrase.encrypt({
         passphrase,

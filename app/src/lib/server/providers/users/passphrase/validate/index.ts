@@ -13,19 +13,19 @@ export async function validate({
     userId,
     passphrase
 }:{
-    tx: DbTransaction | typeof db,
+    tx?: DbTransaction | typeof db,
     userId: string,
     passphrase: string
 }): Promise<boolean> {
     // Query database for user's passphrase
-    const res = await tx.findFirst(schema.passphrases, {userId, invalidatedAt: null})
+    const res = await tx.query.passphrases.findFirst(schema.passphrases, {userId, invalidatedAt: null})
     if (!res) return false
 
     // Encrypt passphrase with salt and iterations from database
     const hash = await users.passphrase.encrypt({
         passphrase,
         salt: res.salt,
-        iterations: res.iterations
+        iterations: parseInt(res.iterations)
     })
 
     // Compare encrypted passphrase with hash from database

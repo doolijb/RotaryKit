@@ -15,6 +15,7 @@ const unauthRoutes = {
 }
 
 function checkGuardedRoute(requestedPath: string, routes: Record<string, string>) {
+    requestedPath = requestedPath.replace("/__data.json", "")
     const guardedRoute: string | undefined = Object.keys(routes).find(route => requestedPath.startsWith(route))
     if (guardedRoute) {
         return redirect(302, `${routes[guardedRoute]}?next=${requestedPath}`)

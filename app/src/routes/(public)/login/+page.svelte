@@ -27,7 +27,10 @@
 				)
 				await goto(nextPage)
 			})
-			.ClientError(handleClientError({ errors, toastStore}))
+			.ClientError((r) => { 
+                errors = r.body.errors
+                return handleClientError({ errors, toastStore})(r)
+            })
 			.ServerError(handleServerError({ toastStore }))
 			.catch(handleException({ toastStore }))
 	}

@@ -9,22 +9,18 @@ export * from "./hasAdminPermission"
  * toasts (if toastStore is provided), before executing an optional callback function
  */
 export function handleClientError({
-    errors,
     toastStore,
 }:{
     errors?: FormErrors,
     toastStore?: ToastStore,
 }, callback?: (res: DefaultResponse) => Promise<any>) {
     return (res: DefaultResponse) => {
-        if (errors && res.body["errors"]) {
-            errors = res.body["errors"] || errors
-        }
         if (toastStore) {
             if (!res.body["message"]) {
                 res.body["message"] = "An unknown error occurred"
             }
             toastStore.trigger(
-                new Toast({ message: res.body['message'], style: "warning" })
+                new Toast({ message: res.body['message'], style: "error" })
             )
         }
         if (callback) {
