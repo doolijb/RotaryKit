@@ -5,18 +5,15 @@ import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
 
-interface Post {
+interface Get {
     body?: undefined
-    params: {
-        code: string
-    }
 }
 
 /**
  * Validate the email verification code and mark the email as verified
  * with propagation to the user.
  */
-export async function POST (event: KitEvent<Post, RequestEvent>) {
+export async function GET (event: KitEvent<Get, RequestEvent>) {
 
     try {
         

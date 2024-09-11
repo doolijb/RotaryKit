@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton'
 	import { page } from '$app/stores'
 	import { Main } from '$client/components'
 	import api from '$shared/api'
@@ -6,17 +7,15 @@
 	import { onMount } from 'svelte'
     import { AddEmailAddressForm } from '$client/components'
 	import { handleClientError, handleException, handleServerError, Toast } from '$client/utils'
-	import { invalidateAll } from '$app/navigation'
-	import { getToastStore } from '@skeletonlabs/skeleton'
 
 	const toastStore = getToastStore()
+    const modalStore = getModalStore()
 
 	async function onAddEmailSubmit() {
 		await api.profile.email.POST({body: addEmailData})
 			.Success(async (res) => {
                 getEmails()
 				addEmailCompleted = true
-				await invalidateAll()
 				toastStore.trigger(
 					new Toast({ message: "Your email was added", style: "success" })
 				)
@@ -29,9 +28,69 @@
 			.catch(handleException({ toastStore }))
 	}
 
+    async function onSetPrimaryClick(email) {
+        const modal: ModalSettings = {
+            type: "confirm",
+            title: "Change Primary Email Address",
+            body: `Are you sure you want to make ${email.address} your primary email address for all future authentication and communications? You will no longer be able to login with your current primary email address.`,
+            response: (r: boolean) => {
+                if (r) {
+                    onSetPrimaryConfirmClick(email)
+                }
+            }
+        }
+        modalStore.trigger(modal)
+    }
+
+    async function onSetPrimaryConfirmClick(email) {
+        isSettingPrimary = true
+        await api.profile.email.resourceId$(email.id)['set-user-primary'].PUT()
+            .Success(async (res) => {
+                getEmails()
+                toastStore.trigger(
+                    new Toast({ message: "Your email was made primary", style: "success" })
+                )
+            })
+            .ClientError(handleClientError({ toastStore }))
+            .ServerError(handleServerError({ toastStore }))
+            .catch(handleException({ toastStore }))
+        isSettingPrimary = false
+    }
+
+    async function onDeleteEmailClick(email) {
+        const modal: ModalSettings = {
+            type: "confirm",
+            title: "Delete Email Address",
+            body: `Are you sure you want to delete the email address ${email.address}?`,
+            response: (r: boolean) => {
+                if (r) {
+                    onDeleteEmailConfirmClick(email)
+                }
+            }
+        }
+        modalStore.trigger(modal)
+    }
+
+    async function onDeleteEmailConfirmClick(email) {
+        deletedEmailIds.push(email.id)
+        await api.profile.email.resourceId$(email.id).DELETE()
+            .Success(async (res) => {
+                getEmails()
+                toastStore.trigger(
+                    new Toast({ message: "Your email was deleted", style: "success" })
+                )
+            })
+            .ClientError(handleClientError({ toastStore }))
+            .ServerError(handleServerError({ toastStore }))
+            .catch(handleException({ toastStore }))
+    }
+
 	let addEmailCompleted = false
 	let addEmailData: AddEmailAddressForm["Data"]
 	let addEmailErrors: FormErrors
+    let deletedEmailIds: string[] = [] // Prevent button from being clicked multiple times
+    let isSettingPrimary = false
+    $: isShowControlColumn = emails.length > 1
 
     export let emails = [];
 
@@ -62,32 +121,52 @@
                     <th class="text-start">Email Address</th>
                     <th class="text-start">Verified At</th>
                     <th class="text-start">Is Primary</th>
-                    <th class="text-start"></th>
+                    {#if isShowControlColumn}<th class="text-start"></th>{/if}
                 </tr>
             </thead>
             <tbody>
                 {#each emails as email}
-                    <tr>
+                    <tr class="content-center">
                         <td>{email.address}</td>
                         <td>
                             {#if email.verifiedAt}
                                 {new Date(email.verifiedAt).toLocaleDateString()}
                             {:else}
-                                <button class="btn btn-primary">Resend Verification Email</button>
+                                <button 
+                                    class="btn btn-sm variant-filled-warning"
+                                >
+                                    Resend Verification Email
+                                </button>
                             {/if}
                         </td>
                         <td>
                             {#if email.isUserPrimary}
                                 <Icon icon="mdi:check" class="w-6 h-6 text-green-500" />
                             {:else if email.verifiedAt}
-                                <button class="btn btn-secondary">Make Primary</button>
+                                <button 
+                                    class="btn btn-sm variant-filled-surface hover:variant-filled-secondary"
+                                    on:click={() => onSetPrimaryClick(email)}
+                                    disabled={isSettingPrimary}
+                                >   
+                                    Set Primary
+                                </button>
+                            {:else}
+                                <Icon icon="mdi:cross-circle" class="w-6 h-6 text-surface-300" />
                             {/if}
                         </td>
-                        <td>
-                            {#if !email.isUserPrimary && emails.length > 1}
-                                <button class="btn btn-secondary">Delete</button>
-                            {/if}
-                        </td>
+                        {#if isShowControlColumn}
+                            <td>
+                                {#if !email.isUserPrimary && emails.length > 1}
+                                    <button 
+                                        class="btn btn-sm variant-filled-surface hover:variant-filled-error btn-secondary" 
+                                        on:click={() => onDeleteEmailClick(email)} 
+                                        disabled={deletedEmailIds.includes(email.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                {/if}
+                            </td>
+                        {/if}
                     </tr>
                 {/each}
             </tbody>
@@ -115,3 +194,5 @@
     </div>
     
 </Main>
+
+<style></style>

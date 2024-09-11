@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { passphrase } from '../[code]';
 	import { Main, Loading } from "$client/components"
 	import { page } from "$app/stores"
 	import { invalidateAll } from "$app/navigation"
@@ -13,7 +12,7 @@
 
 	async function verify() {
 		const code = $page.params.code
-		await api.passphrase.reset.code$(code).GET()
+		await api.verify.email.code$(code).GET()
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()

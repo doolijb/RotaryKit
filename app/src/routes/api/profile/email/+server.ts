@@ -1,6 +1,6 @@
 import { db, schema } from "$server/database"
-import { emails, users } from "$server/providers"
-import { BadRequest, Forbidden, InternalServerError, Ok } from "sveltekit-zero-api/http"
+import { emails } from "$server/providers"
+import { BadRequest, Created, Forbidden, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
@@ -86,18 +86,21 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
          * Add the email address to the user's account
          */
         await db.transaction(async tx => {
-            const email = await emails.create({
+            const [email] = await emails.create({
                 tx,
+                isVerified: false,
                 userId: event.locals.user.id,
                 address: data.email,
                 isUserPrimary: false,
+                returning: { id: schema.emails.id }
             })
+            await emails.sendCode({ tx, emailId:email.id })
         })
         
         /**
          * Return the response
          */
-        return Ok({ body: { success: true } })
+        return Created({ body: { success: true } })
 
     } catch (e) {
         logger.error(e)
