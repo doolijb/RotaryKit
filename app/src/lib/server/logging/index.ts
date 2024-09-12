@@ -1,4 +1,3 @@
-
 /**
  * Lets create a global logger for our server using winston
  */
@@ -7,19 +6,40 @@ import type { RequestEvent } from "@sveltejs/kit"
 import chalk from "chalk";
 import { createLogger, format, transports } from "winston"
 
+Error.stackTraceLimit = 1000
+
 const { printf } = format
 
 const appFormat = printf(({ level, message, timestamp, error, event }:{
-    level: string,
+    level: "info" | "warn" | "debug",
     message: string,
     timestamp: string,
-    error?: Error,
+    error: undefined,
+    event?: RequestEvent
+} | {
+    level: "error",
+    message: string,
+    timestamp: string,
+    error: Error,
     event?: RequestEvent
 }) => {
+
+    if (level === "error" && !error) {
+        logger.warn("Error log without an error object")
+    }
+
     const colorizer = format.colorize();
     const coloredLevel = colorizer.colorize(level, level.toUpperCase());
 
-    return `${timestamp} ${coloredLevel}: ${message} ${error ? `\n${error.stack}` : ""} ${
+    let location = '';
+    if (error && error.stack) {
+        const stackLines = error.stack.split('\n');
+        if (stackLines.length > 1) {
+            location = stackLines[1].trim(); // Extract the first line of the stack trace
+        }
+    }
+
+    return `${timestamp} ${coloredLevel}: ${message} ${location ? `\nLocation: ${location}` : ""} ${error ? `\n${error.stack}` : ""} ${
         event ? `\n${JSON.stringify(event, null, 2)}` : ""
     }`
 });
@@ -29,6 +49,7 @@ const baseLogger = createLogger({
     level: "info",
     format: format.combine(
         format.timestamp(),
+        format.errors({ stack: true }), // Ensure stack trace is included
         appFormat
     ),
     transports: [new transports.Console()],

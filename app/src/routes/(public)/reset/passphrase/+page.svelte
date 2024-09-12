@@ -10,10 +10,11 @@
 	const toastStore = getToastStore()
 
 	let completed: boolean = false
-	let email: string = "jack.sparrow@example.com"
+	let email: string
 
 	async function onSubmit() {
-		await api.passphrase.reset.POST({body: data})
+		email = data.email
+		await api.reset.passphrase.POST({body: data})
 			.Success(async (res) => {
 				console.log(res)
 				completed = true

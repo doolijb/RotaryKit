@@ -41,7 +41,8 @@ export async function GET (event: KitEvent<Get, RequestEvent>) {
                 verifiedAt: true,
                 isUserPrimary: true
             },
-            where: (e, { eq }) => eq(e.userId, event.locals.user.id)
+            where: (e, { eq }) => eq(e.userId, event.locals.user.id),
+            orderBy: (e, { asc }) => asc(e.address)
         })
         
         /**

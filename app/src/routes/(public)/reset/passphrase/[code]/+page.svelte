@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { passphrase } from '../[code]';
 	import { Main, Loading } from "$client/components"
 	import { page } from "$app/stores"
 	import { invalidateAll } from "$app/navigation"
@@ -7,20 +6,18 @@
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import api from "$shared/api"
 	import { onMount } from "svelte"
+	import NewPassphraseForm from "$client/components/forms/NewPassphraseForm/NewPassphraseForm.svelte"
 
 	const toastStore = getToastStore()
-	const isCodeValid = null
 
 	async function verify() {
 		const code = $page.params.code
-		await api.passphrase.reset.code$(code).GET()
+		await api.reset.passphrase.code$(code).GET()
 			.Success(async (res) => {
-				completed = true
-				await invalidateAll()
 				toastStore.trigger(
 					new Toast({ message: "Your email has been verified", style: "success" })
 				)
-				completed = true
+				valid = true
 			})
 			.ClientError(handleClientError({ toastStore}, errCallback))
 			.ServerError(handleServerError({ toastStore }, errCallback))
@@ -31,6 +28,7 @@
 		failure = true
 	}
 
+	let valid = false
 	let completed = false
 	let failure = false
 
@@ -50,36 +48,21 @@
             </h1>
         </div>
 		<div class="card p-4 w-full mb-4">
-			<container class="container">
-				<div class="flex flex-col items-center justify-center space-y-4">
-					{#if completed}
-						<h1 class="text-2xl font-bold">Your email address is verified!</h1>
-						<p class="text-lg">
-							{#if $page.data.user}
-								You may continue browsing the <a href="/">site</a>.
-							{:else}
-								You may now <a href="/login">login</a>.
-							{/if}
-						</p>
-					{:else if failure}
-						<h1 class="text-2xl font-bold">Your email address could not be verified.</h1>
-						<p class="text-lg">
-							Please check your verification code or try again later.
-						</p>
-					{:else}
-						<Loading />
-					{/if}
-				</div>
-			</container>
+			{#if valid}
+				<NewPassphraseForm />
+			{:else if failure}
+				<h1 class="text-2xl font-bold">Your passphrase could not be reset.</h1>
+				<p class="text-lg">
+					Please check your code or try again later.
+				</p>
+			{:else}
+				<Loading />
+			{/if}
 		</div>
 		{#if completed}
 			<div class="card p-4">
 				<p class="text-center">
-					{#if $page.data.user}
-						<a href="/" class="btn btn-sm variant-filled-secondary">Home</a>
-					{:else}
-						<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
-					{/if}
+					You may now <a href="/login">login</a> with your new passphrase.
 				</p>
 			</div>
 		{/if}

@@ -21,22 +21,27 @@ export async function sendCode({
     tx=db,
     emailId,
     username=null,
+    expiresAt=new Date(Date.now() + 1000 * 60 * 60 * 24)
 }: {
     tx?: typeof db,
     emailId: string,
     username?: string,
+    expiresAt?: Date | null
 }): Promise<void> {
 
     let code: string
-    const expiresAt = null // TODO
     const subject= "Email Verification"
 
     // Check if there is already a code
     const result = await tx.query.emailVerifications.findFirst({
-        where: (v, {and, eq, isNull}) => and(
+        where: (v, {and, eq, isNull, gte, or}) => and(
             eq(v.emailId, emailId),
             isNull(v.verifiedAt),
-            isNull(v.expiresAt), // TODO: Check if expired compared to now
+            or(
+                isNull(v.expiresAt), 
+                gte(v.expiresAt, new Date())
+            ),
+            isNull(v.expiresAt),
         ),
         with: {
             email: true
@@ -45,12 +50,16 @@ export async function sendCode({
 
     // If there is a code, use it or create a new one
     if (result) {
-        // Create a new code
         code = result.id
-    } else {
-        [{code}] = await tx.insert(schema.emailVerifications).values({
-            emailId: emailId,
+        // Update the expiration date
+        await tx.update(schema.emailVerifications).set({
             expiresAt
+        }).where(eq(schema.emailVerifications.id, code))
+    } else {
+        // Create a new code
+        [{code}] = await tx.insert(schema.emailVerifications).values({
+            emailId,
+            expiresAt,
         }).returning({
             code: schema.emailVerifications.id,
         })
@@ -82,7 +91,7 @@ export async function sendCode({
         args: {
             url,
             name: username,
-            expiresAt,
+            expiresAt: expiresAt.getTime(),
             subject
         },
         type: EmailLogTypes.EMAIL_VERIFICATION

@@ -13,12 +13,25 @@ CREATE TABLE IF NOT EXISTS "admin_roles" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "admin_roles_to_permissions" (
-	"name" text NOT NULL,
-	"user_permission_id" uuid NOT NULL,
-	"staff_role_id" uuid NOT NULL,
+	"admin_permission_id" uuid NOT NULL,
+	"admin_role_id" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT admin_roles_to_permissions_user_permission_id_staff_role_id_pk PRIMARY KEY("user_permission_id","staff_role_id")
+	CONSTRAINT "admin_roles_to_permissions_admin_permission_id_admin_role_id_pk" PRIMARY KEY("admin_permission_id","admin_role_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "email_logs" (
+	"id" uuid PRIMARY KEY DEFAULT (gen_random_uuid ()) NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"success" boolean DEFAULT false NOT NULL,
+	"type" varchar(256) NOT NULL,
+	"recipient_user_id" uuid,
+	"recipient_user_name" varchar(256),
+	"recipient_email_id" uuid,
+	"recipient_email_address" varchar(256) NOT NULL,
+	"parameters" json NOT NULL,
+	"html" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "emails" (
@@ -71,9 +84,9 @@ CREATE TABLE IF NOT EXISTS "users" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users_to_admin_roles" (
 	"user_id" uuid NOT NULL,
-	"role_id" uuid NOT NULL,
+	"admin_role_id" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT users_to_admin_roles_user_id_role_id_pk PRIMARY KEY("user_id","role_id")
+	CONSTRAINT "users_to_admin_roles_user_id_admin_role_id_pk" PRIMARY KEY("user_id","admin_role_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_tokens" (
@@ -86,61 +99,72 @@ CREATE TABLE IF NOT EXISTS "user_tokens" (
 	"os" varchar(256) NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_action_resource" ON "admin_permissions" ("method","resource");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_primary" ON "emails" ("user_id","is_user_primary");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_passphrases" ON "passphrases" ("user_id");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_usernames" ON "users" ("username");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_valid_user_tokens" ON "user_tokens" ("user_id","token");--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "admin_roles_to_permissions" ADD CONSTRAINT "admin_roles_to_permissions_user_permission_id_admin_permissions_id_fk" FOREIGN KEY ("user_permission_id") REFERENCES "admin_permissions"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "admin_roles_to_permissions" ADD CONSTRAINT "admin_roles_to_permissions_admin_permission_id_admin_permissions_id_fk" FOREIGN KEY ("admin_permission_id") REFERENCES "public"."admin_permissions"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "admin_roles_to_permissions" ADD CONSTRAINT "admin_roles_to_permissions_staff_role_id_admin_roles_id_fk" FOREIGN KEY ("staff_role_id") REFERENCES "admin_roles"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "admin_roles_to_permissions" ADD CONSTRAINT "admin_roles_to_permissions_admin_role_id_admin_roles_id_fk" FOREIGN KEY ("admin_role_id") REFERENCES "public"."admin_roles"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "emails" ADD CONSTRAINT "emails_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "email_logs" ADD CONSTRAINT "email_logs_recipient_user_id_users_id_fk" FOREIGN KEY ("recipient_user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "email_verifications" ADD CONSTRAINT "email_verifications_email_id_emails_id_fk" FOREIGN KEY ("email_id") REFERENCES "emails"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "email_logs" ADD CONSTRAINT "email_logs_recipient_email_id_emails_id_fk" FOREIGN KEY ("recipient_email_id") REFERENCES "public"."emails"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "passphrase_resets" ADD CONSTRAINT "passphrase_resets_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "emails" ADD CONSTRAINT "emails_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "passphrases" ADD CONSTRAINT "passphrases_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "email_verifications" ADD CONSTRAINT "email_verifications_email_id_emails_id_fk" FOREIGN KEY ("email_id") REFERENCES "public"."emails"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "users_to_admin_roles" ADD CONSTRAINT "users_to_admin_roles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "passphrase_resets" ADD CONSTRAINT "passphrase_resets_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "users_to_admin_roles" ADD CONSTRAINT "users_to_admin_roles_role_id_admin_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "admin_roles"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "passphrases" ADD CONSTRAINT "passphrases_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "user_tokens" ADD CONSTRAINT "user_tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "users_to_admin_roles" ADD CONSTRAINT "users_to_admin_roles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "users_to_admin_roles" ADD CONSTRAINT "users_to_admin_roles_admin_role_id_admin_roles_id_fk" FOREIGN KEY ("admin_role_id") REFERENCES "public"."admin_roles"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_tokens" ADD CONSTRAINT "user_tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_action_resource" ON "admin_permissions" USING btree ("method","resource");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_passphrases" ON "passphrases" USING btree ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_usernames" ON "users" USING btree ("username");

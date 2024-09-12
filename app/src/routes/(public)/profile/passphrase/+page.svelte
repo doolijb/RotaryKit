@@ -55,11 +55,5 @@
 				{/if}
 			</container>
 		</div>
-		<div class="card p-4">
-			<p class="text-center">
-				Already have an account?
-				<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
-			</p>
-		</div>
 	</div>
 </Main>

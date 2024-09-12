@@ -47,4 +47,5 @@
     "[svelte]": {
         "editor.defaultFormatter": "svelte.svelte-vscode"
     },
+    "html.format.indentHandlebars": true,
 }

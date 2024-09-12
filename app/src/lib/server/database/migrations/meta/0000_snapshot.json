@@ -1,10 +1,10 @@
 {
-  "id": "aae48de7-e161-407f-976c-74ac4d95c081",
+  "id": "62fff546-3872-49b5-8035-be86992f4bf5",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "admin_permissions": {
+    "public.admin_permissions": {
       "name": "admin_permissions",
       "schema": "",
       "columns": {
@@ -38,17 +38,30 @@
         "unique_action_resource": {
           "name": "unique_action_resource",
           "columns": [
-            "method",
-            "resource"
+            {
+              "expression": "method",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "resource",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "admin_roles": {
+    "public.admin_roles": {
       "name": "admin_roles",
       "schema": "",
       "columns": {
@@ -85,24 +98,18 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "admin_roles_to_permissions": {
+    "public.admin_roles_to_permissions": {
       "name": "admin_roles_to_permissions",
       "schema": "",
       "columns": {
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_permission_id": {
-          "name": "user_permission_id",
+        "admin_permission_id": {
+          "name": "admin_permission_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "staff_role_id": {
-          "name": "staff_role_id",
+        "admin_role_id": {
+          "name": "admin_role_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -124,12 +131,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "admin_roles_to_permissions_user_permission_id_admin_permissions_id_fk": {
-          "name": "admin_roles_to_permissions_user_permission_id_admin_permissions_id_fk",
+        "admin_roles_to_permissions_admin_permission_id_admin_permissions_id_fk": {
+          "name": "admin_roles_to_permissions_admin_permission_id_admin_permissions_id_fk",
           "tableFrom": "admin_roles_to_permissions",
           "tableTo": "admin_permissions",
           "columnsFrom": [
-            "user_permission_id"
+            "admin_permission_id"
           ],
           "columnsTo": [
             "id"
@@ -137,12 +144,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "admin_roles_to_permissions_staff_role_id_admin_roles_id_fk": {
-          "name": "admin_roles_to_permissions_staff_role_id_admin_roles_id_fk",
+        "admin_roles_to_permissions_admin_role_id_admin_roles_id_fk": {
+          "name": "admin_roles_to_permissions_admin_role_id_admin_roles_id_fk",
           "tableFrom": "admin_roles_to_permissions",
           "tableTo": "admin_roles",
           "columnsFrom": [
-            "staff_role_id"
+            "admin_role_id"
           ],
           "columnsTo": [
             "id"
@@ -152,17 +159,124 @@
         }
       },
       "compositePrimaryKeys": {
-        "admin_roles_to_permissions_user_permission_id_staff_role_id_pk": {
-          "name": "admin_roles_to_permissions_user_permission_id_staff_role_id_pk",
+        "admin_roles_to_permissions_admin_permission_id_admin_role_id_pk": {
+          "name": "admin_roles_to_permissions_admin_permission_id_admin_role_id_pk",
           "columns": [
-            "user_permission_id",
-            "staff_role_id"
+            "admin_permission_id",
+            "admin_role_id"
           ]
         }
       },
       "uniqueConstraints": {}
     },
-    "emails": {
+    "public.email_logs": {
+      "name": "email_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "(gen_random_uuid ())"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "success": {
+          "name": "success",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_user_id": {
+          "name": "recipient_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recipient_user_name": {
+          "name": "recipient_user_name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recipient_email_id": {
+          "name": "recipient_email_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recipient_email_address": {
+          "name": "recipient_email_address",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parameters": {
+          "name": "parameters",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "html": {
+          "name": "html",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "email_logs_recipient_user_id_users_id_fk": {
+          "name": "email_logs_recipient_user_id_users_id_fk",
+          "tableFrom": "email_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "recipient_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "email_logs_recipient_email_id_emails_id_fk": {
+          "name": "email_logs_recipient_email_id_emails_id_fk",
+          "tableFrom": "email_logs",
+          "tableTo": "emails",
+          "columnsFrom": [
+            "recipient_email_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.emails": {
       "name": "emails",
       "schema": "",
       "columns": {
@@ -213,16 +327,7 @@
           "default": false
         }
       },
-      "indexes": {
-        "unique_user_primary": {
-          "name": "unique_user_primary",
-          "columns": [
-            "user_id",
-            "is_user_primary"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "emails_user_id_users_id_fk": {
           "name": "emails_user_id_users_id_fk",
@@ -249,7 +354,7 @@
         }
       }
     },
-    "email_verifications": {
+    "public.email_verifications": {
       "name": "email_verifications",
       "schema": "",
       "columns": {
@@ -305,7 +410,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "passphrase_resets": {
+    "public.passphrase_resets": {
       "name": "passphrase_resets",
       "schema": "",
       "columns": {
@@ -361,7 +466,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "passphrases": {
+    "public.passphrases": {
       "name": "passphrases",
       "schema": "",
       "columns": {
@@ -414,9 +519,17 @@
         "unique_user_passphrases": {
           "name": "unique_user_passphrases",
           "columns": [
-            "user_id"
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -437,7 +550,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -500,16 +613,24 @@
         "unique_usernames": {
           "name": "unique_usernames",
           "columns": [
-            "username"
+            {
+              "expression": "username",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users_to_admin_roles": {
+    "public.users_to_admin_roles": {
       "name": "users_to_admin_roles",
       "schema": "",
       "columns": {
@@ -519,8 +640,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "role_id": {
-          "name": "role_id",
+        "admin_role_id": {
+          "name": "admin_role_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -548,12 +669,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "users_to_admin_roles_role_id_admin_roles_id_fk": {
-          "name": "users_to_admin_roles_role_id_admin_roles_id_fk",
+        "users_to_admin_roles_admin_role_id_admin_roles_id_fk": {
+          "name": "users_to_admin_roles_admin_role_id_admin_roles_id_fk",
           "tableFrom": "users_to_admin_roles",
           "tableTo": "admin_roles",
           "columnsFrom": [
-            "role_id"
+            "admin_role_id"
           ],
           "columnsTo": [
             "id"
@@ -563,17 +684,17 @@
         }
       },
       "compositePrimaryKeys": {
-        "users_to_admin_roles_user_id_role_id_pk": {
-          "name": "users_to_admin_roles_user_id_role_id_pk",
+        "users_to_admin_roles_user_id_admin_role_id_pk": {
+          "name": "users_to_admin_roles_user_id_admin_role_id_pk",
           "columns": [
             "user_id",
-            "role_id"
+            "admin_role_id"
           ]
         }
       },
       "uniqueConstraints": {}
     },
-    "user_tokens": {
+    "public.user_tokens": {
       "name": "user_tokens",
       "schema": "",
       "columns": {
@@ -622,16 +743,7 @@
           "notNull": true
         }
       },
-      "indexes": {
-        "unique_valid_user_tokens": {
-          "name": "unique_valid_user_tokens",
-          "columns": [
-            "user_id",
-            "token"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "user_tokens_user_id_users_id_fk": {
           "name": "user_tokens_user_id_users_id_fk",
@@ -653,9 +765,10 @@
   },
   "enums": {},
   "schemas": {},
+  "sequences": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   }
 }

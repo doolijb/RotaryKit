@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_primary" ON "emails" USING btree ("user_id","is_user_primary") WHERE "emails"."is_user_primary" = true AND "emails"."user_id" IS NOT NULL;

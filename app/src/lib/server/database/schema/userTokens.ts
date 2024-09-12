@@ -12,10 +12,6 @@ export const userTokens = pgTable("user_tokens", {
     expiresAt: timestamp("expires_at").notNull(),
     browser: varchar("browser", { length: 256 }).notNull(),
     os: varchar("os", { length: 256 }).notNull(),
-}, (obj) => {
-    return {
-        validUserTokenIndex: uniqueIndex("unique_valid_user_tokens").on(obj.userId, obj.token).where(sql`${obj.expiresAt} > now()`),
-    }
 })
 
 export const usersTokenRelations = relations(userTokens, ({ many, one }) => ({

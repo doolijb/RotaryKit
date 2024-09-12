@@ -13,7 +13,7 @@ export const emails = pgTable("emails", {
     isUserPrimary: boolean("is_user_primary").notNull().default(false),
 }, (t) => ({
     unqAddress: unique().on(t.address),
-    unqUserPrimary: uniqueIndex("unique_user_primary").on(t.userId, t.isUserPrimary).where(sql`${t.isUserPrimary} = true, ${t.userId} IS NOT NULL`),
+    unqUserPrimary: uniqueIndex("unique_user_primary").on(t.userId, t.isUserPrimary).where(sql`${t.isUserPrimary} = true AND ${t.userId} IS NOT NULL`),
 }))
 
 export const emailRelations = relations(emails, ({ one: One }) => ({

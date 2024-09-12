@@ -1,33 +1,19 @@
 {
-  "version": "5",
+  "version": "0",
   "dialect": "pg",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1702027052223,
-      "tag": "0000_bitter_thing",
+      "version": "7",
+      "when": 1726086741758,
+      "tag": "0000_cloudy_mindworm",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "5",
-      "when": 1702069553603,
-      "tag": "0001_bumpy_bastion",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1702159977304,
-      "tag": "0002_silly_speed_demon",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1707130129082,
-      "tag": "0003_curly_magma",
+      "version": "7",
+      "when": 1726087172267,
+      "tag": "0001_adorable_surge",
       "breakpoints": true
     }
   ]

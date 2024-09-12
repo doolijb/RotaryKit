@@ -2,17 +2,14 @@ import { drizzle } from "drizzle-orm/node-postgres"
 import { migrate as pgMigrate } from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
 import { schema, relations } from "./schema"
-import { dbCredentials } from "./config"
+import { dbCredentials, getConnectionString } from "./config"
 import seeds from "./seeds"
 import utils from "./utils"
 
 import pgtools from "pgtools"
 import { logger } from "$server/logging"
 
-export function getConnectionString(dbCredentials: {host:string, port:number, database:string, user:string, password:string}) {
-    const { host, port, database, user, password } = dbCredentials
-    return `postgres://${user}:${password}@${host}:${port}/${database}`
-}
+
 
 export const client = new pg.Client({ connectionString: getConnectionString(dbCredentials) })
 
