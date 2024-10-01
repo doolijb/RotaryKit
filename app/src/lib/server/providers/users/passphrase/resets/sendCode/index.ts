@@ -95,7 +95,7 @@ export async function sendCode({
             expiresAt: expiresAt ?  Number.parseInt(expiresAt.getTime().toString()) : undefined,
             subject
         },
-        type: EmailLogTypes.PASSWORD_RESET
+        type: EmailLogTypes.PASSPHRASE_RESET
     })
 
     return toAddress

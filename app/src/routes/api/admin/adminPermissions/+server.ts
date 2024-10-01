@@ -1,8 +1,9 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { adminApi } from "$server/requests"
+import { adminApi, hasAdminPermission } from "$server/requests"
 import { InternalServerError } from "sveltekit-zero-api/http"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
+import { schema } from "$server/database"
 
 interface Get {
     query?: GetListQueryParameters
@@ -13,8 +14,8 @@ interface Get {
  */
 export async function GET (event: KitEvent<Get, RequestEvent>) {
     try {
-        // Check if user is authorized to view users
-        // TODO
+        // Check permissions
+        hasAdminPermission(event, schema.adminRoles)
 
         const columns: {[key:string]: boolean}  = {
             "id":true,

@@ -6,7 +6,7 @@ import { db } from "$server/database"
  * 
  * @param {typeof db} args.tx - The database transaction. Defaults to `db`.
  * @param {string} args.code - The passphrase reset id to check.
- * @returns {Promise<Record<string, any>>} Nothing. Throws an error if the code is invalid.
+ * @returns {Promise<Record<string, any>>} Nothing.
  */
 export async function validateCode({
     tx=db,
@@ -40,7 +40,7 @@ export async function validateCode({
 
 
     if (!result || !result.user.verifiedAt || !result.user.isActive) {
-        throw "Invalid passphrase reset code."
+        return
     }
 
     return result

@@ -36,6 +36,7 @@ export default async function users(tx = db): Promise<void> {
         email: {
             address: "superuser@example.com",
             isVerified: true,
+            isUserPrimary: true,
         }, 
         passphrase
     }
@@ -45,11 +46,13 @@ export default async function users(tx = db): Promise<void> {
             username: "admin",
             isVerified: true,
             isSuperUser: false,
-            returning: {id: schema.users.id}
+            returning: {id: schema.users.id},
+            isAdmin: true,
         },
         email: {
             address: "admin@example.com",
             isVerified: true,
+            isUserPrimary: true,
         },
         passphrase
     }

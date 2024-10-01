@@ -39,6 +39,7 @@ export async function GET(event: RequestEvent) {
 				tableName: "emails",
 				columns: {
 					id: true,
+					username: true,
 					address: true,
 					isUserPrimary: true,
 					verifiedAt: true,
@@ -50,9 +51,9 @@ export async function GET(event: RequestEvent) {
 						id: true,
 						address: true,
 						isUserPrimary: true,
-						verifiedAt: true,
-						createdAt: true,
-						updatedAt: true,
+						// verifiedAt: true,
+						// createdAt: true,
+						// updatedAt: true,
 					}
 				}
 			}

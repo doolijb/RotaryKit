@@ -8,6 +8,7 @@
 	////
 	// COMPUTED
 	////
+	
 	let isLoaded = false
 	$: canEditSuperUsers = $page.data.user.isSuperUser
 

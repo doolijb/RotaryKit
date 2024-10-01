@@ -4,10 +4,14 @@ import { FormSchema } from "$shared/validation/base"
 export class AdminCreateEmail extends FormSchema {
     fields = {
         address: fields.email(),
+        userId: v.String.init(),
         isVerified: v.Boolean.init(),
         isUserPrimary: v.Boolean.init(),
     }
-    optional = {}
+    optional = {
+        userId: true,
+        isUserPrimary: true,
+    }
     fieldAttributes = {
         address: {
             label: "Email Address",
@@ -15,9 +19,12 @@ export class AdminCreateEmail extends FormSchema {
         isVerified: {
             label: "Is Verified",
         },
+        userId: {
+            label: "User",
+        },
         isUserPrimary: {
             label: "Is User Primary",
-        }
+        },
     }
 }
 

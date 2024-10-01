@@ -1,4 +1,5 @@
 export * from "./AdminCreateAdminRole"
+export * from "./AdminCreateEmail"
 export * from "./AdminCreateUser"
 export * from "./AdminCreateUserWithPermissions"
 export * from "./AdminEditAdminRole"

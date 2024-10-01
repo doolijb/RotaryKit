@@ -4,16 +4,12 @@ import { FormSchema } from "$shared/validation/base"
 export class AdminEditUserPassphrase extends FormSchema {
     fields = {
         passphrase: fields.passphrase(),
-        passphraseConfirm: fields.passphraseConfirm(),
     }
     optional = {}
     fieldAttributes = {
         passphrase: {
-            label: "Passphrase",
+            label: "New Passphrase",
         },
-        passphraseConfirm: {
-            label: "Confirm Passphrase",
-        }
     }
 }
 

@@ -10,16 +10,10 @@ const postForm = PostForm.init()
 
 interface Get {
     body?: undefined
-    params: {
-        code: string
-    }
 }
 
 interface Post {
 	body: PostForm["Data"],
-	params: {
-		code: string
-	}
 }
 
 /**
@@ -45,7 +39,7 @@ export async function GET(event: KitEvent<Get, RequestEvent>) {
 /**
  * Validate the passphrase reset code and set a new passphrase.
  */
-export async function POST(event: KitEvent<Post, RequestEvent>) {
+export async function PUT(event: KitEvent<Post, RequestEvent>) {
 	try {
 		/**
 		 * Must not be logged in
@@ -91,7 +85,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Return success
 		 */
-		return Ok({status: 201, body: { success: true }})
+		return Ok({body: { message: "Passphrase updated" }})
 	} catch (e) {
 		logger.error(e)
 		return InternalServerError()

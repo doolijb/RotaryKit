@@ -1,15 +1,29 @@
 import type { RequestEvent } from "@sveltejs/kit"
-import { adminApi } from "$server/requests"
+import { adminApi, hasAdminPermission } from "$server/requests"
 import { InternalServerError } from "sveltekit-zero-api/http"
+import { logger } from "$server/logging"
+import type { KitEvent } from "sveltekit-zero-api"
+import { Check } from "drizzle-orm/mysql-core"
+import { schema } from "$server/database"
+
+interface GET {
+    query?: GetListQueryParameters
+}
+
+// interface Post {
+//     body: PostForm['Data']
+// }
+
 
 /**
- * Admin view for a list of users
+ * Admin view for a list of email addresses
  */
-export async function GET (event: RequestEvent) {
+export async function GET (event: KitEvent<GET, RequestEvent>) {
 
     try {
 
-        // TODO CHECK PERMISSIONS
+        // Check permissions
+        hasAdminPermission(event, schema.emails)
 
         const columns: {[key:string]: boolean}  = {
             "id":true,

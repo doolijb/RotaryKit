@@ -29,6 +29,7 @@
 	export let type: string = "text"
 	export let id: string = v4()
 	export let isTouched = false
+	export let autocomplete: string = undefined
 
 	////
 	// CALCULATED
@@ -136,6 +137,7 @@
 			on:focus={handleOnFocus}
 			on:blur={handleOnBlur}
 			aria-label={label}
+			{autocomplete}
 		/>
 		{#if $$slots.suffix}
 			<div class="align-middle m-0 px-0 me-2">

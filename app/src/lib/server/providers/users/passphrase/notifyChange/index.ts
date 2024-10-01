@@ -1,12 +1,7 @@
+import { PassphraseUpdatedConfirmation } from "$client/emailTemplates"
 import { db } from "$server/database"
-// import { PassphraseUpdatedConfirmation } from "$client/components"
-
-    // TODO: Switch to react-email, this lib is dead
-    /// https://github.com/carstenlebek/svelte-email/issues/25
-    // import { render } from "svelte-email"
-    // const render = undefined
-
-import nodemailer from "nodemailer"
+import { send } from "$server/emails"
+import { EmailLogTypes } from "$shared/constants"
 
 /**
  * Sends a simple email notification to the user's primary email that a user's passphrase has been changed.
@@ -37,32 +32,15 @@ export async function notifyChange({
 
     // const name = user.username
     const toAddress = user.emails[0].address
-    const transportConfig = {
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT),
-        secure: process.env.NODE_ENV === "production",
-    }
 
-    // Send the code
-    const transporter = nodemailer.createTransport(transportConfig)
-
-    // const html = render({
-    //     template: PassphraseUpdatedConfirmation, 
-    //     props: {
-    //         name,
-    //         subject
-    //     } 
-    // })
-
-    const options = {
-        from: `"${process.env.SMTP_DISPLAY_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`,
-        to: toAddress,
+    await send({
         subject,
-        html: ""// html,
-    }
-
-    await transporter.sendMail(options).catch((error) => {
-        console.error(error)
-        throw error
+        to: toAddress,
+        template: PassphraseUpdatedConfirmation,
+        args: {
+            name: user.username,
+            subject
+        },
+        type: EmailLogTypes.PASSPHRASE_CHANGED,
     })
 }

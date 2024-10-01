@@ -1,13 +1,10 @@
 <script lang="ts">
     import {AdminEditResultView, AdminEditUserForm} from "$client/components"
     import { page } from "$app/stores"
-    import axios from "axios"
-	import AdminEditAdminRolesToUserForm from "$client/components/forms/AdminEditAdminRolesToUserForm/AdminEditAdminRolesToUserForm.svelte"
+	import { AdminEditAdminRolesToUserForm, AdminEditUserPassphraseForm } from "$client/components/forms"
     import api from "$shared/api"
 	import { hasAdminPermission } from "$client/utils"
-	import { getToastStore } from "@skeletonlabs/skeleton"
 	import { forms as f } from "$shared/validation"
-    const toastStore = getToastStore()
 
     const resource = "users"
     const resourceId = $page.params.resourceId
@@ -21,6 +18,23 @@
                 return api.admin.users.resourceId$(resourceId).PUT({body: data})
             }
         },
+    }
+
+    ////
+    // TAB: PASSPHRASE
+    ////
+    if (hasAdminPermission({
+        user: $page.data.user,
+        adminPermissions: $page.data.permissions,
+        action: "PUT",
+        resources: ["user", "passphrase"],
+    })) {
+        tabs["passphrase"] = {
+            FormComponent: AdminEditUserPassphraseForm,
+            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditUserPassphrase> }) => {
+                return api.admin.users.resourceId$(resourceId).passphrase.PUT({body: data})
+            }
+        }
     }
 
     ////

@@ -24,7 +24,7 @@
 	// LOCAL EXPORTS
 	////
 
-	export let ref: HTMLInputElement
+	export let ref: HTMLInputElement | null = null
 	export let placeholder = attrs?.placeholder
 	export let label:string = attrs?.label
 	export let disabled: boolean = false
@@ -32,6 +32,7 @@
 	export let id: string = v4()
 	export let isTouched = false
     export let searchInput = ""
+    export let autocomplete: string = undefined
 
 	////
 	// CALCULATED
@@ -199,6 +200,7 @@
 			on:blur={handleOnBlur}
             aria-label={label}
             {required}
+            {autocomplete}
         />
         <slot name="suffix" />
         {#if !disabled && validatorLength}

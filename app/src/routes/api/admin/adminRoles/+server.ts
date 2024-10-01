@@ -1,12 +1,10 @@
-import { adminApi, validateData } from "$server/requests"
+import { adminApi, hasAdminPermission, validateData } from "$server/requests"
 import { db, schema } from "$server/database"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { Ok, BadRequest, InternalServerError } from "sveltekit-zero-api/http"
 import { AdminCreateAdminRole as PostForm } from "$shared/validation/forms"
 import { logger } from "$server/logging"
-
-console.log("getListOf", adminApi.getListOf)
 
 const postForm = PostForm.init()
 
@@ -25,8 +23,8 @@ interface Post {
 export async function GET (event: KitEvent<GET, RequestEvent>) {
 
     try {
-        // Check if user is authorized to view users
-        // TODO
+        // Check permissions
+        hasAdminPermission(event, schema.adminRoles)
 
         const columns: {[key:string]: boolean}  = {
             "id":true,

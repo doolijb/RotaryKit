@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Main, Loading } from "$client/components"
 	import { page } from "$app/stores"
-	import { invalidateAll } from "$app/navigation"
 	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import api from "$shared/api"
 	import { onMount } from "svelte"
-	import NewPassphraseForm from "$client/components/forms/NewPassphraseForm/NewPassphraseForm.svelte"
+	import { NewPassphraseForm }from "$client/components"
+	import { NewPassphrase } from "$shared/validation/forms"
 
 	const toastStore = getToastStore()
 
@@ -14,12 +14,24 @@
 		const code = $page.params.code
 		await api.reset.passphrase.code$(code).GET()
 			.Success(async (res) => {
-				toastStore.trigger(
-					new Toast({ message: "Your email has been verified", style: "success" })
-				)
 				valid = true
 			})
 			.ClientError(handleClientError({ toastStore}, errCallback))
+			.ServerError(handleServerError({ toastStore }, errCallback))
+			.catch(handleException({ toastStore }, errCallback))
+	}
+
+	async function onSubmit(): Promise<void> {
+		console.log(data)
+		const code = $page.params.code
+		await api.reset.passphrase.code$(code).PUT({ body: data })
+			.Success(async (res) => {
+				completed = true
+				toastStore.trigger(
+					new Toast({ message: res['body']['message'] || "Passphrase updated", style: "success" })
+				)
+			})
+			.ClientError(handleClientError({ toastStore }, errCallback))
 			.ServerError(handleServerError({ toastStore }, errCallback))
 			.catch(handleException({ toastStore }, errCallback))
 	}
@@ -31,6 +43,7 @@
 	let valid = false
 	let completed = false
 	let failure = false
+	let data: FormDataOf<NewPassphrase>;
 
 	onMount(() => {
 		verify()
@@ -49,7 +62,7 @@
         </div>
 		<div class="card p-4 w-full mb-4">
 			{#if valid}
-				<NewPassphraseForm />
+				<NewPassphraseForm on:submit={onSubmit} bind:data  />
 			{:else if failure}
 				<h1 class="text-2xl font-bold">Your passphrase could not be reset.</h1>
 				<p class="text-lg">
