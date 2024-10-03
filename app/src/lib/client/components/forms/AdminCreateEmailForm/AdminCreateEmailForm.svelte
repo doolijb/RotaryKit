@@ -10,7 +10,7 @@
 
 	$: canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || $page.data.user.isSuperUser
 	$: userOptions = userChoices.results ? userChoices.results.map(user => ({
-		label: user.email,
+		label: `${user.username} - ${user.id.slice(0, 8)}`,
 		value: user.id,
 	})) : [] as AutocompleteOption[]
 
@@ -35,6 +35,11 @@
 	export let canSubmit: boolean = undefined
 	export let userChoices = {} as PaginatedResponse<Partial<SelectUser>>
 	export let userSearchInput = ""
+	export let getUserChoices = (e: any = null) => {}
+
+	$: (userSearchInput: string) => {
+		getUserChoices(userSearchInput)
+	}
 	
 </script>
 

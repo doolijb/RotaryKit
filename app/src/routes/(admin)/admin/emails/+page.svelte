@@ -8,7 +8,7 @@
     const orderedKeys = ["id","address", "user", "isUserPrimary", "verifiedAt"]
     const dataHandlers = {
         "user": {
-            handler: (result: SelectUser) => result !== undefined ? result.username : undefined
+            handler: (result: SelectUser | undefined) => result ? result.username : undefined
         },
     }
 </script>

@@ -1,4 +1,4 @@
-import { adminApi, error, validateData } from "$server/requests"
+import { adminApi, hasAdminPermission, validateData } from "$server/requests"
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { db, schema } from "$server/database"
 import { emails, users } from "$server/providers"
@@ -6,6 +6,7 @@ import { BadRequest, InternalServerError, Ok } from "sveltekit-zero-api/http"
 import { AdminCreateUser as PostForm, AdminCreateUserWithPermissions as PostFormWithPermissions } from "$shared/validation/forms"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
+import { logger } from "$server/logging"
 
 const postForm = PostForm.init()
 const postFormWithPermissions = new PostFormWithPermissions()
@@ -22,8 +23,7 @@ interface Post {
  * Admin view for a list of users
  */
 export async function GET (event: KitEvent<Get, RequestEvent>) {
-    // Check if user is authorized to view users
-    // TODO
+    hasAdminPermission(event, schema.users)
 
     try {
         const columns: {[key:string]: boolean}  = {
@@ -68,9 +68,7 @@ export async function GET (event: KitEvent<Get, RequestEvent>) {
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
     try {
-    
-        // Check if user is authorized to create a user
-        // TODO
+        hasAdminPermission(event, schema.users)
 
         /**
          * Validate the data
@@ -105,9 +103,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 
         // If errors, throw an error
         if (Object.entries(errors).length > 0) {
-            throw error(400, {
-                errors
-            })
+            return BadRequest({body: errors})
         }
         
         ////

@@ -81,8 +81,10 @@ export async function GET (event: KitEvent<GET, RequestEvent>) {
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
     try {
-        // Check if user is authorized to create a user
-        // TODO
+        /**
+         * Check permissions
+         */
+        hasAdminPermission(event, schema.adminRoles)
 
         /**
          * Validate the data

@@ -2,20 +2,22 @@
     import {AdminCreateView, AdminCreateEmailForm} from "$client/components"
     import { page } from "$app/stores"
 	import api from "$shared/api"
-	import { on } from "events"
 	import { onMount } from "svelte"
 
-    const resource = "users"
+    const resource = "emails"
     const FormComponent = AdminCreateEmailForm
-    const resourceApi = api.admin.users as  ResourceApi
-    const displayTitle = "User"
+    const resourceApi = api.admin.emails as  ResourceApi
+    const displayTitle = "Email"
+
+    async function getUserChoices(e: string = "") {
+        e ? console.log(e) : null
+        api.admin.users.GET().Success((res) => { extras.userChoices = res.body })
+    }
+
     let extras = {
         canEditSuperUsers: $page.data.user.isSuperUser,
         userChoices: {} as PaginatedResponse<Partial<SelectUser>>,
-    }
-
-    async function getUserChoices() {
-        api.admin.users.GET().Success((res) => { extras.userChoices = res.body })
+        getUserChoices: getUserChoices
     }
 
     onMount(() => {
