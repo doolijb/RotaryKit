@@ -28,7 +28,7 @@
 				await goto(nextPage)
 			})
 			.ClientError((r) => { 
-                errors = r.body.errors
+                errors = r.body["errors"] || {}
                 return handleClientError({ errors, toastStore})(r)
             })
 			.ServerError(handleServerError({ toastStore }))

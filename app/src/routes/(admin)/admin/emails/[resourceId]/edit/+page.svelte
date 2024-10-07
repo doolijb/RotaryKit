@@ -3,17 +3,38 @@
     import { page } from "$app/stores"
     import api from "$shared/api"
 	import { forms as f } from "$shared/validation"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 
     const resource = "emails"
     const resourceId = $page.params.resourceId
     const naturalKey = "address"
     const resourceApi = api.admin.emails as ResourceApi
 
+    async function getUserOptions(args: {searchString: string}): Promise<any[]> {
+        let results = []
+        await api.admin.users.GET({query: { search: args.searchString }}).Success((res) => {results = res.body.results})
+        return results
+    }
+
+    function mapUserOptions(data: any[]): AutocompleteOption[] {
+        console.log(data)
+        return data.map((user) => {
+            return {
+                value: user.id,
+                label: user.username,
+            }
+        })
+    }
+
     const tabs: AdminEditResultViewTabs = {
         default: {
             FormComponent: AdminEditEmailForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditUser> | FormDataOf<f.AdminEditUserWithPermissions> }) => {
+            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditEmail> }) => {
                 return api.admin.emails.resourceId$(resourceId).PUT({body: data})
+            },
+            extras: {
+                getUserOptions,
+                mapUserOptions,
             }
         },
     }

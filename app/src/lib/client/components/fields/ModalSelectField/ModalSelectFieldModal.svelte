@@ -64,7 +64,7 @@
     <div class="modal-example-form card p-4 w-modal shadow-xl space-y-4">
         <header class="text-2xl font-bold">{$modalStore[0].title ?? '(title missing)'}</header>
         <article>{$modalStore[0].body ?? '(body missing)'}</article>
-        <form class="modal-form border border-surface-500 p-4 space-y-4 rounded-container-token" action="javascript:void(0)">
+        <form class="modal-form p-4 space-y-4" action="javascript:void(0)">
             <label class="label">
                 <span>Search</span>
                 <div class="flex">
@@ -97,7 +97,7 @@
         </form>
         <footer class="modal-footer {parent.regionFooter}">
 			<button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-			<button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>{parent.buttonTextSubmit}</button>
+			<button class="btn variant-filled-primary" on:click={onFormSubmit}>{parent.buttonTextSubmit}</button>
 		</footer>
     </div>
 {/if}

@@ -14,14 +14,14 @@ export default meta
 
 class DefaultForm extends FormSchema {
 	fields = {
-		inputField: v.String.init()
+		modalSelectField: v.String.init()
 	}
 	fieldAttributes = {
-		inputField: {
-			label: "Input Field"
+		modalSelectField: {
+			label: "Modal Select Field"
 		}
 	}
-	optional = { inputField: true }
+	optional = { modalSelectField: true }
 }
 
 async function getOptions ({searchString: string}) {
@@ -47,9 +47,9 @@ export const Default = {
 	args: {
 		getOptions,
 		mapOptions,
-		field: "inputField",
+		field: "modalSelectField",
 		form: DefaultForm.init(),
-		data: { inputField: "" },
+		data: { modalSelectField: "" },
 		errors: {},
 	}
 }
@@ -59,9 +59,9 @@ export const Disabled = {
 		getOptions,
 		mapOptions,
 		disabled: true,
-		field: "inputField",
+		field: "modalSelectField",
 		form: DefaultForm.init(),
-		data: { inputField: 3 },
+		data: { modalSelectField: 3 },
 		errors: {}
 	}
 }
@@ -70,9 +70,9 @@ export const Filled = {
 	args: {
 		getOptions,
 		mapOptions,
-		field: "inputField",
+		field: "modalSelectField",
 		form: DefaultForm.init(),
-		data: { inputField: 3 },
+		data: { modalSelectField: 3 },
 		errors: {},
 		result: { id: 3, title: "Tiger" },
 	}
@@ -80,11 +80,11 @@ export const Filled = {
 
 class WithValidatorsForm extends FormSchema {
 	fields = {
-		inputField: v.String.init().minLength({ minLen: 3 }).maxLength({ maxLen: 10 })
+		modalSelectField: v.String.init().minLength({ minLen: 3 }).maxLength({ maxLen: 10 })
 	}
 	optional = {}
 	fieldAttributes = {
-		inputField: {
+		modalSelectField: {
 			label: "Modal Select Field",
 			description:
 				"You can add additional information about how your users should fill out this field here."
@@ -96,9 +96,9 @@ export const WithValidators = {
 	args: {
 		getOptions,
 		mapOptions,
-		field: "inputField",
+		field: "modalSelectField",
 		form: WithValidatorsForm.init(),
-		data: { inputField: "" },
+		data: { modalSelectField: "" },
 		errors: {}
 	}
 }
@@ -107,9 +107,9 @@ export const FilledWithValidators = {
 	args: {
 		getOptions,
 		mapOptions,
-		field: "inputField",
+		field: "modalSelectField",
 		form: WithValidatorsForm.init(),
-		data: { inputField: 3 },
+		data: { modalSelectField: 3 },
 		errors: {},
 		result: { id: 3, title: "Tiger" },
 	}
@@ -117,12 +117,12 @@ export const FilledWithValidators = {
 
 class WithPlaceholderForm extends FormSchema {
 	fields = {
-		inputField: new v.String()
+		modalSelectField: new v.String()
 	}
 	optional = {}
 	fieldAttributes = {
-		inputField: {
-			label: "Input Field",
+		modalSelectField: {
+			label: "Modal Select Field",
 			placeholder: "Select an option"
 		}
 	}
@@ -132,9 +132,9 @@ export const WithPlaceholder = {
 	args: {
 		getOptions,
 		mapOptions,
-		field: "inputField",
+		field: "modalSelectField",
 		form: WithPlaceholderForm.init(),
-		data: { inputField: "" },
+		data: { modalSelectField: "" },
 		errors: {},
 		result: { id: 3, title: "Tiger" },
 	}

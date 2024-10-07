@@ -10,9 +10,11 @@
 	const resourceId = $page.params.resourceId
 
 	const mutateResult = (result: SelectEmail & {user:SelectUser & {emails?: SelectEmail[], primaryEmailAddress?: string}}) => {
-        result.user.primaryEmailAddress = (result.user.emails.find((email) => email.isUserPrimary)).address
-        delete result.user.emails
-        return result
+		if (result.user && result.user.emails) {
+			result.user.primaryEmailAddress = (result.user.emails.find((email) => email.isUserPrimary)).address
+			delete result.user.emails
+		}
+		return result
 	}
 </script>
 

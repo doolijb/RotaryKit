@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores"
 	import { FormBase, TextInput, CheckboxInput, Autocomplete } from "$client/components"
+	import ModalSelectField from "$client/components/fields/ModalSelectField"
 	import { AdminCreateEmail as Form } from "$shared/validation/forms"
 	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 	
@@ -8,11 +9,7 @@
 	// CALCULATED
 	////
 
-	$: canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || $page.data.user.isSuperUser
-	$: userOptions = userChoices.results ? userChoices.results.map(user => ({
-		label: `${user.username} - ${user.id.slice(0, 8)}`,
-		value: user.id,
-	})) : [] as AutocompleteOption[]
+	let canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || $page.data.user.isSuperUser
 
 	////
 	// LOCAL EXPORTS
@@ -26,6 +23,8 @@
 		userId: null,
 	}
 	export let errors: FormErrors = {}
+	export let getUserOptions: ({searchString}) => Promise<any[]>
+	export let mapUserOptions: (data: any[]) => AutocompleteOption[]
 
 	////
 	// DOWNSTREAM EXPORTS
@@ -65,15 +64,15 @@
 	/>
 
 	{#if canEditUsers}
-		<Autocomplete
+		<ModalSelectField
 			id="userId"
 			field="userId"
 			bind:data
 			bind:errors
-			bind:searchInput={userSearchInput}
-			bind:options={userOptions}
 			{form}
 			{disabled}
+			getOptions={getUserOptions}
+			mapOptions={mapUserOptions}
 		/>
 	{/if}
 

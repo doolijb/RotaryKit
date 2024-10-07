@@ -3,26 +3,35 @@
     import { page } from "$app/stores"
 	import api from "$shared/api"
 	import { onMount } from "svelte"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 
     const resource = "emails"
     const FormComponent = AdminCreateEmailForm
     const resourceApi = api.admin.emails as  ResourceApi
     const displayTitle = "Email"
 
-    async function getUserChoices(e: string = "") {
-        e ? console.log(e) : null
-        api.admin.users.GET().Success((res) => { extras.userChoices = res.body })
+    async function getUserOptions(args: {searchString: string}): Promise<any[]> {
+        let results = []
+        await api.admin.users.GET({query: { search: args.searchString }}).Success((res) => {results = res.body.results})
+        return results
+    }
+
+    function mapUserOptions(data: any[]): AutocompleteOption[] {
+        console.log(data)
+        return data.map((user) => {
+            return {
+                value: user.id,
+                label: user.username,
+            }
+        })
     }
 
     let extras = {
         canEditSuperUsers: $page.data.user.isSuperUser,
-        userChoices: {} as PaginatedResponse<Partial<SelectUser>>,
-        getUserChoices: getUserChoices
+        getUserOptions,
+        mapUserOptions,
     }
 
-    onMount(() => {
-        getUserChoices()
-    })
 </script>
 
 <AdminCreateView

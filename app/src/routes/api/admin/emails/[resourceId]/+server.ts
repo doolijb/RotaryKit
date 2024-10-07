@@ -4,23 +4,22 @@ import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { Ok, InternalServerError, Forbidden, BadRequest, NotFound } from "sveltekit-zero-api/http"
-import { AdminEditUser as PutForm, AdminEditUserWithPermissions as PutFormWithPermissions } from "$shared/validation/forms"
+import { AdminEditEmail as PutForm } from "$shared/validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
+import { emails } from "$server/providers"
 
 const putForm = PutForm.init()
-const putFormWithPermissions = new PutFormWithPermissions()
 
 interface Put {
-    body: PutFormWithPermissions["Data"] | PutForm["Data"]
+    body: PutForm["Data"]
 }
 
 export async function GET(event: RequestEvent) {
 	try {
-
 		if(!hasAdminPermission(
 			event,
-			schema.users,
+			schema.emails,
 		)) {
 			return Forbidden()
 		}
@@ -45,16 +44,6 @@ export async function GET(event: RequestEvent) {
 					verifiedAt: true,
 					createdAt: true,
 					updatedAt: true,
-				},
-				with: {
-					emails: {
-						id: true,
-						address: true,
-						isUserPrimary: true,
-						// verifiedAt: true,
-						// createdAt: true,
-						// updatedAt: true,
-					}
 				}
 			}
 		}
@@ -87,18 +76,18 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		if(!hasAdminPermission(
 			event,
-			schema.users,
+			schema.emails,
 		)) {
 			return Forbidden()
 		}
 
 		////
-		// Validate the data
+		// VALIDATE
 		////
+		let hasChanges = false
 
-		const canEditSuperUsers = event.locals.user.isSuperUser
 		const { data, errors } = await validateData({
-			form: canEditSuperUsers ? putFormWithPermissions : putForm,
+			form: putForm,
 			event, 
 		})
 
@@ -107,84 +96,60 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		}
 
 		////
-		// UPDATE USER
+		// UPDATE EMAIL
 		////
 
-		const user = await db.query.users.findFirst({
+		const email = await db.query.emails.findFirst({
 			where: (u, { eq }) => eq(u.id, event.params.resourceId)
 		})
 		
-		if (!user) {
+		if (!email) {
 			return NotFound()
 		}
 
-		const setUserData: {
-			username?: string
-			isVerified?: boolean
-			isActive?: boolean
-			isAdmin?: boolean
-			isSuperUser?: boolean
-		} = {}
+		const values = {}
 
-		const setUserMap = {
-			username: () => {
-				if (user.username !== data.username) {
-					setUserData["username"] = data.username
-				}
-			},
-			isVerified: () => {
-				if (!!user.verifiedAt !== data.isVerified) {
-					if (data.isVerified) {
-						console.log("verifiedAt", data.isVerified)
-						setUserData["verifiedAt"] = new Date()
-					} else {
-						setUserData["verifiedAt"] = null
-					}
-				}
-			},
-			isActive: () => {
-				if (user.isActive !== data.isActive) {
-					setUserData["isActive"] = data.isActive
-				}
-			},
-			isAdmin: canEditSuperUsers ? () => {
-				if (user.isAdmin !== data["isAdmin"]) {
-					setUserData["isAdmin"] = data["isAdmin"]
-				}
-			} : undefined,
-			isSuperUser: canEditSuperUsers ? () => {
-				if (user.isSuperUser !== data["isSuperUser"]) {
-					setUserData["isSuperUser"] = data["isSuperUser"]
-				}
-			} : undefined,
+		////
+		// CHECK FOR CHANGES
+		////
+
+		if (data.address !== email.address) {
+			values["address"] = data.address
+			hasChanges = true
 		}
 
-		Object.keys(data).forEach((key) => {
-			if (setUserMap[key]) {
-				setUserMap[key]()
-			}
-		})
-
-		if (Object.keys(setUserData).length === 0) {
-			return BadRequest({body:{message:"No changes to save"}})
+		if (data.userId !== email.userId) {
+			values["userId"] = data.userId
+			hasChanges = true
 		}
 
-		if(setUserData.username) {
-			const user = await db.query.users.findFirst({
-				where: (u, { eq }) => eq(u.username, setUserData.username)
-			})
+		if (!!data.isVerified !== !!email.verifiedAt) {
+			values["verifiedAt"] = data.isVerified ? new Date() : null
+			hasChanges = true
+		}
 
-			if (user) {
-				return BadRequest({body:{errors:{username:{Taken:"The username is unavailable"}}}})
-			}
+		if (data.isUserPrimary && !email.isUserPrimary) {
+			hasChanges = true
+		} else if (!data.isUserPrimary && email.isUserPrimary) {
+			// We cannot unset the primary email
+			return BadRequest({ body: { message: "Cannot unset primary email, set a new primary instead" } })
+		}
+
+		////
+		// SAVE CHANGES
+		////
+
+		if (!hasChanges) {
+			return BadRequest({ body: { message: "No changes to save" } })
 		}
 
 		await db.transaction(async (tx) => {
-			// Update the user
-			await tx
-				.update(schema.users)
-				.set(setUserData)
-				.where(eq(schema.users.id, event.params.resourceId))
+			if (Object.keys(values).length > 0) {
+				await tx.update(schema.emails).set(values).where(eq(schema.emails.id, event.params.resourceId))
+			}
+			if (data.isUserPrimary && !email.isUserPrimary) {
+				await emails.setUserPrimary({tx, emailId: email.id, userId: data.userId})
+			}
 		})
 
 		////
@@ -211,18 +176,30 @@ export async function DELETE(event: RequestEvent) {
 		
 		if(!hasAdminPermission(
 			event,
-			schema.users,
+			schema.emails,
 		)) {
 			return Forbidden()
 		}
 
 		////
-		// DELETE USER
+		// VALIDATE
+		////
+
+		const email = await db.query.emails.findFirst({
+			where: (e, { eq }) => eq(e.id, event.params.resourceId)
+		})
+
+		if (email.userId && email.isUserPrimary) {
+			return BadRequest({ body: { message: "Cannot delete a user's primary email" } })
+		}
+
+		////
+		// DELETE EMAIL
 		////
 
 		await db.transaction(async (tx) => {
 			// Delete the user
-			await tx.delete(schema.users).where(eq(schema.users.id, event.params.resourceId))
+			await tx.delete(schema.emails).where(eq(schema.emails.id, event.params.resourceId))
 		})
 
 		////
