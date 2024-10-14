@@ -15,9 +15,9 @@ export function encrypt({
     return new Promise<string>((resolve, reject) => {
         crypto.pbkdf2(
           passphrase,
-          // We use SECRET_SALT here so some aspect of the salt always comes from the environment 
+          // We use CRYPTO_SECRET_SALT here so some aspect of the salt always comes from the environment 
           // and not the database
-          salt + process.env.SECRET_SALT,
+          salt + process.env.CRYPTO_SECRET_SALT,
           iterations,
           256,
           "sha256",

@@ -21,6 +21,11 @@ import { adminRolesToPermissions, adminRolesToPermissionRelations } from "./admi
 import { usersToAdminRoles, usersToAdminRoleRelations } from "./usersToAdminRoles"
 
 /**
+ * Files
+ */
+import { images, imageRelations } from "./images"
+
+/**
  * Logging
  */
 import { emailLogs } from "./emailLogs"
@@ -40,6 +45,7 @@ export const schema = {
     adminRolesToPermissions,
     usersToAdminRoles,
     emailLogs,
+    images,
 }
 
 /**
@@ -55,4 +61,5 @@ export const relations = {
     adminRoleRelations,
     adminRolesToPermissionRelations,
     usersToAdminRoleRelations,
+    imageRelations,
 }

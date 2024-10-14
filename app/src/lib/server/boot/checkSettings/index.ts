@@ -3,7 +3,7 @@ import { logger } from "$server/logging"
 /**
  * Check that all required environment variables are set
  */
-export function checkSettings({
+export async function checkSettings({
     envDefaults = {
         USER_TOKEN_EXPIRATION_HOURS: "72"
     }
@@ -13,13 +13,13 @@ export function checkSettings({
     logger.info("• Checking settings...")
     const envVars = [
         "APP_URL",
-        "POSTGRES_HOST",
-        "POSTGRES_PORT",
-        "POSTGRES_DB",
         "POSTGRES_USER",
         "POSTGRES_PASSWORD",
-        "SECRET_KEY",
-        "SECRET_SALT",
+        "POSTGRES_DB",
+        "POSTGRES_HOST",
+        "POSTGRES_PORT",
+        "CRYPTO_SECRET_SALT",
+        "CRYPTO_SECRET_KEY",
         "USER_TOKEN_EXPIRATION_HOURS",
         "SMTP_HOST",
         "SMTP_PORT",
@@ -28,6 +28,11 @@ export function checkSettings({
         "SMTP_PASSWORD",
         "SMTP_DISPLAY_NAME",
         "SMTP_FROM_ADDRESS",
+        "STORAGE_ACCESS_KEY_ID",
+        "STORAGE_SECRET_ACCESS_KEY",
+        "STORAGE_DEFAULT_REGION",
+        "STORAGE_DEFAULT_BUCKET",
+        "STORAGE_ENDPOINT"
     ]
 
     envVars.forEach((envVar) => {

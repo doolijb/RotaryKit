@@ -8,7 +8,7 @@ const data = {
 }
 
 test("lowercase included validator test: passes", async () => {
-    const validator = LowerCaseIncluded .init()
+    const validator = LowerCaseIncluded.init()
 
     let result = await validator.test({key:"a", data})
     expect(Object.keys(result)).toHaveLength(0)
@@ -18,7 +18,7 @@ test("lowercase included validator test: passes", async () => {
 })
 
 test("lowercase included complete validator test: fails", async () => {
-    const validator = LowerCaseIncluded .init()
+    const validator = LowerCaseIncluded.init()
 
     const result = await validator.test({key:"c", data})
 

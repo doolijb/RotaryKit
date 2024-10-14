@@ -53,6 +53,22 @@ CREATE TABLE IF NOT EXISTS "email_verifications" (
 	"verified_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "images" (
+	"id" uuid PRIMARY KEY DEFAULT (gen_random_uuid ()) NOT NULL,
+	"title" varchar(256) NOT NULL,
+	"original_path" varchar(512),
+	"original_bytes" bigint,
+	"webp_path" varchar(512),
+	"webp_bytes" bigint,
+	"jpg_path" varchar(512),
+	"jpg_bytes" bigint,
+	"uploaded_by_user_id" uuid NOT NULL,
+	"profile_image_user_id" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"status" varchar(256) DEFAULT 'active' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "passphrase_resets" (
 	"id" uuid PRIMARY KEY DEFAULT (gen_random_uuid ()) NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -136,6 +152,18 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "images" ADD CONSTRAINT "images_uploaded_by_user_id_users_id_fk" FOREIGN KEY ("uploaded_by_user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "images" ADD CONSTRAINT "images_profile_image_user_id_users_id_fk" FOREIGN KEY ("profile_image_user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "passphrase_resets" ADD CONSTRAINT "passphrase_resets_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -166,5 +194,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "unique_action_resource" ON "admin_permissions" USING btree ("method","resource");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_primary" ON "emails" USING btree ("user_id","is_user_primary") WHERE "emails"."is_user_primary" = true AND "emails"."user_id" IS NOT NULL;--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_passphrases" ON "passphrases" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "unique_usernames" ON "users" USING btree ("username");

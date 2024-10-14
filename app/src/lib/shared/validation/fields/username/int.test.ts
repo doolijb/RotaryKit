@@ -32,6 +32,5 @@ test("username field validation: fails when special character is included", asyn
         username: "InvalidUser!",
     }
     const errors = await field.validate({ key: "username", data })
-    console.log(errors)
     expect(errors).toHaveProperty("specialCharExcluded")
 })  

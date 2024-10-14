@@ -219,6 +219,34 @@ declare global {
 
     type Middleware = (event: RequestEvent) => Promise<void | Response>
 
+    ////
+    // FILE UPLOADS
+    ////
+
+    type FileExtension = "pdf" | "jpg" | "jpeg" | "png" | "webp" | "mp4" | "mov" | "avi" | "wmv" | "flv" | "mkv" 
+                        | "mp3" | "wav" | "flac" | "ogg" | "wma" | "aac" | "m4a" | "doc" | "docx" | "xls" | "xlsx" 
+                        | "ppt" | "pptx" | "txt" | "rtf" | "csv" | "json" | "xml" | "zip" | "rar" | "7z" | "tar" 
+                        | "json" | "yml" | "yaml" | "toml" | "ini" | "cfg" | "conf" | "md" | "markdown" | "rst" 
+                        | "svg" | "ico" | "bmp" | "gif" | "tiff" | "tif" | "psd" | "ai" | "sketch" | "fig"
+
+    type FileType = "image" | "document" | "video" | "audio" | "archive" | "code"
+
+    type DocumentFileTypeExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "csv"]
+    type ImageFileTypeExtensions = ["jpg", "jpeg", "png", "webp", "svg", "ico", "bmp", "gif", "tiff", "tif", "psd", "ai", "sketch", "fig"]
+    type VideoFileTypeExtensions = ["mp4", "mov", "avi", "wmv", "flv", "mkv"]
+    type AudioFileTypeExtensions = ["mp3", "wav", "flac", "ogg", "wma", "aac", "m4a"]
+    type ArchiveFileTypeExtensions = ["zip", "rar", "7z", "tar"]
+    type CodeFileTypeExtensions = ["json", "xml", "yml", "yaml", "toml", "ini", "cfg", "conf", "md", "markdown", "rst"]
+
+    type FileTypes = {
+        image: ImageFileTypeExtensions,
+        document: DocumentFileTypeExtensions,
+        video: VideoFileTypeExtensions,
+        audio: AudioFileTypeExtensions,
+        archive: ArchiveFileTypeExtensions,
+        code: CodeFileTypeExtensions,
+    }
+
 }
 
 export {};

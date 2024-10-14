@@ -1,6 +1,12 @@
-import { migrate, seeds } from "$server/database"
-import { checkSettings } from "./checkSettings"
+import {
+	migrate,
+	seeds
+} from "$server/database"
 import { logger } from "$server/logging"
+import { checkDatabase } from "./checkDatabase"
+
+import { checkObjectStorage } from "./checkObjectStorage"
+import { checkSettings } from "./checkSettings"
 
 /**
  * Perform any necessary boot-up tasks
@@ -14,7 +20,9 @@ export async function boot({
     logger.info(startupText)
 
     await migrate()
-    checkSettings({envDefaults})
+    await checkSettings({envDefaults})
+    await checkDatabase()
+    await checkObjectStorage()
 
     try {
         seeds.adminPermissions()

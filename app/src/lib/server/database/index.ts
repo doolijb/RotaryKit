@@ -28,7 +28,6 @@ async function handleClientConnection() {
 }
 
 await handleClientConnection()
-await migrate()
 
 export async function migrate() {
     

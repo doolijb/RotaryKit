@@ -5,25 +5,25 @@ const form = UserLogin.init()
 
 test("UserLogin form test: passes", async () => {
     const data: FormDataOf<UserLogin> = {
-        username: "usr",
+        email: "test@example.com",
         passphrase: "pass",
     }
     const result = await form.validate({data})
     expect(result).toEqual({})
 })
 
-test("UserLogin form test: fails when username is less than 3 characters", async () => {
+test("UserLogin form test: fails when email is less than 3 characters", async () => {
     const data = {
-        username: "us", // username is less than 3 characters
+        email: "us", // email is invalid format
         passphrase: "pass",
     }
     const result = await form.validate({data})
-    expect(result).toHaveProperty("username")
+    expect(result).toHaveProperty("email")
 })
 
 test("UserLogin form test: fails when passphrase is less than 3 characters", async () => {
     const data = {
-        username: "usr",
+        email: "test@example.com",
         passphrase: "pa", // passphrase is less than 3 characters
     }
     const result = await form.validate({data})
