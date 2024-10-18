@@ -8,6 +8,27 @@
       "when": 1728688522718,
       "tag": "0000_flat_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1728963434822,
+      "tag": "0001_flat_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729208233303,
+      "tag": "0002_dusty_makkari",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1729209508552,
+      "tag": "0003_motionless_ricochet",
+      "breakpoints": true
     }
   ]
 }

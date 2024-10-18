@@ -10,8 +10,6 @@
     const extras = {
         canEditSuperUsers: $page.data.user.isSuperUser,
     }
-
-    console.log($page.params.resourceId)
 </script>
 
 <AdminCreateView

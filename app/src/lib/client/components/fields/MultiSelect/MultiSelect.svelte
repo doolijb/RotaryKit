@@ -52,7 +52,6 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 	// 	: ValidStates.NONE
 	$: canRemove = !!selectedValues.length 
 	$: canAdd = !!selectedAvailable.length
-	$: { console.log(data[field])}
 
 	////
 	// CONSTANTS

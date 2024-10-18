@@ -1,8 +1,6 @@
 import { boot } from "$server/boot"
 import { logger } from "$server/logging"
 import { userAuthentication, routeGuard } from "$server/middleware"
-import { redirect, type RequestEvent } from "@sveltejs/kit"
-import { request } from "http"
 
 ////
 // BOOT

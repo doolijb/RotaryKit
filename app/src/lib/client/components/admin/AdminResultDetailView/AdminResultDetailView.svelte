@@ -68,7 +68,6 @@
 	})
 
 	async function handleDelete() {
-		console.log("handleDelete")
 		modalStore.trigger({
 			type: "confirm",
 			title: `Delete ${pluralize.singular(humanizeString(resource))}`,

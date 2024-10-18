@@ -14,8 +14,10 @@ declare global {
             status?: number
 		}
 		interface Locals {
+            storageUrl: string,
             user?: SelectUser,
             adminPermissions?: SelectAdminPermission[],
+            profileImages?: SelectImage[],
             userAgent?: {
                 browser: {
                     name: string
@@ -30,7 +32,9 @@ declare global {
             title?: string
             description?: string
             keywords?: string
-            user?: SelectUser
+            user?: SelectUser & {
+                profileImages: SelectImage[]
+            }
         }
 	}
 
@@ -98,6 +102,7 @@ declare global {
     type SelectAdminRole = typeof schema.adminRoles.$inferSelect
     type SelectAdminRolesToPermissions = typeof schema.adminRolesToPermissions.$inferSelect
     type SelectUsersToAdminRoles = typeof schema.usersToAdminRoles.$inferSelect
+    type SelectImage = typeof schema.images.$inferSelect
 
     type InsertUser = typeof schema.users.$inferInsert
     type InsertUserToken = typeof schema.userTokens.$inferInsert
@@ -110,6 +115,7 @@ declare global {
     type InsertAdminRole = typeof schema.adminRoles.$inferInsert
     type InsertAdminRolesToPermissions = typeof schema.adminRolesToPermissions.$inferInsert
     type InsertUsersToAdminRoles = typeof schema.usersToAdminRoles.$inferInsert
+    type InsertImage = typeof schema.images.$inferInsert
 
     ////
     // UNORGANIZED

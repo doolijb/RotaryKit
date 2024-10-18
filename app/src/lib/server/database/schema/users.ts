@@ -5,6 +5,7 @@ import { userTokens } from "./userTokens"
 import { usersToAdminRoles } from "./usersToAdminRoles"
 import { passphrases } from "./passphrases"
 import { emails } from "./emails"
+import { images } from "./images"
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
@@ -32,4 +33,11 @@ export const userRelations = relations(users, ({ many, one }) => ({
     emails: many(emails),
     toAdminRoles: many(usersToAdminRoles),
     userTokens: many(userTokens),
+    uploadedImages: many(images, {
+        relationName: "uploadedImageUser",
+    }),
+
+    profileImages: many(images, {
+        relationName: "profileImageUser",
+    }),
 }))

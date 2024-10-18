@@ -57,7 +57,6 @@ const baseLogger = createLogger({
 
 // Lets add a global error handler
 export function handleException(error: Error, event?: RequestEvent) {
-    console.log(error)
     logger.error(error.message, { error, event })
 }
 

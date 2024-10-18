@@ -155,7 +155,6 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			isVerified: () => {
 				if (!!user.verifiedAt !== data.isVerified) {
 					if (data.isVerified) {
-						console.log("verifiedAt", data.isVerified)
 						setUserData["verifiedAt"] = new Date()
 					} else {
 						setUserData["verifiedAt"] = null

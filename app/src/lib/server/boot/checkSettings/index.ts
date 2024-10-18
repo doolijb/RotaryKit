@@ -32,7 +32,8 @@ export async function checkSettings({
         "STORAGE_SECRET_ACCESS_KEY",
         "STORAGE_DEFAULT_REGION",
         "STORAGE_DEFAULT_BUCKET",
-        "STORAGE_ENDPOINT"
+        "STORAGE_PRIVATE_ENDPOINT",
+        "STORAGE_PUBLIC_ENDPOINT",
     ]
 
     envVars.forEach((envVar) => {

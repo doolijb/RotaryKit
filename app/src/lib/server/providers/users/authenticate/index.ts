@@ -1,5 +1,6 @@
-import { eq } from "drizzle-orm"
+import { asc, desc, eq } from "drizzle-orm"
 import { db, schema } from "$server/database"
+import { images } from "$server/database/migrations/schema"
 
 interface AuthenticateAndValidate {
 	tx?: typeof db
@@ -44,6 +45,7 @@ export async function authenticate({
 	user: SelectUser
 	adminPermissions?: SelectAdminPermission[]
 } | null> {
+
 	////
 	// GET USER TOKEN
 	////
@@ -54,6 +56,17 @@ export async function authenticate({
 			user: {
 				with: {
 					emails: true,
+					profileImages: {
+						columns: {
+							originalPath: true,
+							webpPath: true,
+							jpgPath: true,
+							smallWebpPath: true,
+							smallJpgPath: true,
+						},
+						orderBy: [desc(images.createdAt)],
+						limit: 1
+					},
 					toAdminRoles: {
 						columns: {},
 						with: {

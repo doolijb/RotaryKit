@@ -16,7 +16,6 @@
 		email = data.email
 		await api.reset.passphrase.POST({body: data})
 			.Success(async (res) => {
-				console.log(res)
 				completed = true
 				const nextPage: string = $page.url.searchParams.get("next") || "/"
 			})

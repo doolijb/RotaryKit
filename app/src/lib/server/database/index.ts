@@ -42,7 +42,7 @@ export async function migrate() {
     return await pgMigrate(db, {
         migrationsFolder: './src/lib/server/database/migrations',
     }).catch((e) => {
-        logger.error({ message: e.message, stack: e.stack })
+        logger.error({ message: e.message, error: e })
         process.exit(1)
     }).then(() => {
         return

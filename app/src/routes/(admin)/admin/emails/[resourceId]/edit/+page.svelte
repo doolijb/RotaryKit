@@ -17,7 +17,6 @@
     }
 
     function mapUserOptions(data: any[]): AutocompleteOption[] {
-        console.log(data)
         return data.map((user) => {
             return {
                 value: user.id,

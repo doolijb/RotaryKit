@@ -22,7 +22,6 @@
 	}
 
 	async function onSubmit(): Promise<void> {
-		console.log(data)
 		const code = $page.params.code
 		await api.reset.passphrase.code$(code).PUT({ body: data })
 			.Success(async (res) => {

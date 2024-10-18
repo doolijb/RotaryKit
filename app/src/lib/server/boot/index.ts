@@ -1,5 +1,4 @@
 import {
-	migrate,
 	seeds
 } from "$server/database"
 import { logger } from "$server/logging"
@@ -16,10 +15,8 @@ export async function boot({
 }: {
     envDefaults?: EnvDefaults
 }) {
-    const startupText = "Starting up... "
-    logger.info(startupText)
+    logger.info("Starting up... ")
 
-    await migrate()
     await checkSettings({envDefaults})
     await checkDatabase()
     await checkObjectStorage()

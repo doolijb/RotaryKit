@@ -25,6 +25,20 @@
             <p>
                 <b>User Since:</b> {userSince.toLocaleDateString()}
             </p>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+
+                <a href="/profile/image" class="card p-4 border-0 variant-filled ">
+                    <div class="grid grid-cols-12">
+                        <div class="col-span-4">
+                            <Icon icon="mdi:email" class="w-16 h-16" />
+                        </div>
+                        <div class="col-span-8 text-sm">
+                            <h3 class="h4">Profile Image</h3>
+                            <p>Set the image associated with you</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 		</div>
 	</div>
 

@@ -43,7 +43,8 @@
         "Swapy",
         "tailwindcss",
         "trcp",
-        "trpc"
+        "trpc",
+        "uuidv"
     ],
     "search.exclude": {
         "**/*.svelte-kit": true

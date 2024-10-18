@@ -24,7 +24,6 @@
 			adminRoles: [],
 			adminPermissions: [],
 		}
-		console.log("retResult", retResult)
 
 		Object.values(retResult.toAdminRoles).forEach(({ adminRole }) => {
 			retResult.permissions = adminRole.toAdminPermissions.length

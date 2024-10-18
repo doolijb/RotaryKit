@@ -82,7 +82,6 @@
     function handleOnInput(e: Event) {
         touch()
         dispatch("input", e)
-        console.log("data", data)
     }
 
     ////

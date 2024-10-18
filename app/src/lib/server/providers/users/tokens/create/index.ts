@@ -41,8 +41,6 @@ export  async function create({
         expiresAt
     })
 
-    console.log('expires at', expiresAt)
-
     // Returning?
     if (returning) {
         query.returning(returning)
