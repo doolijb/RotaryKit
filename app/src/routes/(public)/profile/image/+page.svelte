@@ -85,6 +85,7 @@
 	let errors: FormErrors
 
 	onMount(async () => {})
+	console.log($page.data.user.profileImages)
 </script>
 
 <Main>

@@ -1,6 +1,7 @@
 import { asc, desc, eq } from "drizzle-orm"
 import { db, schema } from "$server/database"
 import { images } from "$server/database/migrations/schema"
+import { ImageStatus } from "$shared/constants"
 
 interface AuthenticateAndValidate {
 	tx?: typeof db
@@ -58,13 +59,11 @@ export async function authenticate({
 					emails: true,
 					profileImages: {
 						columns: {
-							originalPath: true,
-							webpPath: true,
-							jpgPath: true,
 							smallWebpPath: true,
 							smallJpgPath: true,
 						},
 						orderBy: [desc(images.createdAt)],
+						where: (i, { eq }) => eq(i.status, ImageStatus.PUBLISHED),
 						limit: 1
 					},
 					toAdminRoles: {

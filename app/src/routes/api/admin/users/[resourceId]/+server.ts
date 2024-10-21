@@ -37,6 +37,19 @@ export async function GET(event: RequestEvent) {
 		}
 
 		const availableRelations: AvailableRelations = {
+			profileImages: {
+				tableName: "images",
+				columns: {
+					id: true,
+					smallWebpPath: true,
+					smallWebpBytes: true,
+					smallJpgPath: true,
+					smallJpgBytes: true,
+					createdAt: true,
+					status: true,
+				},
+				limit: 1
+			},
 			emails: {
 				tableName: "emails",
 				columns: {

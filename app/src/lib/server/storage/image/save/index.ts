@@ -1,30 +1,28 @@
-
+import * as storage from "$server/storage"
 
 export async function save({
-    originalBuffer,
-    webpBuffer,
-    jpgBuffer,
-    mediumWebpBuffer,
-    mediumJpgBuffer,
-    smallWebpBuffer,
-    smallJpgBuffer,
+	file,
+    buffers,
     extension,
     uuid,
-    now,
+    now= new Date(),
     bucket,
     uploadedByUserId,
     profileImageUserId,
 }: {
-    originalBuffer: Buffer
-    webpBuffer: Buffer
-    jpgBuffer: Buffer
-    mediumWebpBuffer: Buffer
-    mediumJpgBuffer: Buffer
-    smallWebpBuffer: Buffer
-    smallJpgBuffer: Buffer
+	file: File
+    buffers: {
+		originalBuffer: ArrayBuffer
+		webpBuffer: ArrayBuffer
+		jpgBuffer: ArrayBuffer
+		mediumWebpBuffer: ArrayBuffer
+		mediumJpgBuffer: ArrayBuffer
+		smallWebpBuffer: ArrayBuffer
+		smallJpgBuffer: ArrayBuffer
+	}
     extension: string
     uuid: string
-    now: number
+    now: Date
     bucket: string
     uploadedByUserId: string
     profileImageUserId?: string
@@ -33,12 +31,13 @@ export async function save({
         const month = now.getMonth() + 1
         const day = now.getDate()
         const path = `public/uploads/images/${year}/${month}/${day}`
-		const baseName = `${event.locals.user.id}__${uuid}`
+		const baseName = `${uploadedByUserId}__${uuid}`
 		const mediumBaseName = `${baseName}__medium`
 		const smallBaseName = `${baseName}__small`
 		const toSave = []
 		const imageValues = {
 			title: file.name.split(".").slice(0, -1).join("."),
+			totalBytes: 0,
 			createdAt: now,
 			updatedAt: now,
 			uploadedByUserId,
@@ -46,70 +45,79 @@ export async function save({
 		} as SelectImage
 
 		// Original image
-		if (originalBuffer) {
+		if (buffers.originalBuffer) {
 			const originalKey = `${path}/${baseName}.${extension}`
-			toSave.push({ key: originalKey, body: originalBuffer })
+			toSave.push({ key: originalKey, body: buffers.originalBuffer })
 			imageValues.originalPath = `/${bucket}/${originalKey}`
-			imageValues.originalBytes = originalBuffer.byteLength
+			imageValues.originalBytes = buffers.originalBuffer.byteLength
+			imageValues.totalBytes += imageValues.originalBytes
 		}
 
 		// WebP Optimized image
-		if (webpBuffer) {
+		if (buffers.webpBuffer) {
 			const webpKey = `${path}/${baseName}.webp`
-			const webpBytes = webpBuffer.byteLength
-			toSave.push({ key: webpKey, body: webpBuffer })
+			const webpBytes = buffers.webpBuffer.byteLength
+			toSave.push({ key: webpKey, body: buffers.webpBuffer })
 			imageValues.webpPath = `/${bucket}/${webpKey}`
 			imageValues.webpBytes = webpBytes
+			imageValues.totalBytes += webpBytes
 		}
 
 		// JPG Optimized image
-		if (jpgBuffer) {
+		if (buffers.jpgBuffer) {
 			const jpgKey = `${path}/${baseName}.jpg`
-			const jpgBytes = jpgBuffer.byteLength
-			toSave.push({ key: jpgKey, body: jpgBuffer })
+			const jpgBytes = buffers.jpgBuffer.byteLength
+			toSave.push({ key: jpgKey, body: buffers.jpgBuffer })
 			imageValues.jpgPath = `/${bucket}/${jpgKey}`
 			imageValues.jpgBytes = jpgBytes
+			imageValues.totalBytes += jpgBytes
 		}
 
 		// WebP Optimized medium image
-		if (mediumWebpBuffer) {
+		if (buffers.mediumWebpBuffer) {
 			const mediumWebpKey = `${path}/${mediumBaseName}.webp`
-			const mediumWebpBytes = mediumWebpBuffer.byteLength
-			toSave.push({ key: mediumWebpKey, body: mediumWebpBuffer })
+			const mediumWebpBytes = buffers.mediumWebpBuffer.byteLength
+			toSave.push({ key: mediumWebpKey, body: buffers.mediumWebpBuffer })
 			imageValues.mediumWebpPath = `/${bucket}/${mediumWebpKey}`
 			imageValues.mediumWebpBytes = mediumWebpBytes
+			imageValues.totalBytes += mediumWebpBytes
 		}
 
 		// JPG Optimized medium image
-		if (mediumJpgBuffer) {
+		if (buffers.mediumJpgBuffer) {
 			const mediumJpgKey = `${path}/${mediumBaseName}.jpg`
-			const mediumJpgBytes = mediumJpgBuffer.byteLength
-			toSave.push({ key: mediumJpgKey, body: mediumJpgBuffer })
+			const mediumJpgBytes = buffers.mediumJpgBuffer.byteLength
+			toSave.push({ key: mediumJpgKey, body: buffers.mediumJpgBuffer })
 			imageValues.mediumJpgPath = `/${bucket}/${mediumJpgKey}`
 			imageValues.mediumJpgBytes = mediumJpgBytes
+			imageValues.totalBytes += mediumJpgBytes
 		}
 		
 
 		// WebP Optimized small image
-		if (smallWebpBuffer) {
+		if (buffers.smallWebpBuffer) {
 			const smallWebpKey = `${path}/${smallBaseName}.webp`
-			const smallWebpBytes = smallWebpBuffer.byteLength
-			toSave.push({ key: smallWebpKey, body: smallWebpBuffer })
+			const smallWebpBytes = buffers.smallWebpBuffer.byteLength
+			toSave.push({ key: smallWebpKey, body: buffers.smallWebpBuffer })
 			imageValues.smallWebpPath = `/${bucket}/${smallWebpKey}`
 			imageValues.smallWebpBytes = smallWebpBytes
+			imageValues.totalBytes += smallWebpBytes
 		}
 
 		// JPG Optimized small image
-		if (smallJpgBuffer) {
+		if (buffers.smallJpgBuffer) {
 			const smallJpgKey = `${path}/${smallBaseName}.jpg`
-			const smallJpgBytes = smallJpgBuffer.byteLength
-			toSave.push({ key: smallJpgKey, body: smallJpgBuffer })
+			const smallJpgBytes = buffers.smallJpgBuffer.byteLength
+			toSave.push({ key: smallJpgKey, body: buffers.smallJpgBuffer })
 			imageValues.smallJpgPath = `/${bucket}/${smallJpgKey}`
 			imageValues.smallJpgBytes = smallJpgBytes
+			imageValues.totalBytes += smallJpgBytes
 		}
 
 		// Upload the images
 		toSave.forEach(async ({ key, body }) => {
 			await storage.save({ key, body })
 		})
+
+		return imageValues
 }

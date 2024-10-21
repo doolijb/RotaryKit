@@ -7,8 +7,8 @@ import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
 import { schema } from "$server/database"
 import { eq } from "drizzle-orm"
-import * as storage from "$server/storage"
-import { v4 as uuidv4 } from "uuid"
+import { images } from "$server/providers"
+
 
 const postForm = PostForm.init()
 
@@ -51,55 +51,28 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Delete the old images
 		 */
-
-        const { STORAGE_DEFAULT_BUCKET: bucket } = process.env
-
-		if (oldImages.length) {
-			oldImages.forEach(async (image) => {
-				await storage.image.delete(image)
-            })
-			await db
-				.delete(schema.images)
-				.where(eq(schema.images.profileImageUserId, event.locals.user.id))
-		}
+		oldImages.forEach(async (image) => {
+			await images.remove({image})
+		})
 
 		/**
 		 * Upload new image
 		 */
 
-		// Generate a uuid
-		let uuid: string
-
-		while (uuid == undefined) {
-			uuid = uuidv4()
-			const existing = (await db
-				.select({ id: schema.images.id })
-				.from(schema.images)
-				.where(eq(schema.images.id, uuid))) as SelectImage[]
-			if (existing.length) uuid = undefined
-		}
-
-		// Get current time
 		const file = data.image[0] as File
-		const now = new Date()
-
-		const { originalBuffer, webpBuffer, jpgBuffer, mediumWebpBuffer, mediumJpgBuffer, smallWebpBuffer, smallJpgBuffer } =
-			await storage.image.process({image: file, largeSize: false, mediumSize: false, fit: "cover"})
-		const extension = file.name.split(".").pop().toLocaleLowerCase()
-		await storage.image.save()
-
+		
 		/**
 		 * Add the new image to the database
 		 */
-
 		await db.transaction(async (tx) => {
-			await tx.insert(schema.images).values(imageValues)
+			await images.create({ tx, file, uploadedByUserId: event.locals.user.id, profileImageUserId: event.locals.user.id })
 		})
 
 		/**
 		 * Return the response
 		 */
 		return Created({ body: { success: true } })
+
 	} catch (e) {
 		logger.exception(e, event)
 		return InternalServerError()
@@ -125,15 +98,9 @@ export async function DELETE (event: KitEvent<Delete, RequestEvent>) {
         /**
          * Delete the old images
          */
-
-        if (oldImages.length) {
-            oldImages.forEach(async (image) => {
-                await deleteImage(image)
-            })
-            await db
-                .delete(schema.images)
-                .where(eq(schema.images.profileImageUserId, event.locals.user.id))
-        }
+		oldImages.forEach(async (image) => {
+			await images.remove({image})
+		})
 
         return Ok()
     } catch (e) {

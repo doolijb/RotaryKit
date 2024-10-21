@@ -26,6 +26,10 @@
 		adminRoles: {
 			title: "Admin Roles",
 			icon: "mdi:shield-account"
+		},
+		images: {
+			title: "Images",
+			icon: "mdi:image"
 		}
 	}
 

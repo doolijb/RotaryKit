@@ -147,7 +147,9 @@ declare global {
         [key: string]: {
           tableName: string,
           columns: {[key:string]: boolean},
-          where?: SQL<unknown>
+          where?: SQL<unknown>,
+          orderBy?: {[key:string]: "asc" | "desc"}
+          limit?: number
         }
       }
 

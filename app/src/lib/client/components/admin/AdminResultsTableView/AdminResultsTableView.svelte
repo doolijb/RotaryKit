@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { type PopupSettings, popup, getModalStore } from "@skeletonlabs/skeleton"
-	import axios, { type AxiosResponse } from "axios"
+	import { getModalStore } from "@skeletonlabs/skeleton"
 	import { onMount, setContext } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import { Toast, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/stores"
-	import { goto, invalidateAll } from "$app/navigation"
+	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import { load } from "js-yaml"
 
 	setContext("page", page)
 
@@ -29,6 +27,7 @@
 		}
 	} = {}
 	export let orderedKeys: string[] = []
+	export let excludeKeys: string[] = []
 	export let getResourceId: (result: Result<any>) => string = (result: Result<any>) => result.id
 	export let resource: string
 	export let resourceApi: ResourceApi
@@ -257,6 +256,7 @@
 		{...response.body}
 		{dataHandlers}
 		{orderedKeys}
+		{excludeKeys}
 		{canViewResource}
 		{canEditResource}
 		{canDeleteResource}

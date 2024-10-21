@@ -5,6 +5,7 @@ import { users } from "./users"
 export const images = pgTable("images", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     title: varchar("title", { length: 256 }).notNull(),
+    totalBytes: bigint("total_bytes", { mode: 'number' }).notNull(), // Consider changing to numeric if applicable
     originalPath: varchar("original_path", { length: 512 }),
     originalBytes: bigint("original_bytes", { mode: 'number' }), // Consider changing to numeric if applicable
     webpPath: varchar("webp_path", { length: 512 }),
@@ -20,7 +21,7 @@ export const images = pgTable("images", {
     smallWebpBytes: bigint("small_webp_bytes", { mode: 'number' }), // Consider changing to numeric if applicable
     smallJpgBytes: bigint("small_jpg_bytes", { mode: 'number' }), // Consider changing to numeric if applicable
     uploadedByUserId: uuid("uploaded_by_user_id").notNull().references(() => users.id, { onDelete: "set null" }),
-    profileImageUserId: uuid("profile_image_user_id").references(() => users.id, { onDelete: "set null" }),
+    profileImageUserId: uuid("profile_image_user_id").references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     status: varchar("status", { length: 256 }).notNull().default("active"),
@@ -39,5 +40,4 @@ export const imageRelations = relations(images, ({ one: One }) => ({
         references: [users.id],
         relationName: "profileImageUser",
     }),
-    
 }))
