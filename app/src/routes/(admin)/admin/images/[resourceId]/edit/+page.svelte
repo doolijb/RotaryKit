@@ -1,41 +1,18 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditEmailForm} from "$client/components"
+    import {AdminEditResultView, AdminEditImageForm} from "$client/components"
     import { page } from "$app/stores"
     import api from "$shared/api"
-	import { forms as f } from "$shared/validation"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 
-    const resource = "emails"
+    const resource = "images"
     const resourceId = $page.params.resourceId
-    const naturalKey = "address"
-    const resourceApi = api.admin.emails as ResourceApi
+    const naturalKey = "title"
+    const resourceApi = api.admin.images as ResourceApi
 
-    async function getUserOptions(args: {searchString: string}): Promise<any[]> {
-        let results = []
-        await api.admin.users.GET({query: { search: args.searchString }}).Success((res) => {results = res.body.results})
-        return results
-    }
-
-    function mapUserOptions(data: any[]): AutocompleteOption[] {
-        return data.map((user) => {
-            return {
-                value: user.id,
-                label: user.username,
-            }
-        })
-    }
-
-    const tabs: AdminEditResultViewTabs = {
+    const tabs = {
         default: {
-            FormComponent: AdminEditEmailForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditEmail> }) => {
-                return api.admin.emails.resourceId$(resourceId).PUT({body: data})
-            },
-            extras: {
-                getUserOptions,
-                mapUserOptions,
-            }
-        },
+            FormComponent: AdminEditImageForm,
+            onSubmit: ({data}) => api.admin.images.resourceId$(resourceId).PUT({body: data}),
+        }
     }
 </script>
 

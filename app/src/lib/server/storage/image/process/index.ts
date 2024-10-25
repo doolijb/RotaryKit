@@ -1,11 +1,12 @@
-import sharp from "sharp";
+import sharp from "sharp"
+import { ImageResolutions } from "$shared/constants"
 
 export async function process({
 	image,
 	fit = "contain",
-	resolution = { width: 3840, height: 2160 },
-	mediumResolution = { width: 800, height: 800 },
-	smallResolution = { width: 200, height: 200 },
+	resolution = { width: ImageResolutions.LARGE[0], height: ImageResolutions.LARGE[1] },
+	mediumResolution = { width: ImageResolutions.MEDIUM[0], height: ImageResolutions.MEDIUM[1] },
+	smallResolution = { width: ImageResolutions.SMALL[0], height: ImageResolutions.SMALL[1] },
 	jpgQuality = 40,
 	webpQuality = 83,
 	largeSize = true,

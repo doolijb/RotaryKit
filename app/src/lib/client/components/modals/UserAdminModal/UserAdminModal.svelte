@@ -1,7 +1,5 @@
 <script lang="ts">
-    import UserAdminReview from "$components/review/UserAdminReview/UserAdminReview.svelte"
-    import {ReviewModes} from "$shared/constants"
-    import {AppShell, Tab, TabGroup} from "@skeletonlabs/skeleton"
+    import {Tab, TabGroup} from "@skeletonlabs/skeleton"
     
 
     export let parent: any = null

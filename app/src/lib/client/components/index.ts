@@ -14,3 +14,6 @@ export * from "./admin"
 export * from "./forms"
 export * from "./layout"
 export * from "./extras"
+export * from "./modals"
+
+export { default as ImageView } from "./ImageView"

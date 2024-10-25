@@ -4,8 +4,9 @@ import { BadRequest, Created, InternalServerError } from "sveltekit-zero-api/htt
 import { logger } from "$server/logging"
 import type { KitEvent } from "sveltekit-zero-api"
 import { db, schema } from "$server/database"
-import { AdminCreateEmail as PostForm } from "$shared/validation/forms"
-import { emails } from "$server/providers"
+import { AdminCreateImage as PostForm } from "$shared/validation/forms"
+import { images } from "$server/providers"
+import type { ImageSizes } from "$shared/constants"
 
 interface GET {
     query?: GetListQueryParameters
@@ -18,7 +19,7 @@ interface Post {
 const postForm = PostForm.init()
 
 /**
- * Admin view for a list of email addresses
+ * Admin view for a list of images
  */
 export async function GET (event: KitEvent<GET, RequestEvent>) {
 
@@ -31,6 +32,7 @@ export async function GET (event: KitEvent<GET, RequestEvent>) {
             "id": true,
             "totalBytes": true,
             "createdAt": true,
+            "updatedAt": true,
             "status": true,
         }
 
@@ -66,14 +68,14 @@ export async function GET (event: KitEvent<GET, RequestEvent>) {
 
 
 /**
- * Admin view for a list of email addresses
+ * Admin view for a list of images
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
     try {
         /**
          * Check permissions
          */
-        hasAdminPermission(event, schema.emails)
+        hasAdminPermission(event, schema.images)
 
         /**
          * Validate the data
@@ -81,35 +83,35 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
         const { data, errors } = await validateData<PostForm["Data"]>({ form: postForm, event })
         if (Object.entries(errors).length > 0) return BadRequest({body: errors})
 
-        ////
-        // DATABASE VALIDATION
-        ////
-
-        // Check if role name is already taken
-        if (await db.query.emails.findFirst({where: (e, {eq}) => eq(e.address, data.address)})) {
-            errors["address"] = {"Taken": "This email address is already in use"}
-        }
-
         // If errors, throw an error
         if (Object.entries(errors).length > 0) {
             return BadRequest({body: errors})
         }
         
-        ////
-        // CREATE EMAIL ADDRESS
-        ////
+        /**
+         * Create Image
+         */
 
-        let result: SelectEmail
+        const file = data.image[0] as File
+
+        let result: SelectImage
 
         await db.transaction(async (tx) => {
-            // Create the role
-            await emails.create({...data, tx})
-        }).then(async () => {
-            result = await db.query.emails.findFirst({where: (r, {eq}) => eq(r.address, data.address)})
-        })
+			[result] = await await images.create({ 
+                tx, 
+                file,
+                title: data.title,
+                maxSize: data.maxSize as typeof ImageSizes.Option,
+                status: data.status as typeof ImageStatus.Option,
+                uploadedByUserId: event.locals.user.id,
+                returning: {id: schema.images.id}
+            })
+            console.log("result", result)
+		})
 
-        // Return the email
-        return Created({ body: { success: true, result }})
+        // Return the image
+        return Created({ body: { result }})
+
     } catch (err) {
         logger.exception(err, event)
         return InternalServerError()

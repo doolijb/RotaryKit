@@ -1,35 +1,14 @@
 <script lang="ts">
-    import {AdminCreateView, AdminCreateEmailForm} from "$client/components"
-    import { page } from "$app/stores"
+	import { useFormData } from '$client/utils';
+    import {AdminCreateView, AdminCreateImageForm} from "$client/components"
 	import api from "$shared/api"
-	import { onMount } from "svelte"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 
-    const resource = "emails"
-    const FormComponent = AdminCreateEmailForm
-    const resourceApi = api.admin.emails as  ResourceApi
-    const displayTitle = "Email"
+    const resource = "images"
+    const FormComponent = AdminCreateImageForm
+    const resourceApi = api.admin.images as  ResourceApi
+    const displayTitle = "Image"
 
-    async function getUserOptions(args: {searchString: string}): Promise<any[]> {
-        let results = []
-        await api.admin.users.GET({query: { search: args.searchString }}).Success((res) => {results = res.body.results})
-        return results
-    }
-
-    function mapUserOptions(data: any[]): AutocompleteOption[] {
-        return data.map((user) => {
-            return {
-                value: user.id,
-                label: user.username,
-            }
-        })
-    }
-
-    let extras = {
-        canEditSuperUsers: $page.data.user.isSuperUser,
-        getUserOptions,
-        mapUserOptions,
-    }
+    let extras = {}
 
 </script>
 
@@ -38,5 +17,6 @@
     {resourceApi}
     {displayTitle}
     {FormComponent}
+    requestBodyType="formData"
     bind:extras
 />

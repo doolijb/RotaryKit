@@ -6,7 +6,7 @@
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import { Toast, handleClientError, handleServerError } from "$client/utils"
+	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
 
 	const toastStore = getToastStore()
 
@@ -20,6 +20,7 @@
 	export let FormComponent: ConstructorOfATypedSvelteComponent
 	export let primaryKey: string = "id"
 	export let extras: Record<string, any> = {}
+	export let requestBodyType: "json" | "formData" = "json"
 
 	////
 	// CHILD EXPORTS
@@ -42,7 +43,18 @@
 	}
 
 	async function onSubmit(e?: Event) {
-		await resourceApi.POST({body: data})
+		let body: Record<string, any> | FormData
+
+		switch(requestBodyType) {
+			case "json":
+				body = data
+				break
+			case "formData":
+				body = useFormData({data})
+				break
+		}
+
+		await resourceApi.POST({body})
 			.Success(async (r) => {
 				toastStore.trigger(
 					new Toast({

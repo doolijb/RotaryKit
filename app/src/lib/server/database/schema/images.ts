@@ -1,6 +1,7 @@
 import { pgTable, varchar, uuid, timestamp, bigint } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { users } from "./users"
+import { ImageStatus } from "$shared/constants"
 
 export const images = pgTable("images", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
@@ -24,7 +25,7 @@ export const images = pgTable("images", {
     profileImageUserId: uuid("profile_image_user_id").references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
-    status: varchar("status", { length: 256 }).notNull().default("active"),
+    status: varchar("status", { length: 256 }).notNull()
 })
 
 export const imageRelations = relations(images, ({ one: One }) => ({

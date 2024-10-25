@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AdminHeader, DetailGridItem, Loading, TextCell } from "$client/components" 
+	import { AdminHeader, DetailGridItem, Loading, TextCell, AdminImageResultDetails } from "$client/components" 
 	import Icon from "@iconify/svelte"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
 	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
@@ -125,6 +125,8 @@
 	}
 
 	let currentTab: string
+	$: isCurrentTabImage = result && currentTab && ("smallWebpPath" in tabs[currentTab]);
+	$: isCurrentTabArray = result && currentTab && Array.isArray(tabs[currentTab])
 
 	////
 	// DATA HANDLERS
@@ -207,7 +209,7 @@
 			<!-- Tab Panels --->
 			<svelte:fragment slot="panel">
 				<!-- If array of items, display a table -->
-				{#if Array.isArray(tabs[currentTab])}
+				{#if isCurrentTabArray}
 					<!-- No results found -->
 					{#if tabs[currentTab].length === 0}
 						<p class="text-center">No results found.</p>
@@ -238,6 +240,8 @@
 							</table>
 						</div>
 					{/if}
+				{:else if isCurrentTabImage}
+					<AdminImageResultDetails result={tabs[currentTab]} />
 				{:else}
 					<!-- If object, display a grid of details -->
 					<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

@@ -1,13 +1,12 @@
 import type { RequestEvent } from "@sveltejs/kit"
 import { validateData, hasAdminPermission } from "$server/requests"
-import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { Ok, InternalServerError, Forbidden, BadRequest, NotFound } from "sveltekit-zero-api/http"
 import { AdminEditEmail as PutForm } from "$shared/validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
-import { emails } from "$server/providers"
+import { images } from "$server/providers"
 
 const putForm = PutForm.init()
 
@@ -19,36 +18,56 @@ export async function GET(event: RequestEvent) {
 	try {
 		if(!hasAdminPermission(
 			event,
-			schema.emails,
+			schema.images,
 		)) {
 			return Forbidden()
 		}
 
 		const columns: { [key: string]: boolean } = {
 			id: true,
-			address: true,
-			isUserPrimary: true,
-			verifiedAt: true,
+			title: true,
+			totalBytes: true,
 			createdAt: true,
 			updatedAt: true,
+			originalPath: true,
+			originalBytes: true,
+			webpPath: true,
+			webpBytes: true,
+			jpgPath: true,
+			jpgBytes: true,
+			mediumWebpPath: true,
+			mediumWebpBytes: true,
+			mediumJpgPath: true,
+			mediumJpgBytes: true,
+			smallWebpPath: true,
+			smallWebpBytes: true,
+			smallJpgPath: true,
+			smallJpgBytes: true,
+			status: true,
 		}
 
 		const availableRelations: AvailableRelations = {
-			user: {
-				tableName: "emails",
+			uploadedByUser: {
+				tableName: "users",
 				columns: {
 					id: true,
 					username: true,
-					address: true,
-					isUserPrimary: true,
-					verifiedAt: true,
+					createdAt: true,
+					updatedAt: true,
+				}
+			},
+			profileImageUser: {
+				tableName: "users",
+				columns: {
+					id: true,
+					username: true,
 					createdAt: true,
 					updatedAt: true,
 				}
 			}
 		}
 
-		const result = await db.query.emails.findFirst({
+		const result = await db.query.images.findFirst({
 			columns,
 			where: (e, { eq }) => eq(e.id, event.params.resourceId),
 			with: availableRelations
@@ -76,7 +95,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		if(!hasAdminPermission(
 			event,
-			schema.emails,
+			schema.images,
 		)) {
 			return Forbidden()
 		}
@@ -99,11 +118,11 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// UPDATE EMAIL
 		////
 
-		const email = await db.query.emails.findFirst({
+		const image = await db.query.images.findFirst({
 			where: (u, { eq }) => eq(u.id, event.params.resourceId)
 		})
 		
-		if (!email) {
+		if (!image) {
 			return NotFound()
 		}
 
@@ -113,26 +132,14 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// CHECK FOR CHANGES
 		////
 
-		if (data.address !== email.address) {
+		if (data.title !== image.title) {
 			values["address"] = data.address
 			hasChanges = true
 		}
 
-		if (data.userId !== email.userId) {
+		if (data.status !== image.status) {
 			values["userId"] = data.userId
 			hasChanges = true
-		}
-
-		if (!!data.isVerified !== !!email.verifiedAt) {
-			values["verifiedAt"] = data.isVerified ? new Date() : null
-			hasChanges = true
-		}
-
-		if (data.isUserPrimary && !email.isUserPrimary) {
-			hasChanges = true
-		} else if (!data.isUserPrimary && email.isUserPrimary) {
-			// We cannot unset the primary email
-			return BadRequest({ body: { message: "Cannot unset primary email, set a new primary instead" } })
 		}
 
 		////
@@ -145,10 +152,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		await db.transaction(async (tx) => {
 			if (Object.keys(values).length > 0) {
-				await tx.update(schema.emails).set(values).where(eq(schema.emails.id, event.params.resourceId))
-			}
-			if (data.isUserPrimary && !email.isUserPrimary) {
-				await emails.setUserPrimary({tx, emailId: email.id, userId: data.userId})
+				await tx.update(schema.images).set(values).where(eq(schema.images.id, event.params.resourceId))
 			}
 		})
 
@@ -176,21 +180,9 @@ export async function DELETE(event: RequestEvent) {
 		
 		if(!hasAdminPermission(
 			event,
-			schema.emails,
+			schema.images,
 		)) {
 			return Forbidden()
-		}
-
-		////
-		// VALIDATE
-		////
-
-		const email = await db.query.emails.findFirst({
-			where: (e, { eq }) => eq(e.id, event.params.resourceId)
-		})
-
-		if (email.userId && email.isUserPrimary) {
-			return BadRequest({ body: { message: "Cannot delete a user's primary email" } })
 		}
 
 		////
@@ -198,8 +190,8 @@ export async function DELETE(event: RequestEvent) {
 		////
 
 		await db.transaction(async (tx) => {
-			// Delete the user
-			await tx.delete(schema.emails).where(eq(schema.emails.id, event.params.resourceId))
+			// Delete the image
+			await tx.delete(schema.images).where(eq(schema.images.id, event.params.resourceId))
 		})
 
 		////

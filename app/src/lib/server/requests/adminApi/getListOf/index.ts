@@ -7,6 +7,8 @@ import {
 	type PgTableWithColumns,
 	PgTimestamp,
 	PgBoolean,
+	PgBigInt53,
+	PgBigInt64,
 } from "drizzle-orm/pg-core"
 import { querySpread, type KitEvent } from "sveltekit-zero-api"
 import { Ok } from "sveltekit-zero-api/http"
@@ -69,13 +71,16 @@ function getWith<T extends PgTableWithColumns<any>>(
 }
 
 function canILikeColumn(column: Column<any>, value: string) {
-	return !is(column, PgUUID) && !is(column, PgTimestamp) && !is(column, PgBoolean)
+	return !is(column, PgUUID) && !is(column, PgTimestamp) && !is(column, PgBoolean) && !is(column, PgBigInt53) && !is(column, PgBigInt64)
 }
 
 function canEqColumn(column: Column<any>, value: string) {
 	// If it's a UUID, check if the value is a valid UUID
 	if (is(column, PgUUID)) {
 		return /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(value)
+	// Check if value is an integer
+	} else if (is(column, PgBigInt53) || is(column, PgBigInt64)) {
+		return !isNaN(parseInt(value))
 	} else {
 		return !is(column, PgTimestamp) && !is(column, PgBoolean)
 	}

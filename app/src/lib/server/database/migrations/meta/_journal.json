@@ -43,6 +43,13 @@
       "when": 1729540976016,
       "tag": "0005_yummy_spirit",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1729825449091,
+      "tag": "0006_fine_celestials",
+      "breakpoints": true
     }
   ]
 }

@@ -237,7 +237,7 @@
 					<!-- RESULT ROW -->
 					<tr>
 						<!-- ROW NUMBER IN TOTAL RESULTS -->
-						<td class="opacity-50">
+						<td on:click={() => onViewResult(result)} class="opacity-50 hover:opacity-100 cursor-pointer" title="View">
 							{idx + resultStart}
 						</td>
 

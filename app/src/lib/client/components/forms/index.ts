@@ -14,3 +14,5 @@ export { default as AdminEditUserPassphraseForm } from "./AdminEditUserPassphras
 export { default as AdminEditAdminRolesToUserForm } from "./AdminEditAdminRolesToUserForm"
 export { default as AdminCreateEmailForm } from "./AdminCreateEmailForm"
 export { default as UserProfileImageForm } from "./UserProfileImageForm"
+export { default as AdminCreateImageForm } from "./AdminCreateImageForm"
+export { default as AdminEditImageForm } from "./AdminEditImageForm"

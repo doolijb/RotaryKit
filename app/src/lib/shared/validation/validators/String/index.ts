@@ -26,6 +26,7 @@ export class String extends Primitive<string> {
     multiSelectOptions = this.stageValidator(c.MultiSelectOptions)
     numbersIncluded = this.stageValidator(c.NumbersIncluded)
     postalCodeValid = this.stageValidator(c.PostalCodeValid)
+    selectOptions = this.stageValidator(c.SelectOptions)
     specialCharExcluded = this.stageValidator(c.SpecialCharExcluded)
     specialCharIncluded = this.stageValidator(c.SpecialCharIncluded)
     telephoneValid = this.stageValidator(c.TelephoneValid)

@@ -24,7 +24,10 @@ const preview: Preview = {
 			stores: {
 				page: {
 					url: new URL("http://localhost"),
-					params: {}
+					params: {},
+					data: {
+						// storageUrl: "https://placehold.co",
+					}
 				},
 				navigating: null,
 				session: null,

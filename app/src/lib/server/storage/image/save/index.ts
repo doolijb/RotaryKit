@@ -8,7 +8,6 @@ export async function save({
     now= new Date(),
     bucket,
     uploadedByUserId,
-    profileImageUserId,
 }: {
 	file: File
     buffers: {
@@ -25,7 +24,6 @@ export async function save({
     now: Date
     bucket: string
     uploadedByUserId: string
-    profileImageUserId?: string
 }) {
         const year = now.getFullYear()
         const month = now.getMonth() + 1
@@ -36,13 +34,11 @@ export async function save({
 		const smallBaseName = `${baseName}__small`
 		const toSave = []
 		const imageValues = {
-			title: file.name.split(".").slice(0, -1).join("."),
 			totalBytes: 0,
 			createdAt: now,
 			updatedAt: now,
 			uploadedByUserId,
-			profileImageUserId,
-		} as SelectImage
+		} as {[key: string]: any}
 
 		// Original image
 		if (buffers.originalBuffer) {

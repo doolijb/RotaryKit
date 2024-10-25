@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { getModalStore, getToastStore, type ModalSettings } from "@skeletonlabs/skeleton"
 	import { page } from "$app/stores"
-	import { Main } from "$client/components"
+	import { ImageView, Main } from "$client/components"
 	import api from "$shared/api"
 	import Icon from "@iconify/svelte"
 	import { onMount } from "svelte"
 	import { UserProfileImageForm } from "$client/components"
-	import { handleClientError, handleException, handleServerError, Toast } from "$client/utils"
+	import { handleClientError, handleException, handleServerError, Toast, useFormData } from "$client/utils"
 	import { Avatar } from "@skeletonlabs/skeleton"
 	import { invalidateAll } from "$app/navigation"
 
@@ -27,20 +27,10 @@
 
 
 	async function onSubmit() {
-		const formData = new FormData()
-
-		Object.keys(data).forEach((key) => {
-			if (Array.isArray(data[key])) {
-				data[key].forEach((value: any) => {
-					formData.append(`${key}[]`, value)
-				})
-			} else {
-				formData.append(key, data[key])
-			}
-		})
+		const body = useFormData({data})
 
 		await api.profile.image
-			.POST({ body: formData })
+			.POST({ body })
 			.Success(async (res) => {
 				// addEmailCompleted = true
 				toastStore.trigger(
@@ -102,17 +92,13 @@
 			<div class="grid sm:grid-cols-1 md:grid-cols-2">
 				<div class="flex">
 					<span>
-						{#if profileImage}
-						<picture>
-							{#if profileImage.smallWebpPath}
-								<source srcset={$page.data.storageUrl + profileImage.smallWebpPath} type="image/webp" />
+						<Avatar class="w-[10em]" background="bg-tertiary-400-500-token" initials={$page.data.user.username}>
+							{#if hasProfileImage}
+								<ImageView result={profileImage} />
+							{:else}
+								<!-- <ImageView src="/images/placeholder.png" /> -->
 							{/if}
-							{#if profileImage.smallJpgPath}
-								<source srcset={$page.data.storageUrl + profileImage.smallJpgPath} type="image/jpeg" />
-							{/if}
-							<img src={$page.data.storageUrl + profileImage.smallJpgPath} alt="Profile Image" class="rounded-full" />
-						</picture>
-						{/if}
+						</Avatar>
 					</span>
 				</div>
 				<div>

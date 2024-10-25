@@ -8,6 +8,8 @@ export * from "./AdminEditUser"
 export * from "./AdminEditUserPassphrase"
 export * from "./AdminEditUserWithPermissions"
 export * from "./AdminEditEmail"
+export * from "./AdminCreateImage"
+export * from "./AdminEditImage"
 
 export * from "./UserLogin"
 export * from "./UserRegister"

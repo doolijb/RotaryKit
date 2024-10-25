@@ -41,10 +41,9 @@ export async function GET(event: RequestEvent) {
 				tableName: "images",
 				columns: {
 					id: true,
+					totalBytes: true,
 					smallWebpPath: true,
-					smallWebpBytes: true,
 					smallJpgPath: true,
-					smallJpgBytes: true,
 					createdAt: true,
 					status: true,
 				},

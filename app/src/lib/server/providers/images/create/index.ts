@@ -1,22 +1,28 @@
 import { db, schema } from "$server/database"
 import * as storage from "$server/storage"
 import { v4 as uuidv4 } from "uuid"
-import { ImageStatus } from "$shared/constants"
+import { ImageSizes, ImageStatus } from "$shared/constants"
 import { eq } from "drizzle-orm"
 
 export async function create({
     tx = db,
     file,
+    title,
     uploadedByUserId,
     profileImageUserId,
     bucket = process.env.STORAGE_DEFAULT_BUCKET,
+    status = ImageStatus.PUBLISHED,
+    maxSize = ImageSizes.LARGE,
     returning
 }: {
     tx?: typeof db
     file: File
+    title: string
     uploadedByUserId: string
     profileImageUserId?: string
     bucket?: string,
+    status?: typeof ImageStatus.Option,
+    maxSize?: typeof ImageSizes.Option,
     returning?: ReturningSelect
 }): PromisedQueryResult<typeof returning> {
 
@@ -32,11 +38,25 @@ export async function create({
         if (existing.length) uuid = undefined
     }
 
+    if (!title) {
+        title = file.name.split(".").slice(0, -1).join(".")
+    }
 
     const now = new Date()
+    const originalSize = [ImageSizes.ORIGINAL, ImageSizes.NO_OPTIMIZATION].includes(maxSize)
+    const largeSize = [ImageSizes.ORIGINAL, ImageSizes.LARGE].includes(maxSize)
+    const mediumSize = largeSize || ImageSizes.MEDIUM == maxSize
+    const smallSize = mediumSize || ImageSizes.SMALL == maxSize
 
     const buffers =
-        await storage.image.process({image: file, largeSize: false, mediumSize: false, fit: "cover"})
+        await storage.image.process({
+            image: file,
+            originalSize,
+            largeSize, 
+            mediumSize,
+            smallSize, 
+            fit: "cover"
+        })
     const extension = file.name.split(".").pop().toLocaleLowerCase()
     const imageValues = await storage.image.save({
         file,
@@ -46,13 +66,17 @@ export async function create({
         now,
         bucket,
         uploadedByUserId,
-        profileImageUserId,
     })
+
+    if (profileImageUserId) {
+        imageValues.profileImageUserId = profileImageUserId
+    }
 
     const query = tx.insert(schema.images).values({
         ...imageValues,
-        status: ImageStatus.PUBLISHED,
-    })
+        title,
+        status,
+    } as InsertImage)
 
     // Returning?
     if (returning) {
