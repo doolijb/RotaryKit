@@ -194,7 +194,7 @@ declare global {
 
     type AdminEditResultViewTab = {
 		FormComponent: ConstructorOfATypedSvelteComponent
-		onSubmit: ({data}) => ApiRequest
+		onsubmit: ({data}) => ApiRequest
 		getExtras?: () => Promise<{ [key: string]: any }>
 		extras?: { [key: string]: any }
 		data?: { [key: string]: any }

@@ -150,42 +150,43 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			return NotFound()
 		}
 
-		const setUserData: {
+		const values: {
 			username?: string
 			isVerified?: boolean
 			isActive?: boolean
 			isAdmin?: boolean
 			isSuperUser?: boolean
+			updatedAt?: Date
 		} = {}
 
 		const setUserMap = {
 			username: () => {
 				if (user.username !== data.username) {
-					setUserData["username"] = data.username
+					values["username"] = data.username
 				}
 			},
 			isVerified: () => {
 				if (!!user.verifiedAt !== data.isVerified) {
 					if (data.isVerified) {
-						setUserData["verifiedAt"] = new Date()
+						values["verifiedAt"] = new Date()
 					} else {
-						setUserData["verifiedAt"] = null
+						values["verifiedAt"] = null
 					}
 				}
 			},
 			isActive: () => {
 				if (user.isActive !== data.isActive) {
-					setUserData["isActive"] = data.isActive
+					values["isActive"] = data.isActive
 				}
 			},
 			isAdmin: canEditSuperUsers ? () => {
 				if (user.isAdmin !== data["isAdmin"]) {
-					setUserData["isAdmin"] = data["isAdmin"]
+					values["isAdmin"] = data["isAdmin"]
 				}
 			} : undefined,
 			isSuperUser: canEditSuperUsers ? () => {
 				if (user.isSuperUser !== data["isSuperUser"]) {
-					setUserData["isSuperUser"] = data["isSuperUser"]
+					values["isSuperUser"] = data["isSuperUser"]
 				}
 			} : undefined,
 		}
@@ -196,13 +197,13 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			}
 		})
 
-		if (Object.keys(setUserData).length === 0) {
+		if (Object.keys(values).length === 0) {
 			return BadRequest({body:{message:"No changes to save"}})
 		}
 
-		if(setUserData.username) {
+		if(values.username) {
 			const user = await db.query.users.findFirst({
-				where: (u, { eq }) => eq(u.username, setUserData.username)
+				where: (u, { eq }) => eq(u.username, values.username)
 			})
 
 			if (user) {
@@ -210,11 +211,13 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			}
 		}
 
+		values.updatedAt = new Date()
+
 		await db.transaction(async (tx) => {
 			// Update the user
 			await tx
 				.update(schema.users)
-				.set(setUserData)
+				.set(values)
 				.where(eq(schema.users.id, event.params.resourceId))
 		})
 
@@ -222,7 +225,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// RESPONSE
 		////
 
-		return Ok({ body: { success: true }})
+		return Ok()
 
 	} catch (err) {
 		logger.exception(err, event)

@@ -13,47 +13,73 @@
 	const dispatch = createEventDispatcher()
 
 	////
-	// VARIABLE PROPS
+	// PROPS
 	////
-
-	/** The results to display in the table. */
-	export let results: PaginatedResponse<any>["results"]
-	/** The orderBy query string. */
-	export let orderBy: PaginatedResponse<any>["orderBy"]
-	/** The total number of results. */
-	export let totalCount: PaginatedResponse<any>["totalCount"]
-	/** The sequence of the first result. */
-	export let resultStart: PaginatedResponse<any>["resultStart"]
-	/** The sequence of the last result. */
-	export let resultEnd: PaginatedResponse<any>["resultEnd"]
-	/** Manually set the priority of keys in the table. Optional */
-	export let orderedKeys: string[] = []
-	/** Manually exclude keys from the table. Optional */
-	export let excludeKeys: string[] = []
-	/** Staff user can view resource. */
-	export let canViewResource: boolean
-	/** Staff user can edit resource. */
-	export let canEditResource: boolean
-	/** Staff user can delete resource. */
-	export let canDeleteResource: boolean
-	/**
+	
+	interface Props {
+		/** The results to display in the table. */
+		results: PaginatedResponse<any>["results"];
+		/** The orderBy query string. */
+		orderBy: PaginatedResponse<any>["orderBy"];
+		/** The total number of results. */
+		totalCount: PaginatedResponse<any>["totalCount"];
+		/** The sequence of the first result. */
+		resultStart: PaginatedResponse<any>["resultStart"];
+		/** The sequence of the last result. */
+		resultEnd: PaginatedResponse<any>["resultEnd"];
+		/** Manually set the priority of keys in the table. Optional */
+		orderedKeys?: string[];
+		/** Manually exclude keys from the table. Optional */
+		excludeKeys?: string[];
+		/** Staff user can view resource. */
+		canViewResource: boolean;
+		/** Staff user can edit resource. */
+		canEditResource: boolean;
+		/** Staff user can delete resource. */
+		canDeleteResource: boolean;
+		/**
 	 * Manually handle how data is displayed for a key in the table.
 	 * Recommended for displaying nested data. Optional
 	 */
-	export let dataHandlers: {
-		[key: string]: {
-			header?: string
-			handler?: (result: Result<any>) => any
-			orderByKey?: string
-			getUrl?: (result: Result<any>) => string
-		}
-	} = {}
+		dataHandlers?: {
+			[key: string]: {
+				header?: string
+				handler?: (result: Result<any>) => any
+				orderByKey?: string
+				getUrl?: (result: Result<any>) => string
+			}
+		};
+
+		// Events
+		onView?: (result: Result<any>) => void;
+		onEdit?: (result: Result<any>) => void;
+		onDelete?: (result: Result<any>) => void;
+	}
+
+	let {
+		results,
+		orderBy,
+		totalCount,
+		resultStart,
+		resultEnd,
+		orderedKeys = [],
+		excludeKeys = [],
+		canViewResource,
+		canEditResource,
+		canDeleteResource,
+		dataHandlers = {},
+
+		// Events
+		onView,
+		onEdit,
+		onDelete,
+	}: Props = $props();
 
 	////
-	// EVENTS
+	// FUNCTIONS
 	////
 	
-	async function onOrderByChange(key: string) {
+	async function orderByChange(key: string) {
 		// Get current direction
 		const currentDirection: string | undefined = orderByArray.find(
 			(orderBy) => orderBy.key === key
@@ -88,18 +114,6 @@
 		dispatch("orderByChange", orderBy)
 	}
 
-	async function onViewResult(result: Result<any>) {
-		dispatch("viewResult", result)
-	}
-
-	function onEditResult(result: Result<any>) {
-		dispatch("editResult", result)
-	}
-
-	function onDeleteResult(result: Result<any>) {
-		dispatch("deleteResult", result)
-	}
-
 	////
 	// INTERNAL VARIABLES
 	////
@@ -109,7 +123,7 @@
 	 * So we need to get a list of all keys from all results.
 	 * Add them to orderedKeys
 	 */
-	$: finalOrderedKeys = [
+	let finalOrderedKeys = $derived([
 		...orderedKeys,
 		...(results.reduce((acc: string[], result): string[] => {
 			Object.keys(result).forEach((key) => {
@@ -119,28 +133,28 @@
 			})
 			return acc
 		}, []) as string[])
-	]
+	])
 
 	/**
 	 * Parse OrderBy and OrderDirection
 	 * i.e. "createdAt:asc,username:desc" => [{key: "createdAt", direction: "asc"}, {key: "username", direction: "desc"}]
 	 */
-	$: orderByArray = orderBy.split(",").map((orderBy) => {
+	let orderByArray = $derived(orderBy.split(",").map((orderBy) => {
 		const [key, direction] = orderBy.split(":")
 		return { key, direction }
-	})
+	}))
 
 	/**
 	 * Create popup settings for each result.
 	 */
-	$: actionPopupSettings = results.reduce((acc, result) => {
+	let actionPopupSettings = $derived(results.reduce((acc, result) => {
 		acc[String(result.id)] = {
 			event: "focus-click",
 			target: `actionListbox-${result.id}`,
 			placement: "bottom"
 		}
 		return acc
-	}, {})
+	}, {}))
 
 	////
 	// HELPERS
@@ -189,6 +203,37 @@
 	}
 </script>
 
+{#snippet actionsDropdown(result)}
+	{#if canViewResource || canEditResource || canDeleteResource}
+		<td class="text-center">
+			<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
+				<span>
+					<Icon icon="akar-icons:more-vertical" />
+				</span>
+			</button>
+			<div
+				class="card w-48 shadow-xl p-0 z-50"
+				data-popup={actionPopupSettings[String(result["id"])].target}
+			>
+				<div class="arrow bg-primary-500-backdrop-token"></div>
+				<div class="btn-group-vertical variant-filled w-full">
+					{#if canViewResource}
+						<button onclick={() => onView(result)}> View </button>
+					{/if}
+
+					{#if canEditResource}
+						<button onclick={() => onEdit(result)}> Edit </button>
+					{/if}
+
+					{#if canDeleteResource}
+						<button onclick={() => onDelete(result)}> Delete </button>
+					{/if}
+				</div>
+			</div>
+		</td>
+	{/if}
+{/snippet}
+
 {#if results.length}
 	<!-- DISPLAY TABLE OF RESULTS -->
 	<div class="table-container mb-4">
@@ -202,7 +247,7 @@
 					<!-- RESULT DATA HEADERS -->
 					{#each finalOrderedKeys as key}
 						{#if getOrderByKey(key)}
-							<th on:click={() => onOrderByChange(key)}>
+							<th onclick={() => orderByChange(key)}>
 								<button class="hover:underline">
 									{getKeyDisplay(key)}
 									{#if orderByArray.find((orderBy) => orderBy.key === getOrderByKey(key))}
@@ -237,7 +282,7 @@
 					<!-- RESULT ROW -->
 					<tr>
 						<!-- ROW NUMBER IN TOTAL RESULTS -->
-						<td on:click={() => onViewResult(result)} class="opacity-50 hover:opacity-100 cursor-pointer" title="View">
+						<td onclick={() => onView(result)} class="opacity-50 hover:opacity-100 cursor-pointer" title="View">
 							{idx + resultStart}
 						</td>
 
@@ -251,34 +296,7 @@
 						{/each}
 
 						<!-- ACTIONS DROPDOWN -->
-						{#if canViewResource || canEditResource || canDeleteResource}
-							<td class="text-center">
-								<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
-									<span>
-										<Icon icon="akar-icons:more-vertical" />
-									</span>
-								</button>
-								<div
-									class="card w-48 shadow-xl p-0 z-50"
-									data-popup={actionPopupSettings[String(result["id"])].target}
-								>
-									<div class="arrow bg-primary-500-backdrop-token" />
-									<div class="btn-group-vertical variant-filled w-full">
-										{#if canViewResource}
-											<button on:click={() => onViewResult(result)}> View </button>
-										{/if}
-
-										{#if canEditResource}
-											<button on:click={() => onEditResult(result)}> Edit </button>
-										{/if}
-
-										{#if canDeleteResource}
-											<button on:click={() => onDeleteResult(result)}> Delete </button>
-										{/if}
-									</div>
-								</div>
-							</td>
-						{/if}
+						{@render actionsDropdown(result)}
 					</tr>
 				{/each}
 			</tbody>

@@ -8,21 +8,31 @@
 
 	////
 	// PARENT EXPORTS
-	////
+	
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
 	
 	////
 	// LOCAL EXPORTS
 	////
 	
 	export const form = Form.init()
-	export let data: Form["Data"] = {
+	interface Props {
+		////
+		disabled?: boolean;
+		canSubmit?: boolean;
+		data?: Form["Data"];
+		errors?: FormErrors;
+	}
+
+	let {
+		disabled = undefined,
+		canSubmit = $bindable(undefined),
+		data = $bindable({
 		passphrase: "",
 		passphraseConfirm: "",
-	} 
-	export let errors: FormErrors = {}
+	}),
+		errors = $bindable({})
+	}: Props = $props();
 
 </script>
 

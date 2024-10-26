@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { useFormData } from '$client/utils';
     import {AdminCreateView, AdminCreateImageForm} from "$client/components"
 	import api from "$shared/api"
 
@@ -8,7 +7,7 @@
     const resourceApi = api.admin.images as  ResourceApi
     const displayTitle = "Image"
 
-    let extras = {}
+    let extras = $state({})
 
 </script>
 
@@ -18,5 +17,5 @@
     {displayTitle}
     {FormComponent}
     requestBodyType="formData"
-    bind:extras
+    {extras}
 />

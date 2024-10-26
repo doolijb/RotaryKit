@@ -8,7 +8,7 @@
 
 	const toastStore = getToastStore()
 
-	async function onSubmit() {
+	async function onsubmit() {
 		await api.register.POST({body: data})
 			.Success(async (res) => {
 				completed = true
@@ -26,9 +26,9 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	let completed = false
-	let data: UserRegisterForm["Data"]
-	let errors: FormErrors
+	let completed = $state(false)
+	let data: UserRegisterForm["Data"] = $state({})
+	let errors: FormErrors = $state({})
 
 </script>
 
@@ -44,7 +44,7 @@
 		<div class="card p-4 w-full mb-4">
 			<container class="container">
 				{#if !completed}
-					<UserRegisterForm on:submit={onSubmit} bind:data bind:errors />
+					<UserRegisterForm on:submit={onsubmit} bind:data bind:errors />
 				{:else}
 					<div class="flex flex-col items-center justify-center space-y-4">
 						<h1 class="text-2xl font-bold">Thank you for registering!</h1>

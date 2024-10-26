@@ -1,57 +1,83 @@
 <script lang="ts">
 
 import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
 	import Icon from "@iconify/svelte"
+	import type { on } from "events"
 
-	const dispatch = createEventDispatcher()
-
-	////
-	// UPSTREAM EXPORTS
-	////
-
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-	export let options: MultiSelectOption[]
 	interface MultiSelectOption { [key: string]: string | number, label: string }
 
 	////
-	// LOCAL EXPORTS
+	// PROPS
 	////
+	
 
-	export let ref: HTMLSelectElement = undefined
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let id: string = v4()
-	export let isTouched = false
-	export let size: number = 4
-	export let selectedValues = []
-	export let selectedAvailable = []
+	interface Props {
+		// Props
+		field: string
+		form: FormSchema
+		options: Record<string, MultiSelectOption>
+		label?: string
+		disabled?: boolean
+		id?: string
+		size?: number
+
+		// Bindables
+		data?: Record<string, string[]>
+		errors?: Record<string, Record<string, string>>
+		ref?: HTMLSelectElement
+		isTouched?: boolean
+		selectedValues?: string[]
+		selectedAvailable?: string[]
+
+		// Events
+		onblur?: (e: Event) => void
+		onfocus?: (e: Event) => void
+		oninput?: (e: Event) => void
+	}
+
+	let {
+		// Props
+		field,
+		form,
+		options,
+		label,
+		disabled = $bindable(false),		id = v4(),
+		size = 4,
+
+		// Bindables
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		ref = $bindable(undefined),
+		isTouched = $bindable(false),
+		selectedValues = $bindable([]),
+		selectedAvailable = $bindable([]),
+
+		// Events
+		onblur,
+		onfocus,
+		oninput
+	}: Props = $props();
 
 	////
 	// CALCULATED
 	////
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	// $: validatorLength = form.fields[field].validators.length
-	$: required = fieldValidator.isRequired
-	// $: validState = isTouched
-	// 	? fieldErrors && Object.keys(fieldErrors).length
-	// 		? ValidStates.INVALID
-	// 		: data[field]
-	// 		  ? ValidStates.VALID
-	// 		  : ValidStates.NONE
-	// 	: ValidStates.NONE
-	$: canRemove = !!selectedValues.length 
-	$: canAdd = !!selectedAvailable.length
+	let attrs = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let required = $derived(fieldValidator.isRequired)
+	let canRemove = $derived(!!selectedValues.length) 
+	let canAdd = $derived(!!selectedAvailable.length)
+
+	$effect(() =>{
+		if (!label && !!attrs) {
+			label = attrs.label
+		}
+	})
 
 	////
 	// CONSTANTS
@@ -79,7 +105,6 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 	}
 
 	function handleRemove() {
-		console.log("selectedValues", selectedValues)
 		data[field] = Object.values(data[field]).filter( value => !selectedValues.includes(value))
 		selectedValues = []
 		touch()
@@ -91,16 +116,12 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 
 	function handleOnBlur(e: Event) {
 		touch()
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onblur(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		dispatch("input", e)
+		oninput(e)
 	}
 
 	////
@@ -144,7 +165,7 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 				<button
 					type="button"
 					class="btn btn-primary btn-sm mb-2"
-					on:click={handleAdd}
+					onclick={handleAdd}
 					disabled={!canAdd || disabled}
 					title={canAdd ? "Add selected options" : "First select an option to add"}
 				>
@@ -157,7 +178,7 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 				<button
 					type="button"
 					class="btn btn-primary btn-sm mb-3"
-					on:click={handleRemove}
+					onclick={handleRemove}
 					disabled={!canRemove || disabled}
 					title={canRemove ? "Remove selected options" : "First select an option to remove"}
 				>
@@ -179,9 +200,9 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 				{size}
 				bind:this={ref}
 				{disabled}
-				on:input={handleOnInput}
-				on:focus={handleOnFocus}
-				on:blur={handleOnBlur}
+				oninput={handleOnInput}
+				onblur={handleOnBlur}
+				{onfocus}
 				aria-label={label}
 				{required}
 			>

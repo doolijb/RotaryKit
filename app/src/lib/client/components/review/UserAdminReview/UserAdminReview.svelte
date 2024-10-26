@@ -2,7 +2,14 @@
     import {ReviewModes} from "$shared/constants"
     import {onMount} from "svelte"
 
-    export let formData = {
+
+    interface Props {
+        formData?: any;
+        mode?: string;
+        user?: SelectUser | undefined | null;
+    }
+
+    let { formData = $bindable({
         user: {
             username: "",
             firstName: "",
@@ -11,10 +18,7 @@
             password: "",
             passwordConfirm: ""
         }
-    }
-    export let mode: string = ReviewModes.CREATE
-
-    export let user: SelectUser | undefined | null = null
+    }), mode = ReviewModes.CREATE, user = null }: Props = $props();
 
     const invalidFields: string[] = ["username"]
 

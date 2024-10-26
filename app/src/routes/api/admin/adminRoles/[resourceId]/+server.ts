@@ -146,7 +146,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			if (roleEdited) {
 				await tx
 					.update(schema.adminRoles)
-					.set({ name: data.name })
+					.set({ name: data.name, updatedAt: new Date() } as Partial<InsertAdminRole>)
 					.where(eq(schema.adminRoles.id, event.params.resourceId))
 			}
 
@@ -169,7 +169,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		})
 
 		// Return
-		return Ok({ body: { success: true } })
+		return Ok()
 	} catch (err) {
 		logger.exception(err, event)
 		return InternalServerError()
@@ -191,7 +191,7 @@ export async function DELETE(event: KitEvent<Delete, RequestEvent>) {
 		await db.delete(schema.adminRoles).where(eq(schema.adminRoles.id, event.params.resourceId))
 
 		// Return
-		return Ok({ body: { success: true } })
+		return Ok()
 	} catch (err) {
 		logger.exception(err, event)
 		return InternalServerError()

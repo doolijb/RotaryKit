@@ -6,8 +6,13 @@
 	import { ImageView } from '$client/components'
 
 	// Props
-	/** Exposes parent props to this component. */
-	export let parent: SvelteComponent;
+	
+    interface Props {
+        /** Exposes parent props to this component. */
+        parent: SvelteComponent;
+    }
+
+    let { parent }: Props = $props();
 
 	const modalStore = getModalStore();
 
@@ -15,7 +20,7 @@
 	const cImage = 'rounded-container-token overflow-hidden shadow-xl';
     console.log($modalStore[0]?.image)
 
-    let buttonVisible = false;
+    let buttonVisible = $state(false);
 
     // Show the button after a short delay to allow the modal to open
     setTimeout(() => {
@@ -25,7 +30,7 @@
 
 {#if $modalStore[0]}
 	<!-- Button -->
-    <button class="btn-icon variant-filled {cButton} {buttonVisible ? 'opacity-100' : 'opacity-0'}" on:click={parent.onClose}>×</button>
+    <button class="btn-icon variant-filled {cButton} {buttonVisible ? 'opacity-100' : 'opacity-0'}" onclick={parent.onClose}>×</button>
 	<!-- Image -->
 	<ImageView result={$modalStore[0].meta.result} class="{cImage}" size={$modalStore[0].meta.size} />
 {/if}

@@ -30,8 +30,8 @@
 		failure = true
 	}
 
-	let completed = false
-	let failure = false
+	let completed = $state(false)
+	let failure = $state(false)
 
 	onMount(() => {
 		verify()

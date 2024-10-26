@@ -17,7 +17,7 @@ export async function create({
 }: {
     tx?: typeof db
     file: File
-    title: string
+    title?: string
     uploadedByUserId: string
     profileImageUserId?: string
     bucket?: string,

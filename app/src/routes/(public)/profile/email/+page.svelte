@@ -7,9 +7,32 @@
 	import { onMount } from "svelte"
 	import { AddEmailAddressForm } from "$client/components"
 	import { handleClientError, handleException, handleServerError, Toast } from "$client/utils"
+	import { AddEmailAddress as Form } from "$shared/validation/forms"
 
 	const toastStore = getToastStore()
 	const modalStore = getModalStore()
+
+
+	////
+	// STATE
+	////
+
+	let emails = $state<SelectEmail[]>([])
+	let addEmailCompleted = $state(false)
+	let addEmailData = $state({} as Form["Data"])
+	let addEmailErrors: FormErrors = $state({})
+	let deletedEmailIds: string[] = [] // Prevent button from being clicked multiple times
+	let isSettingPrimary = $state(false)
+
+	////
+	// CALCULATED
+	////
+
+	let isShowControlColumn = $derived(emails.length > 1)
+
+	////
+	// FUNCTIONS
+	////
 
 	async function onAddEmailSubmit() {
 		await api.profile.email
@@ -27,7 +50,7 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	async function onSetPrimaryClick(email) {
+	async function onSetPrimaryClick(email: SelectEmail) {
 		const modal: ModalSettings = {
 			type: "confirm",
 			title: "Change Primary Email Address",
@@ -41,7 +64,7 @@
 		modalStore.trigger(modal)
 	}
 
-	async function onSetPrimaryConfirmClick(email) {
+	async function onSetPrimaryConfirmClick(email: SelectEmail) {
 		isSettingPrimary = true
 		await api.profile.email
 			.resourceId$(email.id)
@@ -57,7 +80,7 @@
 		isSettingPrimary = false
 	}
 
-	async function onResendCodeClick(email) {
+	async function onResendCodeClick(email: SelectEmail) {
 		await api.profile.email
 			.resourceId$(email.id)
 			["resend-code"].POST()
@@ -69,7 +92,7 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	async function onDeleteEmailClick(email) {
+	async function onDeleteEmailClick(email: SelectEmail) {
 		const modal: ModalSettings = {
 			type: "confirm",
 			title: "Delete Email Address",
@@ -83,7 +106,7 @@
 		modalStore.trigger(modal)
 	}
 
-	async function onDeleteEmailConfirmClick(email) {
+	async function onDeleteEmailConfirmClick(email: SelectEmail) {
 		deletedEmailIds.push(email.id)
 		await api.profile.email
 			.resourceId$(email.id)
@@ -97,20 +120,15 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	let addEmailCompleted = false
-	let addEmailData: AddEmailAddressForm["Data"]
-	let addEmailErrors: FormErrors
-	let deletedEmailIds: string[] = [] // Prevent button from being clicked multiple times
-	let isSettingPrimary = false
-	$: isShowControlColumn = emails.length > 1
-
-	export let emails = []
-
 	async function getEmails() {
 		api.profile.email.GET().Ok((res) => {
-			emails = res.body.emails
+			emails = res.body.emails as SelectEmail[]
 		})
 	}
+
+	////
+	// LIFECYCLE
+	////
 
 	onMount(async () => {
 		getEmails()
@@ -150,7 +168,7 @@
 							{:else}
 								<button 
 									class="btn btn-sm variant-filled-warning" 
-									on:click={() => onResendCodeClick(email)}
+									onclick={() => onResendCodeClick(email)}
 								>
 									Resend Verification Email
 								</button>
@@ -162,7 +180,7 @@
 							{:else if email.verifiedAt}
 								<button
 									class="btn btn-sm variant-filled-surface hover:variant-filled-secondary"
-									on:click={() => onSetPrimaryClick(email)}
+									onclick={() => onSetPrimaryClick(email)}
 									disabled={isSettingPrimary}
 								>
 									Set Primary
@@ -176,7 +194,7 @@
 								{#if !email.isUserPrimary && emails.length > 1}
 									<button
 										class="btn btn-sm variant-filled-surface hover:variant-filled-error btn-secondary"
-										on:click={() => onDeleteEmailClick(email)}
+										onclick={() => onDeleteEmailClick(email)}
 										disabled={deletedEmailIds.includes(email.id)}
 									>
 										Delete
@@ -209,7 +227,7 @@
 				<AddEmailAddressForm
 					bind:data={addEmailData}
 					bind:errors={addEmailErrors}
-					on:submit={onAddEmailSubmit}
+					onsubmit={onAddEmailSubmit}
 				/>
 			{/if}
 		</div>

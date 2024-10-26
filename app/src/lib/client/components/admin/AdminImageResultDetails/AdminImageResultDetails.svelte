@@ -6,7 +6,11 @@
 
     const modalStore = getModalStore()
 
-	export let result: SelectImage
+	interface Props {
+		result: SelectImage;
+	}
+
+	let { result }: Props = $props();
 
 	function getValue(key) {
 		switch (key) {
@@ -84,7 +88,9 @@
 
 <div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 	<DetailGridItem label="Preview" class="row-span-3">
-        <ImageView {result} size="small" class="rounded cursor-pointer" on:click={onImageClick} />
+		<button onclick={onImageClick}>
+			<ImageView {result} size="small" class="rounded cursor-pointer" />
+		</button>
 	</DetailGridItem>
     <DetailGridItem label={getLabel("id")} value={getValue("id")} />
     <DetailGridItem label={getLabel("title")} value={getValue("title")}/>
@@ -93,12 +99,11 @@
     <DetailGridItem label={getLabel("status")} value={getValue("status")} />
 	<DetailGridItem label={getLabel("totalBytes")} value={getValue("totalBytes")} />
 	<hr class="border-gray-200 col-span-3" />
+	<DetailGridItem label="Original" value={!!getValue("originalPath") ? "Available" : "Unavailable"} />
     {#if result.originalPath}
         <DetailGridItem label={getLabel("originalPath")} value={getValue("originalPath")}  humanizeLabel={false}/>
         <DetailGridItem label={"Size"} value={getValue("originalBytes")}  humanizeLabel={false}/>
-    {:else}
-        <DetailGridItem label="Original" value="Unavailable" />
-    {/if}
+	{/if}
     {#each ["webp", "jpg", "mediumWebp", "mediumJpg", "smallWebp", "smallJpg"] as key}
     <hr class="border-gray-200 col-span-3" />
         <DetailGridItem label={key} value={!!getValue(key + "Path") ? "Available" : "Unavailable"}/>

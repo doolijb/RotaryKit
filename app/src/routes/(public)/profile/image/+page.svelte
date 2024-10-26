@@ -4,29 +4,46 @@
 	import { ImageView, Main } from "$client/components"
 	import api from "$shared/api"
 	import Icon from "@iconify/svelte"
-	import { onMount } from "svelte"
 	import { UserProfileImageForm } from "$client/components"
 	import { handleClientError, handleException, handleServerError, Toast, useFormData } from "$client/utils"
 	import { Avatar } from "@skeletonlabs/skeleton"
 	import { invalidateAll } from "$app/navigation"
+	import type { UserProfileImage as Form } from "$shared/validation/forms"
+
 
 	const toastStore = getToastStore()
 	const modalStore = getModalStore()
 
-	$: hasProfileImage = $page.data.user.profileImages.length > 0
+	////
+	// VARIABLES
+	////
 
-	function getProfileImageUrl(user: SelectUser & { profileImages: SelectImage[] }) {
-		const hasProfileImage = user.profileImages.length > 0
+	let addEmailCompleted = false
 
-		if (hasProfileImage) {
+	////
+	// STATE
+	////
+
+	let data = $state({} as Form["Data"])
+	let errors: FormErrors = $state({})
+
+	////
+	// CALCULATED
+	////
+
+	let profileImage = $derived(getProfileImage($page.data.user) as SelectImage)
+
+	////
+	// FUNCTIONS
+	////
+
+	function getProfileImage(user: SelectUser & { profileImages: SelectImage[] }) {
+		if (user.profileImages.length > 0) {
 			return user.profileImages[0]
 		}
 	}
 
-	$: profileImage = getProfileImageUrl($page.data.user) as SelectImage
-
-
-	async function onSubmit() {
+	async function onsubmit() {
 		const body = useFormData({data})
 
 		await api.profile.image
@@ -70,12 +87,6 @@
 		})
 	}
 
-	let addEmailCompleted = false
-	let data: UserProfileImageForm["Data"]
-	let errors: FormErrors
-
-	onMount(async () => {})
-	console.log($page.data.user.profileImages)
 </script>
 
 <Main>
@@ -92,12 +103,12 @@
 			<div class="grid sm:grid-cols-1 md:grid-cols-2">
 				<div class="flex">
 					<span>
-						<Avatar class="w-[10em]" background="bg-tertiary-400-500-token" initials={$page.data.user.username}>
-							{#if hasProfileImage}
-								<ImageView result={profileImage} />
-							{:else}
-								<!-- <ImageView src="/images/placeholder.png" /> -->
-							{/if}
+						<Avatar class="w-[10em]" background="bg-tertiary-400-500-token" initials={!profileImage ? $page.data.user.username : undefined}>
+							{#key profileImage}
+								{#if !!profileImage}
+									<ImageView result={profileImage} alt={$page.data.user.username} />
+								{/if}
+							{/key}
 						</Avatar>
 					</span>
 				</div>
@@ -109,8 +120,8 @@
 					<p class="pt-2">
 						<button 
 							class="btn variant-filled-error"
-							on:click={onDelete}
-							disabled={!hasProfileImage}
+							onclick={onDelete}
+							disabled={!!profileImage}
 						>
 						<Icon icon="bi:trash" class="mr-2" />
 							Delete
@@ -130,16 +141,8 @@
 					click the link to verify your email address.
 				</div>
 			{:else}
-				<UserProfileImageForm bind:data bind:errors on:submit={onSubmit} />
+				<UserProfileImageForm bind:data bind:errors {onsubmit} />
 			{/if}
 		</div>
 	</div>
 </Main>
-
-<style>
-	img {
-		image-rendering: -webkit-optimize-contrast; /* Webkit (Chrome, Safari) */
-		image-rendering: crisp-edges; /* Firefox */
-		image-rendering: pixelated; /* CSS4 */
-	}
-</style>

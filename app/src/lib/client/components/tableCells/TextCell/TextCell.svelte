@@ -4,15 +4,25 @@
     import { Toast } from "$client/utils"
 	import moment from "moment"
 
-    export let text: string
-    export let copy: string = undefined
-    export let url: string = undefined
-    let displayText = text
+    interface Props {
+        text: string;
+        copy?: string;
+        url?: string;
+        children?: import('svelte').Snippet<[any]>;
+    }
+
+    let {
+        text,
+        copy = $bindable(undefined),
+        url = undefined,
+        children
+    }: Props = $props();
+    let displayText = $state(text)
 
     const toastStore = getToastStore()
 
-    $: copyText = !url && copy ? copy : text
-    $: title = copyText ? "Click to copy" : undefined
+    let copyText = $derived(!url && copy ? copy : text)
+    let title = $derived(copyText ? "Click to copy" : undefined)
 
     /**
      * Check if text is a UUID value and truncate it,
@@ -26,22 +36,22 @@
         !copy && (copy = displayText)
     }
 
-    let focused = false
+    let focused = $state(false)
 </script>
 
-<!-- svelte-ignore missing-declaration -->
+<!-- svelte-ignore missing_declaration -->
 {#if !text}
-    <td/>
+    <td></td>
 {:else if !!url}
     <td
         class="select-none"
         {title}
-        on:focus={() => (focused = true)}
-        on:focusout={() => (focused = false)}
-        on:mouseover={() => (focused = true)}
-        on:mouseleave={() => (focused = false)}
+        onfocus={() => (focused = true)}
+        onfocusout={() => (focused = false)}
+        onmouseover={() => (focused = true)}
+        onmouseleave={() => (focused = false)}
     >
-        <slot {text}>
+        {#if children}{@render children({ text, })}{:else}
             <span class="flex">
                 <a 
                     href={url} 
@@ -60,23 +70,23 @@
                     <Icon icon="mdi:open-in-new" />
                 </a>
             </span>
-        </slot>
+        {/if}
     </td>
 {:else}
     <td
         class="select-none"
         {title}
         use:clipboard={copyText}
-        on:click={() => {
+        onclick={() => {
             url && window.open(url)
             !url && copyText && toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
         }}
-        on:focus={() => (focused = true)}
-        on:focusout={() => (focused = false)}
-        on:mouseover={() => (focused = true)}
-        on:mouseleave={() => (focused = false)}
+        onfocus={() => (focused = true)}
+        onfocusout={() => (focused = false)}
+        onmouseover={() => (focused = true)}
+        onmouseleave={() => (focused = false)}
     >
-        <slot {text}>
+        {#if children}{@render children({ text, })}{:else}
             <span class="flex">
                 <span>
                     {displayText}
@@ -90,7 +100,7 @@
                     </span>
                 {/if}
             </span>
-        </slot>
+        {/if}
     </td>
 {/if}
 

@@ -115,7 +115,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		}
 
 		////
-		// UPDATE EMAIL
+		// UPDATE IMAGE
 		////
 
 		const image = await db.query.images.findFirst({
@@ -126,19 +126,19 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			return NotFound()
 		}
 
-		const values = {}
+		const values: Partial<SelectImage> = {}
 
 		////
 		// CHECK FOR CHANGES
 		////
 
 		if (data.title !== image.title) {
-			values["address"] = data.address
+			values.title = data.title
 			hasChanges = true
 		}
 
 		if (data.status !== image.status) {
-			values["userId"] = data.userId
+			values.status = data.status
 			hasChanges = true
 		}
 
@@ -149,6 +149,8 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		if (!hasChanges) {
 			return BadRequest({ body: { message: "No changes to save" } })
 		}
+
+		values.updatedAt = new Date()
 
 		await db.transaction(async (tx) => {
 			if (Object.keys(values).length > 0) {

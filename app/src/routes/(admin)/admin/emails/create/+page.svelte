@@ -25,11 +25,11 @@
         })
     }
 
-    let extras = {
+    let extras = $state({
         canEditSuperUsers: $page.data.user.isSuperUser,
         getUserOptions,
         mapUserOptions,
-    }
+    })
 
 </script>
 
@@ -38,5 +38,5 @@
     {resourceApi}
     {displayTitle}
     {FormComponent}
-    bind:extras
+    {extras}
 />

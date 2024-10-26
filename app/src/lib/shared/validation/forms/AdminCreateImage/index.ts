@@ -25,9 +25,11 @@ export class AdminCreateImage extends FormSchema {
         },
         maxSize: {
             label: "Max size",
+            defaultValue: ImageSizes.LARGE,
         },
         status: {
             label: "Status",
+            defaultValue: ImageStatus.PUBLISHED,
         },
     }
 }

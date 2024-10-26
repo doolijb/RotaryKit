@@ -7,9 +7,9 @@
     const resourceApi = api.admin.adminRoles as unknown as ResourceApi
     const displayTitle = "Admin Role"
     const FormComponent = AdminCreateAdminRoleForm
-    const extras = {
+    const extras = $state({
         adminPermissions: [] as SelectAdminPermission[],
-    }
+    })
 
     async function loadAdminPermissions() {
         api.admin.adminPermissions.GET({query: {pageLimit:1000}})

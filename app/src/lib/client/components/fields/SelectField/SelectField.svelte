@@ -1,63 +1,70 @@
 <script lang="ts">
 	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { PopupSettings, AutocompleteOption } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
-
-	const dispatch = createEventDispatcher()
-
-	////
-	// PARENT EXPORTS
-	////
-
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	import humanizeString from 'humanize-string'
 
 	////
 	// LOCAL EXPORTS
-	////
+	
 
-	export let ref: HTMLSelectElement = undefined
-	export let placeholder = attrs?.placeholder
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let id: string = v4()
-	export let isTouched = false
-	export let autocomplete: string = undefined
-	export let options: AutocompleteOption[] = []
+	interface Props {
+		// Props
+		field: string
+		form: FormSchema
+		placeholder?: string
+		label?: string
+		id?: string
+		options?: AutocompleteOption[]
 
-	////
-	// CALCULATED
-	////
+		// Bindables
+		data?: Record<string, any>
+		errors?: Record<string, any>
+		ref?: any
+		disabled?: boolean
+		isTouched?: boolean
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = 0
-	$: {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
+		// Events
+		oninput?: (e: Event) => Promise<void>
+		onblur?: (e: Event) => Promise<void>
+		onfocus?: (e: Event) => Promise<void>
 	}
-	$: required = fieldValidator.isRequired
-	$: validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	$: selectOptionsValidator = fieldValidator.validators.find(v => v.key == "selectOptions")
+
+	let {
+		// Props
+		field,
+		form,
+		placeholder,
+		label,
+		id = v4(),
+		options,
+
+		// Bindables
+		data = $bindable({}),
+		errors = $bindable({}),
+		ref = $bindable(),
+		disabled = $bindable(false),		
+		isTouched = $bindable(false),
+
+		// Events
+		oninput,
+		onblur,
+		onfocus,
+	}: Props = $props();
 
 	////
 	// CONSTANTS
 	////
 
 	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+
+	////
+	// STATE
+	////
+
+	let validatorLength = $state(0);
 
 	////
 	// FUNCTIONS
@@ -72,23 +79,42 @@
 		validate()
 	}
 
-	////
-	// EVENTS
-	////
-
 	function handleOnBlur(e: Event) {
 		touch()
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onblur?.(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		dispatch("input", e)
+		oninput?.(e)
 	}
+
+	////
+	// CALCULATED
+	////
+
+	let attrs = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+
+	let required = $derived(fieldValidator.isRequired)
+	let selectOptionsValidator = $derived(fieldValidator.validators.find(v => v.key == "selectOptions"))
+
+	$effect(() => {
+		validatorLength = Object.values(fieldValidator.validators).filter(
+			validator => !validator.isHidden
+		).length
+	})
+
+	$effect.pre(() => {
+		if (!label) {
+			if (attrs && attrs.placeholder) {
+				label = attrs.placeholder
+			} else {
+				label = humanizeString(field)
+			}
+		}
+	})
 
 	////
 	// LIFECYCLE
@@ -100,8 +126,6 @@
 
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div class="mb-2">
 	<div class="flex items-center">
 		<label class="label inline-flex pb-2" for={id}>
@@ -122,17 +146,15 @@
 		bind:value={data[field]}
 		{disabled}
 		{required}
-		on:input={handleOnInput}
-		on:focus={handleOnFocus}
-		on:blur={handleOnBlur}
+		{onfocus}
+		oninput={handleOnInput}
+		onblur={handleOnBlur}
 		aria-label={label}
-		{autocomplete}
 	>
 		{#if !required}
 			<option value="" selected={!data[field]}>Select an option</option>
 		{/if}
 		{#if options && options.length > 0}
-			<options value="Test 3">Test!</options>
 			{#each options.reverse() as option}
 				<option value={option.value} selected={option===data[field]}>{option.label}</option>
 			{/each}

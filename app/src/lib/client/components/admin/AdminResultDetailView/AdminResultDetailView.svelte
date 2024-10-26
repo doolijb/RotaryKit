@@ -27,20 +27,27 @@
 
 	////
 	// VARIABLE PROPS
-	////
+	
 
-	export let resource: string
-	export let resourceApi: ResourceApi
-	export let dataHandlerSet: DataHandlers = {}
-	export let naturalKey: string
-	export let resourceId: string
-	export let mutateResult: (result: Result<any>) => Result<any> | undefined = undefined
+	interface Props {
+		////
+		resource: string;
+		resourceApi: ResourceApi;
+		dataHandlerSet?: DataHandlers;
+		naturalKey: string;
+		resourceId: string;
+		mutateResult?: (result: Result<any>) => Result<any> | undefined;
+	}
 
-	////
-	// INTERNAL VARIABLES
-	////
+	let {
+		resource,
+		resourceApi,
+		dataHandlerSet = {},
+		naturalKey,
+		resourceId,
+		mutateResult = undefined
+	}: Props = $props();
 
-	$: isLoaded = !!result && !!currentTab
 
 	////
 	// PERMISSIONS
@@ -95,7 +102,7 @@
 	// RESULT
 	////
 
-	let result: Record<string, any>
+	let result: Record<string, any> = $state()
 
 	async function getResult() {
 		await resourceApi.resourceId$(resourceId).GET({})
@@ -110,9 +117,9 @@
 	// TABS
 	////
 
-	const tabs = {
+	const tabs = $state({
 		default: {}
-	}
+	})
 
 	function buildTabs() {
 		Object.entries(result).forEach(([key, value]) => {
@@ -124,9 +131,7 @@
 		})
 	}
 
-	let currentTab: string
-	$: isCurrentTabImage = result && currentTab && ("smallWebpPath" in tabs[currentTab]);
-	$: isCurrentTabArray = result && currentTab && Array.isArray(tabs[currentTab])
+	let currentTab: string = $state()
 
 	////
 	// DATA HANDLERS
@@ -165,36 +170,47 @@
 		buildTabs()
 		currentTab = $page.url.searchParams.get("tab") || "default"
 	})
+	////
+	// INTERNAL VARIABLES
+	////
+
+	let isLoaded = $derived(!!result && !!currentTab)
+	let isCurrentTabImage = $derived(result && currentTab && ("smallWebpPath" in tabs[currentTab]));
+	let isCurrentTabArray = $derived(result && currentTab && Array.isArray(tabs[currentTab]))
 </script>
 
 <AdminHeader>
-	<svelte:fragment slot="title">
-		<Icon icon="bx:detail" class="mr-2 mb-1 w-auto inline" />
-		Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
-			? `: ${result[naturalKey]}`
-			: ""}
-	</svelte:fragment>
-	<div class="flex justify-between" slot="controls">
-		<a href="/admin/{resource}" class="btn variant-filled-surface">
-			<Icon icon="material-symbols:list" class="mr-2" />
-			View All
-		</a>
-		{#if canCreateResource}
-			<a
-				href="/admin/{resource}/create"
-				class="btn variant-filled-success"
-				class:disabled={!isLoaded}
-			>
-				<Icon icon="mdi:plus" class="mr-2" />
-				New
+	{#snippet title()}
+	
+			<Icon icon="bx:detail" class="mr-2 mb-1 w-auto inline" />
+			Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
+				? `: ${result[naturalKey]}`
+				: ""}
+		
+	{/snippet}
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			<a href="/admin/{resource}" class="btn variant-filled-surface">
+				<Icon icon="material-symbols:list" class="mr-2" />
+				View All
 			</a>
-		{/if}
-	</div>
+			{#if canCreateResource}
+				<a
+					href="/admin/{resource}/create"
+					class="btn variant-filled-success"
+					class:disabled={!isLoaded}
+				>
+					<Icon icon="mdi:plus" class="mr-2" />
+					New
+				</a>
+			{/if}
+		</div>
+	{/snippet}
 </AdminHeader>
 
 {#if isLoaded}
 	<section class="card variant-soft p-4 mb-4">
-		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<!-- svelte-ignore a11y_label_has_associated_control -->
 		<TabGroup>
 			{#each Object.keys(tabs) as key}
 				<Tab bind:group={currentTab} name={humanizeString(key)} value={key}>
@@ -207,50 +223,52 @@
 				</Tab>
 			{/each}
 			<!-- Tab Panels --->
-			<svelte:fragment slot="panel">
-				<!-- If array of items, display a table -->
-				{#if isCurrentTabArray}
-					<!-- No results found -->
-					{#if tabs[currentTab].length === 0}
-						<p class="text-center">No results found.</p>
-					{:else}
-					<!-- Display a table -->
-						<div class="table-container">
-							<table class="table w-full m-0 variant-soft">
-								<thead>
-									<tr>
-										{#each Object.keys(tabs[currentTab][0]) as key}
-											<th>{getHeader(key)}</th>
-										{/each}
-									</tr>
-								</thead>
-								<tbody>
-									{#each tabs[currentTab] as result}
+			{#snippet panel()}
+					
+					<!-- If array of items, display a table -->
+					{#if isCurrentTabArray}
+						<!-- No results found -->
+						{#if tabs[currentTab].length === 0}
+							<p class="text-center">No results found.</p>
+						{:else}
+						<!-- Display a table -->
+							<div class="table-container">
+								<table class="table w-full m-0 variant-soft">
+									<thead>
 										<tr>
-											{#each Object.keys(result) as key}
-												{#if typeof getValue(result, key,) === "boolean"}
-													<BoolCell value={getValue(result, key)} />
-												{:else}
-													<TextCell text={`${getValue(result, key)}`} />
-												{/if}
+											{#each Object.keys(tabs[currentTab][0]) as key}
+												<th>{getHeader(key)}</th>
 											{/each}
 										</tr>
-									{/each}
-								</tbody>
-							</table>
+									</thead>
+									<tbody>
+										{#each tabs[currentTab] as result}
+											<tr>
+												{#each Object.keys(result) as key}
+													{#if typeof getValue(result, key,) === "boolean"}
+														<BoolCell value={getValue(result, key)} />
+													{:else}
+														<TextCell text={`${getValue(result, key)}`} />
+													{/if}
+												{/each}
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						{/if}
+					{:else if isCurrentTabImage}
+						<AdminImageResultDetails result={tabs[currentTab]} />
+					{:else}
+						<!-- If object, display a grid of details -->
+						<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+							{#each Object.keys(tabs[currentTab]) as key}
+								<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
+							{/each}
 						</div>
 					{/if}
-				{:else if isCurrentTabImage}
-					<AdminImageResultDetails result={tabs[currentTab]} />
-				{:else}
-					<!-- If object, display a grid of details -->
-					<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-						{#each Object.keys(tabs[currentTab]) as key}
-							<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
-						{/each}
-					</div>
-				{/if}
-			</svelte:fragment>
+				
+					{/snippet}
 		</TabGroup>
 	</section>
 {:else}
@@ -259,28 +277,30 @@
 
 {#if canDeleteResource || canEditResource}
 	<AdminHeader>
-		<div class="flex justify-between" slot="controls">
-			{#if canDeleteResource}
-				<button
-					type="button"
-					class="btn variant-filled-error"
-					on:click={handleDelete}
-					disabled={!isLoaded}
-				>
-					<Icon icon="mdi:trash-can" class="mr-2" />
-					Delete
-				</button>
-			{/if}
-			{#if canEditResource}
-				<a
-					href="{$page.url.pathname}/edit"
-					class="btn variant-filled-primary"
-					class:disabled={!isLoaded}
-				>
-					<Icon icon="mdi:pencil" class="mr-2" />
-					Edit
-				</a>
-			{/if}
-		</div>
+		{#snippet controls()}
+				<div class="flex justify-between" >
+				{#if canDeleteResource}
+					<button
+						type="button"
+						class="btn variant-filled-error"
+						onclick={handleDelete}
+						disabled={!isLoaded}
+					>
+						<Icon icon="mdi:trash-can" class="mr-2" />
+						Delete
+					</button>
+				{/if}
+				{#if canEditResource}
+					<a
+						href="{$page.url.pathname}/edit"
+						class="btn variant-filled-primary"
+						class:disabled={!isLoaded}
+					>
+						<Icon icon="mdi:pencil" class="mr-2" />
+						Edit
+					</a>
+				{/if}
+			</div>
+			{/snippet}
 	</AdminHeader>
 {/if}

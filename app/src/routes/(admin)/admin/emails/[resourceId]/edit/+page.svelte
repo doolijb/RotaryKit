@@ -28,7 +28,7 @@
     const tabs: AdminEditResultViewTabs = {
         default: {
             FormComponent: AdminEditEmailForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditEmail> }) => {
+            onsubmit: ({ data }: { data: FormDataOf<f.AdminEditEmail> }) => {
                 return api.admin.emails.resourceId$(resourceId).PUT({body: data})
             },
             extras: {

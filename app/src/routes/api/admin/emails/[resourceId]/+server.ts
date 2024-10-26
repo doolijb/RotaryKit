@@ -107,24 +107,24 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			return NotFound()
 		}
 
-		const values = {}
+		const values: Partial<SelectEmail> = {}
 
 		////
 		// CHECK FOR CHANGES
 		////
 
 		if (data.address !== email.address) {
-			values["address"] = data.address
+			values.address = data.address
 			hasChanges = true
 		}
 
 		if (data.userId !== email.userId) {
-			values["userId"] = data.userId
+			values.userId = data.userId
 			hasChanges = true
 		}
 
 		if (!!data.isVerified !== !!email.verifiedAt) {
-			values["verifiedAt"] = data.isVerified ? new Date() : null
+			values.verifiedAt = data.isVerified ? new Date() : null
 			hasChanges = true
 		}
 
@@ -142,6 +142,8 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		if (!hasChanges) {
 			return BadRequest({ body: { message: "No changes to save" } })
 		}
+
+		values.updatedAt = new Date()
 
 		await db.transaction(async (tx) => {
 			if (Object.keys(values).length > 0) {

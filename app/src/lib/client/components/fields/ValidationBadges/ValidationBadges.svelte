@@ -3,25 +3,35 @@
     import {popup} from "@skeletonlabs/skeleton"
     
     ////
-    // PARENT EXPORTS
+    // PROPS
     ////
+    
 
-    export let fieldErrors: FieldErrors
-    export let fieldValidator: Primitive<unknown>
-    export let hideRequired = false
+    interface Props {
+        ////
+        fieldErrors: FieldErrors;
+        fieldValidator: Primitive<unknown>;
+        hideRequired?: boolean;
+    }
+
+    let { 
+        fieldErrors, 
+        fieldValidator, 
+        hideRequired = false 
+    }: Props = $props();
 
     ////
     // CALCULATED
     ////
 
-    $: stickyValidators = Object.values(fieldValidator.validators).filter((validator) => 
+    let stickyValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => 
         validator.isSticky && 
         !validator.isHidden && 
         validator.popup && 
             ((validator.key === "required" && !hideRequired) || validator.key !== "required" )
-        )
-    $: dynamicValidators = Object.values(fieldValidator.validators).filter((validator) => !validator.isHidden && !validator.isSticky && !!fieldErrors[validator.key])
-    $: validators = [...stickyValidators, ...dynamicValidators].slice(0, 3)
+        ))
+    let dynamicValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => !validator.isHidden && !validator.isSticky && !!fieldErrors[validator.key]))
+    let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
 
 </script>
 {#each Object.values(validators) as validator}
@@ -45,7 +55,7 @@
             class="arrow"
             class:variant-filled-primary={!fieldErrors[validator.key]}
             class:variant-filled-error={!!fieldErrors[validator.key]}
-        />
+></div>
     </div>
 {/each}
 

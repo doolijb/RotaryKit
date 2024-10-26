@@ -11,14 +11,14 @@
     const naturalKey = "username"
     const resourceApi = api.admin.users as ResourceApi
 
-    const tabs: AdminEditResultViewTabs = {
+    const tabs: AdminEditResultViewTabs = $state({
         default: {
             FormComponent: AdminEditUserForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditUser> | FormDataOf<f.AdminEditUserWithPermissions> }) => {
+            onsubmit: ({ data }: { data: FormDataOf<f.AdminEditUser> | FormDataOf<f.AdminEditUserWithPermissions> }) => {
                 return api.admin.users.resourceId$(resourceId).PUT({body: data})
             }
         },
-    }
+    })
 
     ////
     // TAB: PASSPHRASE
@@ -31,7 +31,7 @@
     })) {
         tabs["passphrase"] = {
             FormComponent: AdminEditUserPassphraseForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditUserPassphrase> }) => {
+            onsubmit: ({ data }: { data: FormDataOf<f.AdminEditUserPassphrase> }) => {
                 return api.admin.users.resourceId$(resourceId).passphrase.PUT({body: data})
             }
         }
@@ -49,7 +49,7 @@
     })) {
         tabs["adminRoles"] = {
             FormComponent: AdminEditAdminRolesToUserForm,
-            onSubmit: ({ data }: { data: FormDataOf<f.AdminEditAdminRolesToUser>}) => {
+            onsubmit: ({ data }: { data: FormDataOf<f.AdminEditAdminRolesToUser>}) => {
                 return api.admin.users.resourceId$(resourceId).adminRoles.PUT({body: data})
             },
             getExtras: async () => {

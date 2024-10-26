@@ -17,29 +17,41 @@
 
 	////
 	// VARIABLE PROPS
-	////
-	export let dataHandlers: {
+	
+	interface Props {
+		////
+		dataHandlers?: {
 		[key: string]: {
 			header?: string
 			handler?: (result: Result<any>) => any
 			orderByKey?: string
 			getUrl?: (result: Result<any>) => string
 		}
-	} = {}
-	export let orderedKeys: string[] = []
-	export let excludeKeys: string[] = []
-	export let getResourceId: (result: Result<any>) => string = (result: Result<any>) => result.id
-	export let resource: string
-	export let resourceApi: ResourceApi
+	};
+		orderedKeys?: string[];
+		excludeKeys?: string[];
+		getResourceId?: (result: Result<any>) => string;
+		resource: string;
+		resourceApi: ResourceApi;
+	}
+
+	let {
+		dataHandlers = {},
+		orderedKeys = [],
+		excludeKeys = [],
+		getResourceId = (result: Result<any>) => result.id,
+		resource,
+		resourceApi
+	}: Props = $props();
 
 	////
 	// INTERNAL VARIABLES
 	////
 
-	let errorLoading = false
+	let errorLoading = $state(false)
 
 	// SEARCH PARAMS
-	let searchParam: string = $page.url.searchParams.get("search") || ""
+	let searchParam: string = $state($page.url.searchParams.get("search") || "")
 	let orderByParam: string | undefined = $page.url.searchParams.get("orderBy")
 	let pageParam: number | undefined = parseInt($page.url.searchParams.get("page"))
 	let pageLimitParam: number | undefined = parseInt($page.url.searchParams.get("pageLimit"))
@@ -61,7 +73,7 @@
 			orderBy: string,
 			search?: string,
 		}
-	}
+	} = $state()
 	let searchTimeoutId: NodeJS.Timeout | undefined
 
 	// PERMISSIONS
@@ -112,13 +124,20 @@
 	}
 
 	async function loadResults(): Promise<void> {
+		const query: {
+				search?: string,
+				orderBy?: string,
+				page?: number,
+				pageLimit?: number,
+			} = {}
+
+			if (searchParam) query.search = searchParam
+			if (orderByParam) query.orderBy = orderByParam
+			if (pageParam) query.page = pageParam
+			if (pageLimitParam) query.pageLimit = pageLimitParam
+
 		await resourceApi.GET({
-			query: {
-				search: searchParam || undefined,
-				orderBy: orderByParam || undefined,
-				page: pageParam || undefined,
-				pageLimit: pageLimitParam || undefined
-			}
+			query
 		}).Success((r: Response) => {
 			response = r as any // TODO: Fix types
 		})
@@ -135,32 +154,32 @@
 	// HANDLERS
 	////
 
-	async function handleOrderByChange(event: CustomEvent<string>): Promise<void> {
-		orderByParam = event.detail
+	async function onOrderByChange(value: string): Promise<void> {
+		orderByParam = value
 		await loadResults()
 	}
 
-	async function handlePageChange(event: CustomEvent<number>): Promise<void> {
-		pageParam = event.detail
+	async function onPageChange(value: number): Promise<void> {
+		pageParam = value
 		await loadResults()
 	}
 
-	async function handlePageLimitChange(event: CustomEvent<number>): Promise<void> {
-		pageLimitParam = event.detail
+	async function onPageLimitChange(value: number): Promise<void> {
+		pageLimitParam = value
 		await loadResults()
 	}
 
-	async function handleViewResult(event: CustomEvent<Result<any>>): Promise<void> {
+	async function onView(event: CustomEvent<Result<any>>): Promise<void> {
 		const resourceId = getResourceId(event.detail)
 		goto(`/admin/${resource}/${resourceId}`)
 	}
 
-	async function handleEditResult(event: CustomEvent<Result<any>>): Promise<void> {
+	async function onEdit(event: CustomEvent<Result<any>>): Promise<void> {
 		const resourceId = getResourceId(event.detail)
 		goto(`/admin/${resource}/${resourceId}/edit`)
 	}
 
-	async function handleDeleteResult(event: CustomEvent<Result<any>>): Promise<void> {
+	async function onDelete(event: CustomEvent<Result<any>>): Promise<void> {
 		const resourceId = getResourceId(event.detail)
 		modalStore.trigger({
 			type: "confirm",
@@ -197,11 +216,11 @@
 		})
 	}
 
-	async function handleCreateResource(): Promise<void> {
+	async function onCreate(): Promise<void> {
 		goto(`/admin/${resource}/create`, { replaceState: true })
 	}
 
-	async function handleSearchStringChange(event: Event): Promise<void> {
+	async function onSearchStringChange(event: Event): Promise<void> {
 		clearTimeout(searchTimeoutId)
 		searchTimeoutId = setTimeout(loadResults, 500)
 	}
@@ -216,38 +235,42 @@
 </script>
 
 <AdminHeader>
-	<div slot="title" class="capitalize">
-		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
-		{pluralize.plural(humanizeString(resource))}
-	</div>
+	{#snippet title()}
+		<div  class="capitalize">
+			<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
+			{pluralize.plural(humanizeString(resource))}
+		</div>
+	{/snippet}
 
-	<div class="flex justify-between" slot="controls">
-		<div>
-			<input
-				class="input w-auto"
-				type="text"
-				placeholder="Search"
-				bind:value={searchParam}
-				on:input={handleSearchStringChange}
-			/>
-			<button
-				class="btn variant-filled"
-				disabled={!searchParam}
-				on:click={() => {
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			<div>
+				<input
+					class="input w-auto"
+					type="text"
+					placeholder="Search"
+					bind:value={searchParam}
+					oninput={onSearchStringChange}
+				/>
+				<button
+					class="btn variant-filled"
+					disabled={!searchParam}
+					onclick={() => {
 					searchParam = ""
 					loadResults()
 				}}
-			>
-				Reset
-			</button>
+				>
+					Reset
+				</button>
+			</div>
+			{#if canCreateResource}
+				<button class="btn variant-filled-secondary" onclick={onCreate}>
+					<Icon icon="mdi:plus" class="mr-2" />
+					New
+				</button>
+			{/if}
 		</div>
-		{#if canCreateResource}
-			<button class="btn variant-filled-secondary" on:click={handleCreateResource}>
-				<Icon icon="mdi:plus" class="mr-2" />
-				New
-			</button>
-		{/if}
-	</div>
+	{/snippet}
 </AdminHeader>
 
 <!-- RESULTS TABLE -->
@@ -260,20 +283,22 @@
 		{canViewResource}
 		{canEditResource}
 		{canDeleteResource}
-		on:orderByChange={(orderBy) => handleOrderByChange(orderBy)}
-		on:viewResult={handleViewResult}
-		on:editResult={handleEditResult}
-		on:deleteResult={handleDeleteResult}
+		on:orderByChange={(orderBy) => onOrderByChange(orderBy)}
+		on:viewResult={onView}
+		on:editResult={onEdit}
+		on:deleteResult={onDelete}
 	/>
 	{#if response && response.body && response.body.results.length}
 		<AdminHeader>
-			<svelte:fragment slot="controls">
-				<Pagination
-					{...response.body}
-					on:pageLimitChange={(pageLimit) => handlePageLimitChange(pageLimit)}
-					on:pageChange={(page) => handlePageChange(page)}
-				/>
-			</svelte:fragment>
+			{#snippet controls()}
+					
+					<Pagination
+						{...response.body}
+						{onPageLimitChange}
+						{onPageChange}
+					/>
+				
+					{/snippet}
 		</AdminHeader>
 	{/if}
 {:else if errorLoading}
@@ -283,7 +308,7 @@
 		<br />
 	</div>
 	<div class="flex items-center justify-center">
-		<button class="btn variant-filled" on:click={loadResults}>
+		<button class="btn variant-filled" onclick={loadResults}>
 			<Icon icon="mdi:reload" class="mr-2" />
 			Retry
 		</button>

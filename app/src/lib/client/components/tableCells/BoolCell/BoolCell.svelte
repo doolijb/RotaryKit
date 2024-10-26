@@ -1,8 +1,12 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
 
-    export let title: string | null = null
-    export let value: boolean | null = null
+    interface Props {
+        title?: string | null;
+        value?: boolean | null;
+    }
+
+    let { title = null, value = null }: Props = $props();
 
     function getBoolDisplay(value: boolean): string {
         if (typeof value === "undefined" || value === null) {

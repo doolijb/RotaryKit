@@ -86,7 +86,6 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 						userId: event.params.resourceId,
 						adminRoleId
 					}))
-					console.log(insertQuery)
 
 					await tx.insert(schema.usersToAdminRoles).values(insertQuery)
 				}
@@ -101,8 +100,8 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 					await tx.delete(schema.usersToAdminRoles).where(deleteQuery)
 			}})
 
-		// Return the user
 		return Ok()
+		
 	} catch (err) {
 		console.error(err)
 		return InternalServerError()

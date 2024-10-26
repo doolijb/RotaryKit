@@ -106,7 +106,6 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
                 uploadedByUserId: event.locals.user.id,
                 returning: {id: schema.images.id}
             })
-            console.log("result", result)
 		})
 
         // Return the image

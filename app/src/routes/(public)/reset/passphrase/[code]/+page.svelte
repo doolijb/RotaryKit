@@ -21,7 +21,7 @@
 			.catch(handleException({ toastStore }, errCallback))
 	}
 
-	async function onSubmit(): Promise<void> {
+	async function onsubmit(): Promise<void> {
 		const code = $page.params.code
 		await api.reset.passphrase.code$(code).PUT({ body: data })
 			.Success(async (res) => {
@@ -39,10 +39,10 @@
 		failure = true
 	}
 
-	let valid = false
-	let completed = false
-	let failure = false
-	let data: FormDataOf<NewPassphrase>;
+	let valid = $state(false)
+	let completed = $state(false)
+	let failure = $state(false)
+	let data: FormDataOf<NewPassphrase> = $state();
 
 	onMount(() => {
 		verify()
@@ -61,7 +61,7 @@
         </div>
 		<div class="card p-4 w-full mb-4">
 			{#if valid}
-				<NewPassphraseForm on:submit={onSubmit} bind:data  />
+				<NewPassphraseForm on:submit={onsubmit} bind:data  />
 			{:else if failure}
 				<h1 class="text-2xl font-bold">Your passphrase could not be reset.</h1>
 				<p class="text-lg">

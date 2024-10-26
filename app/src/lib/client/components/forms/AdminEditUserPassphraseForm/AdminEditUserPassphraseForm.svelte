@@ -6,14 +6,25 @@
     import Icon from "@iconify/svelte"
     import { getToastStore } from "@skeletonlabs/skeleton"
 
-    export let disabled: boolean
-    export let canSubmit: boolean
-    export let result: SelectUser
-    export let form = Form.init()
-    export let data: Form["Data"] = {
-        passphrase: "",
+    interface Props {
+        disabled: boolean;
+        canSubmit: boolean;
+        result: SelectUser;
+        form?: any;
+        data?: Form["Data"];
+        errors?: FormErrors;
     }
-    export let errors: FormErrors = {}
+
+    let {
+        disabled,
+        canSubmit = $bindable(),
+        result,
+        form = $bindable(Form.init()),
+        data = $bindable({
+        passphrase: "",
+    }),
+        errors = $bindable({})
+    }: Props = $props();
 
     const toastStore = getToastStore()
 
@@ -74,7 +85,7 @@
 {/if}
 
 <FormBase
-    bind:form
+    {form}
     bind:errors
     bind:data
     bind:canSubmit
@@ -88,21 +99,21 @@
             id="passphrase"
             field="passphrase"
             bind:data
-            bind:form
             bind:errors
+            {form}
             {disabled}
         />
         <div>
             <button
                 type="button"
-                on:click={generatePassphrase}
+                onclick={generatePassphrase}
                 class="btn variant-filled-secondary">
                 <Icon icon="mdi:dice" class="me-2" />
                 Generate Random Passphrase
             </button>
             <button
                 type="button"
-                on:click={copyPassphrase}
+                onclick={copyPassphrase}
 				disabled={!data.passphrase || Object.keys(errors).length > 0}
                 class="btn variant-filled-surface">
                 <Icon icon="mdi:clipboard" class="me-2" />

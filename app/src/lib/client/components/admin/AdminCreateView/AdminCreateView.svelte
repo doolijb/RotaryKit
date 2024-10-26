@@ -7,34 +7,51 @@
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
 	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
+	import type { Component, Snippet } from "svelte"
 
 	const toastStore = getToastStore()
 
 	////
-	// PARENT EXPORTS
+	// PROPS
 	////
 
-	export let displayTitle: string
-	export let resource: string
-	export let resourceApi: ResourceApi
-	export let FormComponent: ConstructorOfATypedSvelteComponent
-	export let primaryKey: string = "id"
-	export let extras: Record<string, any> = {}
-	export let requestBodyType: "json" | "formData" = "json"
+	interface Props {
+		displayTitle: string;
+		resource: string;
+		resourceApi: ResourceApi;
+		FormComponent: Component<any, any, any>;
+		primaryKey?: string;
+		extras?: Record<string, any>;
+		requestBodyType?: "json" | "formData";
+		helpSnippet?: Snippet;
+	}
+
+	let {
+		// Props
+		displayTitle,
+		resource,
+		resourceApi,
+		FormComponent,
+		primaryKey = "id",
+		extras = {},
+		requestBodyType = "json",
+
+		// Snippets
+		helpSnippet,
+	}: Props = $props();
 
 	////
-	// CHILD EXPORTS
+	// STATE
 	////
 
-	let canSubmit: boolean = undefined
-	let formComponent: ATypedSvelteComponent = undefined
-	let data: Record<string, any> = undefined
+	let canSubmit: boolean = $state(false)
+	let data = $state({} as FormDataOf<any>)
 
 	////
 	// EVENTS
 	////
 
-	async function onCancel(e: Event) {
+	async function oncancel(e: Event) {
 		if (window.history.length > 2) {
 			window.history.back()
 		} else {
@@ -42,7 +59,7 @@
 		}
 	}
 
-	async function onSubmit(e?: Event) {
+	async function onsubmit(e?: Event) {
 		let body: Record<string, any> | FormData
 
 		switch(requestBodyType) {
@@ -69,75 +86,74 @@
 }
 </script>
 
-<AdminHeader>
-	<svelte:fragment slot="title">
-		<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
-		<span class="capitalize">
-			Create: {displayTitle}
-		</span>
-	</svelte:fragment>
+{#snippet createButton()}
+	<button
+		type="button"
+		class="btn variant-filled-success"
+		onclick={onsubmit}
+		disabled={!canSubmit}
+	>
+		<Icon icon="mdi:floppy" class="mr-2" />
+		Create
+	</button>
+{/snippet}
 
-	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={onCancel}>
-			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
-			Cancel
-		</button>
-		<button
-			type="button"
-			class="btn variant-filled-success"
-			on:click={onSubmit}
-			disabled={!canSubmit}
-		>
-			<Icon icon="mdi:floppy" class="mr-2" />
-			Create
-		</button>
-	</div>
+{#snippet cancelButton()}
+	<button type="button" class="btn variant-filled-surface" onclick={oncancel}>
+		<Icon icon="material-symbols:cancel-outline" class="mr-2" />
+		Cancel
+	</button>
+{/snippet}
+
+<AdminHeader>
+	{#snippet title()}
+	
+			<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
+			<span class="capitalize">
+				Create: {displayTitle}
+			</span>
+		
+	{/snippet}
+
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			{@render cancelButton()}
+			{@render createButton()}
+		</div>
+	{/snippet}
 </AdminHeader>
 
-{#if $$slots.help}
+{#if helpSnippet}
 	<div class="card variant-soft p-4 m-0 mb-4">
 		<Accordion>
 			<AccordionItem title="Help">
-				<svelte:fragment slot="lead">
-					<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
-				</svelte:fragment>
-				<svelte:fragment slot="summary">
-					About adding a new {displayTitle}
-				</svelte:fragment>
-				<svelte:fragment slot="content">
-					<slot name="help" />
-				</svelte:fragment>
+							
+				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
+					
+				About adding a new {displayTitle}
+					
+				{@render helpSnippet?.()}
+
 			</AccordionItem>
 		</Accordion>
 	</div>
 {/if}
 
 <div class="card variant-soft p-4 mb-4">
-	<svelte:component
-		this={FormComponent}
-		bind:this={formComponent}
+	<FormComponent
 		bind:canSubmit
 		bind:data
-		on:submit={onSubmit}
-		on:cancel={onCancel}
+		{onsubmit}
+		{oncancel}
 		{...extras}
 	/>
 </div>
 
 <AdminHeader>
-	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface" on:click={onCancel}>
-			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
-			Cancel
-		</button>
-		<button
-			type="button"
-			class="btn variant-filled-success"
-			on:click={onSubmit}
-			disabled={!canSubmit}
-		>
-			<Icon icon="mdi:floppy" class="mr-2" />
-			Create
-		</button>
-	</div>
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			{@render cancelButton()}
+			{@render createButton()}
+		</div>
+	{/snippet}
 </AdminHeader>

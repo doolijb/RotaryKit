@@ -2,99 +2,113 @@
 	import { page, } from "$app/stores"
 	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$client/components"
 	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
+	import { onMount } from "svelte"
+
+	////
+	// PROPS
+	////
 	
-	////
-	// PARENT EXPORTS
-	////
 
-	export let canEditSuperUsers: boolean
+	interface Props {
+		// Props
+		canEditSuperUsers: boolean
 
-	////
-	// LOCAL EXPORTS
-	////
+		// Bindables
+		data: Form["Data"] | FormWithPermissions["Data"]
+		errors: FormErrors
+		disabled: boolean
+		canSubmit: boolean
 
-	const form: Form | FormWithPermissions = canEditSuperUsers ? new FormWithPermissions() : new Form()
-	export let data: typeof form["Data"] = {
-		username: "",
-		email: "",
-		passphrase: "",
-		isVerified: false,
-		isAdmin: canEditSuperUsers ? false : undefined,
-		isSuperUser: canEditSuperUsers ? false : undefined,
+		// Events
+		onsubmit: (data: Form | FormWithPermissions) => Promise<void>
+		oncancel: (args: unknown) => Promise<void>
 	}
-	export let errors: FormErrors = {}
+
+	let {
+		// Props
+		canEditSuperUsers,
+
+		// Bindables
+		data = $bindable({
+			username: "",
+			email: "",
+			passphrase: "",
+			isVerified: false,
+			isAdmin: canEditSuperUsers ? false : undefined,
+			isSuperUser: canEditSuperUsers ? false : undefined,
+		}),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel,
+	}: Props = $props();
 
 	////
-	// DOWNSTREAM EXPORTS
+	// CONSTANTS
 	////
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	let form: Form | FormWithPermissions
+
+	////
+	// LIFECYCLE
+	////
+
+	onMount(() => {
+		form = canEditSuperUsers ? new FormWithPermissions() : new Form()
+	})
 	
 </script>
-
-<FormBase
-	{form}
-	bind:data
-	bind:errors
-	bind:canSubmit
-	bind:disabled
-	on:submit
-	on:cancel
-	showSubmit={false}
-	showCancel={false}
->
-	<TextInput
-		label="Username"
-		id="username"
-		field="username"
+{#if form}
+	<FormBase
+		{form}
 		bind:data
 		bind:errors
-		{form}
-		{disabled}
-	/>
+		bind:canSubmit
+		bind:disabled
+		{onsubmit}
+		{oncancel}
+		showSubmit={false}
+		showCancel={false}
+	>
+		<TextInput
+			label="Username"
+			id="username"
+			field="username"
+			bind:data
+			bind:errors
+			{form}
+			{disabled}
+		/>
 
-	<TextInput
-		label="Email"
-		id="email"
-		field="email"
-		bind:data
-		bind:errors
-		{form}
-		{disabled}
-	/>
+		<TextInput
+			label="Email"
+			id="email"
+			field="email"
+			bind:data
+			bind:errors
+			{form}
+			{disabled}
+		/>
 
-	<PassphraseInput
-		label="Passphrase"
-		id="passphrase"
-		field="passphrase"
-		bind:data
-		bind:errors
-		{form}
-		{disabled}
-	/>
+		<PassphraseInput
+			label="Passphrase"
+			id="passphrase"
+			field="passphrase"
+			bind:data
+			bind:errors
+			{form}
+			{disabled}
+		/>
 
-	<div class="flex space-x-3 my-5">
-		<div class="card px-3 pt-3 w-full">
-			<CheckboxInput
-				label="Is Verified"
-				id="isVerified"
-				field="isVerified"
-				bind:data
-				bind:errors
-				{form}
-				{disabled}
-			/>
-		</div>
-	</div>
-
-	{#if canEditSuperUsers}
 		<div class="flex space-x-3 my-5">
 			<div class="card px-3 pt-3 w-full">
 				<CheckboxInput
-					label="Is Admin"
-					id="isAdmin"
-					field="isAdmin"
+					label="Is Verified"
+					id="isVerified"
+					field="isVerified"
 					bind:data
 					bind:errors
 					{form}
@@ -103,18 +117,34 @@
 			</div>
 		</div>
 
-		<div class="flex space-x-3 my-5">
-			<div class="card px-3 pt-3 w-full">
-				<CheckboxInput
-					label="Is Super User"
-					id="isSuperUser"
-					field="isSuperUser"
-					bind:data
-					bind:errors
-					{form}
-					{disabled}
-				/>
+		{#if canEditSuperUsers}
+			<div class="flex space-x-3 my-5">
+				<div class="card px-3 pt-3 w-full">
+					<CheckboxInput
+						label="Is Admin"
+						id="isAdmin"
+						field="isAdmin"
+						bind:data
+						bind:errors
+						{form}
+						{disabled}
+					/>
+				</div>
 			</div>
-		</div>
-	{/if}
-</FormBase>
+
+			<div class="flex space-x-3 my-5">
+				<div class="card px-3 pt-3 w-full">
+					<CheckboxInput
+						label="Is Super User"
+						id="isSuperUser"
+						field="isSuperUser"
+						bind:data
+						bind:errors
+						{form}
+						{disabled}
+					/>
+				</div>
+			</div>
+		{/if}
+	</FormBase>
+{/if}

@@ -1,21 +1,25 @@
 <script lang="ts">
 	import { Modal, Toast } from "@skeletonlabs/skeleton"
 
-    /**
+    
+
+    interface Props {
+        /**
      * This is a component that imports the skeleton theme and styles.
      */
+        dark?: boolean;
+        theme?: string;
+        body?: import('svelte').Snippet;
+    }
 
-    export let dark = false
-    export let theme = "skeleton"
-
-    console.log("theme", theme)
+    let { dark = false, theme = "skeleton", body }: Props = $props();
 
 </script>
 
 <div class="dark:text-gray-100" data-theme={theme} class:dark>
     <Toast />
     <Modal />
-    <slot name="body" />
+    {@render body?.()}
 </div>
 
 <style lang="postcss">

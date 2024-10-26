@@ -5,17 +5,30 @@
 	import humanizeString from "humanize-string"
 	import moment from "moment"
 
-    export let label: string
-    export let value: string | boolean | number = undefined
-    export let copy: string = undefined
-    export let humanizeLabel: boolean = true
+    interface Props {
+        label: string;
+        value?: string | boolean | number;
+        copy?: string;
+        humanizeLabel?: boolean;
+        children?: import('svelte').Snippet;
+        [key: string]: any
+    }
+
+    let {
+        label,
+        value = undefined,
+        copy = undefined,
+        humanizeLabel = true,
+        children,
+        ...rest
+    }: Props = $props();
 
     const toastStore = getToastStore()
     let copyText = copy ? copy : value
-    let focused = false
+    let focused = $state(false)
 
-    $: isUrl = value && typeof value === "string" && value.startsWith("http")
-    $: canCopy = !isUrl && typeof copyText === "string" && copyText.length > 0
+    let isUrl = $derived(value && typeof value === "string" && value.startsWith("http"))
+    let canCopy = $derived(!isUrl && typeof copyText === "string" && copyText.length > 0)
 
     function copyToClipboard() {
         navigator.clipboard.writeText(copyText as string)
@@ -29,26 +42,26 @@
     }
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore missing-declaration -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore missing_declaration -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div 
-    class="flex flex-col select-none {$$restProps.class || ''}"
+    class="flex flex-col select-none {rest.class || ''}"
     class:cursor-pointer={canCopy}
-    on:click={onClick}
-    on:focus={() => (focused = true)}
-    on:focusout={() => (focused = false)}
-    on:mouseover={() => (focused = true)}
-    on:mouseleave={() => (focused = false)}
+    onclick={onClick}
+    onfocus={() => (focused = true)}
+    onfocusout={() => (focused = false)}
+    onmouseover={() => (focused = true)}
+    onmouseleave={() => (focused = false)}
     title={canCopy ? "Click to copy" : undefined}
 >
-    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <!-- svelte-ignore a11y_label_has_associated_control -->
     <label class="text-sm text-gray-500">
         {humanizeLabel ? humanizeString(label) : label}
     </label>
     <!-- If no slot -->
-    {#if $$slots.default}
-        <slot />
+    {#if children}
+        {@render children?.()}
     {:else}
         <p>
             {#if isUrl}

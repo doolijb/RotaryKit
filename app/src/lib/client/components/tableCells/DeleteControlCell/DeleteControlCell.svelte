@@ -1,11 +1,15 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
 
-    export let disabled = false
-    export let onClick: (args: any) => void = () => console.log("onClick")
-    export let title = "Delete"
+    interface Props {
+        disabled?: boolean;
+        onClick?: (args: any) => void;
+        title?: string;
+    }
 
-    let focused = false
+    let { disabled = false, onClick = () => console.log("onClick"), title = "Delete" }: Props = $props();
+
+    let focused = $state(false)
 </script>
 
 <td class="select-none py-0" {title}>
@@ -14,11 +18,11 @@
             type="button"
             class="variant-soft-error btn-icon btn-icon-sm"
             {disabled}
-            on:click={onClick}
-            on:focus={() => (focused = true)}
-            on:focusout={() => (focused = false)}
-            on:mouseover={() => (focused = true)}
-            on:mouseleave={() => (focused = false)}
+            onclick={onClick}
+            onfocus={() => (focused = true)}
+            onfocusout={() => (focused = false)}
+            onmouseover={() => (focused = true)}
+            onmouseleave={() => (focused = false)}
         >
             <Icon
                 icon="mdi:delete"

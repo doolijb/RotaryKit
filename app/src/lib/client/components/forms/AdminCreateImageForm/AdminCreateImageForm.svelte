@@ -1,39 +1,52 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { FormBase, TextInput, FileDropField, SelectField } from "$client/components"
 	import { ImageResolutions, ImageSizes, ImageStatus } from "$shared/constants"
 	import { AdminCreateImage as Form } from "$shared/validation/forms"
-	
-	////
-	// CALCULATED
-	////
 
-	$: {
-		// If image[0] and title is empty, set the title to the file name, minus the extension
-		if (data.image.length && !data.title) {
-			data.title = data.image[0].name.replace(/\.[^/.]+$/, "")
-		}
-	}
-
-	////
-	// LOCAL EXPORTS
-	////
 
 	const form: Form = new Form()
-	export let data: typeof form["Data"] = {
+
+
+	////
+	// PROPS
+	////
+	
+
+	interface Props {
+		data?: typeof form["Data"];
+		errors?: FormErrors;
+		disabled?: boolean;
+		canSubmit?: boolean;
+	}
+
+	let {
+		data = $bindable({
 		title: "",
 		image: [],
 		maxSize: ImageSizes.LARGE,
 		status: ImageStatus.PUBLISHED
-	}
-	export let errors: FormErrors = {}
+	}),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel
+	}: Props = $props();
 
 	////
-	// DOWNSTREAM EXPORTS
+	// CALCULATED
 	////
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
-
+	$effect.pre(() => {
+		// If image[0] and title is empty, set the title to the file name, minus the extension
+		if (data.image?.length && !data.title) {
+			data.title = data.image[0].name.replace(/\.[^/.]+$/, "")
+		}
+	});
 </script>
 
 <FormBase
@@ -42,8 +55,8 @@
 	bind:errors
 	bind:canSubmit
 	bind:disabled 
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >
@@ -65,7 +78,7 @@
 		{disabled}
 	/>
 
-	<div class="card mb-3 hidden lg:block">
+	<div class="card mb-3 hidden lg:block mt-4">
 		<section class="p-4">
 			<p>
 				<b>Max image sizes:</b>

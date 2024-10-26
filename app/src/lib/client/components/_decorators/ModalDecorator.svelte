@@ -6,8 +6,12 @@
     import {onMount} from "svelte"
     import Icon from "@iconify/svelte"
 
-    export let registry: Record<string, any> = null
-    export let settings: ModalSettings = null
+    interface Props {
+        registry?: Record<string, any>;
+        settings?: ModalSettings;
+    }
+
+    let { registry = null, settings = null }: Props = $props();
 
     const modalStore = getModalStore()
 
@@ -20,7 +24,7 @@
     })
 </script>
 
-<button class="btn variant-filled" on:click={showModal}>
+<button class="btn variant-filled" onclick={showModal}>
     <Icon icon="mdi:alert" class="mr-2 h-6 w-6" />
     Show Modal
 </button>

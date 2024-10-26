@@ -4,30 +4,41 @@
 
     ////
     // PARENT EXPORTS
-    ////
+    
 
-    export let fieldErrors: FieldErrors
-    export let fieldValidator: Primitive<unknown>
-    export let attrs: FormFieldAttributes | undefined
 
     ////
     // LOCAL EXPORTS
-    ////
     
-    export let legendPopup: PopupSettings
+    
+    interface Props {
+        ////
+        fieldErrors: FieldErrors;
+        fieldValidator: Primitive<unknown>;
+        attrs: FormFieldAttributes | undefined;
+        ////
+        legendPopup: PopupSettings;
+    }
+
+    let {
+        fieldErrors,
+        fieldValidator,
+        attrs,
+        legendPopup
+    }: Props = $props();
     
     ////
     // CALCULATED
     ////
 
-    $: stickyValidators = Object.values(fieldValidator.validators).filter((validator) => validator.isSticky && !validator.isHidden)
-    $: dynamicValidators = Object.values(fieldValidator.validators).filter((validator) => !validator.isHidden && !validator.isSticky)
-    $: validators = [...stickyValidators, ...dynamicValidators]
+    let stickyValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => validator.isSticky && !validator.isHidden))
+    let dynamicValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => !validator.isHidden && !validator.isSticky))
+    let validators = $derived([...stickyValidators, ...dynamicValidators])
     
 </script>
 
 {#if validators.length || attrs && attrs.description}
-    <div class="card variant-soft z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
+    <div class="card variant-filled z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
         {#if attrs && attrs.description}
         <h4 class="h4">Description</h4>
             <div class="mt-2">

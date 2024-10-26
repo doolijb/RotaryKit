@@ -1,11 +1,37 @@
 <script lang="ts">
     import { page } from "$app/stores"
+	import { ImageSizes } from "$shared/constants"
 
-    export let result: SelectImage
-    export let alt: string | undefined = undefined
-    export let size: "small" | "medium" | "large" | "original" = "large"
+    ////
+    // PROPS
+    ////
 
-    const sources: { type: string, srcset: string }[] = []
+    interface Props {
+        // Props
+        result: SelectImage
+        alt?: string | undefined
+        size?: typeof ImageSizes.SMALL | typeof ImageSizes.MEDIUM | typeof ImageSizes.LARGE | typeof ImageSizes.ORIGINAL
+    }
+
+    let {
+        // Props
+        result,
+        alt,
+        size = ImageSizes.LARGE,
+
+        // Rest
+        ...restProps
+    }: Props = $props()
+
+    ////
+    // CONSTANTS
+    ////
+
+    let sources: { type: string, srcset: string }[] = $state([])
+
+    ////
+    // FUNCTIONS
+    ////
 
     function addSmall() {
         if (result.smallWebpPath) {
@@ -66,6 +92,7 @@
             addSmall()
             break
     }
+    
 
 </script>
 
@@ -74,7 +101,7 @@
     {#each sources as { type, srcset }, i}
         <source type={type} srcset={$page.data.storageUrl + srcset} />
     {/each}
-    <img src={$page.data.storageUrl + result.smallJpgPath} alt={ alt || result.title } class="{$$props.class}" on:click />
+    <img src={$page.data.storageUrl + result.smallJpgPath} alt={ alt || result.title } />
 </picture>
     
     

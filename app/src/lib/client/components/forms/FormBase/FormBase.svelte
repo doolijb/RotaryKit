@@ -1,39 +1,71 @@
 <script lang="ts">
 	import type { FormSchema } from "$shared/validation/base"
-	import { createEventDispatcher } from "svelte"
-
-	const dispatch = createEventDispatcher()
+	import { onMount, type Snippet } from "svelte"
 
 	////
-	// PARENT EXPORTS
+	// EXPORTS
 	////
 
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
+	interface Props {
+		// Props
+		submitLabel?: string
+		cancelLabel?: string
+		showCancel?: boolean
+		showSubmit?: boolean
+		form: FormSchema
 
-	////
-	// LOCAL EXPORTS
-	////
+		// Bindables
+		disabled?: boolean
+		data?: FormData<typeof form.Data>
+		errors?: FormErrors
+		canSubmit?: boolean
 
-	export let submitLabel = "Submit"
-	export let cancelLabel = "Cancel"
-	export let canSubmit = false
-	export let showCancel = true
-	export let showSubmit = true
-	export let disabled = false
-	export const submit = (e: Event) => onSubmit(e)
-	export const cancel = (e: Event) => onCancel(e)
+		// Events
+		onsubmit?: (args: any) => Promise<void>
+		oncancel?: (args: any) => Promise<void>
+
+		// Children
+		children?: Snippet
+		extraButtonsSnippet?: Snippet
+		submitSnippet?: Snippet
+		cancelSnippet?: Snippet
+	}
+
+	let {
+		// Props
+		submitLabel = "Submit",
+		cancelLabel = "Cancel",
+		showCancel = true,
+		showSubmit = true,
+		form,
+
+		// Bindables
+		disabled = $bindable(false),
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel,
+
+		// Children
+		children,
+		extraButtonsSnippet,
+		submitSnippet,
+		cancelSnippet
+	}: Props = $props()
 
 	////
 	// COMPUTED
 	////
 
-	$: isPopulated = !!Object.values(data).find((value) => !!value)
-	$: hasErrors = Object.keys(errors).some((field) => Object.keys(errors[field]).length)
-	$: {
+	const isPopulated = $derived(!!Object.values(data).find((value) => !!value))
+	const hasErrors = $derived(Object.keys(errors).some((field) => Object.keys(errors[field]).length))
+
+	$effect(()=> {
 		canSubmit = !hasErrors
-	}
+	})
 
 	////
 	// Event Handlers
@@ -43,14 +75,10 @@
 		errors = await form.validate({data})
 	}
 
-	const onSubmit = async (e: Event) => {
+	const handleOnSubmit = async (args) => {
 		disabled = true
-		dispatch("submit", e)
+		await onsubmit(args)
 		disabled = false
-	}
-
-	const onCancel = async (e: Event) => {
-		dispatch("cancel", e)
 	}
 
 	////
@@ -63,7 +91,7 @@
 	function submitOnEnter(node: HTMLFormElement) {
 		const handler = (event: KeyboardEvent) => {
 			if (event.key === "Enter") {
-				onSubmit(event)
+				onsubmit(event)
 			}
 		}
 
@@ -108,33 +136,63 @@
 			// No cleanup necessary
 		}
 	}
+
+	////
+	// LIFECYCLE
+	////
+
+	onMount(() => {
+		const fieldAttrs = form.fieldAttributes
+		Object.keys(fieldAttrs).forEach((field) => {
+			if (
+				"defaultValue" in fieldAttrs[field] && 
+				(
+					data[field] === undefined 
+					|| data[field] === null 
+					|| data[field] === ""
+				)
+			) {
+				data[field] = fieldAttrs[field].defaultValue
+			}
+		})
+	})
+
 </script>
 
 <div>
-	<form use:submitOnEnter use:autofocus on:submit={onSubmit} class="mb-4">
-		<slot />
+	
+	<form use:submitOnEnter use:autofocus {onsubmit} class="mb-4">
+		{@render children()}
 	</form>
 
 	<div class="flex flex-row justify-between">
-		<slot name="cancel">
+
+		<!-- Cancel button, etc -->
+		{#if cancelSnippet}
+			{@render cancelSnippet()}
+		{:else}
 			{#if showCancel}
-				<button type="button" class="btn variant-filled-surface" {disabled} on:click={onCancel}>
+				<button type="button" class="btn variant-filled-surface" {disabled} onclick={oncancel}>
 					{cancelLabel}
 				</button>
 			{/if}
-		</slot>
-		<!-- Cancel button, etc -->
-		<slot name="extraButtons" />
-		<slot name="submit">
+		{/if}
+
+		{@render extraButtonsSnippet?.()}
+
+		<!-- Submit button -->
+		{#if submitSnippet}
+			{@render submitSnippet()}
+		{:else}
 			{#if showSubmit}
 				<button
 					type="button"
 					class="btn variant-filled ms-auto"
 					disabled={disabled || !canSubmit}
-					on:click={async (e) => {
+					onclick={async (e) => {
 						disabled = true
 						validate()
-						canSubmit && onSubmit && (await onSubmit(e))
+						canSubmit && onsubmit && (await onsubmit(e))
 						disabled = false
 					}}
 					title={canSubmit ? "" : "Please fill out all required fields"}
@@ -142,6 +200,7 @@
 					{submitLabel}
 				</button>
 			{/if}
-		</slot>
+		{/if}
+
 	</div>
 </div>

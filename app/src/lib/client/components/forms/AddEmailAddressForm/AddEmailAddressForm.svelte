@@ -2,22 +2,36 @@
 	import { FormBase, TextInput } from "$client/components"
 	import { AddEmailAddress as Form } from "$shared/validation/forms"
 
-	////
-	// LOCAL EXPORTS
-	////
 
-	export let data: Form["Data"] = {
-		email: "",
-	}
-	export let errors = {} as FormErrors
 	export const form = Form.init()
 
 	////
-	// CHILD EXPORTS
+	// PROPS
 	////
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	interface Props {
+		form?: Form,
+		data?: Form["Data"],
+		errors?: FormErrors,
+		disabled?: boolean,
+		canSubmit?: boolean,
+		onsubmit?: () => Promise<void>,
+	}
+
+	let {
+		// Props
+
+		// Bindables
+		data = $bindable({
+			email: "",
+		}),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit
+	}: Props = $props();
 	
 </script>
 
@@ -27,7 +41,7 @@
 	bind:data
 	bind:canSubmit
 	bind:disabled
-	on:submit
+	{onsubmit}
 	showCancel={false}
 >
 	<TextInput

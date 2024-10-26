@@ -7,20 +7,30 @@
 
     ////
     // PARENT EXPORTS
-    ////
+    
 
-    export let fieldErrors: FieldErrors
-    export let fieldValidator: Primitive<unknown>
-    export let legendPopup: PopupSettings
-    export let validState: ValidStates
+    interface Props {
+        ////
+        fieldErrors: FieldErrors;
+        fieldValidator: Primitive<unknown>;
+        legendPopup: PopupSettings;
+        validState: ValidStates;
+    }
+
+    let {
+        fieldErrors,
+        fieldValidator,
+        legendPopup,
+        validState
+    }: Props = $props();
 
     ////
     // CALCULATED
     ////
 
-    let legendIcon: HTMLDivElement
+    let legendIcon: HTMLDivElement = $state()
 
-    $: validatorLength = Object.keys(fieldValidator).length
+    let validatorLength = $derived(Object.keys(fieldValidator).length)
 
     onMount(() => {
         // Enforce OOP to give elements a chance to render
@@ -32,13 +42,13 @@
 </script>
 
 {#if validatorLength}
-    <!-- svelte-ignore a11y-click-events-have-key-events The event is required for event behavior to work as intended -->
+    <!-- svelte-ignore a11y_click_events_have_key_events The event is required for event behavior to work as intended -->
     <!-- We need to execute the attached event, and prevent populating up on click -->
     <div
         class="legendIconWrapper cursor-pointer {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
         tabindex="-1"
         bind:this={legendIcon}
-        on:click={e => {
+        onclick={e => {
             e.preventDefault()
             // @ts-ignore
             e.target.event = "click"

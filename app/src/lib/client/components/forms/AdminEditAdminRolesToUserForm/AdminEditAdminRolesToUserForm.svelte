@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from "$app/stores"
 	import { FormBase, MultiSelect } from "$client/components"
 	import { AdminEditAdminRolesToUser as Form } from "$shared/validation/forms"
@@ -6,14 +8,8 @@
 
 	////
 	// PARENT EXPORTS
-	////
+	
 
-	export let adminRoles: SelectAdminRole[]
-	export let result: SelectUser & {
-		toAdminRoles: (
-			SelectUsersToAdminRoles & { adminRole: SelectAdminRole }
-		)[]
-	}
 
 
 	////
@@ -21,21 +17,40 @@
 	////
 
 	export const form = Form.init()
-	export let data: Form["Data"] = { adminRoles: [] }
-	export let errors: FormErrors = {}
 
 	////
 	// CHILD EXPORTS
-	////
+	
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	interface Props {
+		////
+		adminRoles: SelectAdminRole[];
+		result: SelectUser & {
+		toAdminRoles: (
+			SelectUsersToAdminRoles & { adminRole: SelectAdminRole }
+		)[]
+	};
+		data?: Form["Data"];
+		errors?: FormErrors;
+		////
+		disabled?: boolean;
+		canSubmit?: boolean;
+	}
+
+	let {
+		adminRoles,
+		result,
+		data = $bindable({ adminRoles: [] }),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false)
+	}: Props = $props();
 
 	////
 	// COMPUTED
 	////
 
-	let adminRoleOptions = []
+	let adminRoleOptions = $state([])
 
 	onMount(() => {
 		adminRoleOptions = adminRoles.map((role) => ({
@@ -56,10 +71,12 @@
 		}
 	})
 
-	$: if (result && !result.isAdmin) {
-		canSubmit = false
-		disabled = true
-	}
+	run(() => {
+		if (result && !result.isAdmin) {
+			canSubmit = false
+			disabled = true
+		}
+	});
 
 </script>
 

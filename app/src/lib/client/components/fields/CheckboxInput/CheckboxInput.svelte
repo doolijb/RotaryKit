@@ -1,55 +1,74 @@
 <script lang="ts">
-   	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+   	import { ValidationBadges } from "$client/components"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
-
-	const dispatch = createEventDispatcher()
-
-	////
-	// UPSTREAM EXPORTS
-	////
-
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	import humanizeString from "humanize-string"
 
 	////
-	// LOCAL EXPORTS
+	// PROPS
 	////
 
-	export let ref: HTMLInputElement = null
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let type: string = "text"
-	export let id: string = v4()
-	export let isTouched = false
+	interface Props {
+		// Props
+		field: string
+		form: FormSchema
+		label?: string
+		type?: "checkbox" | "radio"
+
+		// Bindables
+		disabled: boolean
+		data: Record<string, any>
+		errors: Record<string, any>
+		ref: HTMLInputElement | null
+		id: string
+		isTouched: boolean
+
+		// Events
+		onblur?: () => void
+		onfocus?: () => void
+		oninput?: (e: Event) => void
+	}
+
+	let {
+		// Props
+		field,
+		form,
+		label,
+		type = "checkbox",
+
+		// Bindables
+		disabled = $bindable(false),
+		data = $bindable({}),
+		errors = $bindable({}),
+		ref = $bindable(null),
+		id = $bindable(v4()),
+		isTouched = $bindable(false),
+
+		// Events
+		onblur,
+		onfocus,
+		oninput,
+	}: Props = $props();
 
 	////
 	// CALCULATED
 	////
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = form.fields[field].validators.length
-	$: required = fieldValidator.isRequired
-	$: validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
+	const attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let required = $derived(fieldValidator.isRequired)
 
-	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+	$effect(() => {
+		if (!label) {
+			if (attrs?.label) {
+				label = attrs.label
+			} else {
+				label = humanizeString(field)
+			}
+		}
+	})
 
 	////
 	// FUNCTIONS
@@ -75,17 +94,13 @@
 
 	function handleOnBlur(e: Event) {
 		touch()
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onblur?.()
 	}
 
 	function handleOnInput(e: Event) {
         data[field] = !data[field]
 		touch()
-		dispatch("input", e)
+		oninput?.(e)
 	}
 
 	////
@@ -105,12 +120,12 @@
             {disabled}
             {required}
             class="checkbox me-3 mb-2" 
-            type="checkbox"
+            {type}
             bind:this={ref}
             checked={!!data[field]}
-            on:input={handleOnInput}
-			on:focus={handleOnFocus}
-			on:blur={handleOnBlur}
+			{onfocus}
+            oninput={handleOnInput}
+			onblur={handleOnBlur}
             aria-label={label}
         />
         <label class="label inline-flex me-3 mb-2" for={id}>

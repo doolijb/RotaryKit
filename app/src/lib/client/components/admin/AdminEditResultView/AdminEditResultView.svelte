@@ -9,54 +9,83 @@
 	import { onMount } from "svelte"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
+	import type { Snippet } from "svelte"
 
 	const toastStore = getToastStore()
 
 	////
-	// VARIABLE PROPS
+	// PROPS
 	////
+	
+	interface Props {
+		// Props
+		resource: string
+		naturalKey?: string
+		primaryKey?: string
+		resourceApi: ResourceApi
 
-	export let resource: string
-	export let naturalKey: string | undefined
-	export let primaryKey = "id"
-	export let tabs: AdminEditResultViewTabs
-	export let resourceApi: ResourceApi
+		// Bindables
+		tabs: Record<string, any>
 
-	////
-	// TABS
-	////
-
-	let currentTab = "default"
-	const openedTabs = []
-	$: {
-		if (!openedTabs.includes(currentTab)) {
-			openedTabs.push(currentTab) 
-			loadTab(currentTab)
-		}
+		// Snippets
+		helpSnippet?: Snippet
 	}
+
+	let {
+		// Props
+		resource,
+		naturalKey,
+		primaryKey = "id",
+		resourceApi,
+
+		// Bindables
+		tabs = $bindable({}),
+
+		// Snippets
+		helpSnippet
+	}: Props = $props();
+
+	////
+	// CONSTANTS
+	////
+
+	const openedTabs = []
+
+	////
+	// STATE
+	////
+
+	let currentTab = $state("default")
+	let result: Record<string, any> = $state()
+
+	////
+	// FUNCTIONS
+	////
 
 	async function loadTab(tab) {
 		tabs[tab].isLoaded = false
 		if (tabs[tab].getExtras !== undefined) {
 			tabs[tab].extras = {...tabs[tab].extras, ...(await tabs[tab].getExtras())}
 		}
-		if (tabs[tab].submitted === undefined) {
-			tabs[tab].submitted = false
-		}
-		if (tabs[tab].extras === undefined) {
-			tabs[tab].extras = {}
-		}
+		tabs[tab].submitted = tabs[tab].submitted || false
+		tabs[tab].extras = tabs[tab].extras || {}
 		tabs[tab].isLoaded = true
+		tabs[tab].data = tabs[tab].data || {} as FormDataOf<any>
+		tabs[tab].errors = tabs[tab].errors || {} as FormErrors
+		tabs[tab].disabled = tabs[tab].disabled || false
+		tabs[tab].canSubmit = tabs[tab].canSubmit || true
 	}
 
-	////
-	// RESULT
-	////
+	async function getResult() {
+		resourceApi.resourceId$($page.params.resourceId).GET({})
+			.Success(async (res) => {
+				result = res.body
+			})
+			.ClientError(handleClientError({ toastStore}))
+			.ServerError(handleServerError({ toastStore }))
+	}
 
-	let result: Record<string, any>
-	$: resultId = result ? result[primaryKey] : undefined
-
-	function onCancel() {
+	function oncancel() {
 		// If history, go back, else go to /admin
 		if (window.history.length > 2) {
 			window.history.back()
@@ -65,8 +94,8 @@
 		}
 	}
 
-	async function onSubmit(e?: Event) {
-		tabs[currentTab].onSubmit({ data: tabs[currentTab].data })
+	async function onsubmit(e?: Event) {
+		tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
 			.Success(async () => {
 				toastStore.trigger(
 					new Toast({
@@ -81,63 +110,74 @@
 	}
 
 	////
-	// FUNCTIONS
+	// CALCULATED
 	////
 
-	async function getResult() {
-		resourceApi.resourceId$($page.params.resourceId).GET({})
-			.Success(async (res) => {
-				result = res.body
-			})
-			.ClientError(handleClientError({ toastStore}))
-			.ServerError(handleServerError({ toastStore }))
-	}
+	$effect.pre(() => console.log("canSubmit: ", tabs[currentTab].canSubmit))
+
+	$effect.pre(() => {
+		if (!openedTabs.includes(currentTab)) {
+			openedTabs.push(currentTab) 
+			loadTab(currentTab)
+		}
+	});
+
+	let resultId = $derived(result ? result[primaryKey] : undefined)
+
+	////
+	// LIFECYCLE
+	////
 
 	onMount(async () => {
 		await getResult()
 	})
+
 </script>
 
-<AdminHeader>
-	<svelte:fragment slot="title">
-		<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
-		Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
-	</svelte:fragment>
+{#snippet updateButton(canSubmit)}
+	<button
+	type="button"
+	class="btn variant-filled-success capitalize"
+	onclick={onsubmit}
+	disabled={canSubmit}
+	>
+	<Icon icon="mdi:floppy" class="mr-2" />
+	Update {currentTab !== "default"
+		? humanizeString(currentTab)
+		: pluralize.singular(humanizeString(resource))}
+	</button>
+{/snippet}
 
-	<div class="flex justify-between" slot="controls">
-		<a href="/admin/{resource}/{resultId}" class="btn variant-filled-surface capitalize">
-			<Icon icon="bx:detail" class="mr-2" />
-			View
-		</a>
-		<button
-			type="button"
-			class="btn variant-filled-success capitalize"
-			on:click={onSubmit}
-			disabled={!tabs[currentTab].canSubmit}
-		>
-			<Icon icon="mdi:floppy" class="mr-2" />
-			Update {currentTab !== "default"
-				? humanizeString(currentTab)
-				: pluralize.singular(humanizeString(resource))}
-		</button>
-	</div>
+<AdminHeader>
+	{#snippet title()}
+	
+			<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
+			Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
+		
+	{/snippet}
+
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			<a href="/admin/{resource}/{resultId}" class="btn variant-filled-surface capitalize">
+				<Icon icon="bx:detail" class="mr-2" />
+				View
+			</a>
+			{@render updateButton(!tabs[currentTab].canSubmit)}
+		</div>
+	{/snippet}
 </AdminHeader>
 
 <!-- Display help text -->
-{#if $$slots.help}
+{#if helpSnippet}
 	<div class="card variant-soft p-4 m-0 mb-4">
 		<Accordion>
 			<AccordionItem title="Help">
-				<svelte:fragment slot="lead">
-					<!-- Help Icon -->
-					<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
-				</svelte:fragment>
-				<svelte:fragment slot="summary">
-					About editing a {pluralize.singular(resource)}
-				</svelte:fragment>
-				<svelte:fragment slot="content">
-					<slot name="help" />
-				</svelte:fragment>
+				<!-- Help Icon -->
+				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
+					
+				About editing a {pluralize.singular(resource)}
+					
+				{@render helpSnippet()}
 			</AccordionItem>
 		</Accordion>
 	</div>
@@ -169,14 +209,14 @@
 					<Loading />
 				{:else}
 					<!-- Show form if tab is populated -->
-					<svelte:component
-						this={tabs[tab].FormComponent}
+					{@const FormComponent = tabs[tab].FormComponent}
+					<FormComponent
 						bind:data={tabs[tab].data}
 						bind:errors={tabs[tab].errors}
 						bind:canSubmit={tabs[tab].canSubmit}
 						bind:disabled={tabs[tab].disabled}
-						on:submit={onSubmit}
-						on:cancel={onCancel}
+						on:submit={onsubmit}
+						on:cancel={oncancel}
 						{...tabs[tab].extras}
 						{result}
 					/>
@@ -187,21 +227,13 @@
 </div>
 
 <AdminHeader>
-	<div class="flex justify-between" slot="controls">
-		<button type="button" class="btn variant-filled-surface capitalize" on:click={onCancel}>
-			<Icon icon="material-symbols:cancel-outline" class="mr-2" />
-			Cancel
-		</button>
-		<button
-			type="button"
-			class="btn variant-filled-success capitalize"
-			on:click={onSubmit}
-			disabled={!tabs[currentTab].canSubmit}
-		>
-			<Icon icon="mdi:floppy" class="mr-2" />
-			Update {currentTab !== "default"
-				? humanizeString(currentTab)
-				: pluralize.singular(humanizeString(resource))}
-		</button>
-	</div>
+	{#snippet controls()}
+		<div class="flex justify-between" >
+			<button type="button" class="btn variant-filled-surface capitalize" onclick={oncancel}>
+				<Icon icon="material-symbols:cancel-outline" class="mr-2" />
+				Cancel
+			</button>
+			{@render updateButton(!tabs[currentTab].canSubmit)}
+		</div>
+	{/snippet}
 </AdminHeader>

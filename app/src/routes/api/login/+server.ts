@@ -97,7 +97,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Return the response
 		 */
-		return Ok({ body: { success: true } })
+		return Ok()
 
 	} catch (e) {
 		logger.error(e)

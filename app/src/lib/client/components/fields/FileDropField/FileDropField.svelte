@@ -1,80 +1,67 @@
 <script lang="ts">
 	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import { FileDropzone, type PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
-	import { validators } from "$shared/validation"
 	import { fileTypes } from "$shared/data"
-	import { list } from "postcss"
 	import Icon from "@iconify/svelte"
-	import { AnalyticsS3ExportFileFormat } from "@aws-sdk/client-s3"
-
-	const dispatch = createEventDispatcher()
-
-	////
-	// PARENT EXPORTS
-	////
-
-	export let field: string
-	export let form: FormSchema
-	export let data: (typeof form)["Data"] & Record<string, File[]>
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	import humanizeString from "humanize-string"
 
 	////
 	// LOCAL EXPORTS
 	////
 
-	export let ref: HTMLInputElement = undefined
-	export let label: string = attrs?.label
-	export let disabled: boolean = false
-	export let type: string = "text"
-	export let id: string = v4()
-	export let isTouched = false
-	export let showFiles: boolean = true
+	interface Props {
+		// Props
+		field: string
+		form: FormSchema
+		label?: string
+		disabled?: boolean
+		showFiles?: boolean
 
-	let addedFiles: FileList = [] as unknown as FileList
-	let listedAvailableExtensions: string
-	let listedFileSizes: string
-	let listedMaxFileCounts: string
+		// Bindables
+		data?: Record<string, any>
+		errors?: Record<string, any>
+		ref?: HTMLInputElement
+		id?: string
+		isTouched?: boolean
 
-	////
-	// CALCULATED
-	////
-
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = 0
-	$: {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			(validator) => !validator.isHidden
-		).length
+		// Events
+		onfocus?: (e: Event) => void
+		onblur?: (e: Event) => void
+		oninput?: (e: Event) => void
 	}
-	$: required = fieldValidator.isRequired
-	$: validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-				? ValidStates.VALID
-				: ValidStates.NONE
-		: ValidStates.NONE
-	$: addedFiles.length && addFilesToForm()
-	$: fileTypesValidator = !!fieldValidator
-		? fieldValidator.validators.find((validator) => validator.key === "fileTypes")
-		: undefined
-	$: fileSizesValidator = !!fieldValidator
-		? fieldValidator.validators.find((validator) => validator.key === "fileSizes")
-		: undefined
-	$: maxFileCountValidator = !!fieldValidator
-		? fieldValidator.validators.find((validator) => validator.key === "maxFileCount")
-		: undefined
-	$: allowMultiSelect = !!maxFileCountValidator
-		? (maxFileCountValidator.args["maxCount"] || 1) > 1
-		: true
-	$: hasFileRelatedErrors = !!Object.keys(fieldErrors).find((key) => key !== "required") || false
-	$: maxFileCount = maxFileCountValidator.args["maxCount"] || undefined
+
+	let {
+		// Props
+		field,
+		form,
+		label,
+		disabled = $bindable(false),		showFiles = true,
+
+		// Bindables
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		ref = $bindable(undefined),
+		id = $bindable(v4()),
+		isTouched = $bindable(false),
+
+		// Events
+		onfocus,
+		onblur,
+		oninput,
+
+	}: Props = $props()
+
+	////
+	// STATE
+	////
+
+	let addedFiles: FileList = $state()
+	let listedAvailableExtensions: string = $state()
+	let listedFileSizes: string = $state()
+	let listedMaxFileCounts: string = $state()
 
 	////
 	// CONSTANTS
@@ -86,14 +73,23 @@
 	// FUNCTIONS
 	////
 
+	function isValidFileList(value: any): value is FileList {
+        return value instanceof FileList;
+    }
+
 	function addFilesToForm() {
-		data[field] = Array.from(data[field] || []).concat(Array.from(addedFiles))
+		const initialDisabled = disabled
+		disabled = true
+		data[field] = Array.from(data[field] || [])
+		// Remove any files already in the data
+		const newFiles = Array.from(addedFiles).filter((file) => !data[field].find((f) => f.name === file.name))
+		data[field] = [...data[field], ...newFiles]
+		// Clear the added files
+		addedFiles = null
+		disabled = initialDisabled
+		touch()
 	}
 
-	function setType(node: HTMLInputElement) {
-		// Can not set dynamic type directly in the input element
-		node.type = type
-	}
 
 	async function validate() {
 		errors[field] = await form.fields[field].validate({ key: field, data })
@@ -225,17 +221,59 @@
 
 	function handleOnBlur(e: Event) {
 		touch()
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onblur?.(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		dispatch("input", e)
+		oninput?.(e)
 	}
+
+	////
+	// CALCULATED
+	////
+
+	let attrs = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let validatorLength = $state(0);
+	
+	let fileTypesValidator = $derived(!!fieldValidator
+		? fieldValidator.validators.find((validator) => validator.key === "fileTypes")
+		: undefined)
+	let fileSizesValidator = $derived(!!fieldValidator
+		? fieldValidator.validators.find((validator) => validator.key === "fileSizes")
+		: undefined)
+	let maxFileCountValidator = $derived(!!fieldValidator
+		? fieldValidator.validators.find((validator) => validator.key === "maxFileCount")
+		: undefined)
+	let allowMultiSelect = $derived(!!maxFileCountValidator
+		? (maxFileCountValidator.args["maxCount"] || 1) > 1
+		: true)
+	let hasFileRelatedErrors = $derived(!!Object.keys(fieldErrors).find((key) => key !== "required") || false)
+	let maxFileCount = $derived(maxFileCountValidator.args["maxCount"] || undefined)
+
+	$effect(() => {
+		if (!label) {
+			if (attrs && attrs.label) {
+				label = attrs.label
+			} else {
+				label = humanizeString(field)
+			}
+		}
+	})
+
+	$effect(() => {
+		validatorLength = Object.values(fieldValidator.validators).filter(
+			(validator) => !validator.isHidden
+		).length
+	});
+
+	$effect(() => {
+		if (addedFiles && addedFiles.length) { 
+			addFilesToForm()
+		}
+	});
 
 	////
 	// LIFECYCLE
@@ -247,10 +285,9 @@
 		listedFileSizes = listFileSizes()
 		listedMaxFileCounts = listMaxFileCounts()
 	})
+
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div class="mb-2">
 	<div class="flex items-center">
 		<label class="label inline-flex pb-2" for={id}>
@@ -265,11 +302,20 @@
 
 	<!-- Show the drop zone if we can accept multiple files, or if 1 file max and no file selected -->
 	 <div class:hidden={!(allowMultiSelect || (!allowMultiSelect && !data[field]?.length))}>
-		<FileDropzone name={field} {id} bind:files={addedFiles} {disabled} multiple={allowMultiSelect} bind:ref>
-			<!-- <svelte:fragment slot="lead">
-				(icon)
-			</svelte:fragment> -->
-			<svelte:fragment slot="message">
+		<FileDropzone 
+			name={field} 
+			{id}
+			{disabled}
+			bind:files={addedFiles} 
+			bind:ref
+			{onfocus} 
+			multiple={allowMultiSelect} 
+			oninput={handleOnInput} 
+			onblur={handleOnBlur}
+		>
+
+			{#snippet message()}
+					
 				<p class="text-sm">
 					{#if allowMultiSelect}
 						<b>Upload files</b> or drag and drop multiple
@@ -277,10 +323,10 @@
 						<b>Upload a file</b> or drag and drop
 					{/if}
 				</p>
-			</svelte:fragment>
-			<svelte:fragment slot="meta">
-				{#if attrs?.description}listAvailableExtensions()
-				{/if}
+			
+			{/snippet}
+
+			{#snippet meta()}
 				{#if fileTypesValidator && listedAvailableExtensions}
 					<p class="text-sm text-gray-500">{listedAvailableExtensions}</p>
 				{/if}
@@ -290,7 +336,8 @@
 				{#if maxFileCountValidator && listedMaxFileCounts}
 					<p class="text-sm text-gray-500">{listedMaxFileCounts}</p>
 				{/if}
-			</svelte:fragment>
+			{/snippet}
+
 		</FileDropzone>
 	</div>
 
@@ -320,7 +367,7 @@
 									</p>
 									<button
 										class="btn variant-filled-error mt-2 ml-auto mt-0"
-										on:click={() => removeFile(file)}
+										onclick={() => removeFile(file)}
 									>
 										<Icon icon="bi:trash" class="w-4 h-4 me-1" />
 										Remove

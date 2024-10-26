@@ -1,45 +1,44 @@
 <script lang="ts">
-	import { page } from "$app/stores"
 	import { FormBase, TextInput, MultiSelect } from "$client/components"
 	import { AdminCreateAdminRole as Form } from "$shared/validation/forms"
-	export let disabled = false
+
+	const form = Form.init()
 
 	////
-	// PARENT EXPORTS
+	// PROPS
 	////
 
-	export let adminPermissions: SelectAdminPermission[]
+	interface Props {
+		disabled?: boolean;
+		adminPermissions: SelectAdminPermission[];
+		data?: Form["Data"];
+		errors?: FormErrors;
+		canSubmit: boolean;
+	}
 
-	////
-	// LOCAL EXPORTS
-	////
-
-	export let form = Form.init()
-	export let data: Form["Data"] = { 
+	let {
+		disabled = $bindable(false),		adminPermissions,
+		data = $bindable({ 
 		name: "",
 		adminPermissions: [] 
-	}
-	export let errors: FormErrors = {}
-
-	////
-	// CHILD EXPORTS
-	////
-
-	export let canSubmit: boolean
+	}),
+		errors = $bindable({}),
+		canSubmit = $bindable()
+	}: Props = $props();
 
 	////
 	// COMPUTED
 	////
 
-	$: adminPermissionOptions = adminPermissions.map((permission) => ({
+	let adminPermissionOptions = $derived(adminPermissions.map((permission) => ({
 		key: permission.id,
 		label: permission.name
-	}))
+	})))
 
 </script>
 
 <FormBase
-	bind:form
+	{form}
 	bind:errors
 	bind:data
 	bind:canSubmit

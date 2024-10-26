@@ -23,7 +23,6 @@ test("API Email Verification: 200", async () => {
 
     // Send request
     const response = await axios.post(`/api/verify/email/${code.id}`).catch(e => {
-        console.log(e.response)
         return e.response
     })
 

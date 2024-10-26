@@ -4,21 +4,36 @@
 
     const dispatch = createEventDispatcher()
 
-    export let amounts: number[] = [10, 25, 50, 100]
-    export let pageCount: PaginatedResponse<any>["pageCount"]
-    export let pageLimit: PaginatedResponse<any>["pageLimit"]
-    export let currentPage: PaginatedResponse<any>["currentPage"]
-    export let previousPage: PaginatedResponse<any>["previousPage"]
-    export let nextPage: PaginatedResponse<any>["nextPage"]
+    interface Props {
+        amounts?: number[];
+        pageCount: PaginatedResponse<any>["pageCount"];
+        pageLimit: PaginatedResponse<any>["pageLimit"];
+        currentPage: PaginatedResponse<any>["currentPage"];
+        previousPage: PaginatedResponse<any>["previousPage"];
+        nextPage: PaginatedResponse<any>["nextPage"];
 
-    function onPageLimitChange(event: Event) {
-        const value = (event.target as HTMLSelectElement).value
-        const newPageLimit = parseInt(value) || 25
-        dispatch("pageLimitChange", newPageLimit)
+        // Events
+        onPageChange: (page: number) => void;
+        onPageLimitChange: (pageLimit: number) => void;
     }
 
-    function onPageChange(page: number) {
-        dispatch("pageChange", page)
+    let {
+        amounts = [10, 25, 50, 100],
+        pageCount,
+        pageLimit,
+        currentPage,
+        previousPage,
+        nextPage,
+
+        // Events
+        onPageChange,
+        onPageLimitChange,
+    }: Props = $props();
+
+    function handlePageLimitChange(event: Event) {
+        const value = (event.target as HTMLSelectElement).value
+        const newPageLimit = parseInt(value) || 25
+        onPageLimitChange(newPageLimit)
     }
 
 </script>
@@ -30,7 +45,7 @@
             <select 
                 class="select w-auto" 
                 name="Page Limit"
-                on:change={onPageLimitChange}
+                onchange={handlePageLimitChange}
             >
                 {#each amounts as amount}
                     <option value={amount} selected={amount === pageLimit}>
@@ -47,7 +62,7 @@
             <button 
                 class="disabled:opacity-50"
                 disabled={!previousPage} 
-                on:click={() => onPageChange(1)}
+                onclick={() => onPageChange(1)}
                 title="First Page"
             >
                 <Icon icon="mdi:page-first" />
@@ -57,7 +72,7 @@
             <button 
                 class="disabled:opacity-50"
                 disabled={!previousPage} 
-                on:click={() => onPageChange(previousPage)}
+                onclick={() => onPageChange(previousPage)}
                 title="Previous Page"
             >
                 <Icon icon="mdi:chevron-left" />
@@ -73,7 +88,7 @@
             <!-- NEXT PAGE -->
             <button 
                 class="disabled:opacity-50"
-                disabled={!nextPage} on:click={() => onPageChange(nextPage)}
+                disabled={!nextPage} onclick={() => onPageChange(nextPage)}
                 title="Next Page"
             >
                 <Icon icon="mdi:chevron-right" />
@@ -82,7 +97,7 @@
             <!-- LAST PAGE -->
             <button 
                 class="disabled:opacity-50"
-                disabled={!nextPage} on:click={() => onPageChange(pageCount)}
+                disabled={!nextPage} onclick={() => onPageChange(pageCount)}
                 title="Last Page"
             >
                 <Icon icon="mdi:page-last" />

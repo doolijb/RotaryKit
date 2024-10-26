@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from "$app/stores"
 	import { FormBase, TextInput, CheckboxInput, Autocomplete } from "$client/components"
 	import ModalSelectField from "$client/components/fields/ModalSelectField"
@@ -16,29 +18,46 @@
 	////
 
 	const form: Form = new Form()
-	export let data: typeof form["Data"] = {
+
+	////
+	// DOWNSTREAM EXPORTS
+	
+
+	interface Props {
+		data?: typeof form["Data"];
+		errors?: FormErrors;
+		getUserOptions: ({searchString}) => Promise<any[]>;
+		mapUserOptions: (data: any[]) => AutocompleteOption[];
+		////
+		disabled?: boolean;
+		canSubmit?: boolean;
+		userChoices?: any;
+		userSearchInput?: string;
+		getUserChoices?: any;
+	}
+
+	let {
+		data = $bindable({
 		address: "",
 		isVerified: false,
 		isUserPrimary: false,
 		userId: null,
-	}
-	export let errors: FormErrors = {}
-	export let getUserOptions: ({searchString}) => Promise<any[]>
-	export let mapUserOptions: (data: any[]) => AutocompleteOption[]
+	}),
+		errors = $bindable({}),
+		getUserOptions,
+		mapUserOptions,
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+		userChoices = {} as PaginatedResponse<Partial<SelectUser>>,
+		userSearchInput = "",
+		getUserChoices = (e: any = null) => {}
+	}: Props = $props();
 
-	////
-	// DOWNSTREAM EXPORTS
-	////
-
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
-	export let userChoices = {} as PaginatedResponse<Partial<SelectUser>>
-	export let userSearchInput = ""
-	export let getUserChoices = (e: any = null) => {}
-
-	$: (userSearchInput: string) => {
-		getUserChoices(userSearchInput)
-	}
+	run(() => {
+		(userSearchInput: string) => {
+			getUserChoices(userSearchInput)
+		}
+	});
 	
 </script>
 

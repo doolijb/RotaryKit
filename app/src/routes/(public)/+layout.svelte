@@ -1,14 +1,25 @@
 <script>
 	import { SiteFooter, SiteNavigation } from "$client/components"
 	import { AppShell } from "@skeletonlabs/skeleton"
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let { children } = $props();
 </script>
 
 <AppShell class="bg-gradient">
-	<svelte:fragment slot="header">
-		<SiteNavigation />
-	</svelte:fragment>
+	{#snippet header()}
+	
+			<SiteNavigation />
+		
+	{/snippet}
 	<div class="min-h-screen">
-		<slot />
+		{@render children?.()}
 	</div>
-	<svelte:fragment slot="pageFooter"><SiteFooter /></svelte:fragment>
+	{#snippet pageFooter()}
+		<SiteFooter />
+	{/snippet}
 </AppShell>

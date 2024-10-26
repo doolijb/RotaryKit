@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import "../../../../app.postcss"
     import {
         arrow,
@@ -56,17 +58,24 @@
 // 		session,
 // 		updated
 // 	};
-// })
 
-    export let darkMode = false
-    /**
+
+    
+    interface Props {
+        // })
+        darkMode?: boolean;
+        /**
      * This is a component that imports the Skeleton theme and styles.
      * It's recommended to choose a theme from themeMap and pass the value into
      * the ThemeProvider theme prop.
      */
-    export let theme = "skeleton"
+        theme?: string;
+        children?: import('svelte').Snippet;
+    }
 
-    let Theme = null
+    let { darkMode = false, theme = "skeleton", children }: Props = $props();
+
+    let Theme = $state(null)
 
     async function getTheme(theme: string) {
         await import("$client/themes").then(module => {
@@ -81,12 +90,16 @@
         await getTheme(theme)
     })
 
-    $: theme ? getTheme(theme) : null
+    run(() => {
+        theme ? getTheme(theme) : null
+    });
 </script>
 
-<svelte:component this={Theme} {theme} dark={darkMode}>
-    <slot slot="body" />
-</svelte:component>
+<Theme {theme} dark={darkMode}>
+    {#snippet body()}
+        {@render children?.()}
+    {/snippet}
+</Theme>
 
 <style lang="postcss">
     /* Expand full width and height */

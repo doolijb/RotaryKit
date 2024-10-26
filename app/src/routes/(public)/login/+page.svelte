@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
 	import { goto } from "$app/navigation"
 	import { Main, UserLoginForm } from "$client/components"
 	import { invalidateAll } from "$app/navigation"
@@ -7,7 +6,6 @@
 	import { page } from "$app/stores"
 	import api from "$shared/api"
 	import { getToastStore } from "@skeletonlabs/skeleton"
-	import type { FormSchema } from "$shared/validation/base"
 	import type { UserLogin } from "$shared/validation/forms"
 
 	const toastStore = getToastStore()
@@ -15,7 +13,7 @@
 	let completed: boolean = false
 	
 
-	async function onSubmit() {
+	async function onsubmit() {
 		await api.login.POST({body: data})
 			.Success(async (res) => {
 				completed = true
@@ -34,9 +32,8 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	let form: FormSchema
-	let data: FormDataOf<UserLogin>
-	let errors: FormErrors
+	let data: FormDataOf<UserLogin> = $state({})
+	let errors: FormErrors = $state({})
 
 </script>
 
@@ -48,7 +45,7 @@
 			</h1>
 		</div>
 		<div class="card border-0 p-4 mb-4">
-			<UserLoginForm on:submit={onSubmit} bind:form bind:data bind:errors />
+			<UserLoginForm {onsubmit} bind:data bind:errors />
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">

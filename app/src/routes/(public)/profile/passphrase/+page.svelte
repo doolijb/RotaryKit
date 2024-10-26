@@ -5,10 +5,23 @@
 	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import api from "$shared/api"
+	import type { ChangePassphrase as Form } from "$shared/validation/forms"
 
 	const toastStore = getToastStore()
 
-	async function onSubmit() {
+	////
+	// COMPUTED
+	////
+
+	let completed = $state(false)
+	let data = $state({} as Form["Data"])
+	let errors: FormErrors = $state({})
+
+	////
+	// FUNCTIONS
+	////
+
+	async function onsubmit() {
 		await api.profile.passphrase.PUT({body: data})
 			.Success(async (res) => {
 				completed = true
@@ -26,10 +39,6 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	let completed = false
-	let data: ChangePassphraseForm["Data"]
-	let errors: FormErrors
-
 </script>
 
 <!-- Nice rounded wrapper, centered, fixed width at full screen, responsive -->
@@ -44,7 +53,7 @@
 		<div class="card p-4 w-full mb-4">
 			<container class="container">
 				{#if !completed}
-					<ChangePassphraseForm on:submit={onSubmit} bind:data bind:errors />
+					<ChangePassphraseForm {onsubmit} bind:data bind:errors />
 				{:else}
 					<div class="flex flex-col items-center justify-center space-y-4">
 						<h1 class="text-2xl font-bold">Success</h1>

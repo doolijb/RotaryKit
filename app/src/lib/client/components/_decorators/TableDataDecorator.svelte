@@ -1,4 +1,9 @@
 <script lang="ts">
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
     /**
      * This is a decorator that will provide a table for table TD components to be rendered in.
      */
@@ -16,9 +21,9 @@
             </thead>
             <tbody>
                 <tr>
-                    <slot />
-                    <slot />
-                    <slot />
+                    {@render children?.()}
+                    {@render children?.()}
+                    {@render children?.()}
                 </tr>
             </tbody>
         </table>

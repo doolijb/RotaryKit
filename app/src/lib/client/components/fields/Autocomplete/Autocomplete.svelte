@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { ValidationBadges, ValidationLegend } from "$client/components"
     import { ValidStates } from "$shared/constants"
     import { Autocomplete, popup, type PopupSettings } from "@skeletonlabs/skeleton"
@@ -11,50 +13,75 @@
 
 	////
 	// UPSTREAM EXPORTS
-	////
+	
 
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
 	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-    export let options: AutocompleteOption[]
 
 	////
 	// LOCAL EXPORTS
-	////
+	
 
-	export let ref: HTMLInputElement | null = null
-	export let placeholder = attrs?.placeholder
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let type: string = "text"
-	export let id: string = v4()
-	export let isTouched = false
-    export let searchInput = ""
-    export let autocomplete: string = undefined
+    interface Props {
+        ////
+        field: string;
+        form: FormSchema;
+        data: typeof form["Data"];
+        errors: FormErrors;
+        options: AutocompleteOption[];
+        ////
+        ref?: HTMLInputElement | null;
+        placeholder?: any;
+        label?: string;
+        disabled?: boolean;
+        type?: string;
+        id?: string;
+        isTouched?: boolean;
+        searchInput?: string;
+        autocomplete?: string;
+        prefix?: import('svelte').Snippet;
+        suffix?: import('svelte').Snippet;
+    }
+
+    let {
+        field,
+        form,
+        data = $bindable({} as FormDataOf<any>),
+        errors = $bindable({}),
+        options,
+        ref = $bindable(null),
+        placeholder = attrs?.placeholder,
+        label = attrs?.label,
+        disabled = $bindable(false),        type = "text",
+        id = v4(),
+        isTouched = $bindable(false),
+        searchInput = $bindable(""),
+        autocomplete = undefined,
+        prefix,
+        suffix
+    }: Props = $props();
 
 	////
 	// CALCULATED
 	////
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = 0
-	$: {
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let validatorLength = $state(0);
+    
+	run(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
 			validator => !validator.isHidden
 		).length
-	}
-	$: required = fieldValidator.isRequired
-	$: validState = isTouched
+	});
+	let required = $derived(fieldValidator.isRequired)
+	let validState = $derived(isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE
-    $: selectedOption = Object.values(options).find(option => option.value === data[field]) || null
+		: ValidStates.NONE)
+    let selectedOption = $derived(Object.values(options).find(option => option.value === data[field]) || null)
 
 	////
 	// CONSTANTS
@@ -181,9 +208,9 @@
 	</div>
 
     <div class="input-group flex">
-        {#if $$slots.prefix}
+        {#if prefix}
 			<div class="align-middle m-0 px-0">
-				<slot name="prefix" />
+				{@render prefix?.()}
 			</div>
 		{/if}
         <input
@@ -195,14 +222,14 @@
             bind:this={ref}
             placeholder={!disabled ? placeholder : ""}
             {disabled}
-            on:input={handleOnInput}
-			on:focus={handleOnFocus}
-			on:blur={handleOnBlur}
+            oninput={handleOnInput}
+			onfocus={handleOnFocus}
+			onblur={handleOnBlur}
             aria-label={label}
             {required}
             {autocomplete}
         />
-        <slot name="suffix" />
+        {@render suffix?.()}
         {#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
 				<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
@@ -223,7 +250,7 @@
                 <button
                     class="mt-3 select-none"
                     type="button"
-                    on:click={e => {
+                    onclick={e => {
                         data[field] = ""
                         searchInput = ""
                         touch()

@@ -5,52 +5,113 @@
 	import { v4 } from "uuid"
 	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
+	import type { Snippet } from 'svelte'
+	import humanizeString from "humanize-string"
 
 	const dispatch = createEventDispatcher()
 
 	////
-	// PARENT EXPORTS
+	// PROPS
 	////
 
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	interface Props {
+		// Props
+		field: string;
+		placeholder?: string;
+		label?: string;
+		autocomplete?: string;
 
-	////
-	// LOCAL EXPORTS
-	////
+		// Bindables
+		form?: FormSchema;
+		data?: Record<string, any>;
+		errors?: Record<string, any>;
+		ref?: any;
+		type?: string;
+		disabled?: boolean;
+		id?: string;
+		isTouched?: boolean;
 
-	export let ref: HTMLInputElement = undefined
-	export let placeholder = attrs?.placeholder
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let type: string = "text"
-	export let id: string = v4()
-	export let isTouched = false
-	export let autocomplete: string = undefined
+		// Events
+		oninput?: (e: Event) => Promise<void> | void
+		onfocus?: (e: Event) => Promise<void> | void
+		onblur?: (e: Event) => Promise<void> | void
+
+		// Snippets
+		prefixSnippet?: Snippet
+		suffixSnippet?: Snippet
+	}
+
+	let {
+		// Props
+		field,
+		placeholder = "",
+		label,
+		autocomplete = undefined,
+
+		// Bindables
+		form = $bindable(),
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		ref = $bindable(undefined),
+		type = $bindable("text"),
+		disabled = $bindable(false),
+		id = $bindable(v4()),
+		isTouched = $bindable(false),
+
+		// Events
+		oninput,
+		onfocus,
+		onblur,
+
+		// Snippets
+		prefixSnippet,
+		suffixSnippet,
+	}: Props = $props();
 
 	////
 	// CALCULATED
 	////
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = 0
-	$: {
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let validatorLength = $state(0);
+	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
+
+	$effect(() => {
+		if (!placeholder && attrs) {
+			placeholder = attrs.placeholder
+		}
+	})
+
+	$effect(() => {
+		if (!label) {
+			if (attrs && attrs.label) {
+				label = attrs.label
+			} else {
+				label = humanizeString(field)
+			}
+		}
+	})
+
+	$effect(() => {
+		if (!!ref) {
+			ref.type = type
+		}
+	})
+	
+	$effect(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
 			validator => !validator.isHidden
 		).length
-	}
-	$: required = fieldValidator.isRequired
-	$: validState = isTouched
+	});
+	let required = $derived(fieldValidator.isRequired)
+	let validState = $derived(isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE
+		: ValidStates.NONE)
 
 	////
 	// CONSTANTS
@@ -61,11 +122,6 @@
 	////
 	// FUNCTIONS
 	////
-
-	function setType(node: HTMLInputElement) {
-		// Can not set dynamic type directly in the input element
-		node.type = type
-	}
 
 	async function validate() {
 		errors[field] = await form.fields[field].validate({key:field, data})
@@ -82,16 +138,12 @@
 
 	function handleOnBlur(e: Event) {
 		touch()
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onblur?.(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		dispatch("input", e)
+		oninput?.(e)
 	}
 
 	////
@@ -104,8 +156,8 @@
 
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div class="mb-2">
 	<div class="flex items-center">
 		<label class="label inline-flex pb-2" for={id}>
@@ -119,29 +171,28 @@
 	</div>
 
 	<div class="input-group flex">
-		{#if $$slots.prefix}
+		{#if prefixSnippet}
 			<div class="align-middle m-0 px-0">
-				<slot name="prefix" />
+				{@render prefixSnippet?.()}
 			</div>
 		{/if}
 		<input
-			{id}
-			class="input border-0 disabled:cursor-not-allowed"
-			use:setType
 			bind:this={ref}
+			{id}
+			{type}
+			class="input border-0 disabled:cursor-not-allowed"
 			{placeholder}
 			bind:value={data[field]}
 			{disabled}
 			{required}
-			on:input={handleOnInput}
-			on:focus={handleOnFocus}
-			on:blur={handleOnBlur}
+			{onfocus}
+			oninput={handleOnInput}
+			onblur={handleOnBlur}
 			aria-label={label}
-			{autocomplete}
 		/>
-		{#if $$slots.suffix}
+		{#if suffixSnippet}
 			<div class="align-middle m-0 px-0 me-2">
-				<slot name="suffix" />
+				{@render suffixSnippet?.()}
 			</div>
 		{/if}
 		{#if !disabled && validatorLength}
@@ -156,11 +207,6 @@
 </div>
 
 <style lang="postcss">
-	/* .input:focus-visible {
-		outline: none;
-		border: none;
-	} */
-
 	.input-group div.px-0 {
 		padding-left: 0 !important;
 		padding-right: 0 !important;

@@ -3,7 +3,7 @@
     import { createSwapy, type Swapy } from "swapy"
 
     let swapy: Swapy
-    let enabled = true
+    let enabled = $state(true)
 
     onMount(() => {
         const container = document.querySelector(".container")
@@ -33,7 +33,7 @@
 </script>
 <div>
 <span>
-    <button class="btn variant-filled-primary" on:click={toggleSwapy}>Toggle</button>
+    <button class="btn variant-filled-primary" onclick={toggleSwapy}>Toggle</button>
 </span>
 </div>
 <div>

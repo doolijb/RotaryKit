@@ -2,10 +2,15 @@
     import {Tab, TabGroup} from "@skeletonlabs/skeleton"
     
 
-    export let parent: any = null
-    export let user: SelectUser = null
+    interface Props {
+        parent?: any;
+        user?: SelectUser;
+    }
 
-    $: tabSet = 0
+    let { parent = null, user = null }: Props = $props();
+
+    let tabSet = $state(0);
+    
 
     const cBase = "card p-4 w-modal shadow-xl space-y-4"
     const cHeader = "text-2xl font-bold"
@@ -26,22 +31,24 @@
         <Tab bind:group={tabSet} name="tab2" value={1}>Email Addresses</Tab>
         <Tab bind:group={tabSet} name="tab3" value={2}>Groups</Tab>
         <!-- Tab Panels --->
-        <svelte:fragment slot="panel">
-            {#if tabSet === 0}
-                Hello World
-                <!-- <UserAdminReview user={user} mode={ReviewMode.VIEW} /> -->
-            {:else if tabSet === 1}
-                (tab panel 2 contents)
-            {:else if tabSet === 2}
-                (tab panel 3 contents)
-            {/if}
-        </svelte:fragment>
+        {#snippet panel()}
+            
+                {#if tabSet === 0}
+                    Hello World
+                    <!-- <UserAdminReview user={user} mode={ReviewMode.VIEW} /> -->
+                {:else if tabSet === 1}
+                    (tab panel 2 contents)
+                {:else if tabSet === 2}
+                    (tab panel 3 contents)
+                {/if}
+            
+            {/snippet}
     </TabGroup>
     <footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}
+        <button class="btn {parent.buttonNeutral}" onclick={parent.onClose}
             >{parent.buttonTextCancel}</button
         >
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}
+        <button class="btn {parent.buttonPositive}" onclick={onFormSubmit}
             >Submit Form</button
         >
     </footer>

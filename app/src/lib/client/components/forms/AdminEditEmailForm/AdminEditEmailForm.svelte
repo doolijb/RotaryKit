@@ -9,39 +9,54 @@
 	////
 	// COMPUTED
 	////
-	let isLoaded = false
-	$: canEditSuperUsers = $page.data.user.isSuperUser
-	$: canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers
+	let isLoaded = $state(false)
+	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
+	let canEditUsers = $derived($page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers)
 
 	////
 	// PARENT EXPORTS
-	////
+	
 
-	export let result: SelectEmail & { user: SelectUser | undefined }
 
 	////
 	// LOCAL EXPORTS
-	////
 	
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors = {}
-	export let getUserOptions: ({searchString}) => Promise<any[]>
-	export let mapUserOptions: (data: any[]) => AutocompleteOption[]
+	
 
 	////
 	// CHILD EXPORTS
-	////
+	
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	interface Props {
+		////
+		result: SelectEmail & { user: SelectUser | undefined };
+		////
+		form: FormSchema;
+		data: typeof form["Data"];
+		errors?: FormErrors;
+		getUserOptions: ({searchString}) => Promise<any[]>;
+		mapUserOptions: (data: any[]) => AutocompleteOption[];
+		////
+		disabled?: boolean;
+		canSubmit?: boolean;
+	}
+
+	let {
+		result,
+		form = $bindable(),
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		getUserOptions,
+		mapUserOptions,
+		disabled = undefined,
+		canSubmit = $bindable(undefined)
+	}: Props = $props();
 
 	////
 	// LIFECYCLE
 	////
 
 	onMount(() => {
-		console.log("canEditSuperUsers", canEditSuperUsers)
 		form = Form.init()
 		data = {
 			address: "",

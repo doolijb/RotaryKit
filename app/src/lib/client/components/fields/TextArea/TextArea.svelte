@@ -10,42 +10,64 @@
 
     ////
     // UPSTREAM EXPORTS
-    ////
+    
 
-    export let field: string
-    export let form: FormSchema
-    export let data: typeof form["Data"]
-    export let errors: FormErrors
     const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-    export let resizeY = false
-    export let rows: number = 3
 
     ////
     // LOCAL EXPORTS
-    ////
+    
 
-    export let ref: HTMLTextAreaElement
-    export let placeholder = attrs?.placeholder
-    export let label:string = attrs?.label
-    export let disabled: boolean = false
-    export let id: string = v4()
-    export let isTouched = false
+    interface Props {
+        ////
+        field: string;
+        form: FormSchema;
+        data: typeof form["Data"];
+        errors: FormErrors;
+        resizeY?: boolean;
+        rows?: number;
+        ////
+        ref: HTMLTextAreaElement;
+        placeholder?: any;
+        label?: string;
+        disabled?: boolean;
+        id?: string;
+        isTouched?: boolean;
+        controls?: import('svelte').Snippet;
+        extraControls?: import('svelte').Snippet;
+    }
+
+    let {
+        field,
+        form,
+        data = $bindable({} as FormDataOf<any>),
+        errors = $bindable({}),
+        resizeY = false,
+        rows = 3,
+        ref = $bindable(),
+        placeholder = attrs?.placeholder,
+        label = attrs?.label,
+        disabled = $bindable(false),        id = v4(),
+        isTouched = $bindable(false),
+        controls,
+        extraControls
+    }: Props = $props();
 
     ////
     // CALCULATED
     ////
 
-    $: fieldValidator = form.fields[field]
-    $: fieldErrors = errors[field] || {}
-    $: validatorLength = form.fields[field].validators.length
-    $: required = fieldValidator.isRequired
-    $: validState = isTouched
+    let fieldValidator = $derived(form.fields[field])
+    let fieldErrors = $derived(errors[field] || {})
+    let validatorLength = $derived(form.fields[field].validators.length)
+    let required = $derived(fieldValidator.isRequired)
+    let validState = $derived(isTouched
         ? fieldErrors && Object.keys(fieldErrors).length
             ? ValidStates.INVALID
             : data[field]
             ? ValidStates.VALID
             : ValidStates.NONE
-        : ValidStates.NONE
+        : ValidStates.NONE)
 
     ////
     // CONSTANTS
@@ -118,17 +140,17 @@
             {required}
             {rows}
             {placeholder}
-            on:input={handleOnInput}
-            on:focus={handleOnFocus}
-            on:blur={handleOnBlur}
-        />
-        {#if $$slots.controls || $$slots.extraControls || !disabled && validatorLength || attrs?.description }
+            oninput={handleOnInput}
+            onfocus={handleOnFocus}
+            onblur={handleOnBlur}
+></textarea>
+        {#if controls || extraControls || !disabled && validatorLength || attrs?.description }
             <div class="fieldFooter flex items-center justify-between px-3 py-2 border bg-surface-50 dark:bg-surface-500">
                 <div class="inline-flex items-center">
-                    <slot name="controls" />
+                    {@render controls?.()}
                 </div>
                 <div class="flex w-100 ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
-                    <slot name="extraControls" />
+                    {@render extraControls?.()}
                     {#if !disabled && validatorLength}
                         <ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
                     {/if}

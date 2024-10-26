@@ -1,49 +1,56 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
 	import { FormBase, TextInput, MultiSelect } from "$client/components"
 	import { AdminEditAdminRole as Form } from "$shared/validation/forms"
-	export let disabled = false
-
+	
 	////
-	// PARENT EXPORTS
+	// PROPS
 	////
 
-	export let result: SelectAdminRole & {
+	interface Props {
+		disabled?: boolean;
+		result: SelectAdminRole & {
 		toAdminPermissions: (
 			SelectAdminRolesToPermissions & {
 				adminPermission: SelectAdminPermission
 			}
 		)[]
+	};
+		adminPermissions: SelectAdminPermission[];
+		form?: any;
+		data?: Form["Data"];
+		errors?: FormErrors;
+		canSubmit?: boolean;
+		populatedFormData?: boolean;
 	}
-	export let adminPermissions: SelectAdminPermission[]
-	
-	////
-	// LOCAL EXPORTS
-	////
 
-	export let form = Form.init()
-	export let data: Form["Data"] = {
+	let {
+		disabled = $bindable(false),		result,
+		adminPermissions,
+		form = $bindable(Form.init()),
+		data = $bindable({
 		name: "",
 		adminPermissions: []
-	}
-	export let errors: FormErrors = {}
-	
-	////
-	// CHILD EXPORTS
-	////
-
-	export let canSubmit: boolean = undefined
-	export let populatedFormData: boolean = undefined
+	}),
+		errors = $bindable({}),
+		canSubmit = $bindable(undefined),
+		populatedFormData = $bindable(undefined)
+	}: Props = $props();
 
 	////
-	// COMPUTED
+	// CALCULATED
 	////
 
-	$: adminPermissionOptions = adminPermissions.map((permission) => ({
+	let adminPermissionOptions = $derived(adminPermissions.map((permission) => ({
 		key: permission.id,
 		label: permission.name
-	}))
+	})))
 
-	$: {
+	////
+	// LIFE CYCLE
+	////
+
+	$effect(() => {
 		if (!populatedFormData && result) {
 			data.name = result.name
 			data.adminPermissions = result.toAdminPermissions.map(
@@ -54,16 +61,16 @@
 				errors = result
 			})
 		}
-	}
+	});
 </script>
 
 <FormBase
-	bind:form
+	{form}
 	bind:errors
 	bind:data
 	bind:canSubmit
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >

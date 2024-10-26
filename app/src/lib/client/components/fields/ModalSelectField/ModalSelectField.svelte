@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { ValidStates } from "$shared/constants"
 	import { createEventDispatcher, onMount } from "svelte"
@@ -13,50 +15,74 @@
 
 	////
 	// PARENT EXPORTS
-	////
+	
 
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
 	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-	export let mapOptions: (data: any[]) => AutocompleteOption
-    export let getOptions: ({searchString}) => Promise<any[]>
-	export let result: any = undefined
 
 	////
 	// LOCAL EXPORTS
-	////
+	
 
-	export let ref: HTMLInputElement = undefined
-	export let placeholder = attrs?.placeholder
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let id: string = v4()
-	export let isTouched = false
+	interface Props {
+		////
+		field: string;
+		form: FormSchema;
+		data: typeof form["Data"];
+		errors: FormErrors;
+		mapOptions: (data: any[]) => AutocompleteOption;
+		getOptions: ({searchString}) => Promise<any[]>;
+		result?: any;
+		////
+		ref?: HTMLInputElement;
+		placeholder?: any;
+		label?: string;
+		disabled?: boolean;
+		id?: string;
+		isTouched?: boolean;
+		prefix?: import('svelte').Snippet;
+		suffix?: import('svelte').Snippet;
+	}
+
+	let {
+		field,
+		form,
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		mapOptions,
+		getOptions,
+		result = undefined,
+		ref = undefined,
+		placeholder = attrs?.placeholder,
+		label = attrs?.label,
+		disabled = $bindable(false),		id = v4(),
+		isTouched = $bindable(false),
+		prefix,
+		suffix
+	}: Props = $props();
 
 	////
 	// CALCULATED
 	////
 
-	$: fieldValidator = form.fields[field]
-	$: fieldErrors = errors[field] || {}
-	$: validatorLength = 0
-	$: {
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let validatorLength = $state(0);
+	
+	run(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
 			validator => !validator.isHidden
 		).length
-	}
+	});
 	// $: required = fieldValidator.isRequired
-	$: validState = isTouched
+	let validState = $derived(isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE
-	let selectedOption = undefined
-	$: displayValue = selectedOption ? selectedOption.label || selectedOption : ""
+		: ValidStates.NONE)
+	let selectedOption = $state(undefined)
+	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
 
 	////
 	// CONSTANTS
@@ -93,7 +119,6 @@
 			body: "",
 			buttonTextSubmit: "Select",
 			response: (response) => {
-				console.log(response)
 				if (!!response) {
 					selectedOption = response.selectedOption
 					data[field] = selectedOption !== undefined ? selectedOption.value : undefined
@@ -162,17 +187,17 @@
 
     <div class="flex items-center">
 		<div class="input-group flex">
-			{#if $$slots.prefix}
+			{#if prefix}
 				<div class="align-middle m-0 px-0">
-					<slot name="prefix" />
+					{@render prefix?.()}
 				</div>
 			{/if}
 			<span class="m-2 border-0 disabled:cursor-not-allowed flex-grow" class:text-surface-400={!data[field] || disabled} aria-label={label}>
 				{displayValue || placeholder || "\u00A0"}
 			</span>
-			{#if $$slots.suffix}
+			{#if suffix}
 				<div class="align-middle m-0 px-0 me-2">
-					<slot name="suffix" />
+					{@render suffix?.()}
 				</div>
 			{/if}
 			{#if !disabled && validatorLength}
@@ -182,10 +207,10 @@
 			{/if}
 		</div>
 		<div class="flex">
-			<button type="button" class="btn variant-filled-secondary ml-2" on:click={openModal} disabled={disabled}>
+			<button type="button" class="btn variant-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
 				Select
 			</button>
-			<button type="button" class="btn variant-filled-surface ml-2" on:click={clearSelection} disabled={!data[field] || disabled}>
+			<button type="button" class="btn variant-filled-surface ml-2" onclick={clearSelection} disabled={!data[field] || disabled}>
 				Clear
 			</button>
 		</div>

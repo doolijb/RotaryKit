@@ -13,7 +13,7 @@
             getExtras: async () => ({
                 adminPermissions: await getAdminPermissions(),
             }),
-            onSubmit: ({data}) => api.admin.adminRoles.resourceId$(resourceId).PUT({body: data}),
+            onsubmit: ({data}) => api.admin.adminRoles.resourceId$(resourceId).PUT({body: data}),
         }
     }
 

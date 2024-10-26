@@ -1,17 +1,23 @@
 <script lang="ts">
     import { Modal, Toast } from "@skeletonlabs/skeleton"
-    /**
+    
+
+    interface Props {
+        /**
      * This is a component that imports the hamlindigo theme and styles.
      */
+        dark?: boolean;
+        theme?: string;
+        body?: import('svelte').Snippet;
+    }
 
-    export let dark = false
-    export let theme = ""
+    let { dark = false, theme = "", body }: Props = $props();
 </script>
 
 <div data-theme={theme} class:dark>
     <Toast />
     <Modal />
-    <slot name="body" />
+    {@render body?.()}
 </div>
 
 <style lang="postcss">

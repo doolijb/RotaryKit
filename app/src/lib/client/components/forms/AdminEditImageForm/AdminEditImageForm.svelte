@@ -1,30 +1,53 @@
 <script lang="ts">
-	import { FormBase, TextInput, FileDropField, SelectField } from "$client/components"
-	import { ImageResolutions, ImageSizes, ImageStatus } from "$shared/constants"
+	import { FormBase, TextInput, SelectField } from "$client/components"
 	import { AdminEditImage as Form } from "$shared/validation/forms"
-	import { onMount } from "svelte"
-
-	////
-	// LOCAL EXPORTS
-	////
 
 	const form: Form = new Form()
-	export let data: typeof form["Data"] = {
-		title: "",
-		status: ""
+
+	////
+	// PROPS
+	////
+
+	interface Props {
+		// Props
+		result?: SelectImage
+
+		// Bindables
+		data: Form["Data"]
+		errors?: FormErrors
+		disabled?: boolean
+		canSubmit?: boolean
+		populatedFormData?: boolean
+
+		// Events
+		onsubmit?: (e: Event) => Promise<void>
+		oncancel?: (e: Event) => Promise<void>
 	}
-	export let errors: FormErrors = {}
-	export let result: SelectImage
+
+	let {
+		// Props
+		result,
+
+		// Bindables
+		data = $bindable({
+			title: "",
+			status: "",
+		}),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+		populatedFormData = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel
+	}: Props = $props();
 
 	////
-	// DOWNSTREAM EXPORTS
+	// COMPUTED
 	////
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
-	export let populatedFormData: boolean = undefined
-
-	$: {
+	$effect.pre(() => {
 		if (!populatedFormData && result) {
 			data.title = result.title
 			data.status = result.status
@@ -33,12 +56,6 @@
 				errors = result
 			})
 		}
-	}
-
-	onMount(() => {
-		form.validate({data}).then((result) => {
-			errors = result
-		})
 	})
 
 </script>
@@ -49,8 +66,8 @@
 	bind:errors
 	bind:canSubmit
 	bind:disabled 
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >
@@ -67,8 +84,8 @@
 		id="status"
 		field="status"
 		bind:data
-		{form}
 		bind:errors
+		{form}
 		{disabled}
 	/>
 </FormBase>

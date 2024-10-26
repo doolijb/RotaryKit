@@ -2,25 +2,44 @@
 	import { FormBase, TextInput, PassphraseInput } from "$client/components"
 	import { UserRegister as Form } from "$shared/validation/forms"
 
-	////
-	// LOCAL EXPORTS
-	////
-
-	export let data: Form["Data"] = {
-		username: "",
-		email: "",
-		passphrase: "",
-		passphraseConfirm: ""
-	}
-	export let errors = {} as FormErrors
 	export const form = Form.init()
 
 	////
-	// CHILD EXPORTS
+	// PROPS
 	////
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	interface Props {
+		// Props
+
+		// Bindables
+		disabled?: boolean;
+		canSubmit?: boolean;
+		data?: Form["Data"];
+		errors?: FormErrors;
+
+		// Events
+		onsubmit: (args: any) => Promise<void>;
+		oncancel?: (args: any) => Promise<void>;
+	}
+
+	let {
+		// Props
+
+		// Bindables
+		data = $bindable({
+			username: "",
+			email: "",
+			passphrase: "",
+			passphraseConfirm: ""
+		}),
+		errors = $bindable({} as FormErrors),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel
+	}: Props = $props();
 	
 </script>
 
@@ -30,11 +49,11 @@
 	bind:data
 	bind:canSubmit
 	bind:disabled
-	on:submit
+	{onsubmit}
+	{oncancel}
 	showCancel={false}
 >
 	<TextInput
-		label="Username"
 		id="username"
 		field="username"
 		{form}
@@ -43,7 +62,6 @@
 		{disabled}
 	/>
 	<TextInput
-		label="Email"
 		id="email"
 		type="email"
 		field="email"
@@ -53,7 +71,6 @@
 		{disabled}
 	/>
 	<PassphraseInput
-		label="Passphrase"
 		id="passphrase"
 		field="passphrase"
 		{form}
@@ -62,7 +79,6 @@
 		{disabled}
 	/>
 	<PassphraseInput
-		label="Confirm Passphrase"
 		id="passphraseConfirm"
 		field="passphraseConfirm"
 		{form}

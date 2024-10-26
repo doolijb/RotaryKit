@@ -1,11 +1,15 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
 
-    export let disabled = false
-    export let onClick = (args: any) => console.log("onClick")
-    export let title = "View"
+    interface Props {
+        disabled?: boolean;
+        onClick?: any;
+        title?: string;
+    }
 
-    let focused = false
+    let { disabled = false, onClick = (args: any) => console.log("onClick"), title = "View" }: Props = $props();
+
+    let focused = $state(false)
 </script>
 
 <td class="select-none" {title}>
@@ -14,11 +18,11 @@
             type="button"
             class="variant-soft-primary btn-icon btn-icon-sm"
             {disabled}
-            on:click={onClick}
-            on:focus={() => (focused = true)}
-            on:focusout={() => (focused = false)}
-            on:mouseover={() => (focused = true)}
-            on:mouseleave={() => (focused = false)}
+            onclick={onClick}
+            onfocus={() => (focused = true)}
+            onfocusout={() => (focused = false)}
+            onmouseover={() => (focused = true)}
+            onmouseleave={() => (focused = false)}
         >
             <Icon
                 icon="mdi:eye"

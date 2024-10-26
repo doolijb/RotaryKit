@@ -11,7 +11,7 @@
     const tabs = {
         default: {
             FormComponent: AdminEditImageForm,
-            onSubmit: ({data}) => api.admin.images.resourceId$(resourceId).PUT({body: data}),
+            onsubmit: ({data}) => api.admin.images.resourceId$(resourceId).PUT({body: data}),
         }
     }
 </script>

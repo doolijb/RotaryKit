@@ -8,6 +8,7 @@ import { logger } from "$server/logging"
 import { schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { images } from "$server/providers"
+import { ImageSizes } from "$shared/constants"
 
 
 const postForm = PostForm.init()
@@ -65,13 +66,13 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		 * Add the new image to the database
 		 */
 		await db.transaction(async (tx) => {
-			await images.create({ tx, file, uploadedByUserId: event.locals.user.id, profileImageUserId: event.locals.user.id })
+			await images.create({ tx, file, uploadedByUserId: event.locals.user.id, profileImageUserId: event.locals.user.id, maxSize:ImageSizes.SMALL })
 		})
 
 		/**
 		 * Return the response
 		 */
-		return Created({ body: { success: true } })
+		return Created()
 
 	} catch (e) {
 		logger.exception(e, event)

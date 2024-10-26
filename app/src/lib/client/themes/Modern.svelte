@@ -4,16 +4,22 @@
      * This is a component that imports the modern theme and styles.
      */
     // import "@skeletonlabs/skeleton/themes/theme-modern.css"
-    // import "@skeletonlabs/skeleton/styles/all.css"
+    
 
-    export let dark = false
-    export let theme = ""
+    interface Props {
+        // import "@skeletonlabs/skeleton/styles/all.css"
+        dark?: boolean;
+        theme?: string;
+        body?: import('svelte').Snippet;
+    }
+
+    let { dark = false, theme = "", body }: Props = $props();
 </script>
 
 <div data-theme={theme} class:dark>
     <Toast />
     <Modal />
-    <slot name="body" />
+    {@render body?.()}
 </div>
 
 <style lang="postcss">

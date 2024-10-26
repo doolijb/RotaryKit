@@ -34,6 +34,7 @@ function getOrderBySQL(orderBy: string, schema: PgTableWithColumns<any>): SQL<un
 	 * Split the string into an array of strings,
 	 * then split each string into an array of column, direction
 	 */
+	console.log("orderBy", orderBy)
 	const orderByList: SQL<unknown>[] = orderBy.split(",").map((orderBy) => {
 		const [column, direction] = orderBy.split(":")
 		return directions[direction](schema[column])

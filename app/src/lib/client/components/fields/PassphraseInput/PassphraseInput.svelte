@@ -1,40 +1,65 @@
 <script lang="ts">
 	import { TextInput } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { createEventDispatcher, onMount, type Snippet } from "svelte"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
 
 	const dispatch = createEventDispatcher()
 
 	////
-	// UPSTREAM EXPORTS
+	// PROPS
 	////
 
-	export let field: string
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+	interface Props {
+		// Props
+		field: string;
+		form: FormSchema;
+		placeholder?: string;
+		label?: string;
 
-	////
-	// LOCAL EXPORTS
-	////
+		// Bindables
+		data?: Record<string, any>;
+		errors?: Record<string, any>;
+		ref?: any;
+		disabled?: boolean;
+		id?: string;
+		isTouched?: boolean;
+		showPassword?: boolean;
 
-	export let ref: HTMLInputElement = undefined
-	export let placeholder = attrs?.placeholder
-	export let label:string = attrs?.label
-	export let disabled: boolean = false
-	export let id: string = v4()
-	export let isTouched = false
-	export let showPassword = false
+		// Events
+		oninput?: (e: Event) => void;
+		onfocus?: (e: Event) => void;
+		onblur?: (e: Event) => void;
+	}
+
+	let {
+		// Props
+		field,
+		form,
+		placeholder,
+		label,
+
+		// Bindables
+		data = $bindable({}),
+		errors = $bindable({}),
+		ref = $bindable(undefined),
+		disabled = $bindable(false),
+		id = $bindable(v4()),
+		isTouched = $bindable(false),
+		showPassword = $bindable(false),
+
+		// Events
+		oninput,
+		onfocus,
+		onblur
+	}: Props = $props();
 
 	////
 	// CALCULATED
 	////
-
-	$: type = showPassword ? "text" : "password"
-	$: ref && (ref.type = type)
+	
+	let type = $derived(showPassword ? "text" : "password")
 
 	////
 	// FUNCTIONS
@@ -44,55 +69,39 @@
 		showPassword = !showPassword
 	}
 
-	////
-	// EVENTS
-	////
-
-	function handleOnBlur(e: Event) {
-		dispatch("blur", e)
-	}
-
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
-	}
-
-	function handleOnInput(e: Event) {
-		dispatch("input", e)
-	}
 
 </script>
 
 <TextInput
-	bind:label
-	bind:id
-	bind:disabled
-	bind:ref
-	bind:placeholder
-	bind:isTouched
-	bind:type
+	{label}
+	{placeholder}
 	{field}
 	{form}
 	{errors}
 	{data}
-	on:input={handleOnInput}
-	on:focus={handleOnFocus}
-	on:blur={handleOnBlur}
+	{type}
+	bind:id
+	bind:disabled
+	bind:ref
+	bind:isTouched
+	{oninput}
+	{onfocus}
+	{onblur}
 >
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<span
-		slot="suffix"
-		on:click={togglePasswordVisibility}
-		class="text-surface-500 cursor-pointer"
-		title="Show Password"
-	>	
-		{#if !showPassword}
-			<Icon icon="mdi:eye-outline" width="2em" />
-		{:else}
-			<Icon class="opacity-50 hover:opacity-100" icon="mdi:eye-off-outline" width="2em" />
-		{/if}
-	</span>
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	{#snippet suffixSnippet()}
+		<span
+			
+			onclick={togglePasswordVisibility}
+			class="text-surface-500 cursor-pointer"
+			title="Show Password"
+		>	
+			{#if !showPassword}
+				<Icon icon="mdi:eye-outline" width="2em" />
+			{:else}
+				<Icon class="opacity-50 hover:opacity-100" icon="mdi:eye-off-outline" width="2em" />
+			{/if}
+		</span>
+	{/snippet}
 </TextInput>
-
-<style lang="postcss">
-</style>

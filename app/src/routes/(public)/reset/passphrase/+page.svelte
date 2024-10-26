@@ -9,10 +9,10 @@
 
 	const toastStore = getToastStore()
 
-	let completed: boolean = false
-	let email: string
+	let completed: boolean = $state(false)
+	let email: string = $state()
 
-	async function onSubmit() {
+	async function onsubmit() {
 		email = data.email
 		await api.reset.passphrase.POST({body: data})
 			.Success(async (res) => {
@@ -27,9 +27,8 @@
 			.catch(handleException({ toastStore }))
 	}
 
-	let form: FormSchema
-	let data: FormDataOf<RecoverPassphraseByEmail>
-	let errors: FormErrors
+	let data: FormDataOf<RecoverPassphraseByEmail> = $state()
+	let errors: FormErrors = $state()
 
 </script>
 
@@ -52,7 +51,7 @@
 			</div>
 		{:else}
 		<div class="card border-0 p-4 mb-4">
-			<RecoverPassphraseByEmailForm on:submit={onSubmit} bind:form bind:data bind:errors />
+			<RecoverPassphraseByEmailForm on:submit={onsubmit} bind:data bind:errors />
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">

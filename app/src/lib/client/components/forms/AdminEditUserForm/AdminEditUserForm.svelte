@@ -9,36 +9,49 @@
 	// COMPUTED
 	////
 	
-	let isLoaded = false
-	$: canEditSuperUsers = $page.data.user.isSuperUser
+	let isLoaded = $state(false)
+	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
 
 	////
 	// PARENT EXPORTS
-	////
+	
 
-	export let result: SelectUser
 
 	////
 	// LOCAL EXPORTS
-	////
 	
-	export let form: FormSchema
-	export let data: typeof form["Data"]
-	export let errors: FormErrors = {}
+	
 
 	////
 	// CHILD EXPORTS
-	////
+	
 
-	export let disabled: boolean = undefined
-	export let canSubmit: boolean = undefined
+	interface Props {
+		////
+		result: SelectUser;
+		////
+		form: FormSchema;
+		data: typeof form["Data"];
+		errors?: FormErrors;
+		////
+		disabled?: boolean;
+		canSubmit?: boolean;
+	}
+
+	let {
+		result,
+		form = $bindable(),
+		data = $bindable({} as FormDataOf<any>),
+		errors = $bindable({}),
+		disabled = undefined,
+		canSubmit = $bindable(undefined)
+	}: Props = $props();
 
 	////
 	// LIFECYCLE
 	////
 
 	onMount(() => {
-		console.log("canEditSuperUsers", canEditSuperUsers)
 		if (canEditSuperUsers) {
 			form = FormWithPermissions.init()
 		} else {
