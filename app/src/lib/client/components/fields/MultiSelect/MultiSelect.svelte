@@ -1,32 +1,28 @@
 <script lang="ts">
-
-import { ValidationBadges, ValidationLegend } from "$client/components"
+	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
 	import Icon from "@iconify/svelte"
-	import type { on } from "events"
-
-	interface MultiSelectOption { [key: string]: string | number, label: string }
+	import humanizeString from "humanize-string"
 
 	////
 	// PROPS
 	////
-	
 
 	interface Props {
 		// Props
 		field: string
 		form: FormSchema
-		options: Record<string, MultiSelectOption>
+		options: MultiSelectOption[]
 		label?: string
 		disabled?: boolean
 		id?: string
 		size?: number
 
 		// Bindables
-		data?: Record<string, string[]>
+		data?: FormDataOf<any>
 		errors?: Record<string, Record<string, string>>
 		ref?: HTMLSelectElement
 		isTouched?: boolean
@@ -63,29 +59,6 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 	}: Props = $props();
 
 	////
-	// CALCULATED
-	////
-
-	let attrs = $derived(form.fieldAttributes[field])
-	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
-	let required = $derived(fieldValidator.isRequired)
-	let canRemove = $derived(!!selectedValues.length) 
-	let canAdd = $derived(!!selectedAvailable.length)
-
-	$effect(() =>{
-		if (!label && !!attrs) {
-			label = attrs.label
-		}
-	})
-
-	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-	////
 	// FUNCTIONS
 	////
 
@@ -99,6 +72,7 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 	}
 
 	function handleAdd() {
+
 		data[field] = [... new Set([...Object.values(data[field]), ...selectedAvailable])]
 		selectedAvailable = []
 		touch()
@@ -116,106 +90,127 @@ import { ValidationBadges, ValidationLegend } from "$client/components"
 
 	function handleOnBlur(e: Event) {
 		touch()
-		onblur(e)
+		onblur?.(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		oninput(e)
+		oninput?.(e)
 	}
 
 	////
-	// LIFECYCLE
+	// CALCULATED
 	////
 
-	onMount(() => {
-		if (data[field]) touch()
+	let ready = $derived(data[field] !== undefined)
+	let attrs = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let required = $derived(fieldValidator.isRequired)
+	let canRemove = $derived(!!selectedValues.length) 
+	let canAdd = $derived(!!selectedAvailable.length)
+
+	$effect.pre(() => {
+		// Make sure the field is initialized
+		if (data[field] === undefined) {
+			data[field] = []
+			console.log("Initialized field", field)
+		}
+		if (data[field].length) touch()
+	})
+
+	$effect.pre(() => {
+		if (!label) {
+			if (attrs.label) {
+				label = attrs.label
+			} else {
+				label = humanizeString(field)
+			}
+		}
 	})
 
 </script>
-
-<div class="mb-2">
-	<div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id}>
-			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-				{label}
-			</span>
-		</label>
-		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
-		{/if}
-	</div>
-	<!-- Side by side select, with arrows to add, remove from left to right -->
-	<div class="sm:flex sm:flex-col md:grid md:grid-cols-5 gap-4">
-		<div class="flex flex-col col-span-2">
-			<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
-				{#each Object.values(options) as {key, label}}
-					{#if !Object.values(data[field]).includes(key)}
-						<option value={key}>{label}</option>
-					{/if}
-				{/each}
-			</select>
-			<span class="text-surface-300 text-sm">
-				Available options: {Object.keys(options).length - Object.values(data[field]).length}
+{#if ready}
+	<div class="mb-2">
+		<div class="flex items-center">
+			<label class="label inline-flex pb-2" for={id}>
+				<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
+					{label}
 				</span>
+			</label>
+			{#if !disabled}
+				<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
+			{/if}
 		</div>
+		<!-- Side by side select, with arrows to add, remove from left to right -->
+		<div class="sm:flex sm:flex-col md:grid md:grid-cols-5 gap-4">
+			<div class="flex flex-col col-span-2">
+				<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
+					{#each Object.values(options) as {key, label}}
+						{#if !Object.values(data[field]).includes(key)}
+							<option value={key}>{label}</option>
+						{/if}
+					{/each}
+				</select>
+				<span class="text-surface-300 text-sm">
+					Available options: {Object.keys(options).length - Object.values(data[field]).length}
+					</span>
+			</div>
 
-		<div class="flex flex-col w-auto">
-			<div class="flex flex-col items-center justify-center h-full">
-				<button
-					type="button"
-					class="btn btn-primary btn-sm mb-2"
-					onclick={handleAdd}
-					disabled={!canAdd || disabled}
-					title={canAdd ? "Add selected options" : "First select an option to add"}
+			<div class="flex flex-col w-auto">
+				<div class="flex flex-col items-center justify-center h-full">
+					<button
+						type="button"
+						class="btn btn-primary btn-sm mb-2"
+						onclick={handleAdd}
+						disabled={!canAdd || disabled}
+						title={canAdd ? "Add selected options" : "First select an option to add"}
+					>
+						<Icon icon="akar-icons:arrow-down" class="md:hidden w-4 h-4" />
+						<span class="mx-2">
+							Add
+						</span>
+						<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
+					</button>
+					<button
+						type="button"
+						class="btn btn-primary btn-sm mb-3"
+						onclick={handleRemove}
+						disabled={!canRemove || disabled}
+						title={canRemove ? "Remove selected options" : "First select an option to remove"}
+					>
+						<Icon icon="akar-icons:arrow-up" class="md:hidden w-4 h-4" />
+						<Icon icon="akar-icons:arrow-left" class="hidden md:inline-block w-4 h-4" />
+						<span class="mx-2">
+							Remove
+						</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="flex flex-col col-span-2">
+				<select
+					{id}
+					class="select h-full border-success-500"
+					multiple
+					bind:value={selectedValues}
+					{size}
+					bind:this={ref}
+					{disabled}
+					oninput={handleOnInput}
+					onblur={handleOnBlur}
+					{onfocus}
+					aria-label={label}
+					{required}
 				>
-					<Icon icon="akar-icons:arrow-down" class="md:hidden w-4 h-4" />
-					<span class="mx-2">
-						Add
-					</span>
-					<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
-				</button>
-				<button
-					type="button"
-					class="btn btn-primary btn-sm mb-3"
-					onclick={handleRemove}
-					disabled={!canRemove || disabled}
-					title={canRemove ? "Remove selected options" : "First select an option to remove"}
-				>
-					<Icon icon="akar-icons:arrow-up" class="md:hidden w-4 h-4" />
-					<Icon icon="akar-icons:arrow-left" class="hidden md:inline-block w-4 h-4" />
-					<span class="mx-2">
-						Remove
-					</span>
-				</button>
+					{#each Object.values(options) as {key, label}}
+						{#if Object.values(data[field]).includes(key)}
+							<option value={key}>{label}</option>
+						{/if}
+					{/each}
+				</select>
+				<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
 			</div>
 		</div>
-
-		<div class="flex flex-col col-span-2">
-			<select
-				{id}
-				class="select h-full border-success-500"
-				multiple
-				bind:value={selectedValues}
-				{size}
-				bind:this={ref}
-				{disabled}
-				oninput={handleOnInput}
-				onblur={handleOnBlur}
-				{onfocus}
-				aria-label={label}
-				{required}
-			>
-				{#each Object.values(options) as {key, label}}
-					{#if Object.values(data[field]).includes(key)}
-						<option value={key}>{label}</option>
-					{/if}
-				{/each}
-			</select>
-			<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
-		</div>
 	</div>
-</div>
-
-<style lang="postcss">
-</style>
+{/if}

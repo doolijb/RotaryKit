@@ -37,6 +37,8 @@
         "maildev",
         "nonpositive",
         "ondelete",
+        "onedit",
+        "onview",
         "paseto",
         "pdfs",
         "pino",

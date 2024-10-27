@@ -99,14 +99,22 @@
     <DetailGridItem label={getLabel("status")} value={getValue("status")} />
 	<DetailGridItem label={getLabel("totalBytes")} value={getValue("totalBytes")} />
 	<hr class="border-gray-200 col-span-3" />
-	<DetailGridItem label="Original" value={!!getValue("originalPath") ? "Available" : "Unavailable"} />
+	<DetailGridItem label="Original" >
+		<span class:opacity-50={!getValue("originalPath")}>
+			{!!getValue("originalPath") ? "Available" : "Unavailable"}
+		</span>
+	</DetailGridItem>
     {#if result.originalPath}
         <DetailGridItem label={getLabel("originalPath")} value={getValue("originalPath")}  humanizeLabel={false}/>
         <DetailGridItem label={"Size"} value={getValue("originalBytes")}  humanizeLabel={false}/>
 	{/if}
     {#each ["webp", "jpg", "mediumWebp", "mediumJpg", "smallWebp", "smallJpg"] as key}
     <hr class="border-gray-200 col-span-3" />
-        <DetailGridItem label={key} value={!!getValue(key + "Path") ? "Available" : "Unavailable"}/>
+        <DetailGridItem label={key}>
+			<span class:opacity-50={!getValue(key + "Path")}>
+				{!!getValue(key + "Path") ? "Available" : "Unavailable"}
+			</span>
+		</DetailGridItem>
         {#if result[key + "Path"]}
             <DetailGridItem label={"View"} value={getValue(key + "Path")}  humanizeLabel={false}/>
             <DetailGridItem label={"Size"} value={getValue(key + "Bytes")}  humanizeLabel={false}/>

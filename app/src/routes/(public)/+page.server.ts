@@ -1,3 +1,5 @@
 export async function load() {
-    return {}
+    return {
+        title: 'Home',
+    }
 }

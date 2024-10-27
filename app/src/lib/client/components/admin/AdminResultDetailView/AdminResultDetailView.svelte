@@ -179,6 +179,12 @@
 	let isCurrentTabArray = $derived(result && currentTab && Array.isArray(tabs[currentTab]))
 </script>
 
+{#snippet noResults()}
+	<div class="text-center">
+		<p>No results found</p>
+	</div>
+{/snippet}
+
 <AdminHeader>
 	{#snippet title()}
 	
@@ -224,51 +230,56 @@
 			{/each}
 			<!-- Tab Panels --->
 			{#snippet panel()}
-					
-					<!-- If array of items, display a table -->
-					{#if isCurrentTabArray}
-						<!-- No results found -->
-						{#if tabs[currentTab].length === 0}
-							<p class="text-center">No results found.</p>
-						{:else}
-						<!-- Display a table -->
-							<div class="table-container">
-								<table class="table w-full m-0 variant-soft">
-									<thead>
-										<tr>
-											{#each Object.keys(tabs[currentTab][0]) as key}
-												<th>{getHeader(key)}</th>
-											{/each}
-										</tr>
-									</thead>
-									<tbody>
-										{#each tabs[currentTab] as result}
+					{#key currentTab}
+						<!-- If array of items, display a table -->
+						{#if isCurrentTabArray}
+							{#if tabs[currentTab].length === 0}
+								{@render noResults()}
+							{:else}
+							<!-- Display a table -->
+								<div class="table-container">
+									<table class="table w-full m-0 variant-soft">
+										<thead>
 											<tr>
-												{#each Object.keys(result) as key}
-													{#if typeof getValue(result, key,) === "boolean"}
-														<BoolCell value={getValue(result, key)} />
-													{:else}
-														<TextCell text={`${getValue(result, key)}`} />
-													{/if}
+												{#each Object.keys(tabs[currentTab][0]) as key}
+													<th>{getHeader(key)}</th>
 												{/each}
 											</tr>
-										{/each}
-									</tbody>
-								</table>
+										</thead>
+										<tbody>
+											{#each tabs[currentTab] as result}
+												<tr>
+													{#each Object.keys(result) as key}
+														{#if typeof getValue(result, key,) === "boolean"}
+															<BoolCell value={getValue(result, key)} />
+														{:else}
+															<TextCell text={`${getValue(result, key)}`} />
+														{/if}
+													{/each}
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							{/if}
+
+						<!-- If object -->
+						{:else if Object.keys(tabs[currentTab] || {}).length === 0}
+							{@render noResults()}
+
+						{:else if isCurrentTabImage}
+							<AdminImageResultDetails result={tabs[currentTab]} />
+
+						{:else}
+							<!-- If object, display a grid of details -->
+							<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+								{#each Object.keys(tabs[currentTab]) as key}
+									<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
+								{/each}
 							</div>
 						{/if}
-					{:else if isCurrentTabImage}
-						<AdminImageResultDetails result={tabs[currentTab]} />
-					{:else}
-						<!-- If object, display a grid of details -->
-						<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-							{#each Object.keys(tabs[currentTab]) as key}
-								<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
-							{/each}
-						</div>
-					{/if}
-				
-					{/snippet}
+					{/key}
+				{/snippet}
 		</TabGroup>
 	</section>
 {:else}

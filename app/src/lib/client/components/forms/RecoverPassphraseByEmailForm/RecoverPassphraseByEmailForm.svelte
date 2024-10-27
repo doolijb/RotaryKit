@@ -3,35 +3,43 @@
 	import { RecoverPassphraseByEmail as Form } from "$shared/validation/forms"
 
 	////
-	// PARENT EXPORTS
-	
-
-	
-	////
-	// LOCAL EXPORTS
+	// PROPS
 	////
 	
 	export const form = Form.init()
 	interface Props {
-		////
-		disabled?: boolean;
-		canSubmit?: boolean;
-		data?: Form["Data"];
-		errors?: FormErrors;
+		// Props
+
+		// Bindings
+		disabled?: boolean
+		canSubmit?: boolean
+		data?: Form["Data"]
+		errors?: FormErrors
+
+		// Events
+		onsubmit: (args?: any) => Promise<void>
+		oncancel?: () => Promise<void>
 	}
 
 	let {
-		disabled = undefined,
-		canSubmit = $bindable(undefined),
+		// Props
+
+		// Bindings
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
 		data = $bindable({
-		email: "",
-	}),
-		errors = $bindable({})
+			email: "",
+		}),
+		errors = $bindable({}),
+
+		// Events
+		onsubmit,
+		oncancel,
 	}: Props = $props();
 
 </script>
 
-<FormBase {form} bind:data bind:errors bind:canSubmit on:submit showCancel={false}>
+<FormBase {form} bind:data bind:errors bind:canSubmit {onsubmit} {oncancel} showCancel={false}>
 	<TextInput
 		id="email"
 		field="email"

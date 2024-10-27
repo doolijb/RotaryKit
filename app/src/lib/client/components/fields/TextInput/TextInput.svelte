@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
-
-	const dispatch = createEventDispatcher()
 
 	////
 	// PROPS
@@ -46,7 +44,6 @@
 		field,
 		placeholder = "",
 		label,
-		autocomplete = undefined,
 
 		// Bindables
 		form = $bindable(),
@@ -67,6 +64,35 @@
 		prefixSnippet,
 		suffixSnippet,
 	}: Props = $props();
+
+	////
+	// CONSTANTS
+	////
+
+	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+
+	////
+	// FUNCTIONS
+	////
+
+	async function validate() {
+		errors[field] = await form.fields[field].validate({key:field, data})
+	}
+
+	async function touch() {
+		isTouched = true
+		await validate()
+	}
+
+	async function handleOnBlur(e: Event) {
+		await touch()
+		await onblur?.(e)
+	}
+
+	async function handleOnInput(e: Event) {
+		await touch()
+		await oninput?.(e)
+	}
 
 	////
 	// CALCULATED
@@ -112,39 +138,6 @@
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
 		: ValidStates.NONE)
-
-	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-	////
-	// FUNCTIONS
-	////
-
-	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
-	}
-
-	async function touch() {
-		isTouched = true
-		validate()
-	}
-
-	////
-	// EVENTS
-	////
-
-	function handleOnBlur(e: Event) {
-		touch()
-		onblur?.(e)
-	}
-
-	function handleOnInput(e: Event) {
-		touch()
-		oninput?.(e)
-	}
 
 	////
 	// LIFECYCLE

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page, } from "$app/stores"
 	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$client/components"
 	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
 	import { onMount } from "svelte"
@@ -8,7 +7,6 @@
 	// PROPS
 	////
 	
-
 	interface Props {
 		// Props
 		canEditSuperUsers: boolean
@@ -47,18 +45,11 @@
 	}: Props = $props();
 
 	////
-	// CONSTANTS
+	// CALCULATED
 	////
 
-	let form: Form | FormWithPermissions
+	let form = $derived(canEditSuperUsers ? FormWithPermissions.init() : Form.init())
 
-	////
-	// LIFECYCLE
-	////
-
-	onMount(() => {
-		form = canEditSuperUsers ? new FormWithPermissions() : new Form()
-	})
 	
 </script>
 {#if form}

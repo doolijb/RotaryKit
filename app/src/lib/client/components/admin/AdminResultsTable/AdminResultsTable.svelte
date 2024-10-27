@@ -2,7 +2,6 @@
 	import { BoolCell, TextCell } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import { popup } from "@skeletonlabs/skeleton"
-	import { createEventDispatcher } from "svelte"
 
 	/**
 	 * @fires orderByChange - Dispatched when an orderable table header is clicked, returns an updated orderBy query string.
@@ -10,7 +9,6 @@
 	 * @fires editResult - Dispatched when the edit button is clicked, returns the result.
 	 * @fires deleteResult - Dispatched when the delete button is clicked, returns the result.
 	 */
-	const dispatch = createEventDispatcher()
 
 	////
 	// PROPS
@@ -51,9 +49,10 @@
 		};
 
 		// Events
-		onView?: (result: Result<any>) => void;
-		onEdit?: (result: Result<any>) => void;
-		onDelete?: (result: Result<any>) => void;
+		onOrderByChange: (orderBy: string) => void;
+		onView: (result: Result<any>) => void;
+		onEdit: (result: Result<any>) => void;
+		onDelete: (result: Result<any>) => void;
 	}
 
 	let {
@@ -70,6 +69,7 @@
 		dataHandlers = {},
 
 		// Events
+		onOrderByChange,
 		onView,
 		onEdit,
 		onDelete,
@@ -79,7 +79,7 @@
 	// FUNCTIONS
 	////
 	
-	async function orderByChange(key: string) {
+	async function handleOrderByChange(key: string) {
 		// Get current direction
 		const currentDirection: string | undefined = orderByArray.find(
 			(orderBy) => orderBy.key === key
@@ -111,11 +111,53 @@
 		const orderByArrayString = newOrderByArray
 			.map((orderBy) => `${orderBy.key}:${orderBy.direction}`)
 			.join(",")
-		dispatch("orderByChange", orderBy)
+		onOrderByChange(orderByArrayString)
+	}
+
+	/**
+	 * Take a key and make it human readable.
+	 * Camel case is converted to title case.
+	 * Title case has spaces added between words.
+	 */
+	 function getKeyDisplay(key: string): string {
+		const header = dataHandlers[key]?.header || key
+		return header
+			.replace(/_/g, " ")
+			.replace(/(?: |\b)(\w)/g, (key) => key.toUpperCase())
+			.replace(/([A-Z])/g, " $1")
+	}
+
+	/**
+	 * Check if the key is in the in the dataHandlers object.
+	 * If it is, return the orderByKey.
+	 * If it isn't, just return the key.
+	 */
+	function getOrderByKey(key: string): string | undefined {
+		if (!!dataHandlers[key]) {
+			return dataHandlers[key].orderByKey
+		}
+		return key
+	}
+
+	/**
+	 * Gets the value from a result,
+	 * and performs data handling if present.
+	 */
+	function getValue(result: Result<any>, key: string): any {
+		const value = result[key]
+		const retVal = dataHandlers[key]?.handler ? dataHandlers[key].handler(value) : value
+		return ![undefined, null].includes(retVal) ? retVal : ""
+	}
+
+	/**
+	 * Gets the url from a result if present.
+	 */
+	function getKeyUrl(result: Result<any>, key: string): string | undefined {
+		return dataHandlers[key]?.getUrl ? dataHandlers[key].getUrl(result) : undefined
 	}
 
 	////
-	// INTERNAL VARIABLES
+	// CALCULATED
 	////
 
 	/**
@@ -156,54 +198,9 @@
 		return acc
 	}, {}))
 
-	////
-	// HELPERS
-	////
-
-	/**
-	 * Take a key and make it human readable.
-	 * Camel case is converted to title case.
-	 * Title case has spaces added between words.
-	 */
-	function getKeyDisplay(key: string): string {
-		const header = dataHandlers[key]?.header || key
-		return header
-			.replace(/_/g, " ")
-			.replace(/(?: |\b)(\w)/g, (key) => key.toUpperCase())
-			.replace(/([A-Z])/g, " $1")
-	}
-
-	/**
-	 * Check if the key is in the in the dataHandlers object.
-	 * If it is, return the orderByKey.
-	 * If it isn't, just return the key.
-	 */
-	function getOrderByKey(key: string): string | undefined {
-		if (!!dataHandlers[key]) {
-			return dataHandlers[key].orderByKey
-		}
-		return key
-	}
-
-	/**
-	 * Gets the value from a result,
-	 * and performs data handling if present.
-	 */
-	function getValue(result: Result<any>, key: string): any {
-		const value = result[key]
-		const retVal = dataHandlers[key]?.handler ? dataHandlers[key].handler(value) : value
-		return ![undefined, null].includes(retVal) ? retVal : ""
-	}
-
-	/**
-	 * Gets the url from a result if present.
-	 */
-	function getKeyUrl(result: Result<any>, key: string): string | undefined {
-		return dataHandlers[key]?.getUrl ? dataHandlers[key].getUrl(result) : undefined
-	}
 </script>
 
-{#snippet actionsDropdown(result)}
+{#snippet actionsDropdown(result: any)}
 	{#if canViewResource || canEditResource || canDeleteResource}
 		<td class="text-center">
 			<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
@@ -247,7 +244,7 @@
 					<!-- RESULT DATA HEADERS -->
 					{#each finalOrderedKeys as key}
 						{#if getOrderByKey(key)}
-							<th onclick={() => orderByChange(key)}>
+							<th onclick={() => handleOrderByChange(key)}>
 								<button class="hover:underline">
 									{getKeyDisplay(key)}
 									{#if orderByArray.find((orderBy) => orderBy.key === getOrderByKey(key))}

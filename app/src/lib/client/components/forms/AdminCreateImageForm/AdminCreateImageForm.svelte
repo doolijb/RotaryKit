@@ -1,41 +1,48 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { FormBase, TextInput, FileDropField, SelectField } from "$client/components"
 	import { ImageResolutions, ImageSizes, ImageStatus } from "$shared/constants"
 	import { AdminCreateImage as Form } from "$shared/validation/forms"
 
 
-	const form: Form = new Form()
+	const form = Form.init()
 
 
 	////
 	// PROPS
 	////
-	
 
 	interface Props {
-		data?: typeof form["Data"];
-		errors?: FormErrors;
-		disabled?: boolean;
-		canSubmit?: boolean;
+		// Props
+
+		// Bindables
+		data?: Form["Data"]
+		errors?: FormErrors
+		disabled?: boolean
+		canSubmit?: boolean
+
+		// Events
+		onsubmit?: (args: any) => Promise<void>
+		oncancel?: (args: any) => Promise<void>
 	}
 
 	let {
+		// Props
+
+		// Bindables
 		data = $bindable({
-		title: "",
-		image: [],
-		maxSize: ImageSizes.LARGE,
-		status: ImageStatus.PUBLISHED
-	}),
+			title: "",
+			image: [],
+			maxSize: ImageSizes.LARGE,
+			status: ImageStatus.PUBLISHED
+		}),
 		errors = $bindable({}),
 		disabled = $bindable(false),
 		canSubmit = $bindable(false),
 
 		// Events
 		onsubmit,
-		oncancel
-	}: Props = $props();
+		oncancel,
+	}: Props = $props()
 
 	////
 	// CALCULATED

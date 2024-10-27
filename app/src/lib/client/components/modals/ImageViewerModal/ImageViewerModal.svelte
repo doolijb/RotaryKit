@@ -18,7 +18,6 @@
 
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl transition-opacity duration-300 opacity-0';
 	const cImage = 'rounded-container-token overflow-hidden shadow-xl';
-    console.log($modalStore[0]?.image)
 
     let buttonVisible = $state(false);
 

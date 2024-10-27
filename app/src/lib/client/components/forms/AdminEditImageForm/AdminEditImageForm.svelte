@@ -2,7 +2,7 @@
 	import { FormBase, TextInput, SelectField } from "$client/components"
 	import { AdminEditImage as Form } from "$shared/validation/forms"
 
-	const form: Form = new Form()
+	const form = Form.init()
 
 	////
 	// PROPS

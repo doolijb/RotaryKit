@@ -1,82 +1,99 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from "$app/stores"
 	import { FormBase, MultiSelect } from "$client/components"
 	import { AdminEditAdminRolesToUser as Form } from "$shared/validation/forms"
+	import Icon from "@iconify/svelte"
 	import { onMount } from "svelte"
 
-	////
-	// PARENT EXPORTS
-	
-
-
-
-	////
-	// LOCAL EXPORTS
-	////
 
 	export const form = Form.init()
 
+
 	////
-	// CHILD EXPORTS
-	
+	// PROPS
+	////
 
 	interface Props {
-		////
-		adminRoles: SelectAdminRole[];
+		// Props
+		adminRoles: SelectAdminRole[]
 		result: SelectUser & {
-		toAdminRoles: (
-			SelectUsersToAdminRoles & { adminRole: SelectAdminRole }
-		)[]
-	};
-		data?: Form["Data"];
-		errors?: FormErrors;
-		////
-		disabled?: boolean;
-		canSubmit?: boolean;
+			toAdminRoles: (
+				SelectUsersToAdminRoles & { adminRole: SelectAdminRole }
+			)[]
+		}
+
+		// Bindables
+		data?: Form["Data"]
+		errors?: FormErrors
+		disabled?: boolean
+		canSubmit?: boolean
+
+		// Events
+		onsubmit: (e: Event) => Promise<void>
+		oncancel: (e: Event) => Promise<void>
 	}
 
 	let {
+		// Props
 		adminRoles,
 		result,
+
+		// Bindables
 		data = $bindable({ adminRoles: [] }),
 		errors = $bindable({}),
 		disabled = $bindable(false),
-		canSubmit = $bindable(false)
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel,
 	}: Props = $props();
+
+	////
+	// STATE
+	////
+
+	let isPopulated = $state(false)
 
 	////
 	// COMPUTED
 	////
 
-	let adminRoleOptions = $state([])
+	let adminRoleOptions: MultiSelectOption[]= $state([])
+	
+	////
+	// LIFECYCLE
+	////
 
-	onMount(() => {
-		adminRoleOptions = adminRoles.map((role) => ({
-			key: role.id,
-			label: role.name
-		}))
-		if (result) {
+	$effect.pre(() => {
+		if (!isPopulated && !!result) {
+			isPopulated = true
+
+			adminRoleOptions = adminRoles.map((role) => ({
+				key: role.id,
+				label: role.name
+			}))
+
+			if (data.adminRoles === undefined) {
+				data.adminRoles = []
+			}
+
 			Object.values(result.toAdminRoles).forEach(
 				({ adminRole }: { adminRole: SelectAdminRole }) => {
 					data.adminRoles.push(adminRole.id)
 				}
 			)
-		}
-		if (!data) {
+
 			form.validate({data}).then((result) => {
 				errors = result
 			})
+
+			if (!result.isAdmin) {
+				canSubmit = false
+				disabled = true
+			}
 		}
 	})
-
-	run(() => {
-		if (result && !result.isAdmin) {
-			canSubmit = false
-			disabled = true
-		}
-	});
 
 </script>
 
@@ -86,16 +103,16 @@
 	bind:data
 	bind:canSubmit
 	bind:disabled
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >
 	{#if result && $page.data.user.id === result.id}
-		<div class="card mb-3">
+		<div class="card mb-3 variant-filled-error">
 			<section class="p-4">
-				<p class="text-red-500">
-					<b>Warning:</b> You are editing your own admin roles.
+				<p>
+					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own admin roles.
 					This may result in you losing access to this page.
 				</p>
 			</section>
@@ -103,10 +120,10 @@
 	{/if}
 
 	{#if result && result.isAdmin && result.toAdminRoles.length === 0}
-		<div class="card mb-3">
+		<div class="card mb-3 variant-filled-error">
 			<section class="p-4">
-				<p class="text-red-500">
-					<b>Warning:</b> This user has no admin roles.
+				<p>
+					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user has no admin roles.
 					They will not be able to view or modify any data.
 				</p>
 			</section>
@@ -114,10 +131,10 @@
 	{/if}
 
 	{#if result && !result.isAdmin}
-		<div class="card mb-3">
+		<div class="card mb-3 variant-filled-error">
 			<section class="p-4">
-				<p class="text-red-500">
-					<b>Warning:</b> This user is not an admin.
+				<p>
+					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
 					Admin roles do not apply.
 				</p>
 			</section>
@@ -125,24 +142,34 @@
 	{/if}
 
 	{#if result && result.isSuperUser}
-		<div class="card mb-3">
+		<div class="card mb-3 variant-filled-error">
 			<section class="p-4">
-				<p class="text-red-500">
-					<b>Warning:</b> This user is a <u>super user</u>.
+				<p>
+					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is a <u>super user</u>.
 					All admin permissions are bypassed.
 				</p>
 			</section>
 		</div>
 	{/if}
 
+	{#if !adminRoleOptions.length}
+		<div class="card mb-3 variant-filled-warning">
+			<section class="p-4">
+				<p class="">
+					<Icon icon="mdi:info-outline" class="me-1 inline" height="1.5em" />
+					No admin roles have been created yet. <a href="/admin/adminRoles/create" class="link hover:underline">Click here to create one.</a>
+				</p>
+			</section>
+		</div>
+	{/if}
+
 	<MultiSelect
-		label="Admin Roles"
 		id="adminRoles"
 		field="adminRoles"
 		size={10}
 		{form}
-		{errors}
-		{data}
+		bind:errors
+		bind:data
 		options={adminRoleOptions}
 		disabled={disabled || !adminRoleOptions.length}
 	/>

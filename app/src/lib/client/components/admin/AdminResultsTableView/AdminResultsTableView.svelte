@@ -57,7 +57,7 @@
 	let pageLimitParam: number | undefined = parseInt($page.url.searchParams.get("pageLimit"))
 
 	// RESULTS
-	let response: undefined | void | Response & {
+	let response: Response & {
 		body: {
 			success: boolean,
 			results: Result<any>[],
@@ -155,6 +155,7 @@
 	////
 
 	async function onOrderByChange(value: string): Promise<void> {
+		console.log("onOrderByChange", value)
 		orderByParam = value
 		await loadResults()
 	}
@@ -169,18 +170,18 @@
 		await loadResults()
 	}
 
-	async function onView(event: CustomEvent<Result<any>>): Promise<void> {
-		const resourceId = getResourceId(event.detail)
+	async function onView(result: any): Promise<void> {
+		const resourceId = getResourceId(result)
 		goto(`/admin/${resource}/${resourceId}`)
 	}
 
-	async function onEdit(event: CustomEvent<Result<any>>): Promise<void> {
-		const resourceId = getResourceId(event.detail)
+	async function onEdit(result: any): Promise<void> {
+		const resourceId = getResourceId(result)
 		goto(`/admin/${resource}/${resourceId}/edit`)
 	}
 
-	async function onDelete(event: CustomEvent<Result<any>>): Promise<void> {
-		const resourceId = getResourceId(event.detail)
+	async function onDelete(result: any): Promise<void> {
+		const resourceId = getResourceId(result)
 		modalStore.trigger({
 			type: "confirm",
 			title: `Delete ${pluralize.plural(humanizeString(resource))}`,
@@ -283,10 +284,10 @@
 		{canViewResource}
 		{canEditResource}
 		{canDeleteResource}
-		on:orderByChange={(orderBy) => onOrderByChange(orderBy)}
-		on:viewResult={onView}
-		on:editResult={onEdit}
-		on:deleteResult={onDelete}
+		{onOrderByChange}
+		{onView}
+		{onEdit}
+		{onDelete}
 	/>
 	{#if response && response.body && response.body.results.length}
 		<AdminHeader>

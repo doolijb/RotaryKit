@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Main } from "$client/components"
 </script>
-  
 
   <Main>
     <h1 class="text-4xl font-bold mb-4">Welcome to Our Project</h1>

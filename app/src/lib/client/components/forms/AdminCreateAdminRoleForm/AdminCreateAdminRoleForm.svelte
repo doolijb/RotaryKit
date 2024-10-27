@@ -9,21 +9,35 @@
 	////
 
 	interface Props {
-		disabled?: boolean;
-		adminPermissions: SelectAdminPermission[];
-		data?: Form["Data"];
-		errors?: FormErrors;
-		canSubmit: boolean;
+		// Props
+
+		// Bindings
+		disabled?: boolean
+		adminPermissions: SelectAdminPermission[]
+		data?: Form["Data"]
+		errors?: FormErrors
+		canSubmit: boolean
+
+		// Events
+		onsubmit: (args?: any) => Promise<void>
+		oncancel: () => Promise<void>
 	}
 
 	let {
+		// Props
+
+		// Bindings
 		disabled = $bindable(false),		adminPermissions,
 		data = $bindable({ 
-		name: "",
-		adminPermissions: [] 
-	}),
+			name: "",
+			adminPermissions: [] 
+		}),
 		errors = $bindable({}),
-		canSubmit = $bindable()
+		canSubmit = $bindable(),
+
+		// Events
+		onsubmit,
+		oncancel
 	}: Props = $props();
 
 	////
@@ -42,13 +56,12 @@
 	bind:errors
 	bind:data
 	bind:canSubmit
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >
 	<TextInput
-		label="Name"
 		id="name"
 		field="name"
 		{form}
@@ -58,7 +71,6 @@
 	/>
 
 	<MultiSelect
-		label="Admin Permissions"
 		id="adminPermissions"
 		size={10}
 		field="adminPermissions"

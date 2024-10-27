@@ -8,11 +8,11 @@
     const dataHandlers = {
         toAdminPermissions: {
             header: "Permissions",
-            handler: (result) => result ? result.length : 0,
+            handler: (result: SelectAdminRolesToPermissions[]) => result ? result.length : 0,
         },
         toUsers: {
             header: "Users",
-            handler: (result) => result ? result.length : 0,
+            handler: (result: SelectUsersToAdminRoles[]) => result ? result.length : 0,
         }
     }
 </script>

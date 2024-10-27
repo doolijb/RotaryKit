@@ -3,32 +3,54 @@
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import { Toast } from "$client/utils"
 	import humanizeString from "humanize-string"
-	import moment from "moment"
+    import { getDisplayAndCopyText } from "$client/utils"
+    import type { Snippet } from "svelte"
+
+    const toastStore = getToastStore()
+
+    ////
+    // PROPS
+    ////
 
     interface Props {
+        // Props
         label: string;
-        value?: string | boolean | number;
+        value?: string | number | boolean | Date;
         copy?: string;
         humanizeLabel?: boolean;
-        children?: import('svelte').Snippet;
-        [key: string]: any
+
+        // Children
+        children?: Snippet<[any]>;
     }
 
     let {
+        // Props
         label,
         value = undefined,
         copy = undefined,
         humanizeLabel = true,
+
+        // Bindables
+
+        // Snippets
         children,
+
+        // Rest
         ...rest
     }: Props = $props();
 
-    const toastStore = getToastStore()
-    let copyText = copy ? copy : value
-    let focused = $state(false)
+    ////
+    // STATE
+    ////
 
-    let isUrl = $derived(value && typeof value === "string" && value.startsWith("http"))
-    let canCopy = $derived(!isUrl && typeof copyText === "string" && copyText.length > 0)
+    let displayText = $state()
+    let copyText = $state(undefined);
+    let focused = $state(false)
+    let type = $state("unknown")
+
+    ////
+    // FUNCTIONS
+    ////
 
     function copyToClipboard() {
         navigator.clipboard.writeText(copyText as string)
@@ -40,6 +62,26 @@
             toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
         }
     }
+    
+    ////
+    // CALCULATED
+    ////
+
+    let canCopy = $derived(copyText !== undefined)
+
+    ////
+    // LIFECYCLE
+    ////
+
+    if (value === undefined) {
+        displayText = "N/A"
+    } else {
+        let displayAndCopy = getDisplayAndCopyText(value)
+        displayText = displayAndCopy.displayText
+        copyText === undefined && (copyText = displayAndCopy.copyText)
+        type = displayAndCopy.type
+    }
+
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -64,7 +106,7 @@
         {@render children?.()}
     {:else}
         <p>
-            {#if isUrl}
+            {#if type === "url"}
                 <a href={`${value}`} target="_blank" rel="noopener noreferrer">
                     Link
                 </a>
@@ -72,16 +114,12 @@
                     icon="mdi:open-in-new"
                     class="inline ms-1 {!focused ? "invisible" : ""}"
                 />
-            {:else if typeof value === "boolean"}
+            {:else if type === "boolean"}
                 <Icon icon={value ? "mdi:check" : "mdi:close"} class="w-auto inline" />
                 {humanizeString(value.toString())}
                 <!-- Is it a date string? -->
-            {:else if value === undefined}
-                <span class="text-gray-400">N/A</span>
-            {:else if moment(value).isValid()}
-                {moment(value).format("lll")}
             {:else}
-                {value}
+                {displayText}
             {/if}
             {#if canCopy}
             <Icon

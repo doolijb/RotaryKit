@@ -22,7 +22,7 @@
 	const mutateResult = (result:Result) => {
 		const retResult = {
 			...result,
-			profileImage: {},
+			profileImage: {} as SelectImage,
 			permissions: 0,
 			adminRoles: [],
 			adminPermissions: [],
@@ -30,20 +30,19 @@
 
 		if (result.profileImages.length) {
 			retResult.profileImage = result.profileImages[0]
-			// Convert jpg bytes to MB
-			retResult.profileImage.jpgSize = byteSize(retResult.profileImage.smallJpgBytes).toString()
-			retResult.profileImage.webpSize = byteSize(retResult.profileImage.smallJpgBytes).toString()
-			delete retResult.profileImage.smallJpgBytes
-			delete retResult.profileImage.smallWebpBytes
 		}
 
 		Object.values(retResult.toAdminRoles).forEach(({ adminRole }) => {
 			retResult.permissions = adminRole.toAdminPermissions.length
             Object.values(adminRole.toAdminPermissions).forEach(
 				({ adminPermission }: { adminPermission: SelectAdminPermission }) => {
-					retResult.adminPermissions.push(adminPermission)
+					console.log(adminPermission)
+					if (!retResult.adminPermissions.includes(adminPermission)) {
+						retResult.adminPermissions.push(adminPermission)
+					}
 				}
 			)
+			delete adminRole.toAdminPermissions
             retResult.adminRoles.push(adminRole)
 		})
 

@@ -1,41 +1,60 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
 	import { FormBase, TextInput, MultiSelect } from "$client/components"
 	import { AdminEditAdminRole as Form } from "$shared/validation/forms"
+	import { onMount } from "svelte"
 	
 	////
 	// PROPS
 	////
 
 	interface Props {
-		disabled?: boolean;
+		// Props
 		result: SelectAdminRole & {
-		toAdminPermissions: (
-			SelectAdminRolesToPermissions & {
-				adminPermission: SelectAdminPermission
-			}
-		)[]
-	};
-		adminPermissions: SelectAdminPermission[];
-		form?: any;
-		data?: Form["Data"];
-		errors?: FormErrors;
-		canSubmit?: boolean;
-		populatedFormData?: boolean;
+			toAdminPermissions: (
+				SelectAdminRolesToPermissions & {
+					adminPermission: SelectAdminPermission
+				}
+			)[]
+		}
+		adminPermissions: SelectAdminPermission[]
+
+		// Bindables
+		disabled?: boolean
+		form?: any
+		data?: Form["Data"]
+		errors?: FormErrors
+		canSubmit?: boolean
+		populatedFormData?: boolean
+
+		// Events
+		onsubmit: (args?: any) => Promise<void>
+		oncancel: () => Promise<void>
 	}
 
 	let {
-		disabled = $bindable(false),		result,
+		// Props
+		result,
 		adminPermissions,
+
+		// Bindable
+		disabled = $bindable(false),		
 		form = $bindable(Form.init()),
 		data = $bindable({
-		name: "",
-		adminPermissions: []
-	}),
+			adminPermissions: []
+		} as Form["Data"]),
 		errors = $bindable({}),
-		canSubmit = $bindable(undefined),
-		populatedFormData = $bindable(undefined)
+		canSubmit = $bindable(false),
+
+		// Events
+		onsubmit,
+		oncancel,
 	}: Props = $props();
+
+	////
+	// STATE
+	////
+
+	let isPopulated = $state(false)
 
 	////
 	// CALCULATED
@@ -47,21 +66,22 @@
 	})))
 
 	////
-	// LIFE CYCLE
+	// LIFECYCLE
 	////
 
-	$effect(() => {
-		if (!populatedFormData && result) {
+	$effect.pre(() => {
+		if (!!result && !isPopulated) {
+			isPopulated = true
 			data.name = result.name
 			data.adminPermissions = result.toAdminPermissions.map(
 				(toAdminPermission) => toAdminPermission.adminPermission.id
 			)
-			populatedFormData = true
-			form.validate({data}).then((result) => {
+			form.validate({data}).then((result: FormErrors) => {
 				errors = result
 			})
 		}
-	});
+	})
+
 </script>
 
 <FormBase
@@ -75,17 +95,15 @@
 	showCancel={false}
 >
 	<TextInput
-		label="Name"
 		id="name"
 		field="name"
 		{form}
+		{disabled}
 		bind:data
 		bind:errors
-		disabled={disabled || !populatedFormData}
 	/>
 
 	<MultiSelect
-		label="Admin Permissions"
 		id="adminPermissions"
 		size={10}
 		field="adminPermissions"
@@ -93,6 +111,6 @@
 		bind:data
 		bind:errors
 		options={adminPermissionOptions}
-		disabled={disabled || !populatedFormData}
+		{disabled}
 	/>
 </FormBase>

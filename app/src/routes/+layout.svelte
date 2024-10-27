@@ -4,6 +4,8 @@
 	import { storePopup, initializeStores, Modal, Toast } from "@skeletonlabs/skeleton"
 	import {ImageViewerModal} from "$client/components"
 	import type { ModalComponent } from "@skeletonlabs/skeleton"
+	import { page } from "$app/stores"
+
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
@@ -16,13 +18,19 @@
 	const modalRegistry: Record<string, ModalComponent> = {
 		imageViewerModal: { ref: ImageViewerModal },
 	}
+
+	const siteName = "SvelteKit Template"
 </script>
 
 <svelte:head>
-	<title> - SvelteKit Template</title>
+	{#if $page.data.title}
+	<title>{$page.data.title} - {siteName}</title>
+	{:else}
+	<title>{siteName}</title>
+	{/if}
 </svelte:head>
+
+{@render children?.()}
 
 <Toast />
 <Modal components={modalRegistry} />
-
-{@render children?.()}

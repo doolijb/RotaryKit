@@ -1,61 +1,72 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from "$app/stores"
-	import { FormBase, TextInput, CheckboxInput, Autocomplete } from "$client/components"
+	import { FormBase, TextInput, CheckboxInput } from "$client/components"
 	import ModalSelectField from "$client/components/fields/ModalSelectField"
 	import { AdminCreateEmail as Form } from "$shared/validation/forms"
 	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
-	
+
+	const form = Form.init()
+
+	////
+	// Props
+	////
+
+	interface Props {
+		// Props
+
+		// Bindables
+		data?: typeof form["Data"];
+		errors?: FormErrors;
+		disabled?: boolean;
+		canSubmit?: boolean;
+		userSearchInput?: string;
+		getUserChoices?: any;
+
+		// Events
+		onsubmit: (args?: any) => Promise<void>;
+		oncancel: () => Promise<void>;
+		getUserOptions: ({searchString}) => Promise<any[]>;
+		mapUserOptions: (data: any[]) => AutocompleteOption[];
+	}
+
+	let {
+		// Props
+
+		// Bindables
+		data = $bindable({
+			address: "",
+			isVerified: false,
+			isUserPrimary: false,
+			userId: null,
+		}),
+		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+		userSearchInput = $bindable(""),
+
+		// Events
+		onsubmit,
+		oncancel,
+		getUserOptions,
+		mapUserOptions,
+	}: Props = $props();
+
+	////
+	// STATE
+	////
+
+	let ready = $state(false)
+
 	////
 	// CALCULATED
 	////
 
 	let canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || $page.data.user.isSuperUser
 
-	////
-	// LOCAL EXPORTS
-	////
-
-	const form: Form = new Form()
-
-	////
-	// DOWNSTREAM EXPORTS
-	
-
-	interface Props {
-		data?: typeof form["Data"];
-		errors?: FormErrors;
-		getUserOptions: ({searchString}) => Promise<any[]>;
-		mapUserOptions: (data: any[]) => AutocompleteOption[];
-		////
-		disabled?: boolean;
-		canSubmit?: boolean;
-		userChoices?: any;
-		userSearchInput?: string;
-		getUserChoices?: any;
-	}
-
-	let {
-		data = $bindable({
-		address: "",
-		isVerified: false,
-		isUserPrimary: false,
-		userId: null,
-	}),
-		errors = $bindable({}),
-		getUserOptions,
-		mapUserOptions,
-		disabled = $bindable(false),
-		canSubmit = $bindable(false),
-		userChoices = {} as PaginatedResponse<Partial<SelectUser>>,
-		userSearchInput = "",
-		getUserChoices = (e: any = null) => {}
-	}: Props = $props();
-
-	run(() => {
-		(userSearchInput: string) => {
-			getUserChoices(userSearchInput)
+	$effect.pre(() => {
+		if (!ready) {
+			getUserOptions({searchString: userSearchInput})
+			ready = true
 		}
 	});
 	
@@ -67,8 +78,8 @@
 	bind:errors
 	bind:canSubmit
 	bind:disabled
-	on:submit
-	on:cancel
+	{onsubmit}
+	{oncancel}
 	showSubmit={false}
 	showCancel={false}
 >

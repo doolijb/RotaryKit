@@ -1,4 +1,4 @@
-import { validateData } from "$server/requests"
+import { hasAdminPermission, validateData } from "$server/requests"
 import { db, schema } from "$server/database"
 import { and, eq, inArray } from "drizzle-orm"
 import type { RequestEvent } from "@sveltejs/kit"
@@ -28,12 +28,13 @@ interface Delete {
 }
 
 /**
- * Admin view for a list of users
+ * Admin view for a list of admin roles
  */
 export async function GET(event: KitEvent<Get, RequestEvent>) {
 	try {
-		// Check if user is authorized to view users
-		// TODO
+		
+		// Check permissions
+        hasAdminPermission(event, schema.adminRoles)
 
 		const columns: { [key: string]: boolean } = {
 			id: true,

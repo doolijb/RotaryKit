@@ -113,8 +113,6 @@
 	// CALCULATED
 	////
 
-	$effect.pre(() => console.log("canSubmit: ", tabs[currentTab].canSubmit))
-
 	$effect.pre(() => {
 		if (!openedTabs.includes(currentTab)) {
 			openedTabs.push(currentTab) 
@@ -215,8 +213,8 @@
 						bind:errors={tabs[tab].errors}
 						bind:canSubmit={tabs[tab].canSubmit}
 						bind:disabled={tabs[tab].disabled}
-						on:submit={onsubmit}
-						on:cancel={oncancel}
+						{onsubmit}
+						{oncancel}
 						{...tabs[tab].extras}
 						{result}
 					/>

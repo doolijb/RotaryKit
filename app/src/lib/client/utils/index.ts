@@ -4,6 +4,7 @@ import { Toast } from "./Toast"
 export * from "./Toast"
 export * from "./hasAdminPermission"
 export * from "./useFormData"
+export * from "./differentiateType"
 
 /**
  * Returns a function that automatically handles form errors (if formErrors is provided),

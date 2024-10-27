@@ -20,7 +20,9 @@
 				const nextPage: string = $page.url.searchParams.get("next") || "/"
 			})
 			.ClientError((r) => { 
-                errors = r.body.errors
+				if ("errors" in r.body) {
+					errors = r.body.errors
+				}
                 return handleClientError({ errors, toastStore})(r)
             })
 			.ServerError(handleServerError({ toastStore }))
@@ -51,7 +53,7 @@
 			</div>
 		{:else}
 		<div class="card border-0 p-4 mb-4">
-			<RecoverPassphraseByEmailForm on:submit={onsubmit} bind:data bind:errors />
+			<RecoverPassphraseByEmailForm {onsubmit} bind:data bind:errors />
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">

@@ -5,25 +5,44 @@
     import { AdminEditUserPassphrase as Form } from "$shared/validation/forms"
     import Icon from "@iconify/svelte"
     import { getToastStore } from "@skeletonlabs/skeleton"
+	import type { on } from "events"
+
+    ////
+    // PROSP
+    ////
 
     interface Props {
-        disabled: boolean;
-        canSubmit: boolean;
-        result: SelectUser;
-        form?: any;
-        data?: Form["Data"];
-        errors?: FormErrors;
+        // Props
+        result: SelectUser
+
+        // Bindables
+        disabled: boolean
+        canSubmit: boolean
+        form: Form
+        data: Form["Data"]
+        errors: FormErrors
+
+        // Events
+        onsubmit: (e: Event) => Promise<void>
+        oncancel: (e: Event) => Promise<void>
     }
 
     let {
-        disabled,
-        canSubmit = $bindable(),
+        // Props
         result,
+
+        // Bindables
+        disabled = $bindable(false),
+        canSubmit = $bindable(false),
         form = $bindable(Form.init()),
         data = $bindable({
-        passphrase: "",
-    }),
-        errors = $bindable({})
+            passphrase: "",
+        }),
+        errors = $bindable({}),
+
+        // Events
+        onsubmit,
+        oncancel,
     }: Props = $props();
 
     const toastStore = getToastStore()
@@ -75,13 +94,14 @@
 </script>
 
 {#if result && $page.data.user.id === result.id}
-	<div class="card mb-3">
-		<section class="p-4">
-			<p class="text-red-500">
-				<b>Warning:</b> You are editing your own passphrase.
-			</p>
-		</section>
-	</div>
+    <div class="card mb-3 variant-filled-error">
+        <section class="p-4">
+            <p>
+                <Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
+                Admin roles do not apply.
+            </p>
+        </section>
+    </div>
 {/if}
 
 <FormBase
@@ -89,8 +109,8 @@
     bind:errors
     bind:data
     bind:canSubmit
-    on:submit
-    on:cancel
+    {onsubmit}
+    {oncancel}
     showSubmit={false}
     showCancel={false}
 >
@@ -114,7 +134,7 @@
             <button
                 type="button"
                 onclick={copyPassphrase}
-				disabled={!data.passphrase || Object.keys(errors).length > 0}
+				disabled={!data.passphrase && !!Object.keys(errors).length}
                 class="btn variant-filled-surface">
                 <Icon icon="mdi:clipboard" class="me-2" />
                 Copy Passphrase

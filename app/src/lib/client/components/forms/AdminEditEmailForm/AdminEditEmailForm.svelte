@@ -6,58 +6,66 @@
 	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
 	import { onMount } from "svelte"
 
-	////
-	// COMPUTED
-	////
-	let isLoaded = $state(false)
-	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
-	let canEditUsers = $derived($page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers)
+	const form = Form.init()
 
 	////
-	// PARENT EXPORTS
-	
-
-
+	// PROPS
 	////
-	// LOCAL EXPORTS
-	
-	
-
-	////
-	// CHILD EXPORTS
-	
 
 	interface Props {
-		////
-		result: SelectEmail & { user: SelectUser | undefined };
-		////
-		form: FormSchema;
-		data: typeof form["Data"];
-		errors?: FormErrors;
-		getUserOptions: ({searchString}) => Promise<any[]>;
-		mapUserOptions: (data: any[]) => AutocompleteOption[];
-		////
-		disabled?: boolean;
-		canSubmit?: boolean;
+		// Props
+		result: SelectEmail & { user?: SelectUser };
+
+		// Bindings
+		disabled?: boolean
+		canSubmit?: boolean
+		form: FormSchema
+		data: Form["Data"]
+		errors?: FormErrors
+
+		// Events
+		getUserOptions: ({searchString}) => Promise<any[]>
+		mapUserOptions: (data: any[]) => AutocompleteOption[]
+		onsubmit: (args: any) => Promise<void>
+		oncancel: () => Promise<void>
 	}
 
 	let {
+		// Props
 		result,
-		form = $bindable(),
-		data = $bindable({} as FormDataOf<any>),
+
+		// Bindings
+		data = $bindable({} as Form["Data"]),
 		errors = $bindable({}),
+		disabled = $bindable(false),
+		canSubmit = $bindable(false),
+
+		// Events
 		getUserOptions,
 		mapUserOptions,
-		disabled = undefined,
-		canSubmit = $bindable(undefined)
+		onsubmit,
+		oncancel,
 	}: Props = $props();
+
+	/////
+	// STATE
+	////
+
+	let isLoaded = $state(false)
+
+	////
+	// COMPUTED
+	////
+	
+	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
+	let canEditUsers = $derived($page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers)
 
 	////
 	// LIFECYCLE
 	////
 
 	onMount(() => {
-		form = Form.init()
+
 		data = {
 			address: "",
 			isVerified: false,
@@ -75,8 +83,8 @@
 		bind:errors
 		bind:data
 		bind:canSubmit
-		on:submit
-		on:cancel
+		{onsubmit}
+		{oncancel}
 		showSubmit={false}
 		showCancel={false}
 	>

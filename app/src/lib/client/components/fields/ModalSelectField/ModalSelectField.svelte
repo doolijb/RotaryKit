@@ -3,92 +3,86 @@
 
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { ValidStates } from "$shared/constants"
-	import { createEventDispatcher, onMount } from "svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { PopupSettings, AutocompleteOption, ModalSettings, ModalComponent, ModalStore } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import ModalSelectFieldModal from './ModalSelectFieldModal.svelte'
+	import type { Snippet } from "svelte"
+	import humanizeString from 'humanize-string'
 
-	const dispatch = createEventDispatcher()
+
 	const modalStore = getModalStore()
-
-	////
-	// PARENT EXPORTS
 	
 
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-
 	////
-	// LOCAL EXPORTS
-	
+	// PROPS
+	////
 
 	interface Props {
-		////
-		field: string;
-		form: FormSchema;
-		data: typeof form["Data"];
-		errors: FormErrors;
-		mapOptions: (data: any[]) => AutocompleteOption;
-		getOptions: ({searchString}) => Promise<any[]>;
-		result?: any;
-		////
-		ref?: HTMLInputElement;
-		placeholder?: any;
-		label?: string;
-		disabled?: boolean;
-		id?: string;
-		isTouched?: boolean;
-		prefix?: import('svelte').Snippet;
-		suffix?: import('svelte').Snippet;
+		// Props
+		field: string
+		form: FormSchema
+		id?: string
+		result?: any
+		placeholder?: string
+		label?: string
+
+		// Bindings
+		data: FormDataOf<any>
+		errors: FormErrors
+		mapOptions: (data: any[]) => AutocompleteOption[]
+		getOptions: ({searchString}) => Promise<any[]>
+		disabled: boolean
+
+		// Events
+		onblur?: (e: Event) => void
+		oninput?: (e: Event) => void
+
+		// Children
+		prefixSnippet?: Snippet
+		suffixSnippet?: Snippet
 	}
 
 	let {
+		// Props
 		field,
 		form,
+		id = v4(),
+		result,
+		placeholder,
+		label,
+
+		// Bindings
 		data = $bindable({} as FormDataOf<any>),
 		errors = $bindable({}),
 		mapOptions,
 		getOptions,
-		result = undefined,
-		ref = undefined,
-		placeholder = attrs?.placeholder,
-		label = attrs?.label,
-		disabled = $bindable(false),		id = v4(),
-		isTouched = $bindable(false),
-		prefix,
-		suffix
+		disabled = $bindable(false),		
+
+		// Events
+		onblur,
+		oninput,
+
+		// Children
+		prefixSnippet,
+		suffixSnippet,
 	}: Props = $props();
-
-	////
-	// CALCULATED
-	////
-
-	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
-	let validatorLength = $state(0);
-	
-	run(() => {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
-	});
-	// $: required = fieldValidator.isRequired
-	let validState = $derived(isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE)
-	let selectedOption = $state(undefined)
-	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
 
 	////
 	// CONSTANTS
 	////
 
 	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+
+	////
+	// STATE
+	////
+
+	let selectedOption = $state(undefined)
+	let validatorLength = $state(0)
+	let isTouched = $state(false)
 
 	////
 	// FUNCTIONS
@@ -100,7 +94,7 @@
 
 	async function touch() {
 		isTouched = true
-		validate()
+		await validate()
 	}
 
 	async function openModal() {
@@ -129,29 +123,53 @@
 		modalStore.trigger(modal)
 	}
 
-	function clearSelection() {
+	async function clearSelection() {
 		data[field] = undefined
 		selectedOption = undefined
-		touch()
+		await touch()
+	}
+
+	async function handleOnBlur(e: Event) {
+		await touch()
+		await onblur?.(e)
+	}
+
+	async function handleOnInput(e: Event) {
+		await touch()
+		await oninput?.(e)
 	}
 
 	////
-	// EVENTS
+	// CALCULATED
 	////
 
-	function handleOnBlur(e: Event) {
-		touch()
-		dispatch("blur", e)
-	}
+	let attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
+	let fieldValidator = $derived(form.fields[field])
+	let fieldErrors = $derived(errors[field] || {})
+	let validState = $derived(isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE)
+	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
 
-	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
-	}
+	$effect.pre(() => {
+		validatorLength = Object.values(fieldValidator.validators).filter(
+			validator => !validator.isHidden
+		).length
+	})
 
-	function handleOnInput(e: Event) {
-		touch()
-		dispatch("input", e)
-	}
+	$effect.pre(() => {
+		if (!label) {
+			if (attrs?.label) {
+				label = attrs.label
+			} else {
+				label = humanizeString(field)
+			}
+		}
+	})
 
 	////
 	// LIFECYCLE
@@ -186,18 +204,18 @@
     </div>
 
     <div class="flex items-center">
-		<div class="input-group flex">
-			{#if prefix}
+		<button class="input-group flex cursor-pointer text-left px-1" title="Select" onclick={openModal} type="button">
+			{#if prefixSnippet}
 				<div class="align-middle m-0 px-0">
-					{@render prefix?.()}
+					{@render prefixSnippet()}
 				</div>
 			{/if}
 			<span class="m-2 border-0 disabled:cursor-not-allowed flex-grow" class:text-surface-400={!data[field] || disabled} aria-label={label}>
 				{displayValue || placeholder || "\u00A0"}
 			</span>
-			{#if suffix}
+			{#if suffixSnippet}
 				<div class="align-middle m-0 px-0 me-2">
-					{@render suffix?.()}
+					{@render suffixSnippet()}
 				</div>
 			{/if}
 			{#if !disabled && validatorLength}
@@ -205,7 +223,7 @@
 					<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
 				</div>
 			{/if}
-		</div>
+		</button>
 		<div class="flex">
 			<button type="button" class="btn variant-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
 				Select

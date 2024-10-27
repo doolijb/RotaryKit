@@ -8,8 +8,8 @@
     let { children } = $props();
 </script>
 
-<div class="flex justify-center pt-5 px-2 mx-auto min-h-screen bg-surface-50">
-    <div class="w-[60rem]">
+<div class="flex justify-center pt-5 px-2 mx-auto">
+    <div class="w-[80rem]">
         {@render children?.()}
     </div>
 </div>

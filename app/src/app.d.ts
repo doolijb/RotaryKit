@@ -255,6 +255,7 @@ declare global {
         code: CodeFileTypeExtensions,
     }
 
+    type MultiSelectOption = { [key: string]: string | number, label: string }
 }
 
 export {};

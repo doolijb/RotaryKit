@@ -12,5 +12,7 @@ export async function load({ locals }) {
     //     redirect(302, "/");
     // }
 
-    return {}
+    return {
+        VERSION: process.env.npm_package_version,
+    }
 }

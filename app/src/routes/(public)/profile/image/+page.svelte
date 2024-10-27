@@ -121,7 +121,7 @@
 						<button 
 							class="btn variant-filled-error"
 							onclick={onDelete}
-							disabled={!!profileImage}
+							disabled={!profileImage}
 						>
 						<Icon icon="bi:trash" class="mr-2" />
 							Delete

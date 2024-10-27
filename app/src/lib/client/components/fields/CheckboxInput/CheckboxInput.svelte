@@ -20,9 +20,9 @@
 		disabled: boolean
 		data: Record<string, any>
 		errors: Record<string, any>
-		ref: HTMLInputElement | null
-		id: string
-		isTouched: boolean
+		ref?: HTMLInputElement | null
+		id?: string
+		isTouched?: boolean
 
 		// Events
 		onblur?: () => void

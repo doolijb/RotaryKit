@@ -1,6 +1,5 @@
 <script>
 	import { SiteFooter, SiteNavigation } from "$client/components"
-	import { AppShell } from "@skeletonlabs/skeleton"
 	/**
 	 * @typedef {Object} Props
 	 * @property {import('svelte').Snippet} [children]
@@ -10,16 +9,18 @@
 	let { children } = $props();
 </script>
 
-<AppShell class="bg-gradient">
-	{#snippet header()}
-	
-			<SiteNavigation />
-		
-	{/snippet}
-	<div class="min-h-screen">
-		{@render children?.()}
-	</div>
-	{#snippet pageFooter()}
-		<SiteFooter />
-	{/snippet}
-</AppShell>
+<div class="flex flex-col min-h-screen">
+
+    <header>
+        <SiteNavigation />
+    </header>
+
+    <main class="flex-grow flex justify-center pt-5 px-2 mx-auto">
+        {@render children?.()}
+    </main>
+
+    <footer>
+        <SiteFooter />
+    </footer>
+    
+</div>

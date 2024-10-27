@@ -1,42 +1,104 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
     import { clipboard, getToastStore } from "@skeletonlabs/skeleton"
-    import { Toast } from "$client/utils"
-	import moment from "moment"
+    import { getDisplayAndCopyText, Toast } from "$client/utils"
+    import type { Snippet } from "svelte"
+
+    const toastStore = getToastStore()
+
+    type ValueType = "unknown" | "uuid" | "number" | "date" | "url" | "boolean"
+
+    ////
+    // PROPS
+    ////
 
     interface Props {
-        text: string;
-        copy?: string;
+        // Props
+        text: string
+        copy?: string
         url?: string;
-        children?: import('svelte').Snippet<[any]>;
+
+        // Children
+        children?: Snippet<[any]>;
     }
 
     let {
         text,
-        copy = $bindable(undefined),
-        url = undefined,
+        copy,
+        url,
+        
+        // Children,
         children
     }: Props = $props();
-    let displayText = $state(text)
 
-    const toastStore = getToastStore()
+    ////
+    // STATE
+    ////
 
-    let copyText = $derived(!url && copy ? copy : text)
-    let title = $derived(copyText ? "Click to copy" : undefined)
+    let displayText = $state()
+    let focused = $state(false)
+    let copyText = $state(undefined)
+    let type = $state("unknown")
 
-    /**
-     * Check if text is a UUID value and truncate it,
-     * Or if it is a date value and format it.
-     */
-    if (text.length === 36 && text[8] === "-" && text[13] === "-" && text[18] === "-" && text[23] === "-") {
-            displayText = text.slice(0, 8)
-    } else if (moment(text).isValid()) {
-        const date = new Date(text)
-        displayText = moment(date).format("lll")
-        !copy && (copy = displayText)
+    ////
+    // FUNCTIONS
+    ////
+
+    function isNumber(value: number | string): boolean {
+        if (typeof value === 'number') {
+            return !isNaN(value) && isFinite(value);
+        } else if (typeof value === 'string') {
+            return !isNaN(parseFloat(value)) && isFinite(parseFloat(value));
+        }
+        return false;
     }
 
-    let focused = $state(false)
+    function isDate(value: string): boolean {
+        // Regular expression to match common date formats including ISO 8601
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$|^\d{2}\/\d{2}\/\d{4}$|^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+        return dateRegex.test(value);
+    }
+
+    function isUUID(value: string): boolean {
+        return value.length === 36 && value[8] === "-" && value[13] === "-" && value[18] === "-" && value[23] === "-";
+    }
+
+    function differentiate(value: number | string | boolean): ValueType {
+        if (typeof value === 'boolean') {
+            return 'boolean'
+        } else if (typeof value === 'string' && value.startsWith("http")) {
+            return 'url';
+        } else if (typeof value === 'string' && isUUID(value)) {
+            return 'uuid';
+        } else if (typeof value === 'string' && isDate(value)) {
+            return 'date';
+        } else if (isNumber(value)) {
+            return 'number';
+        } else {
+            return 'unknown';
+        }
+    }
+
+    ////
+    // CALCULATED
+    ////
+
+    let title = $derived(copyText ? "Click to copy" : undefined)
+    let canCopy = $derived(copyText !== undefined)
+
+    ////
+    // LIFECYCLE
+    ////
+
+    if (text === undefined) {
+        displayText = "N/A"
+    } else {
+        let displayAndCopy = getDisplayAndCopyText(text)
+        displayText = displayAndCopy.displayText
+        copyText === undefined && (copyText = displayAndCopy.copyText)
+        type = displayAndCopy.type
+    }
+
 </script>
 
 <!-- svelte-ignore missing_declaration -->
@@ -79,7 +141,7 @@
         use:clipboard={copyText}
         onclick={() => {
             url && window.open(url)
-            !url && copyText && toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
+            !url && canCopy && toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
         }}
         onfocus={() => (focused = true)}
         onfocusout={() => (focused = false)}
@@ -91,7 +153,7 @@
                 <span>
                     {displayText}
                 </span>
-                {#if copyText}
+                {#if canCopy}
                     <span>
                         <Icon
                             icon="mdi:content-copy"
