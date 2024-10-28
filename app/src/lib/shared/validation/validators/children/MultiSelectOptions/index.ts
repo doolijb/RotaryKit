@@ -11,7 +11,15 @@ export class MultiSelectOptions extends Validator{
     key = "multiSelectOptions"
     message = `Only valid options may be selected`
     test = async ({key, data}) => {
-        const values: unknown = data[key]
-        return !!Object.values(values).find((val) => !Object.values(this.args.options).includes(val))
+        const values: unknown[] = data[key]
+
+        // If value is null/undefined, return true
+        if (values === null || values === undefined || values.length === 0) {
+            return true
+        }
+
+        const violators = values.filter((val) => !Object.values(this.args.options).includes(val))
+
+        return violators.length === 0
     }
 }

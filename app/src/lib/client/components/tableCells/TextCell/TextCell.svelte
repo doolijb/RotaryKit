@@ -86,22 +86,20 @@
     let title = $derived(copyText ? "Click to copy" : undefined)
     let canCopy = $derived(copyText !== undefined)
 
-    ////
-    // LIFECYCLE
-    ////
 
-    if (text === undefined) {
-        displayText = "N/A"
-    } else {
-        let displayAndCopy = getDisplayAndCopyText(text)
-        displayText = displayAndCopy.displayText
-        copyText === undefined && (copyText = displayAndCopy.copyText)
-        type = displayAndCopy.type
-    }
+    $effect.pre(() => {if (text === undefined) {
+            displayText = "N/A"
+        } else {
+            let displayAndCopy = getDisplayAndCopyText(text)
+            displayText = displayAndCopy.displayText
+            copyText === undefined && (copyText = displayAndCopy.copyText)
+            type = displayAndCopy.type
+        }
+    })
 
 </script>
 
-<!-- svelte-ignore missing_declaration -->
+
 {#if !text}
     <td></td>
 {:else if !!url}

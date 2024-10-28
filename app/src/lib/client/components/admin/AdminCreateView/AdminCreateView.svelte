@@ -59,7 +59,7 @@
 		}
 	}
 
-	async function onsubmit(e?: Event) {
+	async function onsubmit() {
 		let body: Record<string, any> | FormData
 
 		switch(requestBodyType) {

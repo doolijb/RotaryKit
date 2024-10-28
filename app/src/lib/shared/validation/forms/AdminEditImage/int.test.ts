@@ -1,31 +1,32 @@
 import { expect, test } from "vitest"
-import { UserLogin } from "."
+import { AdminEditImage } from "."
+import { ImageStatus } from "$shared/constants"
 
-const form = UserLogin.init()
+const form = AdminEditImage.init()
 
-test("UserLogin form test: passes", async () => {
-    const data: FormDataOf<UserLogin> = {
-        email: "test@example.com",
-        passphrase: "pass",
+test("AdminEditImage form test: passes", async () => {
+    const data: FormDataOf<AdminEditImage> = {
+        title: "Sample Image",
+        status: ImageStatus.PUBLISHED,
     }
-    const result = await form.validate({data})
+    const result = await form.validate({ data })
     expect(result).toEqual({})
 })
 
-test("UserLogin form test: fails when email is less than 3 characters", async () => {
+test("AdminEditImage form test: fails when title exceeds max length", async () => {
     const data = {
-        email: "us", // email is invalid format
-        passphrase: "pass",
+        title: "A".repeat(256), // Title exceeds max length of 255
+        status: ImageStatus.UNPUBLISHED,
     }
-    const result = await form.validate({data})
-    expect(result).toHaveProperty("email")
+    const result = await form.validate({ data })
+    expect(result).toHaveProperty("title")
 })
 
-test("UserLogin form test: fails when passphrase is less than 3 characters", async () => {
+test("AdminEditImage form test: fails when status is invalid", async () => {
     const data = {
-        email: "test@example.com",
-        passphrase: "pa", // passphrase is less than 3 characters
+        title: "Sample Image",
+        status: "invalid_status", // Invalid status not in ImageStatus.options
     }
-    const result = await form.validate({data})
-    expect(result).toHaveProperty("passphrase")
-})  
+    const result = await form.validate({ data })
+    expect(result).toHaveProperty("status")
+})

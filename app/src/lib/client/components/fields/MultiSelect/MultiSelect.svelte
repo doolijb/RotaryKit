@@ -102,7 +102,6 @@
 	// CALCULATED
 	////
 
-	let ready = $derived(data[field] !== undefined)
 	let attrs = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
 	let fieldErrors = $derived(errors[field] || {})
@@ -111,10 +110,8 @@
 	let canAdd = $derived(!!selectedAvailable.length)
 
 	$effect.pre(() => {
-		// Make sure the field is initialized
 		if (data[field] === undefined) {
 			data[field] = []
-			console.log("Initialized field", field)
 		}
 		if (data[field].length) touch()
 	})
@@ -130,87 +127,86 @@
 	})
 
 </script>
-{#if ready}
-	<div class="mb-2">
-		<div class="flex items-center">
-			<label class="label inline-flex pb-2" for={id}>
-				<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-					{label}
+
+<div class="mb-2">
+	<div class="flex items-center">
+		<label class="label inline-flex pb-2" for={id}>
+			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
+				{label}
+			</span>
+		</label>
+		{#if !disabled}
+			<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
+		{/if}
+	</div>
+	<!-- Side by side select, with arrows to add, remove from left to right -->
+	<div class="sm:flex sm:flex-col md:grid md:grid-cols-5 gap-4">
+		<div class="flex flex-col col-span-2">
+			<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
+				{#each Object.values(options) as {key, label}}
+					{#if !Object.values(data[field]).includes(key)}
+						<option value={key}>{label}</option>
+					{/if}
+				{/each}
+			</select>
+			<span class="text-surface-300 text-sm">
+				Available options: {Object.keys(options).length - Object.values(data[field]).length}
 				</span>
-			</label>
-			{#if !disabled}
-				<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
-			{/if}
 		</div>
-		<!-- Side by side select, with arrows to add, remove from left to right -->
-		<div class="sm:flex sm:flex-col md:grid md:grid-cols-5 gap-4">
-			<div class="flex flex-col col-span-2">
-				<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
-					{#each Object.values(options) as {key, label}}
-						{#if !Object.values(data[field]).includes(key)}
-							<option value={key}>{label}</option>
-						{/if}
-					{/each}
-				</select>
-				<span class="text-surface-300 text-sm">
-					Available options: {Object.keys(options).length - Object.values(data[field]).length}
-					</span>
-			</div>
 
-			<div class="flex flex-col w-auto">
-				<div class="flex flex-col items-center justify-center h-full">
-					<button
-						type="button"
-						class="btn btn-primary btn-sm mb-2"
-						onclick={handleAdd}
-						disabled={!canAdd || disabled}
-						title={canAdd ? "Add selected options" : "First select an option to add"}
-					>
-						<Icon icon="akar-icons:arrow-down" class="md:hidden w-4 h-4" />
-						<span class="mx-2">
-							Add
-						</span>
-						<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
-					</button>
-					<button
-						type="button"
-						class="btn btn-primary btn-sm mb-3"
-						onclick={handleRemove}
-						disabled={!canRemove || disabled}
-						title={canRemove ? "Remove selected options" : "First select an option to remove"}
-					>
-						<Icon icon="akar-icons:arrow-up" class="md:hidden w-4 h-4" />
-						<Icon icon="akar-icons:arrow-left" class="hidden md:inline-block w-4 h-4" />
-						<span class="mx-2">
-							Remove
-						</span>
-					</button>
-				</div>
-			</div>
-
-			<div class="flex flex-col col-span-2">
-				<select
-					{id}
-					class="select h-full border-success-500"
-					multiple
-					bind:value={selectedValues}
-					{size}
-					bind:this={ref}
-					{disabled}
-					oninput={handleOnInput}
-					onblur={handleOnBlur}
-					{onfocus}
-					aria-label={label}
-					{required}
+		<div class="flex flex-col w-auto">
+			<div class="flex flex-col items-center justify-center h-full">
+				<button
+					type="button"
+					class="btn btn-primary btn-sm mb-2"
+					onclick={handleAdd}
+					disabled={!canAdd || disabled}
+					title={canAdd ? "Add selected options" : "First select an option to add"}
 				>
-					{#each Object.values(options) as {key, label}}
-						{#if Object.values(data[field]).includes(key)}
-							<option value={key}>{label}</option>
-						{/if}
-					{/each}
-				</select>
-				<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
+					<Icon icon="akar-icons:arrow-down" class="md:hidden w-4 h-4" />
+					<span class="mx-2">
+						Add
+					</span>
+					<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
+				</button>
+				<button
+					type="button"
+					class="btn btn-primary btn-sm mb-3"
+					onclick={handleRemove}
+					disabled={!canRemove || disabled}
+					title={canRemove ? "Remove selected options" : "First select an option to remove"}
+				>
+					<Icon icon="akar-icons:arrow-up" class="md:hidden w-4 h-4" />
+					<Icon icon="akar-icons:arrow-left" class="hidden md:inline-block w-4 h-4" />
+					<span class="mx-2">
+						Remove
+					</span>
+				</button>
 			</div>
+		</div>
+
+		<div class="flex flex-col col-span-2">
+			<select
+				{id}
+				class="select h-full border-success-500"
+				multiple
+				bind:value={selectedValues}
+				{size}
+				bind:this={ref}
+				{disabled}
+				oninput={handleOnInput}
+				onblur={handleOnBlur}
+				{onfocus}
+				aria-label={label}
+				{required}
+			>
+				{#each Object.values(options) as {key, label}}
+					{#if Object.values(data[field]).includes(key)}
+						<option value={key}>{label}</option>
+					{/if}
+				{/each}
+			</select>
+			<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
 		</div>
 	</div>
-{/if}
+</div>

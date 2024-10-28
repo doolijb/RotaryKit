@@ -14,13 +14,16 @@
 
     interface Props {
         // Props
-        label: string;
-        value?: string | number | boolean | Date;
-        copy?: string;
-        humanizeLabel?: boolean;
+        label: string
+        value?: string | number | boolean | Date
+        copy?: string
+        humanizeLabel?: boolean
 
         // Children
-        children?: Snippet<[any]>;
+        children?: Snippet
+
+        // Rest
+        [key: string]: any
     }
 
     let {
@@ -73,22 +76,24 @@
     // LIFECYCLE
     ////
 
-    if (value === undefined) {
-        displayText = "N/A"
-    } else {
-        let displayAndCopy = getDisplayAndCopyText(value)
-        displayText = displayAndCopy.displayText
-        copyText === undefined && (copyText = displayAndCopy.copyText)
-        type = displayAndCopy.type
-    }
+    $effect.pre(() => {
+        if (value === undefined) {
+            displayText = "N/A"
+        } else {
+            let displayAndCopy = getDisplayAndCopyText(value)
+            displayText = displayAndCopy.displayText
+            if (copyText === undefined) {
+                copyText = displayAndCopy.copyText
+            }
+            type = displayAndCopy.type
+        }
+    })
 
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore missing_declaration -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
+
 <div 
-    class="flex flex-col select-none {rest.class || ''}"
+    class="flex flex-col select-none {rest.class ? rest.class : ""}"
     class:cursor-pointer={canCopy}
     onclick={onClick}
     onfocus={() => (focused = true)}
@@ -96,6 +101,9 @@
     onmouseover={() => (focused = true)}
     onmouseleave={() => (focused = false)}
     title={canCopy ? "Click to copy" : undefined}
+    role="button"
+    tabindex="0"
+    {...rest}
 >
     <!-- svelte-ignore a11y_label_has_associated_control -->
     <label class="text-sm text-gray-500">

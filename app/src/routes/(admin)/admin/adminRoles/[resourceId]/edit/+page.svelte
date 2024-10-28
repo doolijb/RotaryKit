@@ -7,7 +7,7 @@
     const resourceApi = api.admin.adminRoles as unknown as ResourceApi
     const resourceId = $page.params.resourceId
     const naturalKey = "name"
-    const tabs = {
+    const tabs = $state({
         default: {
             FormComponent: AdminEditAdminRoleForm,
             getExtras: async () => ({
@@ -15,7 +15,7 @@
             }),
             onsubmit: ({data}) => api.admin.adminRoles.resourceId$(resourceId).PUT({body: data}),
         }
-    }
+    })
 
     async function getAdminPermissions() {
         let adminPermissions

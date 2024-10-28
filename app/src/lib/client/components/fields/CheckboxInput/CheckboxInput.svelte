@@ -141,10 +141,3 @@
         {/if}
     </div>
 </div>
-
-<style lang="postcss">
-    .input:focus-visible {
-        outline: none;
-        border: none;
-    }
-</style>

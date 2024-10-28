@@ -13,7 +13,7 @@ for (const theme of themeMap.values()) {
 }
 
 const preview: Preview = {
-	parameters: {
+    parameters: {
 		controls: {
 			matchers: {
 				color: /(background|color)$/i,
@@ -35,7 +35,8 @@ const preview: Preview = {
 			},
 		}
 	},
-	decorators: [
+
+    decorators: [
 		(args, story) => { 
 			if (!story.parameters?.skipThemeProvider) {
 				return {
@@ -52,7 +53,8 @@ const preview: Preview = {
 			}
 		}
 	],
-	globalTypes: {
+
+    globalTypes: {
 		theme: {
 			// Skeleton theme switcher
 			name: "Theme",
@@ -78,7 +80,9 @@ const preview: Preview = {
 				showName: true
 			}
 		}
-	}
+	},
+
+    tags: ["autodocs"]
 }
 
 export default preview

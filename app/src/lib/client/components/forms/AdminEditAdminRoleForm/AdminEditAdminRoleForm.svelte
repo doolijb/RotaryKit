@@ -82,6 +82,9 @@
 		}
 	})
 
+	$inspect(data)
+
+
 </script>
 
 <FormBase

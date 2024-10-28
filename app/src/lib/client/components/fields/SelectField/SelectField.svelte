@@ -165,10 +165,3 @@
 		{/if}
 	</select>
 </div>
-
-<style lang="postcss">
-	.input-group div.px-0 {
-		padding-left: 0 !important;
-		padding-right: 0 !important;
-	}
-</style>

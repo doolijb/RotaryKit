@@ -161,7 +161,7 @@
 
 <div>
 	
-	<form use:submitOnEnter use:autofocus {onsubmit} class="mb-4">
+	<form use:submitOnEnter use:autofocus onsubmit={handleOnSubmit} class="mb-4">
 		{@render children()}
 	</form>
 

@@ -2,10 +2,7 @@
 	import { page } from "$app/stores"
 	import { faker } from "@faker-js/faker"
 	import Icon from "@iconify/svelte"
-	import moment from "moment"
 	import Chart from "@edde746/svelte-apexcharts"
-	import { onMount } from "svelte"
-	import { browser } from "$app/environment"
 </script>
 
 
@@ -105,7 +102,7 @@
 			<!-- Use faker -->
 			{#each Array(5) as _}
 				<tr>
-					<td>{moment(faker.date.recent()).toLocaleString()}</td>
+					<td>faker.date.recent().toLocaleString()</td>
 					<td>{faker.internet.userName()}</td>
 					<td>{faker.lorem.sentence()}</td>
 				</tr>
@@ -133,7 +130,7 @@
 			<!-- Use faker -->
 			{#each Array(5) as _}
 				<tr>
-					<td>{moment(faker.date.recent()).toLocaleString()}</td>
+					<td>faker.date.recent().toLocaleString()</td>
 					<td>{faker.lorem.word()}</td>
 					<td>{faker.lorem.word()}</td>
 					<td>{faker.internet.userName()}</td>

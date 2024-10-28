@@ -25,7 +25,7 @@
         })
     }
 
-    const tabs: AdminEditResultViewTabs = {
+    const tabs = $state({
         default: {
             FormComponent: AdminEditEmailForm,
             onsubmit: ({ data }: { data: FormDataOf<f.AdminEditEmail> }) => {
@@ -36,7 +36,7 @@
                 mapUserOptions,
             }
         },
-    }
+    })
 </script>
 
 <AdminEditResultView

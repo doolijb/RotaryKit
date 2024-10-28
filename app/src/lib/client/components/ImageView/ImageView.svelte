@@ -11,6 +11,9 @@
         result: SelectImage
         alt?: string | undefined
         size?: typeof ImageSizes.SMALL | typeof ImageSizes.MEDIUM | typeof ImageSizes.LARGE | typeof ImageSizes.ORIGINAL
+
+        // Rest
+        [key: string]: any
     }
 
     let {

@@ -31,7 +31,7 @@
 	<!-- Button -->
     <button class="btn-icon variant-filled {cButton} {buttonVisible ? 'opacity-100' : 'opacity-0'}" onclick={parent.onClose}>×</button>
 	<!-- Image -->
-	<ImageView result={$modalStore[0].meta.result} class="{cImage}" size={$modalStore[0].meta.size} />
+	<ImageView result={$modalStore[0].meta.result} class={cImage} size={$modalStore[0].meta.size} />
 {/if}
 
 <style>

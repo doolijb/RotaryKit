@@ -2,10 +2,9 @@ import type { Meta, StoryObj, Args } from "@storybook/svelte"
 
 import ImageView from "."
 import { faker } from "@faker-js/faker";
-import type { ComponentType } from "svelte";
  
 const meta: Meta<typeof ImageView> = {
-  component: Image as any,
+  component: Image,
   parameters: {
     sveltekit_experimental: {
 			stores: {

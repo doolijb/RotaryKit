@@ -94,8 +94,10 @@
 		}
 	}
 
-	async function onsubmit(e?: Event) {
-		tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
+	async function onsubmit() {
+		const initialDisabled = tabs[currentTab].disabled
+		tabs[currentTab].disabled = true
+		await tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
 			.Success(async () => {
 				toastStore.trigger(
 					new Toast({
@@ -107,6 +109,7 @@
 			})
 			.ClientError(handleClientError({ toastStore}))
 			.ServerError(handleServerError({ toastStore }))
+		tabs[currentTab].disabled = initialDisabled
 	}
 
 	////
@@ -132,12 +135,12 @@
 
 </script>
 
-{#snippet updateButton(canSubmit)}
+{#snippet updateButton(tab: {canSubmit: boolean, disabled: boolean})}
 	<button
 	type="button"
 	class="btn variant-filled-success capitalize"
 	onclick={onsubmit}
-	disabled={canSubmit}
+	disabled={!tab.canSubmit || tab.disabled}
 	>
 	<Icon icon="mdi:floppy" class="mr-2" />
 	Update {currentTab !== "default"
@@ -160,7 +163,7 @@
 				<Icon icon="bx:detail" class="mr-2" />
 				View
 			</a>
-			{@render updateButton(!tabs[currentTab].canSubmit)}
+			{@render updateButton(tabs[currentTab])}
 		</div>
 	{/snippet}
 </AdminHeader>
@@ -231,7 +234,7 @@
 				<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 				Cancel
 			</button>
-			{@render updateButton(!tabs[currentTab].canSubmit)}
+			{@render updateButton(tabs[currentTab])}
 		</div>
 	{/snippet}
 </AdminHeader>

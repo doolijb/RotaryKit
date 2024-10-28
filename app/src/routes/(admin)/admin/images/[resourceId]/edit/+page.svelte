@@ -8,12 +8,12 @@
     const naturalKey = "title"
     const resourceApi = api.admin.images as ResourceApi
 
-    const tabs = {
+    const tabs = $state({
         default: {
             FormComponent: AdminEditImageForm,
             onsubmit: ({data}) => api.admin.images.resourceId$(resourceId).PUT({body: data}),
         }
-    }
+    })
 </script>
 
 <AdminEditResultView
