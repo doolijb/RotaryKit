@@ -1,10 +1,10 @@
-import { pgTable, uniqueIndex, varchar, uuid, timestamp, text } from "drizzle-orm/pg-core"
+import { pgTable, uniqueIndex, varchar, uuid, timestamp, text, type PgTableWithColumns } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { users } from "./users"
 
 
-export const userTokens = pgTable("user_tokens", {
+export const userTokens: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("user_tokens", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     userId: uuid("user_id").references(() => users.id, { onDelete: 'set null' }),
     token: text("token").notNull(),
@@ -13,6 +13,8 @@ export const userTokens = pgTable("user_tokens", {
     browser: varchar("browser", { length: 256 }).notNull(),
     os: varchar("os", { length: 256 }).notNull(),
 })
+
+userTokens.usePermissions = false
 
 export const usersTokenRelations = relations(userTokens, ({ many, one }) => ({
     user: one(users, {

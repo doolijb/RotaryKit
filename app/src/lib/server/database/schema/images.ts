@@ -1,9 +1,8 @@
-import { pgTable, varchar, uuid, timestamp, bigint } from "drizzle-orm/pg-core"
+import { pgTable, varchar, uuid, timestamp, bigint, type PgTableWithColumns } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { users } from "./users"
-import { ImageStatus } from "$shared/constants"
 
-export const images = pgTable("images", {
+export const images: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("images", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     title: varchar("title", { length: 256 }).notNull(),
     totalBytes: bigint("total_bytes", { mode: 'number' }).notNull(), // Consider changing to numeric if applicable
@@ -27,6 +26,8 @@ export const images = pgTable("images", {
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     status: varchar("status", { length: 256 }).notNull()
 })
+
+images.usePermissions = true
 
 export const imageRelations = relations(images, ({ one: One }) => ({
 

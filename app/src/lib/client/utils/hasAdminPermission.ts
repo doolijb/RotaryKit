@@ -13,7 +13,7 @@ export function hasAdminPermission({
     action,
     resources,
 }:{
-    user: SelectUser,
+    user: SelectUser & { emails?: Partial<SelectEmail>[], toAdminRoles?: Partial<SelectUsersToAdminRoles>[], profileImages?: Partial<SelectImage>[], images?: Partial<SelectImage>[] },
     adminPermissions: SelectAdminPermission[],
     action: PermissionAction,
     resources: string[],

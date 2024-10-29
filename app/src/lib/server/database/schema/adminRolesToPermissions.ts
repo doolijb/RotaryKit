@@ -6,7 +6,7 @@ import { adminRoles } from "./adminRoles"
 /**
  * Staff role permissions are a way to group permissions together.
  */
-export const adminRolesToPermissions = pgTable("admin_roles_to_permissions", {
+export const adminRolesToPermissions: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("admin_roles_to_permissions", {
     adminPermissionId: uuid("admin_permission_id").notNull().references(() => adminPermissions.id, { onDelete: 'cascade' }),
     adminRoleId: uuid("admin_role_id").notNull().references(() => adminRoles.id, { onDelete: 'cascade' }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -14,6 +14,8 @@ export const adminRolesToPermissions = pgTable("admin_roles_to_permissions", {
 }, (t) => ({
     pk: primaryKey({columns:[t.adminPermissionId, t.adminRoleId]}),
 }))
+
+adminRolesToPermissions.usePermissions = false
 
 export const adminRolesToPermissionRelations = relations(adminRolesToPermissions, ({ one: One }) => ({
         adminPermission: One(adminPermissions, {

@@ -1,9 +1,9 @@
-import { pgTable, uniqueIndex, varchar, uuid, timestamp, unique, boolean } from "drizzle-orm/pg-core"
+import { pgTable, uniqueIndex, varchar, uuid, timestamp, unique, boolean, type PgTableWithColumns } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { users } from "./users"
 
-export const emails = pgTable("emails", {
+export const emails: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("emails", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     address: varchar("email", { length: 256 }).notNull(),
     verifiedAt: timestamp("verified_at"),
@@ -15,6 +15,8 @@ export const emails = pgTable("emails", {
     unqAddress: unique().on(t.address),
     unqUserPrimary: uniqueIndex("unique_user_primary").on(t.userId, t.isUserPrimary).where(sql`${t.isUserPrimary} = true AND ${t.userId} IS NOT NULL`),
 }))
+
+emails.usePermissions = true
 
 export const emailRelations = relations(emails, ({ one: One }) => ({
     user: One(users, {

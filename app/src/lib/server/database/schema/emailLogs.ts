@@ -1,9 +1,9 @@
-import { pgTable, varchar, uuid, timestamp, boolean, json, text } from "drizzle-orm/pg-core"
+import { pgTable, varchar, uuid, timestamp, boolean, json, text, type PgTableWithColumns } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { emails } from "./emails"
 import { users } from "./users"
 
-export const emailLogs = pgTable("email_logs", {
+export const emailLogs: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("email_logs", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -16,3 +16,5 @@ export const emailLogs = pgTable("email_logs", {
     parameters: json("parameters").notNull(),
     html: text("html").notNull(),
 })
+
+emailLogs.usePermissions = true

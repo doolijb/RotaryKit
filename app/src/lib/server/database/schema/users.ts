@@ -1,4 +1,4 @@
-import { pgTable, uniqueIndex, varchar, uuid, timestamp, boolean } from "drizzle-orm/pg-core"
+import { pgTable, uniqueIndex, varchar, uuid, timestamp, boolean, type PgTableWithColumns } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { userTokens } from "./userTokens"
@@ -7,7 +7,7 @@ import { passphrases } from "./passphrases"
 import { emails } from "./emails"
 import { images } from "./images"
 
-export const users = pgTable("users", {
+export const users: PgTableWithColumns<any> & {usePermissions?: boolean} = pgTable("users", {
     id: uuid("id").primaryKey().default(sql`(gen_random_uuid ())`),
     username: varchar("username", { length: 256 }).notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -22,6 +22,8 @@ export const users = pgTable("users", {
     }
 })
 
+users.usePermissions = true
+
 export const userRelations = relations(users, ({ many, one }) => ({
     // One
     passphrase: one(passphrases,{
@@ -31,8 +33,11 @@ export const userRelations = relations(users, ({ many, one }) => ({
 
     // Many
     emails: many(emails),
+
     toAdminRoles: many(usersToAdminRoles),
+
     userTokens: many(userTokens),
+
     uploadedImages: many(images, {
         relationName: "uploadedImageUser",
     }),

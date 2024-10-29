@@ -1,14 +1,17 @@
 <script lang="ts">
-	import { page } from "$app/stores"
-	import { faker } from "@faker-js/faker"
-	import Icon from "@iconify/svelte"
-	import Chart from "@edde746/svelte-apexcharts"
+	// import { page } from "$app/stores"
+	// import { faker } from "@faker-js/faker"
+	// import Icon from "@iconify/svelte"
+	// import Chart from "@edde746/svelte-apexcharts"
+
+	import AdminDashboardContainer from "$client/components/admin/AdminDashboard/AdminDashboardContainer";
 </script>
 
+<AdminDashboardContainer />
 
 
 <!-- Fancy message of the day block -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+<!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
 	<div class="card p-4">
 		<span class="h3">
 			Welcome back, {$page.data.user.username}
@@ -87,7 +90,6 @@
 	</div>
 </div>
 
-<!-- Fancy admin log placeholder -->
 <div class="card p-4 mb-5">
 	<span class="h3"> Admin Log </span>
 	<table class="table mt-4">
@@ -99,7 +101,6 @@
 			</tr>
 		</thead>
 		<tbody>
-			<!-- Use faker -->
 			{#each Array(5) as _}
 				<tr>
 					<td>faker.date.recent().toLocaleString()</td>
@@ -111,7 +112,6 @@
 	</table>
 </div>
 
-<!-- Open tickets placeholder -->
 <div class="card p-4 mb-5">
 	<span class="h3"> Open Tickets </span>
 	<table class="table mt-4">
@@ -127,7 +127,6 @@
 			</tr>
 		</thead>
 		<tbody>
-			<!-- Use faker -->
 			{#each Array(5) as _}
 				<tr>
 					<td>faker.date.recent().toLocaleString()</td>
@@ -141,4 +140,4 @@
 			{/each}
 		</tbody>
 	</table>
-</div>
+</div> -->

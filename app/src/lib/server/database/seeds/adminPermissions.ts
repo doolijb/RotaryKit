@@ -29,7 +29,7 @@ export default async function adminPermissions(tx = db): Promise<void> {
   const existingPermissions = await tx.query.adminPermissions.findMany();
   const insertPermissions: InsertAdminPermission[] = [];
 
-  for (const [key, value] of Object.entries(schema)) {
+  for (const [key, value] of Object.entries(schema).filter(([key, value]) => value.usePermissions)) {
     try {
       const tableConfig = getTableConfig(value);
 

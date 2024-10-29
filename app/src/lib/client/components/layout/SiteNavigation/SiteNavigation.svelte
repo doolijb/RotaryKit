@@ -49,7 +49,7 @@
 	<div class="flex items-center flex-shrink-0 mr-6">
 		<a href="/" class="font-semibold text-xl tracking-tight mr-5">
 			{#if $page.url.pathname.includes("/admin")}
-				<Icon icon="clarity:dashboard-solid" class="mr-2 inline-block" />
+				<Icon icon="mdi:shield" class="mr-2 inline-block" />
 				Admin Dashboard
 			{:else}
 				<Icon icon="teenyicons:svelte-solid" class="mr-2 inline-block" />
