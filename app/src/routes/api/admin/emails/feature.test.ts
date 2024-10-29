@@ -1,8 +1,7 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "$shared/testing"
+import { fetch, basicUser, superUser, loginUser } from "$shared/testing"
 import { db } from "$server/database"
 import { test, expect } from "vitest"
-import data from "./data.server"
-data // silence unused warning, we need this to watch the file
+import api from "$shared/api"
 
 
 test("admin emails GET: passes", async () => {
@@ -23,7 +22,7 @@ test("admin emails GET: passes", async () => {
     /**
      * Send request
      */
-    const response = await axios.get(apiRoute(__dirname), {
+    const response = await api.admin.emails.GET({
         headers: {
             cookie
         }
@@ -56,10 +55,12 @@ test("admin emails GET: passes with pageLimit", async () => {
     /**
      * Send request
      */
-    const query = "?pageLimit=1"
-    const response = await axios.get(apiRoute(__dirname) + query, {
+    const response = await api.admin.emails.GET({
         headers: {
             cookie
+        },
+        query: {
+            pageLimit: 1
         }
     })
 
@@ -88,11 +89,11 @@ test("admin emails GET: fails for basic user", async () => {
     /**
      * Send request
      */
-    const response = await axios.get(apiRoute(__dirname), {
+    const response = await api.admin.emails.GET({
         headers: {
             cookie
         }
-    }).catch(e => e.response)
+    })
 
     /**
      * Check the response

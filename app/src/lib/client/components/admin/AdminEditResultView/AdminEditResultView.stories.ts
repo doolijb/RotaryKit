@@ -1,10 +1,8 @@
 import Component from "."
 import { faker } from "@faker-js/faker"
 import type { Meta } from "@storybook/svelte"
-import type { RequestEvent } from "@sveltejs/kit"
-import { AdminCreateUserForm, AdminEditUserForm } from "$client/components"
+import { AdminEditUserForm } from "$client/components"
 import AdminEditAdminRolesToUserForm from "../../forms/AdminEditAdminRolesToUserForm"
-import axios from "axios"
 import { format } from "date-fns"
 
 const meta: Meta<typeof Component> = {

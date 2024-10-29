@@ -1,7 +1,9 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "$shared/testing"
+import { fetch, basicUser, superUser, loginUser } from "$shared/testing"
 import { db, schema } from "$server/database"
-import { test, expect, vi } from "vitest"
+import { test, expect, vi } from "@playwright/test"
 import { eq } from "drizzle-orm"
+import api from "$shared/api"
+
 
 test("admin users GET: passes", async () => {
 	/**
@@ -24,13 +26,11 @@ test("admin users GET: passes", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await axios
-		.get(apiRoute(__dirname, {"[resourceId]": userId}), {
-			headers: {
-				cookie
-			}
-		})
-		.catch((e) => e.response)
+	const response = await api.admin.users.resourceId$(userId).GET({
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	/**
 	 * Check the response
@@ -59,13 +59,11 @@ test("admin users GET: fails for basic user", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await axios
-		.get(apiRoute(__dirname, {"[resourceId]": userId}), {
-			headers: {
-				cookie
-			}
-		})
-		.catch((e) => e.response)
+	const response = await api.admin.users.resourceId$(userId).GET({
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	/**
 	 * Check the response
@@ -102,11 +100,7 @@ test("admin users PUT: passes", async () => {
 		isActive: false
 	}
 
-	const response = await axios.put(apiRoute(__dirname, {"[resourceId]": userId}), data, {
-		headers: {
-			cookie
-		}
-	})
+	const response = await api.admin.users.resourceId$(userId).PUT({body: data, headers: {cookie}}, fetch)
 
 	expect(response.status).toBe(200)
 	expect(response.data.success).toBe(true)
@@ -144,11 +138,7 @@ test("admin users PUT: fails for basic user", async () => {
 		isActive: false
 	}
 
-	const response = await axios.put(apiRoute(__dirname, {"[resourceId]": userId}), data, {
-		headers: {
-			cookie
-		}
-	}).catch(e => e.response)
+	const response = await api.admin.users.resourceId$(userId).PUT({body: data, headers: {cookie}}, fetch)
 
 	expect(response.status).toBe(403)
 })
@@ -173,7 +163,7 @@ test("admin users DELETE: passes", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await axios.delete(apiRoute(__dirname, {"[resourceId]": userId}))
+	const response = await api.admin.users.resourceId$(userId).DELETE({headers: {cookie}}, fetch)
 
 	expect(response.status).toBe(200)
 	expect(response.data.success).toBe(true)

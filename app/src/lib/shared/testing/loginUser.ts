@@ -1,21 +1,24 @@
-import { users } from "$server/providers"
-import { axios } from "$shared/testing"
+import { fetch } from "$shared/testing"
+import api from "$shared/api"
 
 export default async function loginUser({
-    username,
+    email,
     passphrase,
 }: {
-    username: string,
+    email: string,
     passphrase: string,
 }): Promise<string> {
     
     /**
      * Login
      */
-    const response = await axios.post("/api/login", {
-        username,
-        passphrase,
-    })
+    const response = await api.login.POST({
+        body: {
+            email,
+            passphrase,
+        }
+    }, fetch)
+
 
     /**
      * Get the cookies

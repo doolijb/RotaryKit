@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test"
-import { axios, clearDB, basicUser } from "$shared/testing"
+import { fecth, clearDB, basicUser } from "$shared/testing"
 import type { UserRegister } from "$shared/validation/forms"
 import { db } from "$server/database"
+import api from "$shared/api"
 
 test("API Register POST: 201 with good credentials", async ({ page }) => {
     await clearDB()
@@ -14,10 +15,7 @@ test("API Register POST: 201 with good credentials", async ({ page }) => {
     }
 
     // Make the API call in the Node.js context
-    const response = await axios.post("/api/register", data).catch( e => {
-        console.log("error", e.response.data)
-        return e.response
-    })
+    const response = await api.register.POST({body: data}, fetch)
 
     // Check the status code and body
     expect(response.status).toBe(201)
@@ -43,7 +41,7 @@ test("API Register POST: 400 with undefined required fields", async () => {
      */
     const data = {}
 
-    const response = await axios.post("/api/register", data).catch(e => e.response)
+    const response = await api.register.POST({body: data as any}, fetch)
 
     /**
      * Check the response
@@ -75,7 +73,7 @@ test("API Register POST: 400 for existing user", async () => {
         passphraseConfirm: basicUser.data.passphrase,
     }
 
-    let response = await axios.post("/api/register", data).catch(e => e.response)
+    let response = await api.register.POST({body: data}, fetch)
 
     /**
      * Check the response
@@ -87,10 +85,7 @@ test("API Register POST: 400 for existing user", async () => {
     /**
      * Try to register again with the same email
      */
-    response = await axios.post("/api/register", {
-        ...data,
-        username: "jack2"
-    }).catch(e => e.response)
+    response = await api.register.POST({body: data}, fetch)
 
     /**
      * Check the response

@@ -26,7 +26,7 @@
     ////
 
     onMount(async () => {
-        api.admin.dashboard.newUsers.GET().Ok(({ body }) => {
+        api.admin.dashboard.newUsers.GET({}).Ok(({ body }) => {
             users = body.results
             loading = false
         })
@@ -36,7 +36,7 @@
 </script>
 <div class="flex-grow max-h-full min-h-full variant-soft bg-transparent">
     <h4 class="h4 mb-2">New Users</h4>
-
+    
     {#if loading}
         <Loading />
     {:else}

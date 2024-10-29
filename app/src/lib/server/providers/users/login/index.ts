@@ -20,7 +20,7 @@ export async function login({
 }: {
     tx?: typeof db,
     event: RequestEvent,
-    username: string,
+    userId: string,
     passphrase: string,
 }): Promise<SelectUser | void> {
     /**

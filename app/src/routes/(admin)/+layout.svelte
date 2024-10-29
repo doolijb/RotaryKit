@@ -130,7 +130,7 @@
     <footer>
         <div  class="variant-soft-surface p-4 flex justify-center gap-4">
 			<p class="text-center opacity-75 inline">
-				Application Version: Pre-Alpha
+				Version {$page.data.APP_VERSION}
 			</p>
 			<span class="opacity-75">|</span>
 			<a href="/admin/help" class="opacity-75 hover:opacity-100">

@@ -13,6 +13,6 @@ export async function load({ locals }) {
     // }
 
     return {
-        VERSION: process.env.npm_package_version,
+        APP_VERSION: process.env.npm_package_version,
     }
 }

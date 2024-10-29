@@ -103,11 +103,14 @@ export async function authenticate({
 	// VALIDATE TOKEN
 	////
 
+	const browser = userAgent.browser.name || "Unknown"
+	const os = userAgent.os.name || "Unknown"
+
 	if (validate) {
 		if (
 			userToken.token !== token ||
-			userToken.browser !== userAgent.browser.name ||
-			userToken.os !== userAgent.os.name
+			userToken.browser !== browser ||
+			userToken.os !== os 
 		) {
 			// If failure, expire the token and delete it from the client
 			await tx

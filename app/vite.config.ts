@@ -33,8 +33,11 @@ const config = {
 		}
 	},
 	resolve: {
-		alias: aliasConfig
+		// alias: aliasConfig
 	  },
+	kit: {
+		alias: aliasConfig
+	}
 } satisfies UserConfigExport
 
 export default defineConfig(config)

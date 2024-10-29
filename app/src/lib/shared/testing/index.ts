@@ -5,11 +5,11 @@
 import { client } from "$server/database"
 
 // export { default as deepCompare } from "./deepCompare"
-export * from "./axios"
+export * from "./fetch"
 export * from "./basicUser"
 export * as superUser from "./superUser"
 // export { default as queryInbox } from "./queryInbox"
-// export { default as loginUser } from "./loginUser"
+export { default as loginUser } from "./loginUser"
 // export * from "./RequestEvent"
 
 export async function clearDB() {

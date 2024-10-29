@@ -1,8 +1,7 @@
-import { axios, apiRoute, basicUser, superUser, loginUser } from "$shared/testing"
+import { fetch, basicUser, superUser, loginUser } from "$shared/testing"
 import { db } from "$server/database"
-import { test, expect, vi } from "vitest"
-import data from "./data.server"
-data // silence unused warning, we need this to watch the file
+import { test, expect } from "@playwright/test"
+import api from "$shared/api"
 
 test("admin users GET: passes", async () => {
 	/**
@@ -21,18 +20,18 @@ test("admin users GET: passes", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await axios.get(apiRoute(__dirname), {
-		headers: {
-			cookie
-		}
-	})
+	const response = await api.admin.users.GET({
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	/**
 	 * Check the response
 	 */
 	expect(response.status).toBe(200)
-	expect(response.data.success).toBe(true)
-	expect(response.data.results.length).toBe(2)
+	expect(response.body.success).toBe(true)
+	expect(response.body.results.length).toBe(2)
 })
 
 test("admin users GET: passes with pageLimit", async () => {
@@ -52,19 +51,21 @@ test("admin users GET: passes with pageLimit", async () => {
 	/**
 	 * Send request
 	 */
-	const query = "?pageLimit=1"
-	const response = await axios.get(apiRoute(__dirname) + query, {
-		headers: {
-			cookie
-		}
-	})
+	const response = await api.admin.users.GET({
+        query: {
+            pageLimit: 1
+        },
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	/**
 	 * Check the response
 	 */
 	expect(response.status).toBe(200)
-	expect(response.data.success).toBe(true)
-	expect(response.data.results.length).toBe(1)
+	expect(response.body.success).toBe(true)
+	expect(response.body.results.length).toBe(1)
 })
 
 test("admin users GET: fails for basic user", async () => {
@@ -83,13 +84,11 @@ test("admin users GET: fails for basic user", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await axios
-		.get(apiRoute(__dirname), {
-			headers: {
-				cookie
-			}
-		})
-		.catch((e) => e.response)
+	const response = await api.admin.users.GET({
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	/**
 	 * Check the response
@@ -112,19 +111,20 @@ test("admin users POST: passes", async () => {
 		username: "jacksparrow"
 	}
 
-	const response = await axios.post(apiRoute(__dirname), data, {
-		headers: {
-			cookie
-		}
-	})
+	const response = await api.admin.users.POST({
+        body: data,
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	expect(response.status).toBe(201)
-	expect(response.data.success).toBe(true)
-	expect(response.data.result.username).toBe(data.username)
-    expect(response.data.result.isAdmin).toBe(false)
-    expect(response.data.result.isSuperUser).toBe(false)
-    expect(response.data.result.verifiedAt).toBe(null)
-    expect(response.data.result.emails.length).toBe(0)
+	expect(response.body.success).toBe(true)
+	expect(response.body.result.username).toBe(data.username)
+    expect(response.body.result.isAdmin).toBe(false)
+    expect(response.body.result.isSuperUser).toBe(false)
+    expect(response.body.result.verifiedAt).toBe(null)
+    expect(response.body.result.emails.length).toBe(0)
 })
 
 test("admin users POST: passes with all data", async () => {
@@ -146,22 +146,23 @@ test("admin users POST: passes with all data", async () => {
         isSuperUser: true,
 	}
 
-	const response = await axios.post(apiRoute(__dirname), data, {
-		headers: {
-			cookie
-		}
-	})
+	const response = await api.admin.users.POST({
+        body: data,
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	expect(response.status).toBe(201)
-	expect(response.data.success).toBe(true)
-	expect(response.data.result.username).toBe(data.username)
-    expect(response.data.result.isAdmin).toBe(true)
-    expect(response.data.result.isSuperUser).toBe(true)
-    expect(response.data.result.verifiedAt).not.toBe(null)
-    expect(response.data.result.emails.length).toBe(1)
-    expect(response.data.result.emails[0].address).toBe(data.email)
-    expect(response.data.result.emails[0].verifiedAt).not.toBe(null)
-    expect(response.data.result.emails[0].isUserPrimary).toBe(true)
+	expect(response.body.success).toBe(true)
+	expect(response.body.result.username).toBe(data.username)
+    expect(response.body.result.isAdmin).toBe(true)
+    expect(response.body.result.isSuperUser).toBe(true)
+    expect(response.body.result.verifiedAt).not.toBe(null)
+    expect(response.body.result.emails.length).toBe(1)
+    expect(response.body.result.emails[0].address).toBe(data.email)
+    expect(response.body.result.emails[0].verifiedAt).not.toBe(null)
+    expect(response.body.result.emails[0].isUserPrimary).toBe(true)
 })
 
 test("admin users POST: username is required", async() => {
@@ -178,11 +179,12 @@ test("admin users POST: username is required", async() => {
 	const data = {
 	}
 
-	const response = await axios.post(apiRoute(__dirname), data, {
-		headers: {
-			cookie
-		}
-	}).catch(e => e.response)
+	const response = await api.admin.users.POST({
+        body: data,
+        headers: {
+            cookie
+        }
+    }, fetch)
 
 	expect(response.status).toBe(400)
 })

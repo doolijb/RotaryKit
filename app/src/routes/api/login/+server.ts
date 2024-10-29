@@ -1,12 +1,11 @@
 import { users } from "$server/providers"
-import { db, schema } from "$server/database"
+import { db } from "$server/database"
 import { UserLogin as PostForm } from "$shared/validation/forms"
 import { validateData } from "$server/requests"
 import { BadRequest, InternalServerError, Forbidden, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
-import { eq, and, is } from "drizzle-orm"
 
 const postForm = PostForm.init()
 
@@ -19,6 +18,8 @@ type Post = {
  */
 export async function POST (event: KitEvent<Post, RequestEvent>) {
 	try {
+
+		console.log(event.cookies)
 
 		/**
 		 * Check if user is already logged in
@@ -35,7 +36,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		 * Login
 		 */
 		let authUser: SelectUser | void
-		const email = await db.query.emails.findFirst({
+		const email = await db.query.emails.findFirst({ 
 			where: (e, {eq, and}) => and(
 				eq(e.address, data.email),
 				eq(e.isUserPrimary, true),
