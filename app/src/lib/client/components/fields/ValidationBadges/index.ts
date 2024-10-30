@@ -1,1 +1,1 @@
-export {default} from "./ValidationBadges.svelte"
+export { default } from "./ValidationBadges.svelte"

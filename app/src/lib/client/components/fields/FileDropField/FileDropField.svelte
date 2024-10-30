@@ -238,16 +238,16 @@
 	let fieldErrors = $derived(errors[field] || {})
 	let validatorLength = $state(0);
 	
-	let fileTypesValidator = $derived(!!fieldValidator
+	let fileTypesValidator = $derived(fieldValidator
 		? fieldValidator.validators.find((validator) => validator.key === "fileTypes")
 		: undefined)
-	let fileSizesValidator = $derived(!!fieldValidator
+	let fileSizesValidator = $derived(fieldValidator
 		? fieldValidator.validators.find((validator) => validator.key === "fileSizes")
 		: undefined)
-	let maxFileCountValidator = $derived(!!fieldValidator
+	let maxFileCountValidator = $derived(fieldValidator
 		? fieldValidator.validators.find((validator) => validator.key === "maxFileCount")
 		: undefined)
-	let allowMultiSelect = $derived(!!maxFileCountValidator
+	let allowMultiSelect = $derived(maxFileCountValidator
 		? (maxFileCountValidator.args["maxCount"] || 1) > 1
 		: true)
 	let hasFileRelatedErrors = $derived(!!Object.keys(fieldErrors).find((key) => key !== "required") || false)

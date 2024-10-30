@@ -13,7 +13,7 @@ export { default as loginUser } from "./loginUser"
 // export * from "./RequestEvent"
 
 export async function clearDB() {
-    await client.query(`
+	await client.query(`
         DO $$ DECLARE
             r RECORD;
         BEGIN

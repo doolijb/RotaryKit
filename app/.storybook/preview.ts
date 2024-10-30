@@ -1,7 +1,7 @@
 import type { Preview } from "@storybook/svelte"
 import { ThemeProvider, themeMap } from "../src/lib/client/themes"
 import { EmptyDecorator } from "../src/lib/client/components/_decorators"
-import { SvelteComponent } from "svelte";
+import { SvelteComponent } from "svelte"
 
 const themes = new Array<{ value: string; title: string }>()
 // loop over theme values
@@ -13,7 +13,7 @@ for (const theme of themeMap.values()) {
 }
 
 const preview: Preview = {
-    parameters: {
+	parameters: {
 		controls: {
 			matchers: {
 				color: /(background|color)$/i,
@@ -31,13 +31,13 @@ const preview: Preview = {
 				},
 				navigating: null,
 				session: null,
-				updated: false,
-			},
+				updated: false
+			}
 		}
 	},
 
-    decorators: [
-		(args, story) => { 
+	decorators: [
+		(args, story) => {
 			if (!story.parameters?.skipThemeProvider) {
 				return {
 					Component: ThemeProvider,
@@ -54,7 +54,7 @@ const preview: Preview = {
 		}
 	],
 
-    globalTypes: {
+	globalTypes: {
 		theme: {
 			// Skeleton theme switcher
 			name: "Theme",
@@ -82,7 +82,7 @@ const preview: Preview = {
 		}
 	},
 
-    tags: ["autodocs"]
+	tags: ["autodocs"]
 }
 
 export default preview

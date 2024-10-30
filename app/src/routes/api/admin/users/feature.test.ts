@@ -20,11 +20,14 @@ test("admin users GET: passes", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await api.admin.users.GET({
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.GET(
+		{
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	/**
 	 * Check the response
@@ -51,14 +54,17 @@ test("admin users GET: passes with pageLimit", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await api.admin.users.GET({
-        query: {
-            pageLimit: 1
-        },
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.GET(
+		{
+			query: {
+				pageLimit: 1
+			},
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	/**
 	 * Check the response
@@ -84,11 +90,14 @@ test("admin users GET: fails for basic user", async () => {
 	/**
 	 * Send request
 	 */
-	const response = await api.admin.users.GET({
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.GET(
+		{
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	/**
 	 * Check the response
@@ -111,20 +120,23 @@ test("admin users POST: passes", async () => {
 		username: "jacksparrow"
 	}
 
-	const response = await api.admin.users.POST({
-        body: data,
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.POST(
+		{
+			body: data,
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	expect(response.status).toBe(201)
 	expect(response.body.success).toBe(true)
 	expect(response.body.result.username).toBe(data.username)
-    expect(response.body.result.isAdmin).toBe(false)
-    expect(response.body.result.isSuperUser).toBe(false)
-    expect(response.body.result.verifiedAt).toBe(null)
-    expect(response.body.result.emails.length).toBe(0)
+	expect(response.body.result.isAdmin).toBe(false)
+	expect(response.body.result.isSuperUser).toBe(false)
+	expect(response.body.result.verifiedAt).toBe(null)
+	expect(response.body.result.emails.length).toBe(0)
 })
 
 test("admin users POST: passes with all data", async () => {
@@ -140,33 +152,36 @@ test("admin users POST: passes with all data", async () => {
 
 	const data = {
 		username: "jacksparrow",
-        email: "jack.sparrow@example.com",
-        isVerified: true,
-        isAdmin: true,
-        isSuperUser: true,
+		email: "jack.sparrow@example.com",
+		isVerified: true,
+		isAdmin: true,
+		isSuperUser: true
 	}
 
-	const response = await api.admin.users.POST({
-        body: data,
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.POST(
+		{
+			body: data,
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	expect(response.status).toBe(201)
 	expect(response.body.success).toBe(true)
 	expect(response.body.result.username).toBe(data.username)
-    expect(response.body.result.isAdmin).toBe(true)
-    expect(response.body.result.isSuperUser).toBe(true)
-    expect(response.body.result.verifiedAt).not.toBe(null)
-    expect(response.body.result.emails.length).toBe(1)
-    expect(response.body.result.emails[0].address).toBe(data.email)
-    expect(response.body.result.emails[0].verifiedAt).not.toBe(null)
-    expect(response.body.result.emails[0].isUserPrimary).toBe(true)
+	expect(response.body.result.isAdmin).toBe(true)
+	expect(response.body.result.isSuperUser).toBe(true)
+	expect(response.body.result.verifiedAt).not.toBe(null)
+	expect(response.body.result.emails.length).toBe(1)
+	expect(response.body.result.emails[0].address).toBe(data.email)
+	expect(response.body.result.emails[0].verifiedAt).not.toBe(null)
+	expect(response.body.result.emails[0].isUserPrimary).toBe(true)
 })
 
-test("admin users POST: username is required", async() => {
-    	/**
+test("admin users POST: username is required", async () => {
+	/**
 	 * Login
 	 */
 	await basicUser.create()
@@ -176,15 +191,17 @@ test("admin users POST: username is required", async() => {
 	 * Send request
 	 */
 
-	const data = {
-	}
+	const data = {}
 
-	const response = await api.admin.users.POST({
-        body: data,
-        headers: {
-            cookie
-        }
-    }, fetch)
+	const response = await api.admin.users.POST(
+		{
+			body: data,
+			headers: {
+				cookie
+			}
+		},
+		fetch
+	)
 
 	expect(response.status).toBe(400)
 })

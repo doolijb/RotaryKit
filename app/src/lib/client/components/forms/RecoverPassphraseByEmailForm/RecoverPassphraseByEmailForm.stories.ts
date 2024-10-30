@@ -22,7 +22,7 @@ export const Filled = {
 	args: {
 		...Default.args,
 		data: {
-			email: "jack.sparrow@example.com",
+			email: "jack.sparrow@example.com"
 		}
 	}
 }

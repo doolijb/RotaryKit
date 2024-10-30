@@ -3,31 +3,34 @@ import { users } from "$server/providers"
 
 /**
  * Create a new passphrase for a user and store it in the database
- * 
- * @param tx 
- * @param userId 
- * @param passphrase 
+ *
+ * @param tx
+ * @param userId
+ * @param passphrase
  */
 export async function validate({
-    tx = db,
-    userId,
-    passphrase
-}:{
-    tx?: DbTransaction | typeof db,
-    userId: string,
-    passphrase: string
+	tx = db,
+	userId,
+	passphrase
+}: {
+	tx?: DbTransaction | typeof db
+	userId: string
+	passphrase: string
 }): Promise<boolean> {
-    // Query database for user's passphrase
-    const res = await tx.query.passphrases.findFirst(schema.passphrases, {userId, invalidatedAt: null})
-    if (!res) return false
+	// Query database for user's passphrase
+	const res = await tx.query.passphrases.findFirst(schema.passphrases, {
+		userId,
+		invalidatedAt: null
+	})
+	if (!res) return false
 
-    // Encrypt passphrase with salt and iterations from database
-    const hash = await users.passphrase.encrypt({
-        passphrase,
-        salt: res.salt,
-        iterations: parseInt(res.iterations)
-    })
+	// Encrypt passphrase with salt and iterations from database
+	const hash = await users.passphrase.encrypt({
+		passphrase,
+		salt: res.salt,
+		iterations: parseInt(res.iterations)
+	})
 
-    // Compare encrypted passphrase with hash from database
-    return hash === res.hash
+	// Compare encrypted passphrase with hash from database
+	return hash === res.hash
 }

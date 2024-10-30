@@ -26,7 +26,7 @@ const Template = ({ ...args }) => ({
 	props: args
 })
 
-function getMockUsers(pageLimit: number = 25) {
+function getMockUsers(pageLimit = 25) {
 	const results: SelectUser[] = []
 	for (let i = 0; i < pageLimit; i++) {
 		results.push({
@@ -51,15 +51,15 @@ function getMockUsers(pageLimit: number = 25) {
 
 function handleGetUsersResponse(request): PaginatedResponse<SelectUser> {
 	const totalCount = 250
-	const pageLimit = !!request.searchParams ? parseInt(request.searchParams.get("limit", "25")) : 25
-	const currentPage = !!request.searchParams ? parseInt(request.searchParams.get("page", "1")) : 1
+	const pageLimit = request.searchParams ? parseInt(request.searchParams.get("limit", "25")) : 25
+	const currentPage = request.searchParams ? parseInt(request.searchParams.get("page", "1")) : 1
 	const results = getMockUsers(pageLimit)
 	const pageCount = Math.ceil(totalCount / pageLimit)
 	const nextPage = currentPage != pageCount ? currentPage + 1 : undefined
 	const previousPage = currentPage != 1 ? currentPage - 1 : undefined
 	const resultStart = (currentPage - 1) * pageLimit + 1
 	const resultEnd = Math.min(currentPage * pageLimit, totalCount)
-	const orderBy = !!request.searchParams
+	const orderBy = request.searchParams
 		? request.searchParams.get("orderBy", "createdAt:desc")
 		: "createdAt:desc"
 

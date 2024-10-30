@@ -113,7 +113,7 @@
 			body: "",
 			buttonTextSubmit: "Select",
 			response: (response) => {
-				if (!!response) {
+				if (response) {
 					selectedOption = response.selectedOption
 					data[field] = selectedOption !== undefined ? selectedOption.value : undefined
 				}

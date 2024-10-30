@@ -8,11 +8,11 @@ import { AdminCreateEmail as PostForm } from "$shared/validation/forms"
 import { emails } from "$server/providers"
 
 interface GET {
-    query?: GetListQueryParameters
+	query?: GetListQueryParameters
 }
 
 interface Post {
-    body: PostForm['Data']
+	body: PostForm["Data"]
 }
 
 const postForm = PostForm.init()
@@ -20,93 +20,93 @@ const postForm = PostForm.init()
 /**
  * Admin view for a list of email addresses
  */
-export async function GET (event: KitEvent<GET, RequestEvent>) {
+export async function GET(event: KitEvent<GET, RequestEvent>) {
+	try {
+		// Check permissions
+		hasAdminPermission(event, schema.emails)
 
-    try {
+		const columns: { [key: string]: boolean } = {
+			id: true,
+			address: true,
+			createdAt: true,
+			updatedAt: true,
+			verifiedAt: true,
+			isUserPrimary: true
+		}
 
-        // Check permissions
-        hasAdminPermission(event, schema.emails)
+		const availableRelations: AvailableRelations = {
+			user: {
+				tableName: "emails",
+				columns: {
+					id: true,
+					username: true
+				}
+			}
+		}
 
-        const columns: {[key:string]: boolean}  = {
-            "id":true,
-            "address":true,
-            "createdAt":true,
-            "updatedAt":true,
-            "verifiedAt":true,
-            "isUserPrimary":true,
-        }
-
-        const availableRelations: AvailableRelations = {
-            "user": {
-                tableName: "emails",
-                columns: {
-                    "id":true,
-                    "username": true,
-                },
-            }
-        }
-
-        return await adminApi.getListOf<SelectEmail>({
-            event,
-            tableName: "emails",
-            columns,
-            availableRelations
-        })
-
-    } catch (err) {
-        logger.exception(err, event)
-        return InternalServerError()
-    }
+		return await adminApi.getListOf<SelectEmail>({
+			event,
+			tableName: "emails",
+			columns,
+			availableRelations
+		})
+	} catch (err) {
+		logger.exception(err, event)
+		return InternalServerError()
+	}
 }
-
 
 /**
  * Admin view for a list of email addresses
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
-    try {
-        /**
-         * Check permissions
-         */
-        hasAdminPermission(event, schema.emails)
+	try {
+		/**
+		 * Check permissions
+		 */
+		hasAdminPermission(event, schema.emails)
 
-        /**
-         * Validate the data
-         */
-        const { data, errors } = await validateData<PostForm["Data"]>({ form: postForm, event })
-        if (Object.entries(errors).length > 0) return BadRequest({body: errors})
+		/**
+		 * Validate the data
+		 */
+		const { data, errors } = await validateData<PostForm["Data"]>({ form: postForm, event })
+		if (Object.entries(errors).length > 0) return BadRequest({ body: errors })
 
-        ////
-        // DATABASE VALIDATION
-        ////
+		////
+		// DATABASE VALIDATION
+		////
 
-        // Check if role name is already taken
-        if (await db.query.emails.findFirst({where: (e, {eq}) => eq(e.address, data.address)})) {
-            errors["address"] = {"Taken": "This email address is already in use"}
-        }
+		// Check if role name is already taken
+		if (await db.query.emails.findFirst({ where: (e, { eq }) => eq(e.address, data.address) })) {
+			errors["address"] = { Taken: "This email address is already in use" }
+		}
 
-        // If errors, throw an error
-        if (Object.entries(errors).length > 0) {
-            return BadRequest({body: errors})
-        }
-        
-        ////
-        // CREATE EMAIL ADDRESS
-        ////
+		// If errors, throw an error
+		if (Object.entries(errors).length > 0) {
+			return BadRequest({ body: errors })
+		}
 
-        let result: SelectEmail
+		////
+		// CREATE EMAIL ADDRESS
+		////
 
-        await db.transaction(async (tx) => {
-            // Create the role
-            await emails.create({...data, tx})
-        }).then(async () => {
-            result = await db.query.emails.findFirst({where: (r, {eq}) => eq(r.address, data.address)})
-        })
+		let result: SelectEmail
 
-        // Return the email
-        return Created({ body: { success: true, result }})
-    } catch (err) {
-        logger.exception(err, event)
-        return InternalServerError()
-    }
+		await db
+			.transaction(async (tx) => {
+				// Create the role
+				await emails.create({ ...data, tx })
+			})
+			.then(async () => {
+				result = await db.query.emails.findFirst({
+					where: (r, { eq }) => eq(r.address, data.address)
+				})
+			})
+
+		// Return the email
+		return Created({ body: { success: true, result } })
+	} catch (err) {
+		logger.exception(err, event)
+		return InternalServerError()
+	}
 }

@@ -10,7 +10,7 @@
 
 	const toastStore = getToastStore()
 
-	let completed: boolean = false
+	let completed = false
 	
 
 	async function onsubmit() {

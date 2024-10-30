@@ -38,8 +38,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		 */
 
 		const email = await db.query.emails.findFirst({
-			where: (e, { and, eq, isNotNull }) =>
-				and(eq(e.address, data.email), isNotNull(e.verifiedAt)),
+			where: (e, { and, eq, isNotNull }) => and(eq(e.address, data.email), isNotNull(e.verifiedAt)),
 			with: {
 				user: true
 			}
@@ -65,7 +64,6 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		 * Return the response
 		 */
 		return Ok({ status: 201, body: { success: true } })
-
 	} catch (e) {
 		logger.error(e)
 		return InternalServerError()

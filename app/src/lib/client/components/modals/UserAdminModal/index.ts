@@ -1,4 +1,4 @@
-export {default} from "./UserAdminModal.svelte"
+export { default } from "./UserAdminModal.svelte"
 
 // export const registry: Record<string, any> = {
 //     // Custom Modal 1

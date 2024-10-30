@@ -1,1 +1,1 @@
-export {default} from "./SiteFooter.svelte"
+export { default } from "./SiteFooter.svelte"

@@ -1,1 +1,1 @@
-export {default} from "./FormBase.svelte"
+export { default } from "./FormBase.svelte"

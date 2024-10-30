@@ -1,1 +1,1 @@
-export {default} from "./AdminCreateEmailForm.svelte"
+export { default } from "./AdminCreateEmailForm.svelte"

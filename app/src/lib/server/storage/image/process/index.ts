@@ -31,49 +31,61 @@ export async function process({
 
 	const effort = 6
 
-	const webpBuffer = largeSize ? await sharp(imageBuffer)
-		.resize(resolution.width, resolution.height, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
-		.toBuffer() : null
+	const webpBuffer = largeSize
+		? await sharp(imageBuffer)
+				.resize(resolution.width, resolution.height, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
+				.toBuffer()
+		: null
 
-	const jpgBuffer = largeSize ? await sharp(imageBuffer)
-		.resize(resolution.width, resolution.height, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.jpeg({ quality: jpgQuality })
-		.toBuffer() : null
+	const jpgBuffer = largeSize
+		? await sharp(imageBuffer)
+				.resize(resolution.width, resolution.height, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.jpeg({ quality: jpgQuality })
+				.toBuffer()
+		: null
 
-	const mediumWebpBuffer = mediumSize ? await sharp(imageBuffer)
-		.resize(mediumResolution.width, mediumResolution.height, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
-		.toBuffer() : null
+	const mediumWebpBuffer = mediumSize
+		? await sharp(imageBuffer)
+				.resize(mediumResolution.width, mediumResolution.height, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
+				.toBuffer()
+		: null
 
-	const mediumJpgBuffer = mediumSize ? await sharp(imageBuffer)
-		.resize(mediumResolution.width, mediumResolution.height, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.jpeg({ quality: jpgQuality })
-		.toBuffer() : null
+	const mediumJpgBuffer = mediumSize
+		? await sharp(imageBuffer)
+				.resize(mediumResolution.width, mediumResolution.height, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.jpeg({ quality: jpgQuality })
+				.toBuffer()
+		: null
 
-	const smallWebpBuffer = smallSize ? await sharp(imageBuffer)
-		.resize(200, 200, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
-		.toBuffer() : null
+	const smallWebpBuffer = smallSize
+		? await sharp(imageBuffer)
+				.resize(200, 200, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.webp({ quality: webpQuality, effort, smartSubsample: true, preset: "photo" })
+				.toBuffer()
+		: null
 
-	const smallJpgBuffer = smallSize ? await sharp(imageBuffer)
-		.resize(smallResolution.width, smallResolution.height, { fit })
-		.flatten({ background: '#FFFFFF' })
-		.jpeg({ quality: jpgQuality })
-		.toBuffer() : null
+	const smallJpgBuffer = smallSize
+		? await sharp(imageBuffer)
+				.resize(smallResolution.width, smallResolution.height, { fit })
+				.flatten({ background: "#FFFFFF" })
+				.jpeg({ quality: jpgQuality })
+				.toBuffer()
+		: null
 
-	return { 
-		originalBuffer: originalSize ? buffer : null, 
-		webpBuffer, 
-		jpgBuffer, 
-		mediumWebpBuffer, 
-		mediumJpgBuffer, 
-		smallWebpBuffer, 
-		smallJpgBuffer 
+	return {
+		originalBuffer: originalSize ? buffer : null,
+		webpBuffer,
+		jpgBuffer,
+		mediumWebpBuffer,
+		mediumJpgBuffer,
+		smallWebpBuffer,
+		smallJpgBuffer
 	}
 }

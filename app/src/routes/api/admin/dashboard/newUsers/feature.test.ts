@@ -2,7 +2,7 @@ import { fetch, apiRoute, basicUser, superUser, loginUser } from "$shared/testin
 import { test, expect } from "@playwright/test"
 import api from "$shared/api"
 
-test("admin emails GET: passes", async () => {
+test("admin dashboard module newUsers GET: passes", async () => {
 	/**
 	 * Check the response
 	 */

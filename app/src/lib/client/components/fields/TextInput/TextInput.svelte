@@ -120,7 +120,7 @@
 	})
 
 	$effect(() => {
-		if (!!ref) {
+		if (ref) {
 			ref.type = type
 		}
 	})

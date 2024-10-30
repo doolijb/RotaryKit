@@ -1,1 +1,1 @@
-export {default} from "./AdminCreateAdminRoleForm.svelte"
+export { default } from "./AdminCreateAdminRoleForm.svelte"

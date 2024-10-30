@@ -1,1 +1,1 @@
-export {default as UserAdminReview} from "./UserAdminReview"
+export { default as UserAdminReview } from "./UserAdminReview"

@@ -69,7 +69,6 @@
 // 	expect(response.data.username).toBe(undefined)
 // })
 
-
 // test("admin users PUT: passes", async () => {
 // 	/**
 // 	 * Create user
@@ -180,6 +179,3 @@
 // 	expect(deletedUser).toBe(null)
 
 // })
-
-	
-

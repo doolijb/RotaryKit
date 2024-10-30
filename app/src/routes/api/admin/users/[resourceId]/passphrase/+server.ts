@@ -9,7 +9,7 @@ import { users } from "$server/providers"
 const putForm = PutForm.init()
 
 interface Put {
-    body: PutForm["Data"]
+	body: PutForm["Data"]
 }
 
 /**
@@ -17,13 +17,10 @@ interface Put {
  */
 export async function PUT(event: KitEvent<Put, RequestEvent>) {
 	try {
-		if(!hasAdminPermission(
-			event,
-			schema.users,
-		) || !hasAdminPermission(
-			event,
-			schema.passphrases,
-		)) {
+		if (
+			!hasAdminPermission(event, schema.users) ||
+			!hasAdminPermission(event, schema.passphrases)
+		) {
 			return Forbidden()
 		}
 
@@ -32,49 +29,49 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		 */
 		const { data, errors } = await validateData({
 			form: putForm,
-			event, 
+			event
 		})
-		if (errors.keys) return BadRequest({ body: {errors}})
+		if (errors.keys) return BadRequest({ body: { errors } })
 
 		////
-        // Get the user
-        ////
+		// Get the user
+		////
 
-        const user = await db.query.users.findFirst({
-            columns: {
-                id: true,
-                isAdmin: true,
-                isSuperUser: true,
-            },
-            where: (u, {eq}) => eq(u.id, event.params.resourceId)
-        })
+		const user = await db.query.users.findFirst({
+			columns: {
+				id: true,
+				isAdmin: true,
+				isSuperUser: true
+			},
+			where: (u, { eq }) => eq(u.id, event.params.resourceId)
+		})
 
-        if (!user) {
-            return NotFound()
-        }
+		if (!user) {
+			return NotFound()
+		}
 
-        ////
+		////
 		// MAKE SURE NOT UPDATING USER HIGHER THAN SELF
 		////
 
-        if (user.isSuperUser && !event.locals.user.isSuperUser) {
-            return BadRequest({body: { message: "You do not have permission to update a super user"}})
-        }
+		if (user.isSuperUser && !event.locals.user.isSuperUser) {
+			return BadRequest({ body: { message: "You do not have permission to update a super user" } })
+		}
 
-        ////
-        // Set the new passphrase
-        ////
-        await users.passphrase.set({
+		////
+		// Set the new passphrase
+		////
+		await users.passphrase.set({
 			userId: user.id,
 			passphrase: data.passphrase
 		})
 
-        /**
+		/**
 		 * Send confirmation email
 		 */
-		await users.passphrase.notifyChange({userId:user.id})
+		await users.passphrase.notifyChange({ userId: user.id })
 
-		return Ok({body: { message: "Passphrase updated" }})
+		return Ok({ body: { message: "Passphrase updated" } })
 	} catch (err) {
 		console.error(err)
 		return InternalServerError()

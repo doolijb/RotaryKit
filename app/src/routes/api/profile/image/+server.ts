@@ -10,7 +10,6 @@ import { eq } from "drizzle-orm"
 import { images } from "$server/providers"
 import { ImageSizes } from "$shared/constants"
 
-
 const postForm = PostForm.init()
 
 interface Post {
@@ -18,7 +17,7 @@ interface Post {
 }
 
 interface Delete {
-    body?: undefined
+	body?: undefined
 }
 
 /**
@@ -53,7 +52,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		 * Delete the old images
 		 */
 		oldImages.forEach(async (image) => {
-			await images.remove({image})
+			await images.remove({ image })
 		})
 
 		/**
@@ -61,51 +60,56 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		 */
 
 		const file = data.image[0] as File
-		
+
 		/**
 		 * Add the new image to the database
 		 */
 		await db.transaction(async (tx) => {
-			await images.create({ tx, file, uploadedByUserId: event.locals.user.id, profileImageUserId: event.locals.user.id, maxSize:ImageSizes.SMALL })
+			await images.create({
+				tx,
+				file,
+				uploadedByUserId: event.locals.user.id,
+				profileImageUserId: event.locals.user.id,
+				maxSize: ImageSizes.SMALL
+			})
 		})
 
 		/**
 		 * Return the response
 		 */
 		return Created()
-
 	} catch (e) {
 		logger.exception(e, event)
 		return InternalServerError()
 	}
 }
 
-export async function DELETE (event: KitEvent<Delete, RequestEvent>) {
-    try {
-        /**
-         * Check if user is not logged in
-         */
-        if (!event.locals.user) return Forbidden()
+export async function DELETE(event: KitEvent<Delete, RequestEvent>) {
+	try {
+		/**
+		 * Check if user is not logged in
+		 */
+		if (!event.locals.user) return Forbidden()
 
-        /**
-         * Check for any existing profile image(s)
-         */
+		/**
+		 * Check for any existing profile image(s)
+		 */
 
-        const oldImages = (await db
-            .select()
-            .from(schema.images)
-            .where(eq(schema.images.profileImageUserId, event.locals.user.id))) as SelectImage[]
+		const oldImages = (await db
+			.select()
+			.from(schema.images)
+			.where(eq(schema.images.profileImageUserId, event.locals.user.id))) as SelectImage[]
 
-        /**
-         * Delete the old images
-         */
+		/**
+		 * Delete the old images
+		 */
 		oldImages.forEach(async (image) => {
-			await images.remove({image})
+			await images.remove({ image })
 		})
 
-        return Ok()
-    } catch (e) {
-        logger.exception(e, event)
-        return InternalServerError()
-    }
+		return Ok()
+	} catch (e) {
+		logger.exception(e, event)
+		return InternalServerError()
+	}
 }

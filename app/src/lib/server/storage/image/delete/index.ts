@@ -2,7 +2,7 @@ import { logger } from "$server/logging"
 import * as storage from "$server/storage"
 
 export async function del(image: SelectImage) {
-    const { STORAGE_DEFAULT_BUCKET: bucket } = process.env
+	const { STORAGE_DEFAULT_BUCKET: bucket } = process.env
 
 	const imagePaths = [
 		image.originalPath,

@@ -2,23 +2,23 @@ import { validators as v, fields } from "$shared/validation"
 import { FormSchema } from "$shared/validation/base"
 
 export class AdminEditUser extends FormSchema {
-    fields = {
-        username: fields.username(),
-        isVerified: v.Boolean.init(),
-        isActive: v.Boolean.init(),
-    }
-    optional = {}
-    fieldAttributes = {
-        username: {
-            label: "Username",
-        },
-        isVerified: {
-            label: "Is Verified",
-        },
-        isActive: {
-            label: "Is Active",
-        }
-    }
+	fields = {
+		username: fields.username(),
+		isVerified: v.Boolean.init(),
+		isActive: v.Boolean.init()
+	}
+	optional = {}
+	fieldAttributes = {
+		username: {
+			label: "Username"
+		},
+		isVerified: {
+			label: "Is Verified"
+		},
+		isActive: {
+			label: "Is Active"
+		}
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

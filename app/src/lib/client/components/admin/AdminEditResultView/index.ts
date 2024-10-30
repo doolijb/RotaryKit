@@ -4,4 +4,4 @@
  * export { default } from './ComponentName.svelte'
  */
 
-export {default} from "./AdminEditResultView.svelte"
+export { default } from "./AdminEditResultView.svelte"

@@ -4,12 +4,12 @@ import type { RequestEvent } from "@sveltejs/kit"
 import { cookies } from "$server/auth"
 
 export async function logout({
-    tx=db,
-    event
+	tx = db,
+	event
 }: {
-    tx?: DbTransaction | typeof db,
-    event: RequestEvent
+	tx?: DbTransaction | typeof db
+	event: RequestEvent
 }) {
-    await users.tokens.expire({tx, userTokenId: event.locals.userTokenId})
-    cookies.deleteUserTokenCookie({event})
+	await users.tokens.expire({ tx, userTokenId: event.locals.userTokenId })
+	cookies.deleteUserTokenCookie({ event })
 }

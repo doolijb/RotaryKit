@@ -9,7 +9,7 @@ import { Ok, InternalServerError, BadRequest, Forbidden, NotFound } from "svelte
 const putForm = PutForm.init()
 
 interface Put {
-    body: PutForm["Data"]
+	body: PutForm["Data"]
 }
 
 /**
@@ -17,10 +17,7 @@ interface Put {
  */
 export async function PUT(event: KitEvent<Put, RequestEvent>) {
 	try {
-		if(!hasAdminPermission(
-			event,
-			schema.users,
-		)) {
+		if (!hasAdminPermission(event, schema.users)) {
 			return Forbidden()
 		}
 
@@ -29,9 +26,9 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		 */
 		const { data, errors } = await validateData({
 			form: putForm,
-			event, 
+			event
 		})
-		if (errors.keys) return BadRequest({ body: {errors}})
+		if (errors.keys) return BadRequest({ body: { errors } })
 
 		////
 		// UPDATE USER
@@ -52,7 +49,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 					}
 				}
 			},
-			where: (t, {eq}) => eq(t.id, event.params.resourceId)
+			where: (t, { eq }) => eq(t.id, event.params.resourceId)
 		})
 
 		////
@@ -71,37 +68,38 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		})
 
 		// Find the roles to remove
-		user.toAdminRoles.forEach(({adminRoleId: userAdminRoleId}) => {
+		user.toAdminRoles.forEach(({ adminRoleId: userAdminRoleId }) => {
 			if (!data.adminRoles.includes(userAdminRoleId)) {
 				removeAdminRoleIds.push(userAdminRoleId)
 			}
 		})
 
-		await db
-			.transaction(async (tx) => {
-				// Add the roles
-				if (addAdminRoleIds.length > 0) {
+		await db.transaction(async (tx) => {
+			// Add the roles
+			if (addAdminRoleIds.length > 0) {
+				const insertQuery: InsertUsersToAdminRoles[] = addAdminRoleIds.map((adminRoleId) => ({
+					userId: event.params.resourceId,
+					adminRoleId
+				}))
 
-					const insertQuery: InsertUsersToAdminRoles[] = addAdminRoleIds.map((adminRoleId) => ({
-						userId: event.params.resourceId,
-						adminRoleId
-					}))
+				await tx.insert(schema.usersToAdminRoles).values(insertQuery)
+			}
 
-					await tx.insert(schema.usersToAdminRoles).values(insertQuery)
-				}
-
-				// Remove the roles
-				if (removeAdminRoleIds.length > 0) {
-					const deleteQuery = and(
-						eq(schema.usersToAdminRoles.userId, event.params.resourceId),
-						or(
-						...removeAdminRoleIds.map((adminRoleId) => eq(schema.usersToAdminRoles.adminRoleId, adminRoleId))
-					))
-					await tx.delete(schema.usersToAdminRoles).where(deleteQuery)
-			}})
+			// Remove the roles
+			if (removeAdminRoleIds.length > 0) {
+				const deleteQuery = and(
+					eq(schema.usersToAdminRoles.userId, event.params.resourceId),
+					or(
+						...removeAdminRoleIds.map((adminRoleId) =>
+							eq(schema.usersToAdminRoles.adminRoleId, adminRoleId)
+						)
+					)
+				)
+				await tx.delete(schema.usersToAdminRoles).where(deleteQuery)
+			}
+		})
 
 		return Ok()
-		
 	} catch (err) {
 		console.error(err)
 		return InternalServerError()

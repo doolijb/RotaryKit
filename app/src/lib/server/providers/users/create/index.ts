@@ -8,11 +8,11 @@ import { schema } from "$server/database"
  * @param {bool} args.isVerified - Whether the new user is verified. Defaults to `false`.
  * @param {ReturningSelect} args.returning - The fields to return after creating the new user. Defaults to `null`.
  * @returns {PromisedQueryResult<typeof params.returning>} The results of args.returning, or void.
- * 
+ *
  * @example
  *  import { db, schema } from "$server/database"
  *  import { users } from "$server/providers"
- * 
+ *
  * // Start a transaction
  *  db.transaction(async tx => {
  *      const [{ userId }] = await users.create({
@@ -28,34 +28,33 @@ import { schema } from "$server/database"
  *  })
  */
 export async function create({
-    tx = db,
-    username,
-    isVerified=false,
-    isAdmin=false,
-    isSuperUser=false,
-    returning=null,
+	tx = db,
+	username,
+	isVerified = false,
+	isAdmin = false,
+	isSuperUser = false,
+	returning = null
 }: {
-    tx?: typeof db,
-    username: string,
-    isVerified?: boolean,
-    isAdmin?: boolean,
-    isSuperUser?: boolean,
-    returning?: ReturningSelect
+	tx?: typeof db
+	username: string
+	isVerified?: boolean
+	isAdmin?: boolean
+	isSuperUser?: boolean
+	returning?: ReturningSelect
 }): PromisedQueryResult<typeof returning> {
-    // Create user
-    const query = tx.insert(schema.users)
-        .values({
-            username,
-            verifiedAt: isVerified ? new Date() : null,
-            isAdmin,
-            isSuperUser,
-        })
+	// Create user
+	const query = tx.insert(schema.users).values({
+		username,
+		verifiedAt: isVerified ? new Date() : null,
+		isAdmin,
+		isSuperUser
+	})
 
-    // Returning?
-    if (returning) {
-        query.returning(returning)
-    }
+	// Returning?
+	if (returning) {
+		query.returning(returning)
+	}
 
-    // Return result
-    return await query
+	// Return result
+	return await query
 }

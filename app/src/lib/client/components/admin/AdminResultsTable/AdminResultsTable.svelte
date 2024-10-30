@@ -133,7 +133,7 @@
 	 * If it isn't, just return the key.
 	 */
 	function getOrderByKey(key: string): string | undefined {
-		if (!!dataHandlers[key]) {
+		if (dataHandlers[key]) {
 			return dataHandlers[key].orderByKey
 		}
 		return key

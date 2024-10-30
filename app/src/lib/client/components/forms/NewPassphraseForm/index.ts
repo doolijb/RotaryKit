@@ -1,1 +1,1 @@
-export {default} from "./NewPassphraseForm.svelte"
+export { default } from "./NewPassphraseForm.svelte"

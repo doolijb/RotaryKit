@@ -13,11 +13,11 @@ const meta: Meta<typeof Component> = {
 export default meta
 
 const file1 = new File([""], "filename.txt", { type: "text/plain" })
-Object.defineProperty(file1, 'size', { value: 2 * 1024 * 1024 }); // 2 MB
+Object.defineProperty(file1, "size", { value: 2 * 1024 * 1024 }) // 2 MB
 const file2 = new File([""], "filename2.txt", { type: "text/plain" })
-Object.defineProperty(file2, 'size', { value: 4 * 1024 * 1024 }); // 4 MB
+Object.defineProperty(file2, "size", { value: 4 * 1024 * 1024 }) // 4 MB
 const file3 = new File([""], "filename3.jpg", { type: "image/jpeg" })
-Object.defineProperty(file3, 'size', { value: 10 * 1024 * 1024 }); // 10 MB
+Object.defineProperty(file3, "size", { value: 10 * 1024 * 1024 }) // 10 MB
 
 class DefaultForm extends FormSchema {
 	fields = {
@@ -54,24 +54,23 @@ export const Filled = {
 	args: {
 		field: "fileDropField",
 		form: DefaultForm.init(),
-		data: { fileDropField: [
-			file1,
-			file2
-		] },
+		data: { fileDropField: [file1, file2] },
 		errors: {}
 	}
 }
 
 class WithValidatorsForm extends FormSchema {
 	fields = {
-		fileDropField: v.Files.init().fileTypes({ fileTypes: ["document"] }).maxFileCount({ maxCount: 3, typeMaxCount: {"document": 2, "image": 1}}).fileSizes({ maxSize: 15, typeSizes: { document: 10 }})
+		fileDropField: v.Files.init()
+			.fileTypes({ fileTypes: ["document"] })
+			.maxFileCount({ maxCount: 3, typeMaxCount: { document: 2, image: 1 } })
+			.fileSizes({ maxSize: 15, typeSizes: { document: 10 } })
 	}
 	optional = {}
 	fieldAttributes = {
 		fileDropField: {
 			label: "File Drop Field",
-			description:
-				"You use the form validator field description to provide more details here."
+			description: "You use the form validator field description to provide more details here."
 		}
 	}
 }
@@ -89,11 +88,7 @@ export const FilledWithValidators = {
 	args: {
 		field: "fileDropField",
 		form: WithValidatorsForm.init(),
-		data: { fileDropField: [
-			file1,
-			file2,
-			file3
-		] },
+		data: { fileDropField: [file1, file2, file3] },
 		errors: {}
 	}
 }

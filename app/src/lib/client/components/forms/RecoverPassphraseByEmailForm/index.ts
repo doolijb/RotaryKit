@@ -1,1 +1,1 @@
-export {default} from "./RecoverPassphraseByEmailForm.svelte"
+export { default } from "./RecoverPassphraseByEmailForm.svelte"

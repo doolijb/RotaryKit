@@ -1,1 +1,1 @@
-export {default} from "./ThemeProvider.svelte"
+export { default } from "./ThemeProvider.svelte"

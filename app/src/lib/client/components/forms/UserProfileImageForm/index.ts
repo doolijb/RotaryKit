@@ -1,1 +1,1 @@
-export {default} from "./UserProfileImageForm.svelte"
+export { default } from "./UserProfileImageForm.svelte"

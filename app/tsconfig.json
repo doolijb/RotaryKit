@@ -1,23 +1,17 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
-  "include": [
-    "src/**/*"
-  ],
-  "resolve": [
-    ".svelte",
-    ".ts",
-    ".tsx",
-  ],
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": false,
-    "jsx": "react",
-    "allowImportingTsExtensions": true,
-  }
+	"extends": "./.svelte-kit/tsconfig.json",
+	"include": ["src/**/*"],
+	"resolve": [".svelte", ".ts", ".d.ts", ".tsx"],
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": false,
+		"jsx": "react",
+		"allowImportingTsExtensions": true
+	}
 }

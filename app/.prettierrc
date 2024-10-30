@@ -4,26 +4,16 @@
 	"trailingComma": "none",
 	"printWidth": 100,
 	"plugins": ["prettier-plugin-tailwindcss"],
-	"pluginSearchDirs": ["."],
 	"overrides": [
 		{
 			"files": "*.svelte",
 			"options": {
-				"parser": "svelte",
-				"removeUnusedImports": false
+				"parser": "svelte"
 			}
 		},
 		{
-			"files": "*.ts",
-			"options": {
-				"removeUnusedImports": false
-			}
+			"files": "*.ts"
 		}
 	],
-	"semi": false,
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": false,
-		"source.fixAll.eslint": true
-	}
+	"semi": false
 }

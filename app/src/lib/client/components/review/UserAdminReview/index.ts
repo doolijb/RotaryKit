@@ -1,1 +1,1 @@
-export {default} from "./UserAdminReview.svelte"
+export { default } from "./UserAdminReview.svelte"

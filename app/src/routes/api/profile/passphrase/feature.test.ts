@@ -30,7 +30,7 @@
 //         // Check the db that the passphrase was updated
 //         const user = await db.query.users.findFirst({
 //             where: (u, { eq }) => eq(u.username, basicUser.data.username)
-//         }) 
+//         })
 
 //         // Validate the new passphrase
 //         const isValid = await users.passphrase.validate({

@@ -3,15 +3,15 @@ import { EmailBase } from "../EmailBase"
 import { CodeInline } from "@react-email/code-inline"
 
 export const PassphraseResetCode = ({
-    subject,
-    name,
-    url,
-    expiresAt,
-}:{
-    subject: string,
-    name: string,
-    url: string,
-    expiresAt?: number
+	subject,
+	name,
+	url,
+	expiresAt
+}: {
+	subject: string
+	name: string
+	url: string
+	expiresAt?: number
 }) => {
 	const Main = (
 		<>
@@ -30,7 +30,7 @@ export const PassphraseResetCode = ({
 			<p>
 				Or copy and paste this link into your browser:
 				<br />
-                <CodeInline>{url}</CodeInline>
+				<CodeInline>{url}</CodeInline>
 			</p>
 			{expiresAt && (
 				<p>

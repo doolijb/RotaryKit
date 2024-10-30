@@ -9,11 +9,11 @@ import { logger } from "$server/logging"
 const postForm = PostForm.init()
 
 interface Get {
-    body?: undefined
+	body?: undefined
 }
 
 interface Post {
-	body: PostForm["Data"],
+	body: PostForm["Data"]
 }
 
 /**
@@ -29,7 +29,7 @@ export async function GET(event: KitEvent<Get, RequestEvent>) {
 			return BadRequest()
 		}
 
-		return Ok({ body: { success: true }})
+		return Ok({ body: { success: true } })
 	} catch (e) {
 		logger.error(e)
 		return InternalServerError()
@@ -45,7 +45,7 @@ export async function PUT(event: KitEvent<Post, RequestEvent>) {
 		 * Must not be logged in
 		 */
 		if (event.locals.user) {
-			return Forbidden({ body: { message: "You are already logged in" }})
+			return Forbidden({ body: { message: "You are already logged in" } })
 		}
 
 		/**
@@ -53,9 +53,9 @@ export async function PUT(event: KitEvent<Post, RequestEvent>) {
 		 */
 		const { data, errors } = await validateData({ form: postForm, event })
 		if (Object.keys(errors).length) {
-			return BadRequest({ body: { errors }})
+			return BadRequest({ body: { errors } })
 		}
-		
+
 		/**
 		 * Validate the code
 		 */
@@ -64,7 +64,7 @@ export async function PUT(event: KitEvent<Post, RequestEvent>) {
 		})
 
 		if (!reset) {
-			return BadRequest({ body: { message: "Invalid code" }})
+			return BadRequest({ body: { message: "Invalid code" } })
 		}
 
 		const userId = reset.userId
@@ -80,12 +80,12 @@ export async function PUT(event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Send confirmation email
 		 */
-		await users.passphrase.notifyChange({userId})
+		await users.passphrase.notifyChange({ userId })
 
 		/**
 		 * Return success
 		 */
-		return Ok({body: { message: "Passphrase updated" }})
+		return Ok({ body: { message: "Passphrase updated" } })
 	} catch (e) {
 		logger.error(e)
 		return InternalServerError()

@@ -101,7 +101,7 @@
 	<hr class="border-gray-200 col-span-3" />
 	<DetailGridItem label="Original" >
 		<span class:opacity-50={!getValue("originalPath")}>
-			{!!getValue("originalPath") ? "Available" : "Unavailable"}
+			{getValue("originalPath") ? "Available" : "Unavailable"}
 		</span>
 	</DetailGridItem>
     {#if result.originalPath}
@@ -112,7 +112,7 @@
     <hr class="border-gray-200 col-span-3" />
         <DetailGridItem label={key}>
 			<span class:opacity-50={!getValue(key + "Path")}>
-				{!!getValue(key + "Path") ? "Available" : "Unavailable"}
+				{getValue(key + "Path") ? "Available" : "Unavailable"}
 			</span>
 		</DetailGridItem>
         {#if result[key + "Path"]}

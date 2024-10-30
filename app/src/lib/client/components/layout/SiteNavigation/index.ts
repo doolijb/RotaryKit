@@ -1,1 +1,1 @@
-export {default} from "./SiteNavigation.svelte"
+export { default } from "./SiteNavigation.svelte"

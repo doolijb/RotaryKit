@@ -1,6 +1,5 @@
-
 export async function load() {
-    return {
-        title: "Emails : Admin",
-    }
+	return {
+		title: "Emails : Admin"
+	}
 }

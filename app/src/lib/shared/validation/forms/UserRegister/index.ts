@@ -2,27 +2,27 @@ import { fields } from "$shared/validation"
 import { FormSchema } from "$shared/validation/base"
 
 export class UserRegister extends FormSchema {
-    fields = {
-        username: fields.username(),
-        email: fields.email(),
-        passphrase: fields.passphrase(),
-        passphraseConfirm: fields.passphraseConfirm(),
-    }
-    optional = {}
-    fieldAttributes = {
-        username: {
-            label: "Username",
-        },
-        email: {
-            label: "Email",
-        },
-        passphrase: {
-            label: "Passphrase",
-        },
-        passphraseConfirm: {
-            label: "Confirm Passphrase",
-        },
-    }
+	fields = {
+		username: fields.username(),
+		email: fields.email(),
+		passphrase: fields.passphrase(),
+		passphraseConfirm: fields.passphraseConfirm()
+	}
+	optional = {}
+	fieldAttributes = {
+		username: {
+			label: "Username"
+		},
+		email: {
+			label: "Email"
+		},
+		passphrase: {
+			label: "Passphrase"
+		},
+		passphraseConfirm: {
+			label: "Confirm Passphrase"
+		}
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -14,7 +14,7 @@ const tsconfig = JSON.parse(fs.readFileSync("tsconfig.json", "utf-8"))
 
 // Update the paths property
 tsconfig.compilerOptions.paths = Object.fromEntries(
-  Object.entries(aliases).map(([alias, path]) => [alias, [path]])
+	Object.entries(aliases).map(([alias, path]) => [alias, [path]])
 )
 
 // Write the updated configuration back to tsconfig.json

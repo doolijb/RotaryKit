@@ -3,21 +3,21 @@ import { Matches } from "."
 
 const data = {
 	a: "test",
-	b: "TEST",
+	b: "TEST"
 }
 
 test("Mtches validator test: passes", async () => {
-	const validator = Matches.init({matchingField:"a"})
+	const validator = Matches.init({ matchingField: "a" })
 
-	const result = await validator.test({key:"a", data})
+	const result = await validator.test({ key: "a", data })
 
 	expect(result).toBe(true)
 })
 
 test("Matches validator test: fails", async () => {
-	const validator = Matches.init({matchingField:"a"})
+	const validator = Matches.init({ matchingField: "a" })
 
-	const result = await validator.test({key:"b", data})
-	
+	const result = await validator.test({ key: "b", data })
+
 	expect(result).toBe(false)
 })

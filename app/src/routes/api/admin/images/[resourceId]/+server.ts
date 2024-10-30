@@ -11,15 +11,12 @@ import { images } from "$server/providers"
 const putForm = PutForm.init()
 
 interface Put {
-    body: PutForm["Data"]
+	body: PutForm["Data"]
 }
 
 export async function GET(event: RequestEvent) {
 	try {
-		if(!hasAdminPermission(
-			event,
-			schema.images,
-		)) {
+		if (!hasAdminPermission(event, schema.images)) {
 			return Forbidden()
 		}
 
@@ -43,7 +40,7 @@ export async function GET(event: RequestEvent) {
 			smallWebpBytes: true,
 			smallJpgPath: true,
 			smallJpgBytes: true,
-			status: true,
+			status: true
 		}
 
 		const availableRelations: AvailableRelations = {
@@ -53,7 +50,7 @@ export async function GET(event: RequestEvent) {
 					id: true,
 					username: true,
 					createdAt: true,
-					updatedAt: true,
+					updatedAt: true
 				}
 			},
 			profileImageUser: {
@@ -62,7 +59,7 @@ export async function GET(event: RequestEvent) {
 					id: true,
 					username: true,
 					createdAt: true,
-					updatedAt: true,
+					updatedAt: true
 				}
 			}
 		}
@@ -77,26 +74,20 @@ export async function GET(event: RequestEvent) {
 			return NotFound()
 		}
 
-		return Ok({body:result})
-
+		return Ok({ body: result })
 	} catch (error) {
 		console.log(error)
 		return InternalServerError()
 	}
 }
 
-
 export async function PUT(event: KitEvent<Put, RequestEvent>) {
 	try {
-
 		////
 		// CHECK PERMISSIONS
 		////
 
-		if(!hasAdminPermission(
-			event,
-			schema.images,
-		)) {
+		if (!hasAdminPermission(event, schema.images)) {
 			return Forbidden()
 		}
 
@@ -107,7 +98,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		const { data, errors } = await validateData({
 			form: putForm,
-			event, 
+			event
 		})
 
 		if (errors.keys) {
@@ -121,7 +112,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		const image = await db.query.images.findFirst({
 			where: (u, { eq }) => eq(u.id, event.params.resourceId)
 		})
-		
+
 		if (!image) {
 			return NotFound()
 		}
@@ -154,7 +145,10 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		await db.transaction(async (tx) => {
 			if (Object.keys(values).length > 0) {
-				await tx.update(schema.images).set(values).where(eq(schema.images.id, event.params.resourceId))
+				await tx
+					.update(schema.images)
+					.set(values)
+					.where(eq(schema.images.id, event.params.resourceId))
 			}
 		})
 
@@ -162,8 +156,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// RESPONSE
 		////
 
-		return Ok({ body: { success: true }})
-
+		return Ok({ body: { success: true } })
 	} catch (err) {
 		logger.exception(err, event)
 		return InternalServerError()
@@ -175,15 +168,11 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
  */
 export async function DELETE(event: RequestEvent) {
 	try {
-
 		////
 		// CHECK PERMISSIONS
 		////
-		
-		if(!hasAdminPermission(
-			event,
-			schema.images,
-		)) {
+
+		if (!hasAdminPermission(event, schema.images)) {
 			return Forbidden()
 		}
 
@@ -200,8 +189,7 @@ export async function DELETE(event: RequestEvent) {
 		// RESPONSE
 		////
 
-		return Ok({ body: { success: true }})
-	
+		return Ok({ body: { success: true } })
 	} catch (error) {
 		logger.exception(error, event)
 		return InternalServerError()

@@ -2,7 +2,6 @@
 // import { test, expect } from "@playwright/test"
 // import { db, schema } from "$server/database"
 
-
 // test("API Email Verification: 200", async () => {
 //     await clearDB()
 
@@ -19,7 +18,6 @@
 //     const [code] = await db.insert(schema.emailVerifications).values({
 //         emailId: email.id,
 //     }).returning({ id: schema.emailVerifications.id })
-
 
 //     // Send request
 //     const response = await axios.post(`/api/verify/email/${code.id}`).catch(e => {

@@ -10,21 +10,21 @@ import { logger } from "$server/logging"
 const postForm = PostForm.init()
 
 interface Get {
-    body: undefined,
-    params: {
-        resourceId: string,
-    }
+	body: undefined
+	params: {
+		resourceId: string
+	}
 }
 
 interface Put {
-    body: PostForm['Data']
+	body: PostForm["Data"]
 }
 
 interface Delete {
-    body: undefined,
-    params: {
-        resourceId: string,
-    }
+	body: undefined
+	params: {
+		resourceId: string
+	}
 }
 
 /**
@@ -32,9 +32,8 @@ interface Delete {
  */
 export async function GET(event: KitEvent<Get, RequestEvent>) {
 	try {
-		
 		// Check permissions
-        hasAdminPermission(event, schema.adminRoles)
+		hasAdminPermission(event, schema.adminRoles)
 
 		const columns: { [key: string]: boolean } = {
 			id: true,
@@ -99,7 +98,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// Validate the data
 		////
 
-		const { data, errors } = await validateData({ form: postForm, event})
+		const { data, errors } = await validateData({ form: postForm, event })
 		if (errors.keys) return BadRequest({ body: { errors } })
 
 		////

@@ -46,7 +46,6 @@ export async function authenticate({
 	user: SelectUser
 	adminPermissions?: SelectAdminPermission[]
 } | null> {
-
 	////
 	// GET USER TOKEN
 	////
@@ -60,7 +59,7 @@ export async function authenticate({
 					profileImages: {
 						columns: {
 							smallWebpPath: true,
-							smallJpgPath: true,
+							smallJpgPath: true
 						},
 						orderBy: [desc(images.createdAt)],
 						where: (i, { eq }) => eq(i.status, ImageStatus.PUBLISHED),
@@ -107,11 +106,7 @@ export async function authenticate({
 	const os = userAgent.os.name || "Unknown"
 
 	if (validate) {
-		if (
-			userToken.token !== token ||
-			userToken.browser !== browser ||
-			userToken.os !== os 
-		) {
+		if (userToken.token !== token || userToken.browser !== browser || userToken.os !== os) {
 			// If failure, expire the token and delete it from the client
 			await tx
 				.update(schema.userTokens)

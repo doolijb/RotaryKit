@@ -1,8 +1,8 @@
 /**
  * Users
  */
-import { users, userRelations} from "./users"
-import { emails, emailRelations} from "./emails"
+import { users, userRelations } from "./users"
+import { emails, emailRelations } from "./emails"
 
 /**
  * Authentication
@@ -34,32 +34,32 @@ import { emailLogs } from "./emailLogs"
  * Tables only
  */
 export const schema = {
-    users,
-    emails,
-    userTokens,
-    emailVerifications,
-    passphrases,
-    passphraseResets,
-    adminPermissions,
-    adminRoles,
-    adminRolesToPermissions,
-    usersToAdminRoles,
-    emailLogs,
-    images,
+	users,
+	emails,
+	userTokens,
+	emailVerifications,
+	passphrases,
+	passphraseResets,
+	adminPermissions,
+	adminRoles,
+	adminRolesToPermissions,
+	usersToAdminRoles,
+	emailLogs,
+	images
 }
 
 /**
  * Relations only
  */
 export const relations = {
-    userRelations,
-    emailRelations,
-    usersTokenRelations,
-    emailVerificationRelations,
-    passphraseResetRelations,
-    adminPermissionRelations,
-    adminRoleRelations,
-    adminRolesToPermissionRelations,
-    usersToAdminRoleRelations,
-    imageRelations,
+	userRelations,
+	emailRelations,
+	usersTokenRelations,
+	emailVerificationRelations,
+	passphraseResetRelations,
+	adminPermissionRelations,
+	adminRoleRelations,
+	adminRolesToPermissionRelations,
+	usersToAdminRoleRelations,
+	imageRelations
 }

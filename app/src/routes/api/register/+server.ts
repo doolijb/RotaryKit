@@ -16,31 +16,30 @@ interface Post {
 /**
  * Register a new user
  */
-export async function POST (event: KitEvent<Post, RequestEvent>) {
+export async function POST(event: KitEvent<Post, RequestEvent>) {
 	try {
-
 		/**
 		 * Check if user is already logged in
 		 */
 		if (event.locals.user) return Forbidden()
-		
+
 		/**
 		 * Validate the data
 		 */
 		const { data, errors } = await validateData<PostForm["Data"]>({ form: postForm, event })
-		if (Object.keys(errors).length) return BadRequest({ body: { errors }})
+		if (Object.keys(errors).length) return BadRequest({ body: { errors } })
 
 		/**
 		 * Check if the username or email address is already in use
 		 */
-		if (await users.exists({username: data.username})) {
-			errors["username"] = {"Taken": "This username is already registered"}
-			return BadRequest({ body: { errors }})
+		if (await users.exists({ username: data.username })) {
+			errors["username"] = { Taken: "This username is already registered" }
+			return BadRequest({ body: { errors } })
 		}
 
-		if (await emails.exists({address: data.email})) {
-			errors["email"] = {"Taken": "This email address is already registered"}
-			return BadRequest({ body: { errors }})
+		if (await emails.exists({ address: data.email })) {
+			errors["email"] = { Taken: "This email address is already registered" }
+			return BadRequest({ body: { errors } })
 		}
 
 		/**
@@ -49,42 +48,42 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 
 		let emailId: string
 
-		await db.transaction(async tx => {
-			const [{userId}] = await users.create({
-				tx,
-				username: data.username,
-				returning: {userId: schema.users.id}
-			})
+		await db
+			.transaction(async (tx) => {
+				const [{ userId }] = await users.create({
+					tx,
+					username: data.username,
+					returning: { userId: schema.users.id }
+				})
 
-			const [createdEmail] = await emails.create({
-				tx,
-				userId,
-				address: data.email,
-				isUserPrimary: true,
-				returning: {id: schema.emails.id}
-			})
+				const [createdEmail] = await emails.create({
+					tx,
+					userId,
+					address: data.email,
+					isUserPrimary: true,
+					returning: { id: schema.emails.id }
+				})
 
-			emailId = createdEmail.id
+				emailId = createdEmail.id
 
-			await users.passphrase.set({
-				tx,
-				userId,
-				passphrase: data.passphrase,
-				createOnly: true
+				await users.passphrase.set({
+					tx,
+					userId,
+					passphrase: data.passphrase,
+					createOnly: true
+				})
 			})
-
-		}).then(async () => {
-			await emails.sendCode({
-				emailId,
-				username: data.username
+			.then(async () => {
+				await emails.sendCode({
+					emailId,
+					username: data.username
+				})
 			})
-		})
 
 		/**
 		 * Return the response
 		 */
-		return Created({ status: 201, body: { success: true }})
-		
+		return Created({ status: 201, body: { success: true } })
 	} catch (e) {
 		logger.exception(e, event)
 		return InternalServerError()

@@ -26,7 +26,7 @@ export const Default = {
 export const Filled = {
 	args: {
 		data: {
-			email: "jack.sparrow@example.com",
+			email: "jack.sparrow@example.com"
 		}
 	},
 	render: Template
@@ -35,7 +35,7 @@ export const Filled = {
 export const WithErrors = {
 	args: {
 		data: {
-			email: "jack.sparrow@example",
+			email: "jack.sparrow@example"
 		}
 	}
 }

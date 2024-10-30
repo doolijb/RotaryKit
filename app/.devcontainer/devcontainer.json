@@ -1,19 +1,17 @@
 {
-    "customizations": {
-        "vscode": {
-            "settings": {
-                "remote.forwardOnOpen": false
-            }
-        }
-    },
-    "dockerComposeFile": [
-        "../../docker-compose.yml"
-    ],
-    "name": "app",
-    "otherPortsAttributes": {
-        "onAutoForward": "ignore"
-    },
-    "overrideCommand": true,
-    "service": "app",
-    "workspaceFolder": "/srv/www/app"
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"remote.forwardOnOpen": false
+			}
+		}
+	},
+	"dockerComposeFile": ["../../docker-compose.yml"],
+	"name": "app",
+	"otherPortsAttributes": {
+		"onAutoForward": "ignore"
+	},
+	"overrideCommand": true,
+	"service": "app",
+	"workspaceFolder": "/srv/www/app"
 }

@@ -2,5 +2,5 @@
 export function load() {
 	return {
 		title: "Profile"
-	};
+	}
 }

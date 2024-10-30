@@ -1,1 +1,1 @@
-export {default} from "./Autocomplete.svelte"
+export { default } from "./Autocomplete.svelte"

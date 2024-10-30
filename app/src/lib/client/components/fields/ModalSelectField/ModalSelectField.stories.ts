@@ -24,7 +24,7 @@ class DefaultForm extends FormSchema {
 	optional = { modalSelectField: true }
 }
 
-async function getOptions ({searchString: string}) {
+async function getOptions({ searchString: string }) {
 	await new Promise((resolve) => setTimeout(resolve, 2000))
 	return [
 		{ id: 1, title: "Elephant" },
@@ -36,7 +36,7 @@ async function getOptions ({searchString: string}) {
 	].filter((option) => option.title.toLowerCase().includes(string.toLowerCase()))
 }
 
-function mapOptions (options) {
+function mapOptions(options) {
 	return options.map((option) => ({
 		value: option.id,
 		label: option.title
@@ -50,7 +50,7 @@ export const Default = {
 		field: "modalSelectField",
 		form: DefaultForm.init(),
 		data: { modalSelectField: "" },
-		errors: {},
+		errors: {}
 	}
 }
 
@@ -74,7 +74,7 @@ export const Filled = {
 		form: DefaultForm.init(),
 		data: { modalSelectField: 3 },
 		errors: {},
-		result: { id: 3, title: "Tiger" },
+		result: { id: 3, title: "Tiger" }
 	}
 }
 
@@ -111,7 +111,7 @@ export const FilledWithValidators = {
 		form: WithValidatorsForm.init(),
 		data: { modalSelectField: 3 },
 		errors: {},
-		result: { id: 3, title: "Tiger" },
+		result: { id: 3, title: "Tiger" }
 	}
 }
 
@@ -136,6 +136,6 @@ export const WithPlaceholder = {
 		form: WithPlaceholderForm.init(),
 		data: { modalSelectField: "" },
 		errors: {},
-		result: { id: 3, title: "Tiger" },
+		result: { id: 3, title: "Tiger" }
 	}
 }

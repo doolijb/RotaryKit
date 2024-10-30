@@ -107,18 +107,18 @@
 	////
 
 	function updateUrlParams(): void {
-		if (!!response) {
+		if (response) {
 			searchParam = response.body.search
 			orderByParam = response.body.orderBy
 			pageParam = response.body.currentPage
 			pageLimitParam = response.body.pageLimit
 		}
 		let paramString = ""
-		if (!!searchParam) paramString += `search=${searchParam}&`
-		if (!!orderByParam) paramString += `orderBy=${orderByParam}&`
-		if (!!pageParam) paramString += `page=${pageParam}&`
-		if (!!pageLimitParam) paramString += `pageLimit=${pageLimitParam}&`
-		goto(`${$page.url.pathname}${!!paramString ? `?${paramString.slice(0, -1)}` : ""}`, {
+		if (searchParam) paramString += `search=${searchParam}&`
+		if (orderByParam) paramString += `orderBy=${orderByParam}&`
+		if (pageParam) paramString += `page=${pageParam}&`
+		if (pageLimitParam) paramString += `pageLimit=${pageLimitParam}&`
+		goto(`${$page.url.pathname}${paramString ? `?${paramString.slice(0, -1)}` : ""}`, {
 			replaceState: false
 		})
 	}

@@ -6,7 +6,6 @@
 // import data from "./data.server"
 // data // silence unused warning, this is needed file watch to work
 
-
 // test("Passphrase forgot POST: passes with username", async () => {
 
 //     /**
@@ -34,7 +33,7 @@
 //      * Check the response
 //      */
 //     expect(response.status).toBe(201)
-//     expect(response.data.success).toBe(true)  
+//     expect(response.data.success).toBe(true)
 
 //     /**
 //      * Check that a passphrase reset code was created
@@ -59,7 +58,6 @@
 //     })
 //     expect(inboxEmail).not.toBe(undefined)
 // })
-
 
 // test("Passphrase forgot POST: passes with email", async () => {
 
@@ -88,7 +86,7 @@
 //      * Check the response
 //      */
 //     expect(response.status).toBe(201)
-//     expect(response.data.success).toBe(true)  
+//     expect(response.data.success).toBe(true)
 
 //     /**
 //      * Check that a passphrase reset code was created
@@ -136,6 +134,6 @@
 //      * Check the response
 //      */
 //     expect(response.status).toBe(400)
-//     expect(response.data.success).toBe(undefined) 
+//     expect(response.data.success).toBe(undefined)
 //     expect(response.data.message).toBeDefined()
 // })

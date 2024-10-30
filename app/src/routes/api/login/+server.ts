@@ -10,37 +10,33 @@ import { logger } from "$server/logging"
 const postForm = PostForm.init()
 
 type Post = {
-	body: PostForm['Data']
+	body: PostForm["Data"]
 }
 
 /**
  * Login a user
  */
-export async function POST (event: KitEvent<Post, RequestEvent>) {
+export async function POST(event: KitEvent<Post, RequestEvent>) {
 	try {
-
 		console.log(event.cookies)
 
 		/**
 		 * Check if user is already logged in
 		 */
-		if (event.locals.user) return Forbidden({body: {message: "You are already logged in"}})
+		if (event.locals.user) return Forbidden({ body: { message: "You are already logged in" } })
 
 		/**
 		 * Validate the data
 		 */
-		const {data, errors} = await validateData({ form: postForm, event })
-		if (Object.keys(errors).length) return BadRequest({ body: { errors }})
+		const { data, errors } = await validateData({ form: postForm, event })
+		if (Object.keys(errors).length) return BadRequest({ body: { errors } })
 
 		/**
 		 * Login
 		 */
 		let authUser: SelectUser | void
-		const email = await db.query.emails.findFirst({ 
-			where: (e, {eq, and}) => and(
-				eq(e.address, data.email),
-				eq(e.isUserPrimary, true),
-			),
+		const email = await db.query.emails.findFirst({
+			where: (e, { eq, and }) => and(eq(e.address, data.email), eq(e.isUserPrimary, true)),
 			with: {
 				user: true
 			}
@@ -56,7 +52,6 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 			}
 
 			if (email.user) {
-
 				if (!email.user.verifiedAt) {
 					return BadRequest({
 						body: {
@@ -72,13 +67,12 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 					})
 				}
 
-				await db.transaction(async tx => {
-
+				await db.transaction(async (tx) => {
 					authUser = await users.login({
 						tx,
 						event,
 						userId: email.userId,
-						passphrase: data.passphrase,
+						passphrase: data.passphrase
 					})
 				})
 			}
@@ -90,7 +84,7 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		if (!authUser) {
 			return BadRequest({
 				body: {
-					message: "Invalid username or passphrase",
+					message: "Invalid username or passphrase"
 				}
 			})
 		}
@@ -99,7 +93,6 @@ export async function POST (event: KitEvent<Post, RequestEvent>) {
 		 * Return the response
 		 */
 		return Ok()
-
 	} catch (e) {
 		logger.error(e)
 		return InternalServerError()

@@ -12,15 +12,12 @@ import { emails } from "$server/providers"
 const putForm = PutForm.init()
 
 interface Put {
-    body: PutForm["Data"]
+	body: PutForm["Data"]
 }
 
 export async function GET(event: RequestEvent) {
 	try {
-		if(!hasAdminPermission(
-			event,
-			schema.emails,
-		)) {
+		if (!hasAdminPermission(event, schema.emails)) {
 			return Forbidden()
 		}
 
@@ -30,7 +27,7 @@ export async function GET(event: RequestEvent) {
 			isUserPrimary: true,
 			verifiedAt: true,
 			createdAt: true,
-			updatedAt: true,
+			updatedAt: true
 		}
 
 		const availableRelations: AvailableRelations = {
@@ -43,7 +40,7 @@ export async function GET(event: RequestEvent) {
 					isUserPrimary: true,
 					verifiedAt: true,
 					createdAt: true,
-					updatedAt: true,
+					updatedAt: true
 				}
 			}
 		}
@@ -58,26 +55,20 @@ export async function GET(event: RequestEvent) {
 			return NotFound()
 		}
 
-		return Ok({body:result})
-
+		return Ok({ body: result })
 	} catch (error) {
 		console.log(error)
 		return InternalServerError()
 	}
 }
 
-
 export async function PUT(event: KitEvent<Put, RequestEvent>) {
 	try {
-
 		////
 		// CHECK PERMISSIONS
 		////
 
-		if(!hasAdminPermission(
-			event,
-			schema.emails,
-		)) {
+		if (!hasAdminPermission(event, schema.emails)) {
 			return Forbidden()
 		}
 
@@ -88,7 +79,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		const { data, errors } = await validateData({
 			form: putForm,
-			event, 
+			event
 		})
 
 		if (errors.keys) {
@@ -102,7 +93,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		const email = await db.query.emails.findFirst({
 			where: (u, { eq }) => eq(u.id, event.params.resourceId)
 		})
-		
+
 		if (!email) {
 			return NotFound()
 		}
@@ -132,7 +123,9 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			hasChanges = true
 		} else if (!data.isUserPrimary && email.isUserPrimary) {
 			// We cannot unset the primary email
-			return BadRequest({ body: { message: "Cannot unset primary email, set a new primary instead" } })
+			return BadRequest({
+				body: { message: "Cannot unset primary email, set a new primary instead" }
+			})
 		}
 
 		////
@@ -147,10 +140,13 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 
 		await db.transaction(async (tx) => {
 			if (Object.keys(values).length > 0) {
-				await tx.update(schema.emails).set(values).where(eq(schema.emails.id, event.params.resourceId))
+				await tx
+					.update(schema.emails)
+					.set(values)
+					.where(eq(schema.emails.id, event.params.resourceId))
 			}
 			if (data.isUserPrimary && !email.isUserPrimary) {
-				await emails.setUserPrimary({tx, emailId: email.id, userId: data.userId})
+				await emails.setUserPrimary({ tx, emailId: email.id, userId: data.userId })
 			}
 		})
 
@@ -158,8 +154,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		// RESPONSE
 		////
 
-		return Ok({ body: { success: true }})
-
+		return Ok({ body: { success: true } })
 	} catch (err) {
 		logger.exception(err, event)
 		return InternalServerError()
@@ -171,15 +166,11 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
  */
 export async function DELETE(event: RequestEvent) {
 	try {
-
 		////
 		// CHECK PERMISSIONS
 		////
-		
-		if(!hasAdminPermission(
-			event,
-			schema.emails,
-		)) {
+
+		if (!hasAdminPermission(event, schema.emails)) {
 			return Forbidden()
 		}
 
@@ -208,8 +199,7 @@ export async function DELETE(event: RequestEvent) {
 		// RESPONSE
 		////
 
-		return Ok({ body: { success: true }})
-	
+		return Ok({ body: { success: true } })
 	} catch (error) {
 		logger.exception(error, event)
 		return InternalServerError()

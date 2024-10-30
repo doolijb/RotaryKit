@@ -58,12 +58,12 @@
 
     function onSelectedValueChange(event) {
         const selectedValues = Array.from(event.target.selectedOptions).map((option: AutocompleteOption) => option.value) as [string|number]
-        selectedValue = !!selectedValues ? selectedValues[0] : undefined
+        selectedValue = selectedValues ? selectedValues[0] : undefined
         selectedOption = options.find(option => selectedValues.includes(option.value))
     }
 
     onMount(async () => {
-        if (!!selectedOption) {
+        if (selectedOption) {
             selectedValue = selectedOption.value as string | number
         }
         await onSearchChange(null, {delay: 0})
