@@ -1,4 +1,4 @@
-# Welcome
+# A Sveltekit Framework Template
 
 This is a project template that prioritizes organization, useability and maintainability. To achieve code cleanliness and readability, this codebase leans heavily into a highly opinionated file and directory structure while running away from as much code abstraction as possible.
 
@@ -7,6 +7,14 @@ As a benefit the project is mutable because the majority of the logic is not abs
 The two largest contributions included are the custom validations library, and the integrated postgres Drizzle-ORM library.
 
 Additionally, this project is designed to be developed inside of a container to ensure consistently reliable development environment and tools regardless of developer or machine.
+
+# Getting started
+
+## Clone this repository to your new project
+
+```bash
+git clone https://github.com/username/template-repo.git ./MY-NEW-PROJECT
+```
 
 # Application Structure
 

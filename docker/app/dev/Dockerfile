@@ -9,7 +9,7 @@
 # # # # # # # # # # # # # # # # # # #
 
 # Use the NGINX Unit image, which is based on Debian
-FROM unit:1.31.1-node20
+FROM unit:1.33.0-node22
 
 # # # # # # # # # # # # # # # # # # # #
 # # INSTALL LINUX DEPENCENDIES        #
@@ -25,8 +25,9 @@ FROM unit:1.31.1-node20
 
 WORKDIR /srv/www/app
 COPY ../app .
-RUN npm i
-RUN npm i -g kill-port
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
+RUN pnpm i
+RUN pnpm i -g kill-port
 RUN npx playwright install
 RUN npx playwright install-deps
 

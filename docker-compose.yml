@@ -9,7 +9,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.5.0.0/16
 
 volumes:
   postgres_data:
@@ -30,7 +30,7 @@ services:
       - ./server:/srv/www/app/server
     networks:
       default:
-        ipv4_address: 172.20.0.10
+        ipv4_address: 172.5.0.10
     environment:
       - APP_URL=${APP_URL}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -74,7 +74,7 @@ services:
     image: postgres:13.0-alpine
     networks:
       default:
-        ipv4_address: 172.20.0.20
+        ipv4_address: 172.5.0.20
     ports:
       - 5432:5432
     environment:
@@ -97,7 +97,7 @@ services:
     image: minio/minio:RELEASE.2024-10-02T17-50-41Z
     networks:
       default:
-        ipv4_address: 172.20.0.30
+        ipv4_address: 172.5.0.30
     ports:
       - 9000:9000
       - 9001:9001
@@ -137,7 +137,7 @@ services:
     image: maildev/maildev
     networks:
       default:
-        ipv4_address: 172.20.0.50
+        ipv4_address: 172.5.0.50
     ports:
       - 1080:1080
       - 1025:1025

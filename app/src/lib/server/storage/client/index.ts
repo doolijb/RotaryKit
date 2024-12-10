@@ -38,7 +38,7 @@ const client = new S3Client({
 	},
 	region: STORAGE_DEFAULT_REGION,
 	endpoint: endpoint.toString(),
-	forcePathStyle: true // needed for minio
+	forcePathStyle: process.env.STORAGE_FORCE_PATH_STYLE !== undefined ? !!process.env.STORAGE_FORCE_PATH_STYLE : true
 })
 
 export { client }
