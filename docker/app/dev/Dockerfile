@@ -12,7 +12,7 @@
 FROM unit:1.33.0-node22
 
 # # # # # # # # # # # # # # # # # # # #
-# # INSTALL LINUX DEPENCENDIES        #
+# # INSTALL LINUX DEPENDENCIES        #
 # # # # # # # # # # # # # # # # # # # #
 
 # RUN apt update -y \

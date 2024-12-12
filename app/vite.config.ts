@@ -2,7 +2,7 @@ import { sveltekit } from "@sveltejs/kit/vite"
 import { defineConfig, type UserConfigExport } from "vitest/config"
 import fs from "fs"
 import yaml from "js-yaml"
-import { zeroAPI } from "sveltekit-zero-api"
+import zeroAPI from "sveltekit-zero-api/vite"
 
 // Read the aliases from the YAML file
 const aliases = yaml.load(fs.readFileSync("aliases.yaml", "utf-8")) as { [key: string]: unknown }

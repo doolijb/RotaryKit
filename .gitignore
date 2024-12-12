@@ -8,3 +8,6 @@ app/.svelte-kit
 app/package
 app/vite.config.js.timestamp-*
 app/vite.config.ts.timestamp-*
+app/.pnpm-store/
+
+app/pnpm-lock.yaml

@@ -1,8 +1,8 @@
-import { createZeroApi } from "sveltekit-zero-api/api"
-import type { GeneratedAPI } from "$src/sveltekit-zero-api"
+import type { APIRoutes } from "$src/api.d"
+import { createAPIProxy } from "sveltekit-zero-api/client"
 
-const routes = createZeroApi({
-	onError: async (err) => console.error("[API]", err)
-}) as GeneratedAPI
+const proxy = createAPIProxy() as APIRoutes
 
-export default routes.api
+const api = proxy.api
+
+export default api
