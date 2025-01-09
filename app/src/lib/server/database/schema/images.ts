@@ -3,17 +3,16 @@ import {
 	varchar,
 	uuid,
 	timestamp,
-	bigint,
-	type PgTableWithColumns
+	bigint
 } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { users } from "./users"
 
-export const images: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable("images", {
+export const images = pgTable("images", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`(gen_random_uuid ())`),
-	title: varchar("title", { length: 256 }).notNull(),
+	title: varchar("title", { length: 100 }).notNull(),
 	totalBytes: bigint("total_bytes", { mode: "number" }).notNull(), // Consider changing to numeric if applicable
 	originalPath: varchar("original_path", { length: 512 }),
 	originalBytes: bigint("original_bytes", { mode: "number" }), // Consider changing to numeric if applicable
@@ -37,19 +36,17 @@ export const images: PgTableWithColumns<any> & { usePermissions?: boolean } = pg
 	}),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
-	status: varchar("status", { length: 256 }).notNull()
+	status: varchar("status", { length: 50 }).notNull()
 })
 
-images.usePermissions = true
-
-export const imageRelations = relations(images, ({ one: One }) => ({
-	uploadedByUser: One(users, {
+export const imageRelations = relations(images, ({ one }) => ({
+	uploadedByUser: one(users, {
 		fields: [images.uploadedByUserId],
 		references: [users.id],
 		relationName: "uploadedByUser"
 	}),
 
-	profileImageUser: One(users, {
+	profileImageUser: one(users, {
 		fields: [images.profileImageUserId],
 		references: [users.id],
 		relationName: "profileImageUser"

@@ -26,7 +26,9 @@ interface Post {
  * Admin view for a list of users
  */
 export async function GET(event: KitEvent<Get, RequestEvent>) {
-	hasAdminPermission(event, schema.users)
+	if (!hasAdminPermission(event, schema.users)) {
+		return Forbidden()
+	}
 
 	try {
 		const columns: { [key: string]: boolean } = {
@@ -68,7 +70,9 @@ export async function GET(event: KitEvent<Get, RequestEvent>) {
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
 	try {
-		hasAdminPermission(event, schema.users)
+		if (!hasAdminPermission(event, schema.users)) {
+			return Forbidden()
+		}
 
 		/**
 		 * Validate the data
@@ -83,7 +87,7 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 			event
 		})
 
-		if (errors.keys) return BadRequest({ body: { errors } })
+		if (errors.keys) return BadRequest({ body: { errors, message: "Validation failed" } })
 
 		////
 		// DATABASE VALIDATION

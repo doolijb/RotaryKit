@@ -23,7 +23,7 @@ export async function checkSettings({
 		"USER_TOKEN_EXPIRATION_HOURS",
 		"SMTP_HOST",
 		"SMTP_PORT",
-		"SMTP_USE_TLS",
+		"SMTP_USE_SECURE",
 		"SMTP_USER",
 		"SMTP_PASSWORD",
 		"SMTP_DISPLAY_NAME",

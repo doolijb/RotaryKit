@@ -18,13 +18,21 @@ export async function checkObjectStorage() {
 	} = process.env
 
 	if (
-		!STORAGE_ACCESS_KEY_ID ||
-		!STORAGE_SECRET_ACCESS_KEY ||
-		!STORAGE_DEFAULT_REGION ||
-		!STORAGE_DEFAULT_BUCKET ||
-		!STORAGE_PRIVATE_ENDPOINT
+		STORAGE_ACCESS_KEY_ID === undefined ||
+		STORAGE_SECRET_ACCESS_KEY === undefined ||
+		STORAGE_DEFAULT_REGION === undefined ||
+		STORAGE_DEFAULT_BUCKET === undefined ||
+		STORAGE_PRIVATE_ENDPOINT === undefined
 	) {
-		logger.error({ message: "Missing required S3/Minio environment variables", error: null })
+		// Log the missing environment variables
+		const missingVariables = [
+			"STORAGE_ACCESS_KEY_ID",
+			"STORAGE_SECRET_ACCESS_KEY",
+			"STORAGE_DEFAULT_REGION",
+			"STORAGE_DEFAULT_BUCKET",
+			"STORAGE_PRIVATE_ENDPOINT"
+		].filter((variable) => process.env[variable] === undefined)
+		logger.error({ message: `Missing required S3/Minio environment variables: ${missingVariables.join(", ")}` })
 		process.exit(1)
 	}
 

@@ -4,7 +4,7 @@ import { ImageStatus } from "$shared/constants"
 
 export class AdminEditImage extends FormSchema {
 	fields = {
-		title: v.String.init().maxLength({ max: 255 }),
+		title: v.String.init().maxLength({ max: 100 }).minLength({ min: 5 }),
 		status: v.String.init().selectOptions({ options: ImageStatus.options })
 	}
 	optional = {}

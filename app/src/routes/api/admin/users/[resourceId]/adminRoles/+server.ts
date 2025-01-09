@@ -28,7 +28,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 			form: putForm,
 			event
 		})
-		if (errors.keys) return BadRequest({ body: { errors } })
+		if (errors.keys) return BadRequest({ body: { errors, message: "Validation failed" } })
 
 		////
 		// UPDATE USER

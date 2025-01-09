@@ -18,7 +18,7 @@
     }
 
     let {
-        fieldErrors,
+        fieldErrors = $bindable({}),
         fieldValidator,
         legendPopup,
         validState

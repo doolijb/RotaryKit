@@ -37,7 +37,7 @@ export class FileSizes extends Validator {
 
 	test = async ({ key, data }) => {
 		const files: File[] = data[key]
-		if (!Array.isArray(files)) return false
+		if (!Array.isArray(files) && !files) return true
 		return files.every((file) => {
 			const extension = file.name.split(".").pop()?.toLowerCase()
 			const fileType = Object.keys(fileTypes).find((type) =>

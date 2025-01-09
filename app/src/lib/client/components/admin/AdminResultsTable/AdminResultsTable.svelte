@@ -43,7 +43,7 @@
 			[key: string]: {
 				header?: string
 				handler?: (result: Result<any>) => any
-				orderByKey?: string
+				orderByKey?: string | false
 				getUrl?: (result: Result<any>) => string
 			}
 		};
@@ -133,7 +133,7 @@
 	 * If it isn't, just return the key.
 	 */
 	function getOrderByKey(key: string): string | undefined {
-		if (dataHandlers[key]) {
+		if (dataHandlers[key] !== undefined) {
 			return dataHandlers[key].orderByKey
 		}
 		return key
@@ -234,7 +234,7 @@
 {#if results.length}
 	<!-- DISPLAY TABLE OF RESULTS -->
 	<div class="table-container mb-4">
-		<table class="table-hover table text-inherit variant-soft">
+		<table class="table table-hover">
 			<!-- TABLE HEADER -->
 			<thead>
 				<tr>

@@ -4,7 +4,7 @@ import { ImageSizes, ImageStatus } from "$shared/constants"
 
 export class AdminCreateImage extends FormSchema {
 	fields = {
-		title: v.String.init().maxLength({ max: 255 }),
+		title: v.String.init().maxLength({ max: 100 }).minLength({ min: 5 }),
 		image: v.Files.init()
 			.fileSizes({ maxSize: 50 })
 			.fileTypes({

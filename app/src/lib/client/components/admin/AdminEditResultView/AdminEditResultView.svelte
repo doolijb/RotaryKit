@@ -29,6 +29,9 @@
 
 		// Snippets
 		helpSnippet?: Snippet
+
+		// Functions
+		mutateResult?: (result: Record<string, any>) => Promise<Record<string, any>>
 	}
 
 	let {
@@ -42,7 +45,10 @@
 		tabs = $bindable({}),
 
 		// Snippets
-		helpSnippet
+		helpSnippet,
+
+		// Functions
+		mutateResult
 	}: Props = $props();
 
 	////
@@ -79,7 +85,7 @@
 	async function getResult() {
 		resourceApi.resourceId$($page.params.resourceId).GET({})
 			.Success(async (res) => {
-				result = res.body
+				result = mutateResult ? await mutateResult(res.body) : res.body
 			})
 			.ClientError(handleClientError({ toastStore}))
 			.ServerError(handleServerError({ toastStore }))
@@ -95,9 +101,9 @@
 	}
 
 	async function onsubmit() {
-		const initialDisabled = tabs[currentTab].disabled
-		tabs[currentTab].disabled = true
-		await tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
+		if (!tabs[currentTab].disabled) {
+			tabs[currentTab].disabled = true
+			await tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
 			.Success(async () => {
 				toastStore.trigger(
 					new Toast({
@@ -109,7 +115,8 @@
 			})
 			.ClientError(handleClientError({ toastStore}))
 			.ServerError(handleServerError({ toastStore }))
-		tabs[currentTab].disabled = initialDisabled
+			tabs[currentTab].disabled = false
+		}
 	}
 
 	////
@@ -170,7 +177,7 @@
 
 <!-- Display help text -->
 {#if helpSnippet}
-	<div class="card variant-soft p-4 m-0 mb-4">
+	<div class="card p-4 m-0 mb-4">
 		<Accordion>
 			<AccordionItem title="Help">
 				<!-- Help Icon -->
@@ -184,7 +191,7 @@
 	</div>
 {/if}
 
-<div class="card variant-soft p-4 mb-4">
+<div class="card p-4 mb-4">
 	{#if Object.keys(tabs).length > 1}
 		<TabGroup class="mb-4 capitalize">
 			{#each Object.keys(tabs) as tab}

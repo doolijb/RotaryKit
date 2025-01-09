@@ -24,6 +24,7 @@ import { usersToAdminRoles, usersToAdminRoleRelations } from "./usersToAdminRole
  * Files
  */
 import { images, imageRelations } from "./images"
+import { videos, videoRelations } from "./videos"
 
 /**
  * Logging
@@ -45,7 +46,8 @@ export const schema = {
 	adminRolesToPermissions,
 	usersToAdminRoles,
 	emailLogs,
-	images
+	images,
+        videos
 }
 
 /**
@@ -61,5 +63,28 @@ export const relations = {
 	adminRoleRelations,
 	adminRolesToPermissionRelations,
 	usersToAdminRoleRelations,
-	imageRelations
+	imageRelations,
+	creationRelations,
+	creationTagRelations,
+	creationsToTagRelations,
+	creationToGalleryItemRelations,
+	videoRelations,
+	creationDownloadRelations,
+}
+
+/**
+ * Which tables use permissions
+ */
+export const usesPermissions = {
+	users: true,
+	emails: true,
+	userTokens: false,
+	emailVerifications: false,
+	loginCodes: false,
+	adminPermissions: false,
+	adminRoles: true,
+	adminRolesToPermissions: false,
+	usersToAdminRoles: false,
+	images: true,
+	videos: true,
 }

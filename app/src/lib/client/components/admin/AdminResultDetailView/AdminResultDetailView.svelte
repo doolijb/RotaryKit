@@ -1,8 +1,15 @@
 <script lang="ts">
-	import { AdminHeader, DetailGridItem, Loading, TextCell, AdminImageResultDetails } from "$client/components" 
+	import { 
+		AdminHeader, 
+		DetailGridItem, 
+		Loading, 
+		TextCell, 
+		AdminImageResultDetails, 
+		AdminVideoResultDetails 
+	} from "$client/components" 
 	import Icon from "@iconify/svelte"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
+	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils/index.svelte"
 	import { page } from "$app/stores"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
 	import { onMount } from "svelte"
@@ -13,38 +20,49 @@
 	const toastStore = getToastStore()
 	const modalStore = getModalStore()
 
+	type DataType = "string" | "number" | "boolean" | "html"
+
 	type DataHandler = {
 		header?: string
 		handler?: (result: Result<any>) => string | boolean | number
 		orderByKey?: string
 		getUrl?: (result: Result<any>) => string
 		defer?: string
-	}
-
-	type DataHandlers = {
-		[key: string]: DataHandler | DataHandlers
+		dataType?: DataType
+		tabType?: "default" | "image" | "video" | "array"
 	}
 
 	////
 	// VARIABLE PROPS
-	
+	////
 
 	interface Props {
-		////
+		// Props
 		resource: string;
 		resourceApi: ResourceApi;
-		dataHandlerSet?: DataHandlers;
+		dataHandlers?: DataHandlers;
 		naturalKey: string;
 		resourceId: string;
+		showCreateButton: boolean;
+		showEditButton: boolean;
+		showDeleteButton: boolean;
+
+		// Functions
 		mutateResult?: (result: Result<any>) => Result<any> | undefined;
 	}
 
 	let {
+		// Props
 		resource,
 		resourceApi,
-		dataHandlerSet = {},
+		dataHandlers = {},
 		naturalKey,
 		resourceId,
+		showCreateButton = true,
+		showEditButton = true,
+		showDeleteButton = true,
+
+		// Functions
 		mutateResult = undefined
 	}: Props = $props();
 
@@ -58,21 +76,21 @@
 		adminPermissions: $page.data.adminPermissions,
 		action: "PUT",
 		resources: [resource]
-	})
+	}) && showEditButton
 
 	const canDeleteResource: boolean = hasAdminPermission({
 		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
-	})
+	}) && showDeleteButton
 
 	const canCreateResource: boolean = hasAdminPermission({
 		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
-	})
+	}) && showCreateButton
 
 	async function handleDelete() {
 		modalStore.trigger({
@@ -138,10 +156,27 @@
 	////
 
 	function getDataHandler(key: string): DataHandler | undefined {
-		// If default, then we want the root dataHandlerSet
-		if (currentTab === "default") return dataHandlerSet[key]
+		// If default, then we want the root dataHandlers
+		if (currentTab === "default") return dataHandlers[key]
 		// Otherwise, we want the nested dataHandler(s)
-		return dataHandlerSet[currentTab]?.[key]
+		return dataHandlers[currentTab]?.[key]
+	}
+
+	function getCurrentTabType() {
+		const dataHandler = currentTab === "default" ? dataHandlers : dataHandlers[currentTab]
+		if (dataHandler) {
+			const type = dataHandler.tabType
+
+			if (type) return type
+		}
+
+		if (result && currentTab && ("smallWebpPath" in tabs[currentTab])) {
+			return "image"
+		} else if (result && currentTab && Array.isArray(tabs[currentTab])) {
+			return "array"
+		}
+
+		return "default"
 	}
 
 	function getValue(
@@ -160,6 +195,12 @@
 		return dataHandler ? dataHandler.header || humanizeString(key) : humanizeString(key)
 	}
 
+	function getDataType(key: string) {
+		const dataHandler = getDataHandler(key)
+		let type = dataHandler ? dataHandler.dataType : undefined
+		return type
+	}
+
 	////
 	// LIFECYCLE
 	////
@@ -175,8 +216,6 @@
 	////
 
 	let isLoaded = $derived(!!result && !!currentTab)
-	let isCurrentTabImage = $derived(result && currentTab && ("smallWebpPath" in tabs[currentTab]));
-	let isCurrentTabArray = $derived(result && currentTab && Array.isArray(tabs[currentTab]))
 </script>
 
 {#snippet noResults()}
@@ -215,7 +254,7 @@
 </AdminHeader>
 
 {#if isLoaded}
-	<section class="card variant-soft p-4 mb-4">
+	<section class="card p-4 mb-4">
 		<!-- svelte-ignore a11y_label_has_associated_control -->
 		<TabGroup>
 			{#each Object.keys(tabs) as key}
@@ -231,52 +270,56 @@
 			<!-- Tab Panels --->
 			{#snippet panel()}
 					{#key currentTab}
-						<!-- If array of items, display a table -->
-						{#if isCurrentTabArray}
-							{#if tabs[currentTab].length === 0}
-								{@render noResults()}
-							{:else}
-							<!-- Display a table -->
-								<div class="table-container">
-									<table class="table w-full m-0 variant-soft">
-										<thead>
-											<tr>
-												{#each Object.keys(tabs[currentTab][0]) as key}
-													<th>{getHeader(key)}</th>
-												{/each}
-											</tr>
-										</thead>
-										<tbody>
-											{#each tabs[currentTab] as result}
+						{#if currentTab}
+						{@const tabType = getCurrentTabType()}
+							<!-- If array of items, display a table -->
+							{#if tabType === "array"}
+								{#if tabs[currentTab].length === 0}
+									{@render noResults()}
+								{:else}
+								<!-- Display a table -->
+									<div class="table-container">
+										<table class="table w-full m-0 variant-soft">
+											<thead>
 												<tr>
-													{#each Object.keys(result) as key}
-														{#if typeof getValue(result, key,) === "boolean"}
-															<BoolCell value={getValue(result, key)} />
-														{:else}
-															<TextCell text={`${getValue(result, key)}`} />
-														{/if}
+													{#each Object.keys(tabs[currentTab][0]) as key}
+														<th>{getHeader(key)}</th>
 													{/each}
 												</tr>
-											{/each}
-										</tbody>
-									</table>
+											</thead>
+											<tbody>
+												{#each tabs[currentTab] as result}
+													<tr>
+														{#each Object.keys(result) as key}
+															{#if typeof getValue(result, key,) === "boolean"}
+																<BoolCell value={getValue(result, key)} />
+															{:else}
+																<TextCell text={`${getValue(result, key)}`} />
+															{/if}
+														{/each}
+													</tr>
+												{/each}
+											</tbody>
+										</table>
+									</div>
+								{/if}
+							<!-- If object -->
+							{:else if Object.keys(tabs[currentTab] || {}).length === 0}
+								{@render noResults()}
+
+							{:else if tabType === "image"}
+								<AdminImageResultDetails result={tabs[currentTab]} />
+							{:else if tabType === "video"}
+								<AdminVideoResultDetails result={tabs[currentTab]} />
+							{:else if tabType === "default"}
+								<!-- If object, display a grid of details -->
+								<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min">
+									{#each Object.keys(tabs[currentTab]) as key}
+										{@const dataType = getDataType(key)}
+										<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} {dataType}  />
+									{/each}
 								</div>
 							{/if}
-
-						<!-- If object -->
-						{:else if Object.keys(tabs[currentTab] || {}).length === 0}
-							{@render noResults()}
-
-						{:else if isCurrentTabImage}
-							<AdminImageResultDetails result={tabs[currentTab]} />
-
-						{:else}
-							<!-- If object, display a grid of details -->
-							<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-								{#each Object.keys(tabs[currentTab]) as key}
-									<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} />
-								{/each}
-							</div>
 						{/if}
 					{/key}
 				{/snippet}

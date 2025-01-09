@@ -1,31 +1,43 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
     import type { PopupSettings } from "@skeletonlabs/skeleton"
-
-    ////
-    // PARENT EXPORTS
-    
-
+	import humanizeString from "humanize-string"
 
     ////
     // LOCAL EXPORTS
-    
+    ////
     
     interface Props {
-        ////
-        fieldErrors: FieldErrors;
-        fieldValidator: Primitive<unknown>;
-        attrs: FormFieldAttributes | undefined;
-        ////
-        legendPopup: PopupSettings;
+        // Props
+        fieldValidator: Primitive<unknown>
+        attrs: FormFieldAttributes | undefined
+        legendPopup: PopupSettings
+
+        // Bindable
+        fieldErrors: FieldErrors
     }
 
     let {
-        fieldErrors,
+        // Props
         fieldValidator,
         attrs,
-        legendPopup
-    }: Props = $props();
+        legendPopup,
+
+        // Bindable
+        fieldErrors = $bindable({}),
+    }: Props = $props()
+
+    ////
+    // CONSTANTS
+    ////
+
+	const validatorKeys = fieldValidator.validators.map((v) => v.key)
+
+    ////
+    // STATE
+    ////
+
+    let responseValidators: FieldErrors = $state({})
     
     ////
     // CALCULATED
@@ -34,6 +46,17 @@
     let stickyValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => validator.isSticky && !validator.isHidden))
     let dynamicValidators = $derived(Object.values(fieldValidator.validators).filter((validator) => !validator.isHidden && !validator.isSticky))
     let validators = $derived([...stickyValidators, ...dynamicValidators])
+
+    // Filter out validators that are not in the fieldValidator
+	$effect(() => {
+		const res: FieldErrors = {}
+		Object.keys(fieldErrors).forEach((key) => {
+			console.log(`Includes "${key}"`, validatorKeys.includes(key))
+			if (!validatorKeys.includes(key)) {
+				res[key] = fieldErrors[key]
+			}})
+		responseValidators = res
+	})
     
 </script>
 
@@ -61,9 +84,20 @@
                     <span class="prose-sm">{validator.message}</span>
                 </div>
             {/each}
+            {#each Object.entries(responseValidators) as [key, value]}
+                <div>
+                    <span
+                        class="badge"
+                        class:variant-filled-success={!fieldErrors[key]}
+                        class:variant-filled-error={!!fieldErrors[key]}
+                    >
+                        {humanizeString(key)}
+                    </span>
+                </div>
+                <div class="mb-1 ps-2">
+                    <span class="prose-sm">{value}</span>
+                </div>
+            {/each}
         {/if}
     </div>
 {/if}
-
-<style lang="postcss">
-</style>

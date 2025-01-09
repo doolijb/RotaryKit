@@ -7,11 +7,10 @@ import { utils } from "$server/database"
  * Checks if the user has the permission to do the action.
  * Super users have all permissions whether they are explicitly assigned or not.
  * All other users must be staff for the permission to be valid.
- * Throws a forbidden error if the user does not have permission.
  *
  * @example:
  * export async function POST (event: RequestEvent) {
- *         hasAdminPermission(event, schema.users)
+ *         if (!hasAdminPermission(event, schema.users)) { return Forbidden() }
  *         //... continue with request
  * }
  */

@@ -83,7 +83,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		})
 
 		if (errors.keys) {
-			return BadRequest({ body: { errors } })
+			return BadRequest({ body: { errors, message: "Validation failed" } })
 		}
 
 		////

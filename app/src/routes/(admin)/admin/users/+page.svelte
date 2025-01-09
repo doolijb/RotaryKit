@@ -9,6 +9,10 @@
         "emails": {
             header: "Primary Email",
             handler: (results: SelectEmail[]) => results !== undefined && results.length ? results[0].address : undefined 
+        },
+        "verifiedAt": {
+            header: "Is Verified",
+            handler: (result: Date) => !!result
         }
     }
 </script>

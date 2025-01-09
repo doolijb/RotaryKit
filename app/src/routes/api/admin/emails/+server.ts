@@ -23,7 +23,9 @@ const postForm = PostForm.init()
 export async function GET(event: KitEvent<GET, RequestEvent>) {
 	try {
 		// Check permissions
-		hasAdminPermission(event, schema.emails)
+		if (!hasAdminPermission(event, schema.emails)) {
+			return Forbidden()
+		}
 
 		const columns: { [key: string]: boolean } = {
 			id: true,
@@ -64,7 +66,9 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Check permissions
 		 */
-		hasAdminPermission(event, schema.emails)
+		if (!hasAdminPermission(event, schema.emails)) {
+			return Forbidden()
+		}
 
 		/**
 		 * Validate the data

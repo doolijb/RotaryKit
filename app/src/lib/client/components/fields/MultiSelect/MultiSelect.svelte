@@ -59,11 +59,22 @@
 	}: Props = $props();
 
 	////
+	// STATE
+	////
+
+	let fieldErrors: FieldErrors = $state({})
+
+	////
 	// FUNCTIONS
 	////
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -104,7 +115,6 @@
 
 	let attrs = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
 	let required = $derived(fieldValidator.isRequired)
 	let canRemove = $derived(!!selectedValues.length) 
 	let canAdd = $derived(!!selectedAvailable.length)
@@ -126,6 +136,10 @@
 		}
 	})
 
+	$effect(() => {
+		fieldErrors = errors[field] || {}
+	})
+
 </script>
 
 <div class="mb-2">
@@ -136,7 +150,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors hideRequired={true} />
 		{/if}
 	</div>
 	<!-- Side by side select, with arrows to add, remove from left to right -->

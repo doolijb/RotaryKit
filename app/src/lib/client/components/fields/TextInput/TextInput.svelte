@@ -72,11 +72,22 @@
 	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
 
 	////
+	// STATE
+	////
+
+	let fieldErrors: FieldErrors = $state({})
+
+	////
 	// FUNCTIONS
 	////
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -99,9 +110,32 @@
 	////
 
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
 	let validatorLength = $state(0);
 	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
+	let maxlength = $derived.by(() => {
+		if (fieldValidator) {
+			const validator = fieldValidator.validators.find( v => {
+				return v.key === "maxLength"
+			})
+			if (validator) {
+				return validator.args["maxLen"]
+			}
+		}
+	})
+	let minlength = $derived.by(() => {
+		if (fieldValidator) {
+			const validator = fieldValidator.validators.find( v => {
+				return v.key === "minLength"
+			})
+			if (validator) {
+				return validator.args["minLen"]
+			}
+		}
+	})
+
+	$effect(() => {
+		fieldErrors = errors[field] || {}
+	})
 
 	$effect(() => {
 		if (!placeholder && attrs) {
@@ -159,11 +193,11 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors />
 		{/if}
 	</div>
 
-	<div class="input-group flex">
+	<div class="input-group flex border" class:border-error-500={validState === ValidStates.INVALID}>
 		{#if prefixSnippet}
 			<div class="align-middle m-0 px-0">
 				{@render prefixSnippet?.()}
@@ -178,6 +212,8 @@
 			bind:value={data[field]}
 			{disabled}
 			{required}
+			{maxlength}
+			{minlength}
 			{onfocus}
 			oninput={handleOnInput}
 			onblur={handleOnBlur}
@@ -190,12 +226,12 @@
 		{/if}
 		{#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
+				<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
 			</div>
 		{/if}
 	</div>
 	{#if !disabled && (validatorLength || attrs?.description)}
-		<ValidationLegend.Popup {fieldValidator} {fieldErrors} {legendPopup} {attrs} />
+		<ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
 	{/if}
 </div>
 

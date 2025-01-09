@@ -27,7 +27,9 @@ const config = {
 	build: {
 		rollupOptions: {
 			external: [/\.storybook\..+$/, /\.test\..+$/]
-		}
+		},
+		sourcemap: true,
+		ssr: true,
 	},
 	resolve: {
 		// alias: aliasConfig

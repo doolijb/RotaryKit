@@ -6,11 +6,13 @@ import { userAuthentication, routeGuard } from "$server/middleware"
 // BOOT
 ////
 
-await boot({
-	envDefaults: {
-		USER_TOKEN_EXPIRATION_HOURS: "72"
-	}
-})
+if (process.env.NODE_ENV !== "build") {
+	await boot({
+		envDefaults: {
+			USER_TOKEN_EXPIRATION_HOURS: "72"
+		}
+	})
+}
 
 ////
 // MIDDLEWARE

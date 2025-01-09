@@ -1,5 +1,5 @@
 export async function load() {
 	return {
-		title: "Emails : Admin"
+		title: "Edit Email : Admin"
 	}
 }

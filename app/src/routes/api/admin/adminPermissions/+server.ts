@@ -1,6 +1,6 @@
 import type { RequestEvent } from "@sveltejs/kit"
 import { adminApi, hasAdminPermission } from "$server/requests"
-import { InternalServerError } from "sveltekit-zero-api/http"
+import { Forbidden, InternalServerError } from "sveltekit-zero-api/http"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
 import { schema } from "$server/database"
@@ -15,7 +15,9 @@ interface Get {
 export async function GET(event: KitEvent<Get, RequestEvent>) {
 	try {
 		// Check permissions
-		hasAdminPermission(event, schema.adminRoles)
+		if (!hasAdminPermission(event, schema.adminRoles)) {
+			return Forbidden()
+		}
 
 		const columns: { [key: string]: boolean } = {
 			id: true,

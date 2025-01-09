@@ -14,20 +14,24 @@ import { usersToAdminRoles } from "./usersToAdminRoles"
 import { passphrases } from "./passphrases"
 import { emails } from "./emails"
 import { images } from "./images"
+import { creations } from "./creations"
+import { videos } from "./videos"
 
-export const users: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
+export const users = pgTable(
 	"users",
 	{
 		id: uuid("id")
 			.primaryKey()
 			.default(sql`(gen_random_uuid ())`),
-		username: varchar("username", { length: 256 }).notNull(),
+		username: varchar("username", { length: 15 }).notNull(),
+		displayName: varchar("display_name", { length: 15 }),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 		verifiedAt: timestamp("verified_at"),
 		isAdmin: boolean("is_admin").notNull().default(false),
 		isSuperUser: boolean("is_super_user").notNull().default(false),
-		isActive: boolean("is_active").notNull().default(true)
+		isActive: boolean("is_active").notNull().default(true),
+		bio: text("bio")
 	},
 	(obj) => {
 		return {
@@ -35,8 +39,6 @@ export const users: PgTableWithColumns<any> & { usePermissions?: boolean } = pgT
 		}
 	}
 )
-
-users.usePermissions = true
 
 export const userRelations = relations(users, ({ many, one }) => ({
 	// One
@@ -54,6 +56,10 @@ export const userRelations = relations(users, ({ many, one }) => ({
 
 	uploadedImages: many(images, {
 		relationName: "uploadedImageUser"
+	}),
+
+	uploadedVideos: many(videos, {
+		relationName: "uploadedVideoUser"
 	}),
 
 	profileImages: many(images, {

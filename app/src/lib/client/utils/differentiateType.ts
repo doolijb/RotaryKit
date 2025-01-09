@@ -1,4 +1,4 @@
-type ValueType = "unknown" | "uuid" | "number" | "date" | "url" | "boolean"
+type ValueType = "uuid" | "number" | "date" | "url" | "boolean" | "html" | "string"
 
 function isNumber(value: number | string): boolean {
 	if (typeof value === "number") {
@@ -38,18 +38,20 @@ function differentiateType(value: number | string | boolean): ValueType {
 	} else if (isNumber(value)) {
 		return "number"
 	} else {
-		return "unknown"
+		return "string"
 	}
 }
 
-export function getDisplayAndCopyText(value: string | number | boolean | undefined) {
+export function getDisplayAndCopyText(
+	value: string | number | boolean | Date,
+	dataType: ValueType
+) {
 	let copyText: string
 	let displayText: string | boolean | number | undefined
-	const type = differentiateType(value)
+	const type = dataType || differentiateType(value)
 
 	switch (type as ValueType) {
 		case "boolean":
-		case "unknown":
 		case "number":
 			displayText = value
 			copyText = `${value}`
@@ -70,6 +72,13 @@ export function getDisplayAndCopyText(value: string | number | boolean | undefin
 			const time = date.toLocaleTimeString()
 			displayText = day + " " + time
 			copyText = day + " " + time
+			break
+		case "html":
+			displayText = value
+			break
+		case "string":
+			displayText = value
+			copyText = `${value}`
 			break
 	}
 

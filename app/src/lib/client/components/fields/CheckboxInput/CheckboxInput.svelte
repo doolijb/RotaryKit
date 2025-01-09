@@ -52,12 +52,17 @@
 	}: Props = $props();
 
 	////
+	// STATE
+	////
+
+	let fieldErrors: FieldErrors = $state({})
+
+	////
 	// CALCULATED
 	////
 
 	const attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
 	let required = $derived(fieldValidator.isRequired)
 
 	$effect(() => {
@@ -80,7 +85,12 @@
 	}
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -137,7 +147,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} {fieldErrors} hideRequired={true} />
+            <ValidationBadges {fieldValidator} bind:fieldErrors hideRequired={true} />
         {/if}
     </div>
 </div>

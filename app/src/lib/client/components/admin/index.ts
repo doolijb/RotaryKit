@@ -7,5 +7,6 @@ export { default as Pagination } from "./Pagination"
 export { default as DetailGridItem } from "./DetailGridItem"
 export { default as AdminEditResultView } from "./AdminEditResultView"
 export { default as AdminImageResultDetails } from "./AdminImageResultDetails"
+export { default as AdminVideoResultDetails } from "./AdminVideoResultDetails"
 
 export * from "./AdminDashboard"

@@ -12,8 +12,7 @@ import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { users } from "./users"
 
-export const emails: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
-	"emails",
+export const emails = pgTable("emails",
 	{
 		id: uuid("id")
 			.primaryKey()
@@ -32,8 +31,6 @@ export const emails: PgTableWithColumns<any> & { usePermissions?: boolean } = pg
 			.where(sql`${t.isUserPrimary} = true AND ${t.userId} IS NOT NULL`)
 	})
 )
-
-emails.usePermissions = true
 
 export const emailRelations = relations(emails, ({ one: One }) => ({
 	user: One(users, {

@@ -6,7 +6,7 @@
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
+	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils/index.svelte"
 	import type { Component, Snippet } from "svelte"
 
 	const toastStore = getToastStore()
@@ -45,6 +45,7 @@
 	////
 
 	let canSubmit: boolean = $state(false)
+	let disabled: boolean = $state(false)
 	let data = $state({} as FormDataOf<any>)
 
 	////
@@ -60,30 +61,35 @@
 	}
 
 	async function onsubmit() {
-		let body: Record<string, any> | FormData
+		if (!disabled) {
+			disabled = true
+			let body: Record<string, any> | FormData
 
-		switch(requestBodyType) {
-			case "json":
-				body = data
-				break
-			case "formData":
-				body = useFormData({data})
-				break
+			switch(requestBodyType) {
+				case "json":
+					body = data
+					break
+				case "formData":
+					body = useFormData({data})
+					break
+			}
+
+			await resourceApi.POST({body})
+				.Success(async (r) => {
+					toastStore.trigger(
+						new Toast({
+							message: `${pluralize.singular(humanizeString(resource))} created successfully.`,
+							style: "success"
+						})
+					)
+					goto(`/admin/${resource}/${r.body.result[primaryKey]}`)
+				})
+				.ClientError(handleClientError({ toastStore}))
+				.ServerError(handleServerError({ toastStore }))
+			
+				disabled = false
 		}
-
-		await resourceApi.POST({body})
-			.Success(async (r) => {
-				toastStore.trigger(
-					new Toast({
-						message: `${pluralize.singular(humanizeString(resource))} created successfully.`,
-						style: "success"
-					})
-				)
-				goto(`/admin/${resource}/${r.body.result[primaryKey]}`)
-			})
-			.ClientError(handleClientError({ toastStore}))
-			.ServerError(handleServerError({ toastStore }))
-}
+	}
 </script>
 
 {#snippet createButton()}
@@ -124,7 +130,7 @@
 </AdminHeader>
 
 {#if helpSnippet}
-	<div class="card variant-soft p-4 m-0 mb-4">
+	<div class="card bg-surface-100-800-token p-4 m-0 mb-4">
 		<Accordion>
 			<AccordionItem title="Help">
 							
@@ -139,9 +145,10 @@
 	</div>
 {/if}
 
-<div class="card variant-soft p-4 mb-4">
+<div class="card bg-surface-100-800-token p-4 mb-4">
 	<FormComponent
 		bind:canSubmit
+		bind:disabled
 		bind:data
 		{onsubmit}
 		{oncancel}

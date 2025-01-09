@@ -52,8 +52,17 @@ export async function authenticate({
 
 	const userToken = await tx.query.userTokens.findFirst({
 		where: (t, { and, eq, gt }) => and(eq(t.id, tokenId), gt(t.expiresAt, new Date())),
+		orderBy: (t, { desc }) => desc(t.createdAt),
 		with: {
 			user: {
+				// columns: {
+				// 	id: true,
+				// 	username: true,
+				// 	displayName: true,
+				// 	isAdmin: true,
+				// 	isSuperUser: true,
+				// 	bio: true,
+				// },
 				with: {
 					emails: true,
 					profileImages: {

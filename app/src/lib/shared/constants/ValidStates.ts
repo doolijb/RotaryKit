@@ -1,5 +1,5 @@
 export class ValidStates {
-	static readonly VALID = "VALID"
-	static readonly INVALID = "INVALID"
-	static readonly NONE = "NONE"
+	static readonly VALID = "Valid"
+	static readonly INVALID = "Invalid"
+	static readonly NONE = "None"
 }

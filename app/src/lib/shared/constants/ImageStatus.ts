@@ -1,7 +1,7 @@
 export class ImageStatus {
 	// static readonly PROCESSING = "processing"
-	static readonly UNPUBLISHED = "unpublished"
-	static readonly PUBLISHED = "published"
+	static readonly UNPUBLISHED = "Unpublished"
+	static readonly PUBLISHED = "Published"
 	// static readonly ERROR_UPLOADING = "error uploading"
 	// static readonly ERROR_PROCESSING = "error processing"
 

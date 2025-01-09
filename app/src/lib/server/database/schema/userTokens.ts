@@ -1,18 +1,16 @@
 import {
 	pgTable,
-	uniqueIndex,
-	varchar,
+	uniqueIndex,	varchar,
 	uuid,
 	timestamp,
-	text,
-	type PgTableWithColumns
+	text
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { users } from "./users"
 
-export const userTokens: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
-	"user_tokens",
+export const userTokens = pgTable(
+		"user_tokens",
 	{
 		id: uuid("id")
 			.primaryKey()
@@ -25,8 +23,6 @@ export const userTokens: PgTableWithColumns<any> & { usePermissions?: boolean } 
 		os: varchar("os", { length: 256 }).notNull()
 	}
 )
-
-userTokens.usePermissions = false
 
 export const usersTokenRelations = relations(userTokens, ({ many, one }) => ({
 	user: one(users, {

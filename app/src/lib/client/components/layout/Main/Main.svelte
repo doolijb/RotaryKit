@@ -1,15 +1,21 @@
-<script>
-    /**
-     * @typedef {Object} Props
-     * @property {import('svelte').Snippet} [children]
-     */
+<script lang="ts">
+	import type { Snippet } from "svelte"
 
-    /** @type {Props} */
-    let { children } = $props();
+    
+    interface Props {
+        width?: string
+        children?: Snippet
+    }
+
+    let { 
+        width = "w-full",
+        children
+    }: Props = $props()
+
 </script>
 
-<div class="flex justify-center pt-5 px-2 mx-auto">
-    <div class="w-[80rem]">
+<div class="flex flex-col flex-grow p-4 overflow-y-auto">
+    <div class="{width}">
         {@render children?.()}
     </div>
 </div>

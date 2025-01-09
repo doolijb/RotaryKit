@@ -13,10 +13,11 @@
 		showCancel?: boolean
 		showSubmit?: boolean
 		form: FormSchema
+		useSubmitOnEnter?: boolean
 
 		// Bindables
 		disabled?: boolean
-		data?: FormData<typeof form.Data>
+		data?: typeof form["Data"]
 		errors?: FormErrors
 		canSubmit?: boolean
 
@@ -38,10 +39,11 @@
 		showCancel = true,
 		showSubmit = true,
 		form,
+		useSubmitOnEnter = false,
 
 		// Bindables
 		disabled = $bindable(false),
-		data = $bindable({} as FormDataOf<any>),
+		data = $bindable({} as typeof form["Data"]),
 		errors = $bindable({}),
 		canSubmit = $bindable(false),
 
@@ -75,12 +77,6 @@
 		errors = await form.validate({data})
 	}
 
-	const handleOnSubmit = async (args) => {
-		disabled = true
-		await onsubmit(args)
-		disabled = false
-	}
-
 	////
 	// USE DIRECTIVES
 	////
@@ -90,6 +86,9 @@
 	 */
 	function submitOnEnter(node: HTMLFormElement) {
 		const handler = (event: KeyboardEvent) => {
+			if (!useSubmitOnEnter) {
+				return
+			}
 			if (event.key === "Enter") {
 				onsubmit(event)
 			}
@@ -161,7 +160,7 @@
 
 <div>
 	
-	<form use:submitOnEnter use:autofocus onsubmit={handleOnSubmit} class="mb-4">
+	<form use:submitOnEnter use:autofocus {onsubmit} class="mb-4">
 		{@render children()}
 	</form>
 

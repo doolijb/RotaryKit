@@ -24,7 +24,16 @@ export async function send<T extends React.ComponentType<any>>({
 	const transportConfig = {
 		host: process.env.SMTP_HOST,
 		port: parseInt(process.env.SMTP_PORT),
-		secure: process.env.NODE_ENV === "production"
+		secure: process.env.SMTP_USE_SECURE === "true",
+		logger: process.env.SMTP_DEBUG === "true",
+		debug: process.env.SMTP_DEBUG === "true"
+	}
+
+	if (process.env.SMTP_USER || process.env.SMTP_PASSWORD) {
+		transportConfig["auth"] = {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASSWORD
+		}
 	}
 
 	const transporter = nodemailer.createTransport(transportConfig)

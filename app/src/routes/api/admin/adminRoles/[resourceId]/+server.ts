@@ -3,7 +3,7 @@ import { db, schema } from "$server/database"
 import { and, eq, inArray } from "drizzle-orm"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
-import { InternalServerError, Ok, BadRequest, NotFound } from "sveltekit-zero-api/http"
+import {InternalServerError, Ok, BadRequest, NotFound, Forbidden} from 'sveltekit-zero-api/http';
 import { AdminCreateAdminRole as PostForm } from "$shared/validation/forms"
 import { logger } from "$server/logging"
 
@@ -33,7 +33,9 @@ interface Delete {
 export async function GET(event: KitEvent<Get, RequestEvent>) {
 	try {
 		// Check permissions
-		hasAdminPermission(event, schema.adminRoles)
+		if (!hasAdminPermission(event, schema.adminRoles)) {
+			return Forbidden()
+		}
 
 		const columns: { [key: string]: boolean } = {
 			id: true,
@@ -99,7 +101,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		////
 
 		const { data, errors } = await validateData({ form: postForm, event })
-		if (errors.keys) return BadRequest({ body: { errors } })
+		if (errors.keys) return BadRequest({ body: { errors, message: "Validation failed" } })
 
 		////
 		// UPDATE ADMIN ROLE

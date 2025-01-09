@@ -58,46 +58,63 @@
 	// STATE
 	////
 
+	let fieldErrors: FieldErrors = $state({})
 	let addedFiles: FileList = $state()
 	let listedAvailableExtensions: string = $state()
 	let listedFileSizes: string = $state()
 	let listedMaxFileCounts: string = $state()
 
 	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-	////
 	// FUNCTIONS
 	////
 
-	function isValidFileList(value: any): value is FileList {
-        return value instanceof FileList;
-    }
-
-	function addFilesToForm() {
+	async function addFilesToForm() {
 		const initialDisabled = disabled
 		disabled = true
-		data[field] = Array.from(data[field] || [])
 		// Remove any files already in the data
-		const newFiles = Array.from(addedFiles).filter((file) => !data[field].find((f) => f.name === file.name))
-		data[field] = [...data[field], ...newFiles]
+		const newFiles = Array.from(addedFiles).filter((file) => !data[field].find((f: File) => f.name === file.name))
+		const updatedFiles = data[field] || []
+		newFiles.forEach((file) => {
+			if (!updatedFiles.find((f) => f.name === file.name)) {
+				updatedFiles.push(file)
+			}
+		})
+		data[field] = updatedFiles
 		// Clear the added files
 		addedFiles = null
 		disabled = initialDisabled
-		touch()
+		await touch()
 	}
 
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({ key: field, data })
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
 		isTouched = true
 		validate()
+	}
+
+	function getFileAcceptsAttr() {
+		if (!fileTypesValidator) return
+
+		let extensions = []
+		// if ("fileTypes" in fileTypesValidator.args) {
+		// 	;(fileTypesValidator.args.fileTypes as FileType[]).forEach((fileType) => {
+		// 		extensions.push(...fileTypes[fileType])
+		// 	})
+		// }
+		if ("extensions" in fileTypesValidator.args) {
+			extensions.push(...(fileTypesValidator.args.extensions as FileExtension[]).map((ext) => `.${ext}`))
+		}
+
+		return extensions.join(",")
 	}
 
 	function listAvailableExtensions(): string {
@@ -235,7 +252,6 @@
 
 	let attrs = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
 	let validatorLength = $state(0);
 	
 	let fileTypesValidator = $derived(fieldValidator
@@ -253,7 +269,7 @@
 	let hasFileRelatedErrors = $derived(!!Object.keys(fieldErrors).find((key) => key !== "required") || false)
 	let maxFileCount = $derived(maxFileCountValidator.args["maxCount"] || undefined)
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!label) {
 			if (attrs && attrs.label) {
 				label = attrs.label
@@ -263,29 +279,40 @@
 		}
 	})
 
-	$effect(() => {
+	$effect.pre(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
 			(validator) => !validator.isHidden
 		).length
 	});
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (addedFiles && addedFiles.length) { 
 			addFilesToForm()
 		}
-	});
+	})
+
+	$effect.pre(() => {
+		if (!Array.isArray(data[field])) {
+			data[field] = []
+		}
+	})
+
+	$effect(() => {
+		fieldErrors = errors[field] || {}
+	})
 
 	////
 	// LIFECYCLE
 	////
 
-	onMount(() => {
-		data[field] && touch()
+	onMount(async () => {
+		if (data[field]) {
+			await touch()
+		}
 		listedAvailableExtensions = listAvailableExtensions()
 		listedFileSizes = listFileSizes()
 		listedMaxFileCounts = listMaxFileCounts()
 	})
-
 </script>
 
 <div class="mb-2">
@@ -296,7 +323,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors />
 		{/if}
 	</div>
 
@@ -312,6 +339,8 @@
 			multiple={allowMultiSelect} 
 			oninput={handleOnInput} 
 			onblur={handleOnBlur}
+			accept={getFileAcceptsAttr()}
+			{...attrs}
 		>
 
 			{#snippet message()}
@@ -341,43 +370,41 @@
 		</FileDropzone>
 	</div>
 
-	{#if showFiles}
-		{#if data[field]}
-			<div
-				class="mt-2"
-				class:variant-ringed-error={hasFileRelatedErrors}
-				class:p-2={hasFileRelatedErrors}
-			>
-				{#if hasFileRelatedErrors}
-					<p class="text-sm text-red-500 mb-1">
-						<Icon icon="bi:exclamation-triangle" class="w-4 h-4 me-1 inline" />
-						Please correct your selection before continuing
-					</p>
-				{/if}
-				<div class="grid grid-cols-1 gap-2">
-					{#each data[field] as file}
-						<div class="card p-4">
-							<div class="card-body">
-								<div class="flex items-center gap-2">
-									<Icon icon={getFileTypeIcon(file.name)} class="w-12 h-12 text-gray-500" />
-									<p class="text-sm text-gray-500">
-										{file.name}
-										<br />
-										{(file.size / 1000000).toPrecision(2)} MB
-									</p>
-									<button
-										class="btn variant-filled-error mt-2 ml-auto mt-0"
-										onclick={() => removeFile(file)}
-									>
-										<Icon icon="bi:trash" class="w-4 h-4 me-1" />
-										Remove
-									</button>
-								</div>
+	{#if showFiles && data[field]}
+		<div
+			class="mt-2"
+			class:variant-ringed-error={hasFileRelatedErrors}
+			class:p-2={hasFileRelatedErrors}
+		>
+			{#if hasFileRelatedErrors}
+				<p class="text-sm text-red-500 mb-1">
+					<Icon icon="bi:exclamation-triangle" class="w-4 h-4 me-1 inline" />
+					Please correct your selection before continuing
+				</p>
+			{/if}
+			<div class="grid grid-cols-1 gap-2">
+				{#each data[field] as file}
+					<div class="card p-4 variant-filled-surface">
+						<div class="card-body">
+							<div class="flex items-center gap-2">
+								<Icon icon={getFileTypeIcon(file.name)} class="w-12 h-12" />
+								<p class="text-sm">
+									{file.name}
+									<br />
+									{(file.size / 1000000).toPrecision(2)} MB
+								</p>
+								<button
+									class="btn variant-filled-error mt-2 ml-auto mt-0"
+									onclick={() => removeFile(file)}
+								>
+									<Icon icon="bi:trash" class="w-4 h-4 me-1" />
+									Remove
+								</button>
 							</div>
 						</div>
-					{/each}
-				</div>
+					</div>
+				{/each}
 			</div>
-		{/if}
+		</div>
 	{/if}
 </div>

@@ -3,10 +3,9 @@ import { validateData, hasAdminPermission } from "$server/requests"
 import { db, schema } from "$server/database"
 import { eq } from "drizzle-orm"
 import { Ok, InternalServerError, Forbidden, BadRequest, NotFound } from "sveltekit-zero-api/http"
-import { AdminEditEmail as PutForm } from "$shared/validation/forms"
+import { AdminEditImage as PutForm } from "$shared/validation/forms"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
-import { images } from "$server/providers"
 
 const putForm = PutForm.init()
 
@@ -102,7 +101,7 @@ export async function PUT(event: KitEvent<Put, RequestEvent>) {
 		})
 
 		if (errors.keys) {
-			return BadRequest({ body: { errors } })
+			return BadRequest({ body: { errors, message: "Validation failed" } })
 		}
 
 		////

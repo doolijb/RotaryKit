@@ -37,7 +37,8 @@ export class MaxFileCount extends Validator {
 
 	test = async ({ key, data }) => {
 		const files: File[] = data[key]
-		if (!Array.isArray(files)) return false
+
+		if (!Array.isArray(files) && !files) return true
 		if (files.length > this.args.maxCount) return false
 
 		const fileTypeCounts: Partial<Record<keyof typeof fileTypes, number>> = {}

@@ -32,9 +32,9 @@ const appFormat = printf(
 				error: Error
 				event?: RequestEvent
 		  }) => {
-		if (level === "error" && !error) {
-			logger.warn("Error log without an error object")
-		}
+		// if (level === "error" && !error) {
+		// 	logger.warn("Error log without an error object")
+		// }
 
 		const colorizer = format.colorize()
 		const coloredLevel = colorizer.colorize(level, level.toUpperCase())

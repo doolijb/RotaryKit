@@ -5,7 +5,7 @@
 
 	const resource = "emails"
     const resourceApi = api.admin.emails as ResourceApi
-	const dataHandlerSet = {}
+	const dataHandlers = {}
 	const naturalKey = "address"
 	const resourceId = $page.params.resourceId
 
@@ -18,4 +18,4 @@
 	}
 </script>
 
-<AdminResultDetailView {resource} {resourceApi} {dataHandlerSet} {naturalKey} {resourceId} {mutateResult} />
+<AdminResultDetailView {resource} {resourceApi} {dataHandlers} {naturalKey} {resourceId} {mutateResult} />

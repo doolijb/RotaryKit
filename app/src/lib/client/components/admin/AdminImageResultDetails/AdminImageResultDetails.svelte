@@ -79,7 +79,8 @@
             component: 'imageViewerModal',
             meta: {
                 result: result
-            }
+            },
+			backdropClasses: "z-[500]"
         };
         modalStore.trigger(modal);
     }

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
 	import { popup } from "@skeletonlabs/skeleton"
+	import { popupSettings } from "$shared/validation/utils"
+	import humanizeString from "humanize-string"
 
 	////
 	// PROPS
@@ -13,10 +15,22 @@
 	}
 
 	let { 
-        fieldErrors, 
+        fieldErrors = $bindable({}), 
         fieldValidator, 
         hideRequired = false 
     }: Props = $props()
+
+	////
+	// CONSTANTS
+	////
+
+	const validatorKeys = fieldValidator.validators.map((v) => v.key)
+
+	////
+	// STATE
+	////
+
+	let responseValidators: FieldErrors = $state({})
 
 	////
 	// CALCULATED
@@ -36,6 +50,18 @@
 			(validator) => !validator.isHidden && !validator.isSticky && !!fieldErrors[validator.key]
 		)
 	)
+
+	// Filter out validators that are not in the fieldValidator
+	$effect(() => {
+		const res: FieldErrors = {}
+		Object.keys(fieldErrors).forEach((key) => {
+			console.log(`Includes "${key}"`, validatorKeys.includes(key))
+			if (!validatorKeys.includes(key)) {
+				res[key] = fieldErrors[key]
+			}})
+		responseValidators = res
+	})
+
 	let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
 
 </script>
@@ -62,5 +88,25 @@
 			class:variant-filled-primary={!fieldErrors[validator.key]}
 			class:variant-filled-error={!!fieldErrors[validator.key]}
 		></div>
+	</div>
+{/each}
+
+{#each Object.entries(responseValidators) as [key, message]}
+	{@const resPopup = popupSettings()}
+	<span
+		class="badge ms-1 mb-2 select-none"
+		class:variant-soft-error={true}
+		use:popup={resPopup}
+		aria-label=message
+	>
+		{humanizeString(key)}
+	</span>
+	<div
+		class="card z-10 block p-4 hidden"
+		class:variant-filled-error={true}
+		data-popup={resPopup.target}
+	>
+		<p>{message}</p>
+		<div class="arrow" class:variant-filled-error={true}></div>
 	</div>
 {/each}

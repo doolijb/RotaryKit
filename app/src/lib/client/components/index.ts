@@ -17,3 +17,4 @@ export * from "./extras"
 export * from "./modals"
 
 export { default as ImageView } from "./ImageView"
+export { default as VideoView } from "./VideoView"

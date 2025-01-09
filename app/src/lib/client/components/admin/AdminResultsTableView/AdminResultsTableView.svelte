@@ -2,7 +2,7 @@
 	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
 	import { getModalStore } from "@skeletonlabs/skeleton"
-	import { onMount, setContext } from "svelte"
+	import { onMount, setContext, type Snippet } from "svelte"
 	import { getToastStore } from "@skeletonlabs/skeleton"
 	import { Toast, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/stores"
@@ -33,6 +33,9 @@
 		getResourceId?: (result: Result<any>) => string;
 		resource: string;
 		resourceApi: ResourceApi;
+		showCreateButton?: boolean;
+		showDeleteButton?: boolean;
+		extraHeaderControls?: Snippet
 	}
 
 	let {
@@ -41,7 +44,10 @@
 		excludeKeys = [],
 		getResourceId = (result: Result<any>) => result.id,
 		resource,
-		resourceApi
+		resourceApi,
+		showCreateButton = true,
+		showDeleteButton = true,
+		extraHeaderControls
 	}: Props = $props();
 
 	////
@@ -82,7 +88,7 @@
 		adminPermissions: $page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
-	})
+	}) && showCreateButton
 	const canViewResource: boolean = hasAdminPermission({
 		user: $page.data.user,
 		adminPermissions: $page.data.adminPermissions,
@@ -100,7 +106,7 @@
 		adminPermissions: $page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
-	})
+	}) && showDeleteButton
 
 	////
 	// FUNCTIONS
@@ -264,12 +270,15 @@
 					Reset
 				</button>
 			</div>
-			{#if canCreateResource}
-				<button class="btn variant-filled-secondary" onclick={onCreate}>
-					<Icon icon="mdi:plus" class="mr-2" />
-					New
-				</button>
-			{/if}
+			<div>
+				{@render extraHeaderControls?.()}
+				{#if canCreateResource}
+					<button class="btn variant-filled-secondary" onclick={onCreate}>
+						<Icon icon="mdi:plus" class="mr-2" />
+						New
+					</button>
+				{/if}
+			</div>
 		</div>
 	{/snippet}
 </AdminHeader>
@@ -293,13 +302,13 @@
 		<AdminHeader>
 			{#snippet controls()}
 					
-					<Pagination
-						{...response.body}
-						{onPageLimitChange}
-						{onPageChange}
-					/>
-				
-					{/snippet}
+				<Pagination
+					{...response.body}
+					{onPageLimitChange}
+					{onPageChange}
+				/>
+			
+			{/snippet}
 		</AdminHeader>
 	{/if}
 {:else if errorLoading}

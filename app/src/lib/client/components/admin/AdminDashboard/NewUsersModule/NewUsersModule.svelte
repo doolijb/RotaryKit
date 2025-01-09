@@ -34,7 +34,7 @@
     
 
 </script>
-<div class="flex-grow max-h-full min-h-full variant-soft bg-transparent">
+<div class="flex-grow max-h-full min-h-full bg-transparent">
     <h4 class="h4 mb-2">New Users</h4>
     
     {#if loading}
@@ -48,6 +48,7 @@
                         <th>Username</th>
                         <th>Email</th>
                         <th>Verified</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,6 +65,12 @@
                                     class="{isVerified ? "text-success-500" : "text-error-500"}"
                                     height="1.5em" 
                                 />
+                            </td>
+                            <td>
+                                <a href={`/admin/users/${user.id}`} target="_blank" class="btn btn-sm variant-filled" onclick={(e) => e.stopPropagation()}>
+                                    <Icon icon="mdi:open-in-new" class="mr-2" />
+                                    Details
+                                </a>
                             </td>
                         </tr>
                     {/each}

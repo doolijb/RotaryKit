@@ -2,9 +2,14 @@
 	import "../app.postcss"
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
 	import { storePopup, initializeStores, Modal, Toast } from "@skeletonlabs/skeleton"
-	import {ImageViewerModal} from "$client/components"
+	import { ImageViewerModal, UserLoginModal, CreationUploadModal, SiteNavigation, SiteFooter, AdminModerateCreationModal } from "$client/components"
 	import type { ModalComponent } from "@skeletonlabs/skeleton"
 	import { page } from "$app/stores"
+
+
+	////
+	// PROPS
+	////
 
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -12,25 +17,35 @@
 
 	let { children }: Props = $props();
 
-	initializeStores()
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
-
+	////
+	// CONSTANTS
+	////
+	const siteName = "Rotary Kit"
 	const modalRegistry: Record<string, ModalComponent> = {
 		imageViewerModal: { ref: ImageViewerModal },
 	}
 
-	const siteName = "SvelteKit Template"
+	////
+	// LIFECYCLE
+	////
+
+	initializeStores()
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
+
 </script>
 
 <svelte:head>
 	{#if $page.data.title}
-	<title>{$page.data.title} - {siteName}</title>
+		<title>{$page.data.title} - {siteName}</title>
 	{:else}
-	<title>{siteName}</title>
+		<title>{siteName}</title>
 	{/if}
 </svelte:head>
 
-{@render children?.()}
+<div class="flex flex-col min-h-screen relative">
+    <header>
+        <SiteNavigation />
+    </header>
 
 <Toast />
 <Modal components={modalRegistry} />

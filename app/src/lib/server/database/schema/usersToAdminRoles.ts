@@ -6,8 +6,7 @@ import { adminRoles } from "./adminRoles"
 /**
  * User staff roles are a way to grant users permissions.
  */
-export const usersToAdminRoles: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
-	"users_to_admin_roles",
+export const usersToAdminRoles = pgTable("users_to_admin_roles",
 	{
 		userId: uuid("user_id")
 			.notNull()
@@ -21,8 +20,6 @@ export const usersToAdminRoles: PgTableWithColumns<any> & { usePermissions?: boo
 		pk: primaryKey({ columns: [t.userId, t.adminRoleId] })
 	})
 )
-
-usersToAdminRoles.usePermissions = false
 
 export const usersToAdminRoleRelations = relations(usersToAdminRoles, ({ one: One }) => ({
 	user: One(users, {

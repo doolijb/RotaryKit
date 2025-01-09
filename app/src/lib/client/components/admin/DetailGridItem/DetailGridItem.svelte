@@ -4,7 +4,8 @@
 	import { Toast } from "$client/utils"
 	import humanizeString from "humanize-string"
     import { getDisplayAndCopyText } from "$client/utils"
-    import type { Snippet } from "svelte"
+    import { type Snippet } from "svelte"
+    import DOMPurify from "isomorphic-dompurify"
 
     const toastStore = getToastStore()
 
@@ -18,6 +19,7 @@
         value?: string | number | boolean | Date
         copy?: string
         humanizeLabel?: boolean
+        dataType?: "uuid" | "number" | "date" | "url" | "boolean" | "html" | "string"
 
         // Children
         children?: Snippet
@@ -32,6 +34,7 @@
         value = undefined,
         copy = undefined,
         humanizeLabel = true,
+        dataType,
 
         // Bindables
 
@@ -49,7 +52,6 @@
     let displayText = $state()
     let copyText = $state(undefined);
     let focused = $state(false)
-    let type = $state("unknown")
 
     ////
     // FUNCTIONS
@@ -80,12 +82,14 @@
         if (value === undefined) {
             displayText = "N/A"
         } else {
-            let displayAndCopy = getDisplayAndCopyText(value)
+            let displayAndCopy = getDisplayAndCopyText(value, dataType)
             displayText = displayAndCopy.displayText
             if (copyText === undefined) {
                 copyText = displayAndCopy.copyText
             }
-            type = displayAndCopy.type
+            if (!dataType) {
+                dataType = displayAndCopy.type
+            }
         }
     })
 
@@ -93,7 +97,9 @@
 
 
 <div 
-    class="flex flex-col select-none {rest.class ? rest.class : ""}"
+    class="flex flex-col select-none m-2 {rest.class ? rest.class : ""}"
+    class:col-span-full={dataType === "html"}
+    class:row-start-[100]={dataType === "html"}
     class:cursor-pointer={canCopy}
     onclick={onClick}
     onfocus={() => (focused = true)}
@@ -101,8 +107,7 @@
     onmouseover={() => (focused = true)}
     onmouseleave={() => (focused = false)}
     title={canCopy ? "Click to copy" : undefined}
-    role="button"
-    tabindex="0"
+    role={ canCopy ? "button" : undefined }
     {...rest}
 >
     <!-- svelte-ignore a11y_label_has_associated_control -->
@@ -113,8 +118,12 @@
     {#if children}
         {@render children?.()}
     {:else}
-        <p>
-            {#if type === "url"}
+        <p 
+            class:card={dataType === "html"} 
+            class:variant-soft={dataType === "html"} 
+            class:p-4={dataType === "html"}
+        >
+            {#if dataType === "url"}
                 <a href={`${value}`} target="_blank" rel="noopener noreferrer">
                     Link
                 </a>
@@ -122,10 +131,12 @@
                     icon="mdi:open-in-new"
                     class="inline ms-1 {!focused ? "invisible" : ""}"
                 />
-            {:else if type === "boolean"}
+            {:else if dataType === "boolean"}
                 <Icon icon={value ? "mdi:check" : "mdi:close"} class="w-auto inline" />
                 {humanizeString(value.toString())}
                 <!-- Is it a date string? -->
+            {:else if dataType === "html"}
+                {@html DOMPurify.sanitize(`${value}`)}
             {:else}
                 {displayText}
             {/if}

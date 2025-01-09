@@ -6,14 +6,12 @@ import {
 	boolean,
 	json,
 	text,
-	type PgTableWithColumns
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { emails } from "./emails"
 import { users } from "./users"
 
-export const emailLogs: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
-	"email_logs",
+export const emailLogs = pgTable("email_logs",
 	{
 		id: uuid("id")
 			.primaryKey()
@@ -32,5 +30,3 @@ export const emailLogs: PgTableWithColumns<any> & { usePermissions?: boolean } =
 		html: text("html").notNull()
 	}
 )
-
-emailLogs.usePermissions = true

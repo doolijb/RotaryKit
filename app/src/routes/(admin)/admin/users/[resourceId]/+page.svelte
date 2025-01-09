@@ -6,7 +6,7 @@
 
 	const resource = "users"
     const resourceApi = api.admin.users as ResourceApi
-	const dataHandlerSet = {}
+	const dataHandlers = {}
 	const naturalKey = "username"
 	const resourceId = $page.params.resourceId
 
@@ -53,5 +53,5 @@
 	}
 </script>
 
-<AdminResultDetailView {resource} {resourceApi} {dataHandlerSet} {naturalKey} {resourceId} {mutateResult} />
+<AdminResultDetailView {resource} {resourceApi} {dataHandlers} {naturalKey} {resourceId} {mutateResult} />
  

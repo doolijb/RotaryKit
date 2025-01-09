@@ -179,7 +179,7 @@
                 Array.from({ length: availableModules.length }, (_, i) => `${i + 1}`).forEach(slotId => {
                     slots[slotId] = {
                         slotId: slotId,
-                        colSpan: "2",
+                        colSpan: "full",
                     }
                 })
 
@@ -223,7 +223,7 @@
 
 {#snippet moduleSnippet(module:Module)}
     <div 
-        class="card p-4 flex-grow max-h-full relative" 
+        class="rounded p-4 flex-grow max-h-full relative bg-surface-100-800-token" 
         class:variant-ringed={swapyEnabled}
         data-swapy-item={module.item}
     >
@@ -247,12 +247,13 @@
                             class="select select-sm"
                             onchange={(event) => setColSpan(event, slot)}
                         >
-                            {#each Array(4) as _, i}
+                            {#each Array(3) as _, i}
                                 <option 
                                     value={i + 1} 
                                     selected={slot.colSpan === (i + 1).toString()}
                                 > {i + 1} </option>
                             {/each}
+                            <option value="full" selected={slot.colSpan === "full"}> Full </option>
                         </select>
                     </label>
                 </span>
@@ -313,7 +314,7 @@
 <AdminHeader>
     {#snippet title()}
         <Icon icon="clarity:dashboard-solid" class="mr-2 mb-1 w-auto inline" />
-        Dashboard	
+        Admin Dashboard	
 	{/snippet}
     {#snippet controls()}
     <div class="hidden md:flex my-0">

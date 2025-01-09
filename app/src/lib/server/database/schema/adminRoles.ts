@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, type PgTableWithColumns } from "drizzle-orm/pg-core"
+import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 import { adminRolesToPermissions } from "./adminRolesToPermissions"
 import { usersToAdminRoles } from "./usersToAdminRoles"
@@ -8,8 +8,7 @@ import { usersToAdminRoles } from "./usersToAdminRoles"
  * Staff roles are a way to group permissions together.
  * Users can be assigned to one or more roles.
  */
-export const adminRoles: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
-	"admin_roles",
+export const adminRoles = pgTable( "admin_roles",
 	{
 		id: uuid("id")
 			.primaryKey()
@@ -19,8 +18,6 @@ export const adminRoles: PgTableWithColumns<any> & { usePermissions?: boolean } 
 		updatedAt: timestamp("updated_at").notNull().defaultNow()
 	}
 )
-
-adminRoles.usePermissions = true
 
 export const adminRoleRelations = relations(adminRoles, ({ one: One, many: Many }) => ({
 	toAdminPermissions: Many(adminRolesToPermissions),

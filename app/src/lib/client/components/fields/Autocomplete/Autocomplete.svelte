@@ -60,30 +60,13 @@
         suffix
     }: Props = $props();
 
-	////
-	// CALCULATED
-	////
+    ////
+    // STATE
+    ////
 
-	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
-	let validatorLength = $state(0);
-    
-	run(() => {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
-	});
-	let required = $derived(fieldValidator.isRequired)
-	let validState = $derived(isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE)
-    let selectedOption = $derived(Object.values(options).find(option => option.value === data[field]) || null)
+    let fieldErrors: FieldErrors = $state({})
 
-	////
+    ////
 	// CONSTANTS
 	////
 
@@ -103,7 +86,12 @@
 	}
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -182,6 +170,32 @@
 		dispatch("input", e)
 	}
 
+    ////
+	// CALCULATED
+	////
+
+	let fieldValidator = $derived(form.fields[field])
+	let validatorLength = $state(0);
+    
+	run(() => {
+		validatorLength = Object.values(fieldValidator.validators).filter(
+			validator => !validator.isHidden
+		).length
+	});
+	let required = $derived(fieldValidator.isRequired)
+	let validState = $derived(isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE)
+    let selectedOption = $derived(Object.values(options).find(option => option.value === data[field]) || null)
+
+    $effect(() => {
+        fieldErrors = errors[field] || {}
+    })
+
 	////
 	// LIFECYCLE
 	////
@@ -203,7 +217,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors />
 		{/if}
 	</div>
 
@@ -232,12 +246,12 @@
         {@render suffix?.()}
         {#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
+				<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
 			</div>
 		{/if}
     </div>
     {#if !disabled && (validatorLength || attrs?.description)}
-		<ValidationLegend.Popup {fieldValidator} {fieldErrors} {legendPopup} {attrs} />
+		<ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
 	{/if}
     <div 
         class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto" 

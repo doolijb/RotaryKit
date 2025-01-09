@@ -107,11 +107,12 @@ export async function getListOf<T>({
 	event,
 	tableName,
 	columns,
-	availableRelations = undefined,
+	availableRelations,
 	defaults = {
 		pageLimit: 25,
 		orderBy: "createdAt:asc"
-	}
+	},
+	mutateResults,
 }: {
 	event: KitEvent<Get, RequestEvent>
 	tableName: string
@@ -120,7 +121,8 @@ export async function getListOf<T>({
 	defaults?: {
 		pageLimit?: number
 		orderBy?: string
-	}
+	},
+	mutateResults?: (results: T[]) => Promise<T[]>
 }) {
 	/**
 	 * Get the schema for the table
@@ -211,8 +213,7 @@ export async function getListOf<T>({
 	const nextPage = currentPage === pageCount ? null : currentPage + 1
 
 	const response: PaginatedResponse<SelectUser> = {
-		success: true,
-		results,
+		results: mutateResults ? await mutateResults(results) : results,
 		resultCount,
 		resultStart,
 		resultEnd,

@@ -83,13 +83,19 @@
 	let selectedOption = $state(undefined)
 	let validatorLength = $state(0)
 	let isTouched = $state(false)
+	let fieldErrors: FieldErrors = $state({})
 
 	////
 	// FUNCTIONS
 	////
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -105,6 +111,7 @@
 				getOptions,
 				selectedOption,
 			},
+			backdropClasses: "z-[500]"
 		}
 		const modal: ModalSettings = {
 			type: 'component',
@@ -119,6 +126,7 @@
 				}
 				touch()
 			},
+			backdropClasses: "z-[500]"
 		}
 		modalStore.trigger(modal)
 	}
@@ -145,7 +153,6 @@
 
 	let attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
 	let validState = $derived(isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
@@ -169,6 +176,10 @@
 				label = humanizeString(field)
 			}
 		}
+	})
+
+	$effect(() => {
+		fieldErrors = errors[field] || {}
 	})
 
 	////
@@ -199,7 +210,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} {fieldErrors} />
+            <ValidationBadges {fieldValidator} bind:fieldErrors />
         {/if}
     </div>
 
@@ -220,7 +231,7 @@
 			{/if}
 			{#if !disabled && validatorLength}
 				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend.Icon {fieldValidator} {fieldErrors} {validState} {legendPopup} />
+					<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
 				</div>
 			{/if}
 		</button>
@@ -234,7 +245,7 @@
 		</div>
     </div>
     {#if !disabled && (validatorLength || attrs?.description)}
-        <ValidationLegend.Popup {fieldValidator} {fieldErrors} {legendPopup} {attrs} />
+        <ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
     {/if}
 </div>
 

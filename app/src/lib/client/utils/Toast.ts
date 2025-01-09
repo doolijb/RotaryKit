@@ -25,7 +25,7 @@ export class Toast implements ToastSettings {
 
 		// Fixed settings
 		this.hoverable = true
-		this.classes = "rounded-container-token variant-filled text-surface-50"
+		this.classes = "rounded-container-token text-surface-50"
 		this.background = `variant-filled-${style}`
 	}
 	message: ToastSettings["message"]
@@ -37,4 +37,5 @@ export class Toast implements ToastSettings {
 	hoverable?: ToastSettings["hoverable"]
 	classes?: ToastSettings["classes"]
 	callback?: ToastSettings["callback"]
+	zIndex: 5000
 }

@@ -2,7 +2,7 @@ import { adminApi, hasAdminPermission, validateData } from "$server/requests"
 import { db, schema } from "$server/database"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
-import { Ok, BadRequest, InternalServerError } from "sveltekit-zero-api/http"
+import {Ok, BadRequest, InternalServerError, Forbidden} from 'sveltekit-zero-api/http';
 import { AdminCreateAdminRole as PostForm } from "$shared/validation/forms"
 import { logger } from "$server/logging"
 
@@ -22,7 +22,9 @@ interface Post {
 export async function GET(event: KitEvent<GET, RequestEvent>) {
 	try {
 		// Check permissions
-		hasAdminPermission(event, schema.adminRoles)
+		if (!hasAdminPermission(event, schema.adminRoles)) {
+			return Forbidden()
+		}
 
 		const columns: { [key: string]: boolean } = {
 			id: true,
@@ -82,7 +84,9 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 		/**
 		 * Check permissions
 		 */
-		hasAdminPermission(event, schema.adminRoles)
+		if (!hasAdminPermission(event, schema.adminRoles)) {
+			return Forbidden()
+		}
 
 		/**
 		 * Validate the data

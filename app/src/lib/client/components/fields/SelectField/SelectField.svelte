@@ -8,7 +8,7 @@
 
 	////
 	// LOCAL EXPORTS
-	
+	////
 
 	interface Props {
 		// Props
@@ -27,7 +27,7 @@
 		isTouched?: boolean
 
 		// Events
-		oninput?: (e: Event) => Promise<void>
+		onchange?: (e: Event) => Promise<void>
 		onblur?: (e: Event) => Promise<void>
 		onfocus?: (e: Event) => Promise<void>
 	}
@@ -49,29 +49,29 @@
 		isTouched = $bindable(false),
 
 		// Events
-		oninput,
+		onchange,
 		onblur,
 		onfocus,
 	}: Props = $props();
 
 	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-	////
 	// STATE
 	////
 
-	let validatorLength = $state(0);
+	let validatorLength = $state(0)
+	let fieldErrors: FieldErrors = $state({})
 
 	////
 	// FUNCTIONS
 	////
 
 	async function validate() {
-		errors[field] = await form.fields[field].validate({key:field, data})
+		let fieldErrors = await form.fields[field].validate({key:field, data})
+		if (Object.keys(fieldErrors).length) {
+			errors[field] = fieldErrors
+		} else {
+			delete errors[field]
+		}
 	}
 
 	async function touch() {
@@ -84,9 +84,10 @@
 		onblur?.(e)
 	}
 
-	function handleOnInput(e: Event) {
+	function handleOnChange(e: Event) {
+		console.log("handleOnChange")
 		touch()
-		oninput?.(e)
+		onchange?.(e)
 	}
 
 	////
@@ -95,8 +96,6 @@
 
 	let attrs = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let fieldErrors = $derived(errors[field] || {})
-
 	let required = $derived(fieldValidator.isRequired)
 	let selectOptionsValidator = $derived(fieldValidator.validators.find(v => v.key == "selectOptions"))
 
@@ -114,6 +113,10 @@
 				label = humanizeString(field)
 			}
 		}
+	})
+
+	$effect(() => {
+		fieldErrors = errors[field] || {}
 	})
 
 	////
@@ -134,7 +137,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} {fieldErrors} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors />
 		{/if} 
 	</div>
 
@@ -147,7 +150,7 @@
 		{disabled}
 		{required}
 		{onfocus}
-		oninput={handleOnInput}
+		onchange={handleOnChange}
 		onblur={handleOnBlur}
 		aria-label={label}
 	>

@@ -1,4 +1,5 @@
 import * as storage from "$server/storage"
+import {ObjectCannedACL} from '@aws-sdk/client-s3';
 
 export async function save({
 	file,
@@ -39,12 +40,13 @@ export async function save({
 		updatedAt: now,
 		uploadedByUserId
 	} as { [key: string]: any }
+	const prefix = process.env.STORAGE_FORCE_PATH_STYLE === "true" ? `${bucket}/` : ""
 
 	// Original image
 	if (buffers.originalBuffer) {
 		const originalKey = `${path}/${baseName}.${extension}`
 		toSave.push({ key: originalKey, body: buffers.originalBuffer })
-		imageValues.originalPath = `/${bucket}/${originalKey}`
+		imageValues.originalPath = `/${prefix}${originalKey}`
 		imageValues.originalBytes = buffers.originalBuffer.byteLength
 		imageValues.totalBytes += imageValues.originalBytes
 	}
@@ -54,7 +56,7 @@ export async function save({
 		const webpKey = `${path}/${baseName}.webp`
 		const webpBytes = buffers.webpBuffer.byteLength
 		toSave.push({ key: webpKey, body: buffers.webpBuffer })
-		imageValues.webpPath = `/${bucket}/${webpKey}`
+		imageValues.webpPath = `/${prefix}${webpKey}`
 		imageValues.webpBytes = webpBytes
 		imageValues.totalBytes += webpBytes
 	}
@@ -64,7 +66,7 @@ export async function save({
 		const jpgKey = `${path}/${baseName}.jpg`
 		const jpgBytes = buffers.jpgBuffer.byteLength
 		toSave.push({ key: jpgKey, body: buffers.jpgBuffer })
-		imageValues.jpgPath = `/${bucket}/${jpgKey}`
+		imageValues.jpgPath = `/${prefix}${jpgKey}`
 		imageValues.jpgBytes = jpgBytes
 		imageValues.totalBytes += jpgBytes
 	}
@@ -74,7 +76,7 @@ export async function save({
 		const mediumWebpKey = `${path}/${mediumBaseName}.webp`
 		const mediumWebpBytes = buffers.mediumWebpBuffer.byteLength
 		toSave.push({ key: mediumWebpKey, body: buffers.mediumWebpBuffer })
-		imageValues.mediumWebpPath = `/${bucket}/${mediumWebpKey}`
+		imageValues.mediumWebpPath = `/${prefix}${mediumWebpKey}`
 		imageValues.mediumWebpBytes = mediumWebpBytes
 		imageValues.totalBytes += mediumWebpBytes
 	}
@@ -84,7 +86,7 @@ export async function save({
 		const mediumJpgKey = `${path}/${mediumBaseName}.jpg`
 		const mediumJpgBytes = buffers.mediumJpgBuffer.byteLength
 		toSave.push({ key: mediumJpgKey, body: buffers.mediumJpgBuffer })
-		imageValues.mediumJpgPath = `/${bucket}/${mediumJpgKey}`
+		imageValues.mediumJpgPath = `/${prefix}${mediumJpgKey}`
 		imageValues.mediumJpgBytes = mediumJpgBytes
 		imageValues.totalBytes += mediumJpgBytes
 	}
@@ -94,7 +96,7 @@ export async function save({
 		const smallWebpKey = `${path}/${smallBaseName}.webp`
 		const smallWebpBytes = buffers.smallWebpBuffer.byteLength
 		toSave.push({ key: smallWebpKey, body: buffers.smallWebpBuffer })
-		imageValues.smallWebpPath = `/${bucket}/${smallWebpKey}`
+		imageValues.smallWebpPath = `/${prefix}${smallWebpKey}`
 		imageValues.smallWebpBytes = smallWebpBytes
 		imageValues.totalBytes += smallWebpBytes
 	}
@@ -104,14 +106,14 @@ export async function save({
 		const smallJpgKey = `${path}/${smallBaseName}.jpg`
 		const smallJpgBytes = buffers.smallJpgBuffer.byteLength
 		toSave.push({ key: smallJpgKey, body: buffers.smallJpgBuffer })
-		imageValues.smallJpgPath = `/${bucket}/${smallJpgKey}`
+		imageValues.smallJpgPath = `/${prefix}${smallJpgKey}`
 		imageValues.smallJpgBytes = smallJpgBytes
 		imageValues.totalBytes += smallJpgBytes
 	}
 
 	// Upload the images
 	toSave.forEach(async ({ key, body }) => {
-		await storage.save({ key, body })
+		await storage.save({ key, body, ACL: ObjectCannedACL.public_read })
 	})
 
 	return imageValues

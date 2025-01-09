@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm"
 import { send } from "$server/emails"
 import { EmailLogTypes } from "$shared/constants"
 import { EmailVerificationCode } from "$client/emailTemplates"
+import {logger} from '$server/logging';
 
 /**
  * Creates an email validation code if one does not already exist,
@@ -79,7 +80,9 @@ export async function sendCode({
 	const transportConfig = {
 		host: process.env.SMTP_HOST,
 		port: parseInt(process.env.SMTP_PORT),
-		secure: process.env.NODE_ENV === "production"
+		secure: process.env.SMTP_USE_SECURE === "true",
+		logger: process.env.SMTP_DEBUG === "true",
+		debug: process.env.SMTP_DEBUG === "true"
 	}
 
 	if (process.env.SMTP_USER || process.env.SMTP_PASSWORD) {

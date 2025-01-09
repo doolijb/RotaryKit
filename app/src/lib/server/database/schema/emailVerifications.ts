@@ -3,7 +3,7 @@ import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import { emails } from "./emails"
 
-export const emailVerifications: PgTableWithColumns<any> & { usePermissions?: boolean } = pgTable(
+export const emailVerifications = pgTable(
 	"email_verifications",
 	{
 		id: uuid("id")
@@ -17,8 +17,6 @@ export const emailVerifications: PgTableWithColumns<any> & { usePermissions?: bo
 		verifiedAt: timestamp("verified_at")
 	}
 )
-
-emailVerifications.usePermissions = false
 
 export const emailVerificationRelations = relations(emailVerifications, ({ one }) => ({
 	email: one(emails, {

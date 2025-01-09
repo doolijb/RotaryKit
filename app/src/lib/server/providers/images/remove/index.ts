@@ -4,14 +4,14 @@ import * as storage from "$server/storage"
 
 interface ParamsWithImage {
 	tx?: typeof db
-	id?: undefined
+	imageId?: undefined
 	image: SelectImage
 	returning?: ReturningSelect
 }
 
 interface ParamsWithId {
 	tx?: typeof db
-	id: string
+	imageId: string
 	image?: undefined
 	returning?: ReturningSelect
 }
@@ -19,18 +19,18 @@ interface ParamsWithId {
 export async function remove({
 	tx = db,
 	image,
-	id,
+	imageId,
 	returning
 }: ParamsWithId | ParamsWithImage): PromisedQueryResult<typeof returning> {
 	/**
 	 * Get image if id is provided
 	 */
-	if (!image && id) {
+	if (!image && imageId) {
 		;[image] = (await tx
 			.select()
 			.from(schema.images)
-			.where(eq(schema.images.id, id))) as SelectImage[]
-	} else if (!image && !id) {
+			.where(eq(schema.images.id, imageId))) as SelectImage[]
+	} else if (!image && !imageId) {
 		throw new Error("Must provide either image or id")
 	}
 

@@ -1,6 +1,7 @@
 import { db, schema } from "$server/database"
 import { logger } from "$server/logging"
 import { getTableConfig, type AnyPgColumn } from "drizzle-orm/pg-core"
+import {usesPermissions} from '../schema/index';
 
 interface InsertAdminPermission {
 	action: string
@@ -30,7 +31,7 @@ export default async function adminPermissions(tx = db): Promise<void> {
 	const insertPermissions: InsertAdminPermission[] = []
 
 	for (const [key, value] of Object.entries(schema).filter(
-		([key, value]) => value.usePermissions
+		([key, value]) => usesPermissions[key]
 	)) {
 		try {
 			const tableConfig = getTableConfig(value)

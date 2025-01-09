@@ -1,8 +1,5 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte"
-    import { createEventDispatcher } from "svelte"
-
-    const dispatch = createEventDispatcher()
 
     interface Props {
         amounts?: number[];

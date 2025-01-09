@@ -5,7 +5,7 @@
 
     const resource = "adminRoles"
     const resourceApi = api.admin.adminRoles as ResourceApi
-    const dataHandlerSet = {}
+    const dataHandlers = {}
 
     const mutateResult = (result: SelectAdminPermission & { 
         toAdminPermissions: {adminPermission: SelectAdminPermission}[]
@@ -28,7 +28,7 @@
 <AdminResultDetailView
     {resource}
     {resourceApi}
-    {dataHandlerSet}
+    {dataHandlers}
     {naturalKey}
     {resourceId}
     {mutateResult}

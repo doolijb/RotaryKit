@@ -6,10 +6,10 @@ async function save({
 	key,
 	body,
 	bucket = undefined,
-	ACL = "public-read"
+	ACL = ObjectCannedACL.private
 }: {
 	key: string
-	body: Buffer | string
+	body: Buffer | ArrayBuffer | string
 	bucket?: string
 	ACL?: ObjectCannedACL
 }) {
@@ -17,7 +17,7 @@ async function save({
 	const command = new PutObjectCommand({
 		Bucket: bucket || process.env.STORAGE_DEFAULT_BUCKET,
 		Key: key,
-		Body: body,
+		Body: body as Buffer,
 		ACL
 	})
 	await client.send(command)

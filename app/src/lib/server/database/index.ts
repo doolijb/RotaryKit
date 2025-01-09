@@ -19,9 +19,14 @@ async function handleClientConnection() {
 	try {
 		await client.connect()
 	} catch (error) {
+		logger.error(error)
 		await client.end()
-		await pgtools.createdb(dbCredentials, client.database)
-		await client.connect()
+		if (["development", "test"].includes(process.env.NODE_ENV)) {
+			await pgtools.createdb(dbCredentials, client.database)
+			await client.connect()
+		} else {
+			logger.info({ message: "Database connection failed, skipping", error: error })
+		}
 	}
 }
 

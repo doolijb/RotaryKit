@@ -5,7 +5,9 @@
 
 	const resource = "images"
     const resourceApi = api.admin.images as ResourceApi
-	const dataHandlerSet = {}
+	const dataHandlers = {
+		tabType: "image"
+	}
 	const naturalKey = "title"
 	const resourceId = $page.params.resourceId
 
@@ -13,4 +15,4 @@
 	}
 </script>
 
-<AdminResultDetailView {resource} {resourceApi} {dataHandlerSet} {naturalKey} {resourceId} />
+<AdminResultDetailView {resource} {resourceApi} {dataHandlers} {naturalKey} {resourceId} />
