@@ -17,9 +17,7 @@ if (
 	STORAGE_DEFAULT_REGION === undefined ||
 	STORAGE_PRIVATE_ENDPOINT === undefined ||
 	STORAGE_PUBLIC_ENDPOINT === undefined ||
-	STORAGE_FORCE_PATH_STYLE === undefined ||
-	STORAGE_PRIVATE_ENDPOINT_IS_BUCKET === undefined ||
-	STORAGE_PUBLIC_ENDPOINT_IS_BUCKET === undefined
+	STORAGE_FORCE_PATH_STYLE === undefined
 ) {
 	const missingVariables = [
 		"STORAGE_ACCESS_KEY_ID",
@@ -37,11 +35,22 @@ if (
 // Validate the endpoint URL
 let endpoint
 let publicEndpoint
+
 try {
 	endpoint = new URL(STORAGE_PRIVATE_ENDPOINT)
 } catch (error) {
 	logger.error({
 		message: `Invalid URL for STORAGE_PRIVATE_ENDPOINT: ${STORAGE_PRIVATE_ENDPOINT}`,
+		error
+	})
+	process.exit(1)
+}
+
+try {
+	publicEndpoint = new URL(STORAGE_PUBLIC_ENDPOINT)
+} catch (error) {
+	logger.error({
+		message: `Invalid URL for STORAGE_PUBLIC_ENDPOINT: ${STORAGE_PUBLIC_ENDPOINT}`,
 		error
 	})
 	process.exit(1)

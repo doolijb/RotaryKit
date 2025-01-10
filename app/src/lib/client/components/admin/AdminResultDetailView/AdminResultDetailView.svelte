@@ -9,7 +9,7 @@
 	} from "$client/components" 
 	import Icon from "@iconify/svelte"
 	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils/index.svelte"
+	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/stores"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
 	import { onMount } from "svelte"

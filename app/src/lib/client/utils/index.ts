@@ -5,7 +5,7 @@ export * from "./Toast.ts"
 export * from "./hasAdminPermission.ts"
 export * from "./useFormData.ts"
 export * from "./differentiateType.ts"
-export * from "./handleClientError.svelte.ts"
+export * from "./handleClientError.ts"
 
 /**
  * Returns a function that automatically handles toasts (if toastStore is provided),

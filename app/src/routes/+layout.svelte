@@ -2,7 +2,7 @@
 	import "../app.postcss"
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom"
 	import { storePopup, initializeStores, Modal, Toast } from "@skeletonlabs/skeleton"
-	import { ImageViewerModal, UserLoginModal, CreationUploadModal, SiteNavigation, SiteFooter, AdminModerateCreationModal } from "$client/components"
+	import { ImageViewerModal, SiteNavigation, SiteFooter } from "$client/components"
 	import type { ModalComponent } from "@skeletonlabs/skeleton"
 	import { page } from "$app/stores"
 
@@ -47,5 +47,14 @@
         <SiteNavigation />
     </header>
 
-<Toast />
+    <div class="flex flex-col flex-grow">
+        {@render children?.()}
+    </div>
+
+    <footer class="mt-auto">
+        <SiteFooter />
+    </footer>
+</div>
+
 <Modal components={modalRegistry} />
+<Toast />

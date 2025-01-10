@@ -4,8 +4,7 @@ import {
 	varchar,
 	uuid,
 	timestamp,
-	boolean,
-	type PgTableWithColumns
+	boolean
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
@@ -14,8 +13,6 @@ import { usersToAdminRoles } from "./usersToAdminRoles"
 import { passphrases } from "./passphrases"
 import { emails } from "./emails"
 import { images } from "./images"
-import { creations } from "./creations"
-import { videos } from "./videos"
 
 export const users = pgTable(
 	"users",
@@ -31,7 +28,6 @@ export const users = pgTable(
 		isAdmin: boolean("is_admin").notNull().default(false),
 		isSuperUser: boolean("is_super_user").notNull().default(false),
 		isActive: boolean("is_active").notNull().default(true),
-		bio: text("bio")
 	},
 	(obj) => {
 		return {
@@ -56,10 +52,6 @@ export const userRelations = relations(users, ({ many, one }) => ({
 
 	uploadedImages: many(images, {
 		relationName: "uploadedImageUser"
-	}),
-
-	uploadedVideos: many(videos, {
-		relationName: "uploadedVideoUser"
 	}),
 
 	profileImages: many(images, {

@@ -34,11 +34,7 @@
         images: {
             title: "Images",
             icon: "mdi:image"
-        },
-//	videos: {
-//		title: "Videos",
-//		icon: "mdi:video"
-//	}
+        }
     };
 
 	////

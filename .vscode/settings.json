@@ -4,5 +4,8 @@
     "editor.formatOnPaste": true,
     "cSpell.autoFormatConfigFile": true,
     "html.format.indentHandlebars": true,
-    "html.format.indentInnerHtml": true
+    "html.format.indentInnerHtml": true,
+    "cSpell.words": [
+        "PASETO"
+    ]
 }

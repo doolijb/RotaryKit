@@ -8,6 +8,7 @@ import utils from "./utils"
 
 import pgtools from "pgtools"
 import { logger } from "$server/logging"
+import { sql } from "drizzle-orm"
 
 export const client = new pg.Client({ connectionString: getConnectionString(dbCredentials) })
 
@@ -20,13 +21,16 @@ async function handleClientConnection() {
 		await client.connect()
 	} catch (error) {
 		logger.error(error)
-		await client.end()
-		if (["development", "test"].includes(process.env.NODE_ENV)) {
-			await pgtools.createdb(dbCredentials, client.database)
-			await client.connect()
-		} else {
-			logger.info({ message: "Database connection failed, skipping", error: error })
-		}
+		// await client.end()
+		// if (["development", "test"].includes(process.env.NODE_ENV)) {
+		// 	const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [dbCredentials.database])
+		// 	if (res.rowCount === 0) {
+		// 		await pgtools.createdb(dbCredentials, client.database)
+		// 	}
+		// 	await client.connect()
+		// } else {
+		// 	logger.info({ message: "Database connection failed, skipping", error: error })
+		// }
 	}
 }
 

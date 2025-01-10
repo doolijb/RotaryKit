@@ -9,7 +9,7 @@
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
 	import StarterKit from '@tiptap/starter-kit'
-	import TextStyle from '@tiptap/extension-text-style'
+	import { TextStyle } from '@tiptap/extension-text-style'
 	import Underline from '@tiptap/extension-underline'
 	import Link from '@tiptap/extension-link'
 	import Superscript from '@tiptap/extension-superscript'

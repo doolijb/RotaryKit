@@ -6,7 +6,7 @@
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils/index.svelte"
+	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
 	import type { Component, Snippet } from "svelte"
 
 	const toastStore = getToastStore()
