@@ -25,11 +25,10 @@ FROM unit:1.33.0-node22
 
 WORKDIR /srv/www/app
 COPY ../app .
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
-RUN npm i -g pnpm
-RUN pnpm i
-RUN npx playwright install
-RUN npx playwright install-deps
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.43" && mv /root/.bun/bin/bun /usr/local/bin/bun
+RUN bun install
+RUN bun x playwright install
+RUN bun x playwright install-deps
 
 # # # # # # # # # # # # # # # # # # #
 #  COPY UNIT CONFIG                 #
