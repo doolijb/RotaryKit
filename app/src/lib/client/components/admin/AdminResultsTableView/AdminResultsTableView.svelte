@@ -260,16 +260,16 @@
 
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<div>
+			<div class="flex gap-2">
 				<input
-					class="input w-auto"
+					class="input w-auto pl-1"
 					type="text"
 					placeholder="Search"
 					bind:value={searchParam}
 					oninput={onSearchStringChange}
 				/>
 				<button
-					class="btn preset-filled"
+					class="btn preset-filled-surface-500"
 					disabled={!searchParam}
 					onclick={() => {
 					searchParam = ""
@@ -282,7 +282,7 @@
 			<div>
 				{@render extraHeaderControls?.()}
 				{#if canCreateResource}
-					<button class="btn preset-filled-secondary" onclick={onCreate}>
+					<button class="btn preset-filled-secondary-500" onclick={onCreate}>
 						<Icon icon="mdi:plus" class="mr-2" />
 						New
 					</button>
