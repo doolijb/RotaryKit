@@ -2,7 +2,7 @@
     import {ValidStates} from "$shared/constants"
 	import type { Primitive } from "$shared/validation/base"
     import Icon from "@iconify/svelte"
-    import {popup, type PopupSettings} from "@skeletonlabs/skeleton"
+    import {popup, type PopupSettings} from "@skeletonlabs/skeleton-svelte"
     import {onMount} from "svelte"
 
     ////

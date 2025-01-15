@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { FormBase, CheckboxInput, TextInput, ModalSelectField } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
 	import { AdminEditEmail as Form } from "$shared/validation/forms"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import { onMount } from "svelte"
 
 	const form = Form.init()
@@ -57,8 +57,8 @@
 	// COMPUTED
 	////
 	
-	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
-	let canEditUsers = $derived($page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers)
+	let canEditSuperUsers = $derived(page.data.user.isSuperUser)
+	let canEditUsers = $derived(page.data.permissions?.includes("admin.users.PUT") || canEditSuperUsers)
 
 	////
 	// LIFECYCLE
@@ -89,7 +89,7 @@
 		showCancel={false}
 	>
 
-		{#if result && $page.data.user.id === result.userId}
+		{#if result && page.data.user.id === result.userId}
 			<div class="card mb-3">
 				<section class="p-4">
 					<p class="text-red-500">

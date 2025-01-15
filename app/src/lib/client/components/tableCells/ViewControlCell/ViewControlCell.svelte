@@ -16,7 +16,7 @@
     <div class="flex items-center items-stretch justify-center py-2">
         <button
             type="button"
-            class="variant-soft-primary btn-icon btn-icon-sm"
+            class="preset-soft-primary btn-icon btn-icon-sm"
             {disabled}
             onclick={onClick}
             onfocus={() => (focused = true)}

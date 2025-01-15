@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { Tab, TabGroup, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, handleClientError, handleServerError } from "$client/utils"
-	import { page } from "$app/stores"
-	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
+	import { Tab, TabGroup, type ToastContext, Accordion, AccordionItem } from "@skeletonlabs/skeleton-svelte"
+	import { handleClientError, handleServerError } from "$client/utils"
+	import { page } from "$app/state"
 	import { goto } from "$app/navigation"
-	import { onMount } from "svelte"
+	import { getContext, onMount } from "svelte"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
 	import type { Snippet } from "svelte"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -83,12 +82,12 @@
 	}
 
 	async function getResult() {
-		resourceApi.resourceId$($page.params.resourceId).GET({})
+		resourceApi.resourceId$(page.params.resourceId).GET({})
 			.Success(async (res) => {
 				result = mutateResult ? await mutateResult(res.body) : res.body
 			})
-			.ClientError(handleClientError({ toastStore}))
-			.ServerError(handleServerError({ toastStore }))
+			.ClientError(handleClientError({ toast}))
+			.ServerError(handleServerError({ toast }))
 	}
 
 	function oncancel() {
@@ -105,16 +104,14 @@
 			tabs[currentTab].disabled = true
 			await tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
 			.Success(async () => {
-				toastStore.trigger(
-					new Toast({
-						message: `${pluralize.singular(humanizeString(resource))} updated successfully.`,
-						style: "success"
-					})
-				)
+				toast.create({
+					description: `${pluralize.singular(humanizeString(resource))} updated successfully.`,
+					type: "success"
+				})
 				await getResult()
 			})
-			.ClientError(handleClientError({ toastStore}))
-			.ServerError(handleServerError({ toastStore }))
+			.ClientError(handleClientError({ toast}))
+			.ServerError(handleServerError({ toast }))
 			tabs[currentTab].disabled = false
 		}
 	}
@@ -145,7 +142,7 @@
 {#snippet updateButton(tab: {canSubmit: boolean, disabled: boolean})}
 	<button
 	type="button"
-	class="btn variant-filled-success capitalize"
+	class="btn preset-filled-success capitalize"
 	onclick={onsubmit}
 	disabled={!tab.canSubmit || tab.disabled}
 	>
@@ -166,7 +163,7 @@
 
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<a href="/admin/{resource}/{resultId}" class="btn variant-filled-surface capitalize">
+			<a href="/admin/{resource}/{resultId}" class="btn preset-filled-surface capitalize">
 				<Icon icon="bx:detail" class="mr-2" />
 				View
 			</a>
@@ -237,7 +234,7 @@
 <AdminHeader>
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<button type="button" class="btn variant-filled-surface capitalize" onclick={oncancel}>
+			<button type="button" class="btn preset-filled-surface capitalize" onclick={oncancel}>
 				<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 				Cancel
 			</button>

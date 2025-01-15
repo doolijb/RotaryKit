@@ -2,13 +2,14 @@
 	import { goto } from "$app/navigation"
 	import { Main, UserLoginForm } from "$client/components"
 	import { invalidateAll } from "$app/navigation"
-	import { Toast, handleClientError, handleServerError, handleException } from "$client/utils"
-	import { page } from "$app/stores"
+	import { handleClientError, handleServerError, handleException } from "$client/utils"
+	import { page } from "$app/state"
 	import api from "$shared/api"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import type { UserLogin } from "$shared/validation/forms"
+	import { getContext } from "svelte"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	let completed = false
 	
@@ -17,19 +18,17 @@
 		await api.login.POST({body: data})
 			.Success(async (res) => {
 				completed = true
-				const nextPage: string = $page.url.searchParams.get("next") || "/"
+				const nextPage: string = page.url.searchParams.get("next") || "/"
 				await invalidateAll()
-				toastStore.trigger(
-					new Toast({ message: `Welcome back`, style: "success" })
-				)
+				toast.create({ 
+					description: `Welcome back`, 
+					type: "success" 
+				})
 				await goto(nextPage)
 			})
-			.ClientError((r) => { 
-                errors = r.body["errors"] || {}
-                return handleClientError({ errors, toastStore})(r)
-            })
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ClientError(handleClientError({ toast}))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 	let data: FormDataOf<UserLogin> = $state({})
@@ -41,7 +40,7 @@
 	<div class="m-auto md:w-[35rem]">
 		<div class="card p-4 mb-4 border-0">
 			<h1 class="h2">
-				{$page.data.title}
+				{page.data.title}
 			</h1>
 		</div>
 		<div class="card border-0 p-4 mb-4">
@@ -50,13 +49,13 @@
 		<div class="card p-4 mb-4">
 			<p class="text-center">
 				Don't have an account?
-				<a href="/register" class="btn btn-sm variant-filled-secondary">Register</a>
+				<a href="/register" class="btn btn-sm preset-filled-secondary">Register</a>
 			</p>
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">
 				Forgot your passphrase?
-				<a href="/reset/passphrase" class="btn btn-sm variant-filled-secondary">Reset</a>
+				<a href="/reset/passphrase" class="btn btn-sm preset-filled-secondary">Reset</a>
 			</p>
 		</div>
 	</div>

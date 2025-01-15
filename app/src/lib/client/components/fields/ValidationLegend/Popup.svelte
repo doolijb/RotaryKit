@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
-    import type { PopupSettings } from "@skeletonlabs/skeleton"
+    import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import humanizeString from "humanize-string"
 
     ////
@@ -61,7 +61,7 @@
 </script>
 
 {#if validators.length || attrs && attrs.description}
-    <div class="card variant-filled z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
+    <div class="card preset-filled z-10 w-96 p-4 shadow-xl" data-popup={legendPopup.target}>
         {#if attrs && attrs.description}
         <h4 class="h4">Description</h4>
             <div class="mt-2">
@@ -74,8 +74,8 @@
                 <div>
                     <span
                         class="badge"
-                        class:variant-filled-success={!fieldErrors[validator.key]}
-                        class:variant-filled-error={!!fieldErrors[validator.key]}
+                        class:preset-filled-success={!fieldErrors[validator.key]}
+                        class:preset-filled-error={!!fieldErrors[validator.key]}
                     >
                         {validator.badge}
                     </span>
@@ -88,8 +88,8 @@
                 <div>
                     <span
                         class="badge"
-                        class:variant-filled-success={!fieldErrors[key]}
-                        class:variant-filled-error={!!fieldErrors[key]}
+                        class:preset-filled-success={!fieldErrors[key]}
+                        class:preset-filled-error={!!fieldErrors[key]}
                     >
                         {humanizeString(key)}
                     </span>

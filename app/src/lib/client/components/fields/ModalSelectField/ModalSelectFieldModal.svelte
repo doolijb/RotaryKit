@@ -1,34 +1,44 @@
 <script lang="ts">
-	import type { AutocompleteOption } from '@skeletonlabs/skeleton'
     import { onMount } from 'svelte'
-    import { getModalStore, ProgressBar } from '@skeletonlabs/skeleton'
+    import { Modal, Progress } from '@skeletonlabs/skeleton-svelte'
 
-	const modalStore = getModalStore()
+    interface AutocompleteOption {
+        label: string;
+        value: string | number;
+    }
 
     let searchString = $state("")
     let options = $state([])
     let selectedValue: string | number | undefined = ""
 	let isGettingOptions = $state(false)
+
     interface Props {
-        selectedOption?: AutocompleteOption | undefined;
-        searchTimeout: NodeJS.Timeout;
-        getOptions: ({searchString}) => Promise<any[]>;
-        mapOptions: (data: any[]) => AutocompleteOption[];
-        parent: any;
+        open: boolean
+        selectedOption?: AutocompleteOption | undefined
+        searchTimeout: NodeJS.Timeout
+        getOptions: ({searchString}) => Promise<any[]>
+        mapOptions: (data: any[]) => AutocompleteOption[]
+        onClose: () => void
+        onConfirm: (data?: { selectedOption }) => Promise<void>
+        buttonTextSubmit: string
+        title: string
+        body?: string
+        buttonTextCancel: string
     }
 
     let {
+        open = $bindable(),
         selectedOption = $bindable(undefined),
         searchTimeout = $bindable(),
         getOptions,
         mapOptions,
-        parent
+        onClose,
+        onConfirm,
+        buttonTextSubmit,
+        title,
+        body,
+        buttonTextCancel
     }: Props = $props();
-
-    function onFormSubmit() {
-        if ($modalStore[0].response) $modalStore[0].response({ selectedOption })
-        modalStore.close()
-    }
 
     function clearSelection() {
         selectedOption = undefined
@@ -70,44 +80,48 @@
     })
 </script>
 
-{#if $modalStore[0]}
-    <div class="modal-example-form card p-4 w-modal shadow-xl space-y-4">
-        <header class="text-2xl font-bold">{$modalStore[0].title ?? '(title missing)'}</header>
-        <article>{$modalStore[0].body ?? '(body missing)'}</article>
-        <form class="modal-form p-4 space-y-4" action="javascript:void(0)">
-            <label class="label">
-                <span>Search</span>
-                <div class="flex">
-                    <input class="input" type="text" bind:value={searchString} placeholder="" oninput={onSearchChange} />
-                    <button type="button" class="btn variant-filled-surface ml-2" onclick={clearSearch} disabled={!searchString}>Reset</button>
-                </div>
-            </label>
+<Modal
+    bind:open
+>
+    {#snippet content()}
+        <div class="modal-example-form card p-4 w-modal shadow-xl space-y-4">
+            <header class="text-2xl font-bold">{title}</header>
+            <article>{body ?? '(body missing)'}</article>
+            <form class="modal-form p-4 space-y-4" action="javascript:void(0)">
+                <label class="label">
+                    <span>Search</span>
+                    <div class="flex">
+                        <input class="input" type="text" bind:value={searchString} placeholder="" oninput={onSearchChange} />
+                        <button type="button" class="btn preset-filled-surface ml-2" onclick={clearSearch} disabled={!searchString}>Reset</button>
+                    </div>
+                </label>
 
-			<ProgressBar height="h-1" value={isGettingOptions ? undefined : 100} meter={isGettingOptions ? "bg-surface-900-50-token" : "bg-surface-200-700-token"} />
-            
-            <div class="flex flex-col col-span-2">
-                <select class="select h-full" size=5 onchange={onOptionSelected}>
-                    {#if !!options && options.length > 0}
-                        {#each options as option}
-                            <option value={option.value} selected={!!selectedOption && option.value == selectedOption.value}>{option.label}</option>
-                        {/each}
-					{:else}
-						<option disabled>No options available</option>
-                    {/if}
-                </select>
-            </div>
-
-            <label class="label">
-                <span>Selected</span>
-                <div class="flex">
-                    <input class="input" type="text" value={selectedOption ? selectedOption.label : ''} readonly />
-                    <button type="button" class="btn variant-filled-error ml-2" disabled={!selectedOption} onclick={clearSelection}>Clear</button>
+                <Progress height="h-1" value={isGettingOptions ? undefined : 100} />
+                
+                <div class="flex flex-col col-span-2">
+                    <select class="select h-full" size=5 onchange={onOptionSelected}>
+                        {#if !!options && options.length > 0}
+                            {#each options as option}
+                                <option value={option.value} selected={!!selectedOption && option.value == selectedOption.value}>{option.label}</option>
+                            {/each}
+                        {:else}
+                            <option disabled>No options available</option>
+                        {/if}
+                    </select>
                 </div>
-            </label>
-        </form>
-        <footer class="modal-footer {parent.regionFooter}">
-			<button class="btn {parent.buttonNeutral}" onclick={parent.onClose}>{parent.buttonTextCancel}</button>
-			<button class="btn variant-filled-primary" onclick={onFormSubmit}>{parent.buttonTextSubmit}</button>
-		</footer>
-    </div>
-{/if}
+
+                <label class="label">
+                    <span>Selected</span>
+                    <div class="flex">
+                        <input class="input" type="text" value={selectedOption ? selectedOption.label : ''} readonly />
+                        <button type="button" class="btn preset-filled-error ml-2" disabled={!selectedOption} onclick={clearSelection}>Clear</button>
+                    </div>
+                </label>
+            </form>
+            <footer class="modal-footer">
+                <button class="btn" onclick={onClose}>{buttonTextCancel}</button>
+                <button class="btn preset-filled-primary" onclick={() => onConfirm({selectedOption})}>{buttonTextSubmit}</button>
+            </footer>
+        </div>
+    {/snippet}
+</Modal>

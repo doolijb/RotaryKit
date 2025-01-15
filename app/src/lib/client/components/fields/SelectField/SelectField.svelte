@@ -2,7 +2,7 @@
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import type { PopupSettings, AutocompleteOption } from "@skeletonlabs/skeleton"
+	import type { PopupSettings, AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import humanizeString from 'humanize-string'
 

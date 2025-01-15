@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BoolCell, TextCell } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { popup } from "@skeletonlabs/skeleton"
+	import { popup } from "@skeletonlabs/skeleton-svelte"
 
 	/**
 	 * @fires orderByChange - Dispatched when an orderable table header is clicked, returns an updated orderBy query string.
@@ -213,7 +213,7 @@
 				data-popup={actionPopupSettings[String(result["id"])].target}
 			>
 				<div class="arrow bg-primary-500-backdrop-token"></div>
-				<div class="btn-group-vertical variant-filled w-full">
+				<div class="btn-group-vertical preset-filled w-full">
 					{#if canViewResource}
 						<button onclick={() => onView(result)}> View </button>
 					{/if}

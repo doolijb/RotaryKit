@@ -3,8 +3,8 @@
 
     import { ValidationBadges, ValidationLegend } from "$client/components"
     import { ValidStates } from "$shared/constants"
-    import { Autocomplete, popup, type PopupSettings } from "@skeletonlabs/skeleton"
-    import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+    import { Autocomplete, popup, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
+    import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import { createEventDispatcher, onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"

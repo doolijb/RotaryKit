@@ -2,7 +2,7 @@
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import { FileDropzone, type PopupSettings } from "@skeletonlabs/skeleton"
+	import { FileDropzone, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import { fileTypes } from "$shared/data"
 	import Icon from "@iconify/svelte"
@@ -373,7 +373,7 @@
 	{#if showFiles && data[field]}
 		<div
 			class="mt-2"
-			class:variant-ringed-error={hasFileRelatedErrors}
+			class:preset-ringed-error={hasFileRelatedErrors}
 			class:p-2={hasFileRelatedErrors}
 		>
 			{#if hasFileRelatedErrors}
@@ -384,7 +384,7 @@
 			{/if}
 			<div class="grid grid-cols-1 gap-2">
 				{#each data[field] as file}
-					<div class="card p-4 variant-filled-surface">
+					<div class="card p-4 preset-filled-surface">
 						<div class="card-body">
 							<div class="flex items-center gap-2">
 								<Icon icon={getFileTypeIcon(file.name)} class="w-12 h-12" />
@@ -394,7 +394,7 @@
 									{(file.size / 1000000).toPrecision(2)} MB
 								</p>
 								<button
-									class="btn variant-filled-error mt-2 ml-auto mt-0"
+									class="btn preset-filled-error mt-2 ml-auto mt-0"
 									onclick={() => removeFile(file)}
 								>
 									<Icon icon="bi:trash" class="w-4 h-4 me-1" />

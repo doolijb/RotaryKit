@@ -3,7 +3,6 @@
 	import { ValidStates } from "$shared/constants"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import type { PopupSettings } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"

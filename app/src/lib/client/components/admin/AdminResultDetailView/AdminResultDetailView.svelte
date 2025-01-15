@@ -5,20 +5,20 @@
 		Loading, 
 		TextCell, 
 		AdminImageResultDetails, 
-		AdminVideoResultDetails 
+		AdminVideoResultDetails ,
+		ConfirmationModal,
 	} from "$client/components" 
 	import Icon from "@iconify/svelte"
-	import { Tab, TabGroup, getModalStore, getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
-	import { page } from "$app/stores"
+	import { Tab, TabGroup, type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
+	import { page } from "$app/state"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
-	import { onMount } from "svelte"
+	import { getContext, onMount } from "svelte"
 	import { goto } from "$app/navigation"
 	import pluralize from "pluralize"
 	import humanizeString from "humanize-string"
 
-	const toastStore = getToastStore()
-	const modalStore = getModalStore()
+	const toast: ToastContext = getContext("toast")
 
 	type DataType = "string" | "number" | "boolean" | "html"
 
@@ -72,48 +72,47 @@
 	////
 
 	const canEditResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "PUT",
 		resources: [resource]
 	}) && showEditButton
 
 	const canDeleteResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
 	}) && showDeleteButton
 
 	const canCreateResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
 	}) && showCreateButton
 
+	let isDeleteModalOpen = $state(false)
+
 	async function handleDelete() {
-		modalStore.trigger({
-			type: "confirm",
-			title: `Delete ${pluralize.singular(humanizeString(resource))}`,
-			body: `Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`,
-			response: (r) => {
-				if (r) {
-					resourceApi.resourceId$(resourceId).DELETE({})
-						.Success((r) => {
-							toastStore.trigger(
-								new Toast({
-									message: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
-									style: "success"
-								})
-							)
-							goto(`/admin/${resource}`)
-						})
-						.ClientError(handleClientError({ toastStore }))
-						.ServerError(handleServerError({ toastStore }))
-				}
-			}
-		})
+		isDeleteModalOpen = true
+	}
+
+	function onDeleteModalClose() {
+		isDeleteModalOpen = false
+	}
+
+	async function onDeleteModalConfirm() {
+		resourceApi.resourceId$(resourceId).DELETE({})
+			.Success((r) => {
+				toast.create({
+					description: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
+					type: "success"
+				})
+				goto(`/admin/${resource}`)
+			})
+			.ClientError(handleClientError({ toast }))
+			.ServerError(handleServerError({ toast }))
 	}
 
 	////
@@ -127,8 +126,8 @@
 			.Success((r) => {
 				result = mutateResult ? mutateResult(r.body) : r.body
 			})
-			.ClientError(handleClientError({ toastStore }))
-			.ServerError(handleServerError({ toastStore }))
+			.ClientError(handleClientError({ toast }))
+			.ServerError(handleServerError({ toast }))
 	}
 
 	////
@@ -209,7 +208,7 @@
 		// If there is a tab query param, then we want to set the currentTab to that
 		await getResult()
 		buildTabs()
-		currentTab = $page.url.searchParams.get("tab") || "default"
+		currentTab = page.url.searchParams.get("tab") || "default"
 	})
 	////
 	// INTERNAL VARIABLES
@@ -224,6 +223,14 @@
 	</div>
 {/snippet}
 
+<ConfirmationModal
+	openState={isDeleteModalOpen}
+	onCancel={onDeleteModalClose}
+	onConfirm={onDeleteModalConfirm}
+	title={`Delete ${pluralize.singular(humanizeString(resource))}`}
+	body={`Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`}
+/>
+
 <AdminHeader>
 	{#snippet title()}
 	
@@ -235,14 +242,14 @@
 	{/snippet}
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<a href="/admin/{resource}" class="btn variant-filled-surface">
+			<a href="/admin/{resource}" class="btn preset-filled-surface">
 				<Icon icon="material-symbols:list" class="mr-2" />
 				View All
 			</a>
 			{#if canCreateResource}
 				<a
 					href="/admin/{resource}/create"
-					class="btn variant-filled-success"
+					class="btn preset-filled-success"
 					class:disabled={!isLoaded}
 				>
 					<Icon icon="mdi:plus" class="mr-2" />
@@ -279,7 +286,7 @@
 								{:else}
 								<!-- Display a table -->
 									<div class="table-container">
-										<table class="table w-full m-0 variant-soft">
+										<table class="table w-full m-0 preset-soft">
 											<thead>
 												<tr>
 													{#each Object.keys(tabs[currentTab][0]) as key}
@@ -336,7 +343,7 @@
 				{#if canDeleteResource}
 					<button
 						type="button"
-						class="btn variant-filled-error"
+						class="btn preset-filled-error"
 						onclick={handleDelete}
 						disabled={!isLoaded}
 					>
@@ -346,8 +353,8 @@
 				{/if}
 				{#if canEditResource}
 					<a
-						href="{$page.url.pathname}/edit"
-						class="btn variant-filled-primary"
+						href="{page.url.pathname}/edit"
+						class="btn preset-filled-primary"
 						class:disabled={!isLoaded}
 					>
 						<Icon icon="mdi:pencil" class="mr-2" />

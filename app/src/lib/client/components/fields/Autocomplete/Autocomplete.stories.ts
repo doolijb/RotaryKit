@@ -1,5 +1,5 @@
 import Component from "."
-import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 import type { Meta } from "@storybook/svelte"
 import type { ComponentType } from "svelte"
 import { validators as v, utils, fields } from "$shared/validation"

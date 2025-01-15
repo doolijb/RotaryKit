@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte"
     import { createSwapy, type Swapy } from "swapy"
-    import { getToastStore, type ToastSettings } from "@skeletonlabs/skeleton"
+    import { gettoast, type ToastSettings } from "@skeletonlabs/skeleton-svelte"
 	import { slide } from "svelte/transition"
     import NewUsersModule from "../NewUsersModule"
 	import { hasAdminPermission } from "$client/utils"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
     import { AdminHeader } from "$client/components"
   
     type AvailableModule = {
@@ -36,7 +36,7 @@
     // CONSTANTS
     ////
 
-    const toastStore = getToastStore()
+    const toast: ToastContext = getContext("toast")
 
     ////
     // VARIABLES
@@ -95,7 +95,7 @@
             message: "Dashboard settings saved to browser",
         }
 
-        toastStore.trigger(toast)
+        toast.create(toast)
     }
 
     function loadLayout() {
@@ -152,8 +152,8 @@
 
         // New Users Module
         if (hasAdminPermission({ 
-            user: $page.data.user, 
-            adminPermissions: $page.data.adminPermissions, 
+            user: page.data.user, 
+            adminPermissions: page.data.adminPermissions, 
             resources: ["users"], 
             action: "GET"
         })) {
@@ -224,7 +224,7 @@
 {#snippet moduleSnippet(module:Module)}
     <div 
         class="rounded p-4 flex-grow max-h-full relative bg-surface-100-800-token" 
-        class:variant-ringed={swapyEnabled}
+        class:preset-ringed={swapyEnabled}
         data-swapy-item={module.item}
     >
         <div class="max-h-full flex-grow overflow-scroll relative" class:blur-[2px]={swapyEnabled || columnControlsEnabled}>
@@ -240,7 +240,7 @@
         {#if columnControlsEnabled}
             {@const slot = slots[Object.keys(slots).find(slotId => module.slotId === slotId)]}
             <div class="absolute top-0 right-0 h-full w-full flex items-center justify-center text-center">
-                <span class="variant-glass-tertiary p-4 rounded-lg">
+                <span class="preset-glass-tertiary p-4 rounded-lg">
                     <label>
                         Width
                         <select
@@ -263,7 +263,7 @@
 {/snippet}
 
 <!-- {#if !!swapy && !loadFailed}
-    <div class="hidden md:flex card variant-soft-surface p-4 mb-4">
+    <div class="hidden md:flex card preset-soft-surface p-4 mb-4">
         <div class="flex-grow">
             <h1 class="h4 w-auto mb-2">
                 <Icon class="h-5 w-5 inline" icon="clarity:dashboard-solid" /> Dashboard
@@ -271,8 +271,8 @@
             {#if swapyEnabled || columnControlsEnabled}
                 <button 
                     class="btn btn-sm me-2" 
-                    class:variant-filled-surface={!swapyEnabled && !columnControlsEnabled}
-                    class:variant-filled-primary={swapyEnabled || columnControlsEnabled}
+                    class:preset-filled-surface={!swapyEnabled && !columnControlsEnabled}
+                    class:preset-filled-primary={swapyEnabled || columnControlsEnabled}
                     onclick={save}
                 >
                 <Icon icon="mdi:content-save-outline" width="1.6em" class="inline me-2" />
@@ -293,15 +293,15 @@
                 <div class="inline-flex space-x-2" transition:slide={{ axis: "x" }}>
                     <button 
                         class="btn btn-sm me-2 my-0 align-middle" 
-                        class:variant-filled-surface={!swapyEnabled}
-                        class:variant-filled-primary={swapyEnabled}
+                        class:preset-filled-surface={!swapyEnabled}
+                        class:preset-filled-primary={swapyEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableSwapy}
                     >Drag</button>
                     <button 
                         class="btn btn-sm my-0 align-middle" 
-                        class:variant-filled-surface={!columnControlsEnabled} 
-                        class:variant-filled-primary={columnControlsEnabled}
+                        class:preset-filled-surface={!columnControlsEnabled} 
+                        class:preset-filled-primary={columnControlsEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableColSpan}
                     >Size</button>
@@ -322,8 +322,8 @@
             {#if swapyEnabled || columnControlsEnabled}
                 <button 
                     class="btn btn-sm my-0" 
-                    class:variant-filled-surface={!swapyEnabled && !columnControlsEnabled}
-                    class:variant-filled-primary={swapyEnabled || columnControlsEnabled}
+                    class:preset-filled-surface={!swapyEnabled && !columnControlsEnabled}
+                    class:preset-filled-primary={swapyEnabled || columnControlsEnabled}
                     onclick={save}
                 >
                 <Icon icon="mdi:content-save-outline" width="1.6em" class="inline me-2" />
@@ -344,15 +344,15 @@
                 <div class="inline-flex space-x-2" transition:slide={{ axis: "x" }}>
                     <button 
                         class="btn btn-sm me-2 my-0 align-middle" 
-                        class:variant-filled-surface={!swapyEnabled}
-                        class:variant-filled-primary={swapyEnabled}
+                        class:preset-filled-surface={!swapyEnabled}
+                        class:preset-filled-primary={swapyEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableSwapy}
                     >Drag</button>
                     <button 
                         class="btn btn-sm my-0 align-middle" 
-                        class:variant-filled-surface={!columnControlsEnabled} 
-                        class:variant-filled-primary={columnControlsEnabled}
+                        class:preset-filled-surface={!columnControlsEnabled} 
+                        class:preset-filled-primary={columnControlsEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableColSpan}
                     >Size</button>
@@ -370,7 +370,7 @@
             {@const module = modules.find(module => module.slotId === slotId)}
             <div 
                 class="section-{slotId} h-[30em] col-span-{slot.colSpan} flex flex-col sm:mb-4 lg:mb-0" 
-                class:variant-soft={swapyEnabled}
+                class:preset-soft={swapyEnabled}
                 class:rounded-lg={swapyEnabled}
                 data-swapy-slot={slotId}
             >
@@ -380,7 +380,7 @@
             </div>
         {/each}
     {:else}
-        <div class="col-span-6 card variant-soft p-4">
+        <div class="col-span-6 card preset-soft p-4">
             Hmmm... your dashboard is empty.
         </div>
     {/if}

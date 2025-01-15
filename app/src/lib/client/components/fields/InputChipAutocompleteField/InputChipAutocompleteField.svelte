@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { ValidationBadges } from "$client/components"
 	import { ValidStates } from "$shared/constants"
-	import { onMount } from "svelte"
+	import { getContext } from "svelte"
 	import { v4 } from "uuid"
-	import { Autocomplete, getToastStore } from "@skeletonlabs/skeleton"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+	import { Autocomplete } from "@skeletonlabs/skeleton-svelte"
+	import type { AutocompleteOption, ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
-	import Icon from "@iconify/svelte"
-	import { Toast } from "$client/utils/Toast"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -225,21 +223,19 @@
 			}
 
 			if (attrs?.maxLength && value.length > attrs.maxLength) {
-				const toast = new Toast({
-					message: `You can only enter up to ${attrs.maxLength} characters`,
-					style: "warning",
+				toast.create({
+					description: `You can only enter up to ${attrs.maxLength} characters`,
+					type: "error",
 				})
-				toastStore.trigger(toast)
 				await triggerInputEvent()
 				return
 			}
 
 			if (attrs?.minLength && value.length < attrs.minLength) {
-				const toast = new Toast({
-					message: `You must enter at least ${attrs.minLength} characters`,
-					style: "warning",
+				toast.create({
+					description: `You must enter at least ${attrs.minLength} characters`,
+					type: "error",
 				})
-				toastStore.trigger(toast)
 				await triggerInputEvent()
 				return
 			}
@@ -257,11 +253,10 @@
 	}
 
 	function maxSelectedReachedToast() {
-		const toast = new Toast({
-			message: `You can only select up to ${maxSelected} items`,
-			style: "warning",
+		toast.create({
+			description: `You can only select up to ${maxSelected} items`,
+			type: "warning"
 		})
-		toastStore.trigger(toast)
 	}
 
 	////
@@ -391,7 +386,7 @@
 		{#if selectedList.length}
 			<div class="flex flex-wrap gap-1 pb-2">
 				{#each selectedList as option}
-					<button type="button" class="chip variant-filled" onclick={() => onOptionRemove(option)}>
+					<button type="button" class="chip preset-filled" onclick={() => onOptionRemove(option)}>
 						{isAutocompleteOption(option) ? option.label : option}
 						<Icon icon="mdi:close" class="ml-2" />
 					</button>

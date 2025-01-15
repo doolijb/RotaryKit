@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Main, ChangePassphraseForm } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
 	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { gettoast } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
 	import type { ChangePassphrase as Form } from "$shared/validation/forms"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	////
 	// COMPUTED
@@ -26,17 +26,18 @@
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toastStore.trigger(
-					new Toast({ message: "Your passphrase has been updated", style: "success" })
-				)
+				toast.create({ 
+					description: "Your passphrase has been updated", 
+					type: "success" 
+				})
 				completed = true
 			})
 			.ClientError((r) => { 
                 errors = r.body.errors
-                return handleClientError({ errors, toastStore})(r)
+                return handleClientError({ toast})(r)
             })
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 </script>
@@ -47,7 +48,7 @@
 	<div class="m-auto md:w-[35rem]">
         <div class="card p-4 mb-4">
             <h1 class="h2">
-                {$page.data.title}
+                {page.data.title}
             </h1>
         </div>
 		<div class="card p-4 w-full mb-4">

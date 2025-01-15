@@ -1,15 +1,14 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation"
 	import { Loading } from "$client/components"
-    import { getToastStore } from "@skeletonlabs/skeleton"
-    import { Toast } from "$client/utils"
-	import { onMount } from "svelte"
+    import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { getContext, onMount } from "svelte"
 
-    const toastStore = getToastStore()
+    const toast: ToastContext = getContext("toast")
 
     onMount(async () => {
         await invalidateAll()
-        toastStore.trigger(new Toast({message: "You are logged out", style: "success"}))
+        toast.create({description: "You are logged out", type: "success"})
         await goto("/")
     })
 

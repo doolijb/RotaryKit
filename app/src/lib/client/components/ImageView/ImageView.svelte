@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 	import { ImageSizes } from "$shared/constants"
 
     ////
@@ -102,9 +102,9 @@
 
 <picture>
     {#each sources as { type, srcset }, i}
-        <source type={type} srcset={$page.data.storageUrl + srcset} />
+        <source type={type} srcset={page.data.storageUrl + srcset} />
     {/each}
-    <img src={$page.data.storageUrl + result.smallJpgPath} alt={ alt || result.title } {...restProps} draggable="false" />
+    <img src={page.data.storageUrl + result.smallJpgPath} alt={ alt || result.title } {...restProps} draggable="false" />
 </picture>
     
     

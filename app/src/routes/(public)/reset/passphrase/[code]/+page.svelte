@@ -1,38 +1,39 @@
 <script lang="ts">
 	import { Main, Loading } from "$client/components"
-	import { page } from "$app/stores"
-	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { page } from "$app/state"
+	import { handleClientError, handleException, handleServerError } from "$client/utils"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
-	import { onMount } from "svelte"
+	import { getContext, onMount } from "svelte"
 	import { NewPassphraseForm }from "$client/components"
 	import { NewPassphrase } from "$shared/validation/forms"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	async function verify() {
-		const code = $page.params.code
+		const code = page.params.code
 		await api.reset.passphrase.code$(code).GET()
 			.Success(async (res) => {
 				valid = true
 			})
-			.ClientError(handleClientError({ toastStore}, errCallback))
-			.ServerError(handleServerError({ toastStore }, errCallback))
-			.catch(handleException({ toastStore }, errCallback))
+			.ClientError(handleClientError({ toast}, errCallback))
+			.ServerError(handleServerError({ toast }, errCallback))
+			.catch(handleException({ toast }, errCallback))
 	}
 
 	async function onsubmit(): Promise<void> {
-		const code = $page.params.code
+		const code = page.params.code
 		await api.reset.passphrase.code$(code).PUT({ body: data })
 			.Success(async (res) => {
 				completed = true
-				toastStore.trigger(
-					new Toast({ message: res['body']['message'] || "Passphrase updated", style: "success" })
-				)
+				toast.create({ 
+					description: res['body']['message'] || "Passphrase updated", 
+					type: "success" 
+				})
 			})
-			.ClientError(handleClientError({ toastStore }, errCallback))
-			.ServerError(handleServerError({ toastStore }, errCallback))
-			.catch(handleException({ toastStore }, errCallback))
+			.ClientError(handleClientError({ toast }, errCallback))
+			.ServerError(handleServerError({ toast }, errCallback))
+			.catch(handleException({ toast }, errCallback))
 	}
 
 	async function errCallback(err): Promise<void> {
@@ -56,7 +57,7 @@
 	<div class="m-auto md:w-[35rem]">
         <div class="card p-4 mb-4">
             <h1 class="h2">
-                {$page.data.title}
+                {page.data.title}
             </h1>
         </div>
 		<div class="card p-4 w-full mb-4">

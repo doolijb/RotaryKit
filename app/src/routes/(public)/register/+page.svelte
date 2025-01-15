@@ -1,29 +1,31 @@
 <script lang="ts">
 	import { Main, UserRegisterForm } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
-	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { handleClientError, handleException, handleServerError } from "$client/utils"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
+	import { getContext } from "svelte"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	async function onsubmit() {
 		await api.register.POST({body: data})
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toastStore.trigger(
-					new Toast({ message: "Your account has been created", style: "success" })
-				)
+				toast.create({ 
+					description: "Your account has been created", 
+					type: "success" 
+				})
 				completed = true
 			})
 			.ClientError((r) => { 
                 errors = r.body.errors
-                return handleClientError({ errors, toastStore})(r)
+                return handleClientError({ errors, toast})(r)
             })
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 	let completed = $state(false)
@@ -38,7 +40,7 @@
 	<div class="m-auto md:w-[35rem]">
         <div class="card p-4 mb-4">
             <h1 class="h2">
-                {$page.data.title}
+                {page.data.title}
             </h1>
         </div>
 		<div class="card p-4 w-full mb-4">
@@ -58,7 +60,7 @@
 		<div class="card p-4">
 			<p class="text-center">
 				Already have an account?
-				<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
+				<a href="/login" class="btn btn-sm preset-filled-secondary">Login</a>
 			</p>
 		</div>
 	</div>

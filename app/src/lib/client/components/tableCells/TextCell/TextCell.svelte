@@ -1,10 +1,10 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
-    import { clipboard, getToastStore } from "@skeletonlabs/skeleton"
+    import { clipboard, gettoast } from "@skeletonlabs/skeleton-svelte"
     import { getDisplayAndCopyText, Toast } from "$client/utils"
     import type { Snippet } from "svelte"
 
-    const toastStore = getToastStore()
+    const toast: ToastContext = getContext("toast")
 
     type ValueType = "unknown" | "uuid" | "number" | "date" | "url" | "boolean"
 
@@ -139,7 +139,7 @@
         use:clipboard={copyText}
         onclick={() => {
             url && window.open(url)
-            !url && canCopy && toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
+            !url && canCopy && toast.create({ description: "Copied to clipboard"})
         }}
         onfocus={() => (focused = true)}
         onfocusout={() => (focused = false)}

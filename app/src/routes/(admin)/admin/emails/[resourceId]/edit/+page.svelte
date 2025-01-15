@@ -1,12 +1,12 @@
 <script lang="ts">
     import {AdminEditResultView, AdminEditEmailForm} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
     import api from "$shared/api"
 	import { forms as f } from "$shared/validation"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 
     const resource = "emails"
-    const resourceId = $page.params.resourceId
+    const resourceId = page.params.resourceId
     const naturalKey = "address"
     const resourceApi = api.admin.emails as ResourceApi
 

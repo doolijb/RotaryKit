@@ -1,9 +1,9 @@
 <script lang="ts">
     import {AdminCreateView, AdminCreateEmailForm} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 	import api from "$shared/api"
 	import { onMount } from "svelte"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 
     const resource = "emails"
     const FormComponent = AdminCreateEmailForm
@@ -26,7 +26,7 @@
     }
 
     let extras = $state({
-        canEditSuperUsers: $page.data.user.isSuperUser,
+        canEditSuperUsers: page.data.user.isSuperUser,
         getUserOptions,
         mapUserOptions,
     })

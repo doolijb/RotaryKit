@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { ValidStates } from "$shared/constants"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import type { PopupSettings, AutocompleteOption, ModalSettings, ModalComponent, ModalStore } from "@skeletonlabs/skeleton"
 	import type { FormSchema } from "$shared/validation/base"
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import ModalSelectFieldModal from './ModalSelectFieldModal.svelte'
+	import ModalSelectFieldModal from "./ModalSelectFieldModal.svelte"
 	import type { Snippet } from "svelte"
-	import humanizeString from 'humanize-string'
-
-
-	const modalStore = getModalStore()
+	import humanizeString from "humanize-string"
 	
 
 	////
@@ -103,32 +96,20 @@
 		await validate()
 	}
 
+	let isModalOpen = $state(false)
 	async function openModal() {
-		const modalComponent: ModalComponent = {
-			ref: ModalSelectFieldModal,
-			props: {
-				mapOptions,
-				getOptions,
-				selectedOption,
-			},
-			backdropClasses: "z-[500]"
-		}
-		const modal: ModalSettings = {
-			type: 'component',
-			component: modalComponent,
-			title: label,
-			body: "",
-			buttonTextSubmit: "Select",
-			response: (response) => {
-				if (response) {
-					selectedOption = response.selectedOption
-					data[field] = selectedOption !== undefined ? selectedOption.value : undefined
-				}
-				touch()
-			},
-			backdropClasses: "z-[500]"
-		}
-		modalStore.trigger(modal)
+		isModalOpen = true
+	}
+
+	async function onModalConfirm(data) {
+		selectedOption = data.selectedOption
+		data[field] = selectedOption !== undefined ? selectedOption.value : undefined
+		isModalOpen = false
+		touch()
+	}
+
+	async function onModalClose() {
+		isModalOpen = false
 	}
 
 	async function clearSelection() {
@@ -202,6 +183,21 @@
 
 </script>
 
+<ModalSelectFieldModal
+	bind:open={isModalOpen}
+	{mapOptions}
+	{getOptions}
+	{selectedOption}
+	title={label}
+	body=""
+	onConfirm={onModalConfirm}
+	onClose={onModalClose}
+	buttonTextSubmit="Submit"
+	buttonTextCancel="Cancel"
+	searchTimeout={undefined}
+/>
+
+
 <div class="mb-2">
     <div class="flex items-center">
         <label class="label inline-flex pb-2" for={id}>
@@ -236,10 +232,10 @@
 			{/if}
 		</button>
 		<div class="flex">
-			<button type="button" class="btn variant-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
+			<button type="button" class="btn preset-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
 				Select
 			</button>
-			<button type="button" class="btn variant-filled-surface ml-2" onclick={clearSelection} disabled={!data[field] || disabled}>
+			<button type="button" class="btn preset-filled-surface ml-2" onclick={clearSelection} disabled={!data[field] || disabled}>
 				Clear
 			</button>
 		</div>

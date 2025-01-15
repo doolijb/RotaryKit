@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { getModalStore, getToastStore, type ModalSettings } from "@skeletonlabs/skeleton"
-	import { page } from "$app/stores"
-	import { Main } from "$client/components"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { page } from "$app/state"
+	import { ConfirmationModal, Main } from "$client/components"
 	import api from "$shared/api"
 	import Icon from "@iconify/svelte"
-	import { onMount } from "svelte"
+	import { getContext, onMount } from "svelte"
 	import { AddEmailAddressForm } from "$client/components"
-	import { handleClientError, handleException, handleServerError, Toast } from "$client/utils"
+	import { handleClientError, handleException, handleServerError } from "$client/utils"
 	import { AddEmailAddress as Form } from "$shared/validation/forms"
 
-	const toastStore = getToastStore()
-	const modalStore = getModalStore()
+	const toast: ToastContext = getContext("toast")
 
 
 	////
@@ -23,6 +22,10 @@
 	let addEmailErrors: FormErrors = $state({})
 	let deletedEmailIds: string[] = [] // Prevent button from being clicked multiple times
 	let isSettingPrimary = $state(false)
+	let isSetPrimaryModalOpen = $state(false)
+	let isDeleteEmailModalOpen = $state(false)
+	let setPrimaryModalData: {email?: SelectEmail} = $state({})
+	let deleteEmailModalData: {email?: SelectEmail} = $state({})
 
 	////
 	// CALCULATED
@@ -40,31 +43,22 @@
 			.Success(async (res) => {
 				getEmails()
 				addEmailCompleted = true
-				toastStore.trigger(new Toast({ message: "Your email was added", style: "success" }))
+				toast.create({ description: "Your email was added", type: "success" })
 			})
 			.ClientError((r) => {
 				addEmailErrors = r.body.errors
-				return handleClientError({ errors: addEmailErrors, toastStore })(r)
+				return handleClientError({ toast })(r)
 			})
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 	async function onSetPrimaryClick(email: SelectEmail) {
-		const modal: ModalSettings = {
-			type: "confirm",
-			title: "Change Primary Email Address",
-			body: `Are you sure you want to make ${email.address} your primary email address for all future authentication and communications? You will no longer be able to login with your current primary email address.`,
-			response: (r: boolean) => {
-				if (r) {
-					onSetPrimaryConfirmClick(email)
-				}
-			}
-		}
-		modalStore.trigger(modal)
+		setPrimaryModalData = { email }
+		isSetPrimaryModalOpen = true
 	}
 
-	async function onSetPrimaryConfirmClick(email: SelectEmail) {
+	async function onSetPrimaryModalConfirm({email}:{email: SelectEmail}) {
 		isSettingPrimary = true
 		await api.profile.email
 			.resourceId$(email.id)
@@ -72,12 +66,20 @@
 			.Success(async (res) => {
 				emails = []
 				getEmails()
-				toastStore.trigger(new Toast({ message: res.body.message || "Primary email updated", style: "success" }))
+				toast.create({ description: res.body.message || "Primary email updated", type: "success" })
 			})
-			.ClientError(handleClientError({ toastStore }))
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ClientError(handleClientError({ toast }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 		isSettingPrimary = false
+		isSetPrimaryModalOpen = false
+		setPrimaryModalData = {}
+	}
+
+	async function onSetPrimaryModalCancel() {
+		isSetPrimaryModalOpen = false
+		isSettingPrimary = false
+		setPrimaryModalData = {}
 	}
 
 	async function onResendCodeClick(email: SelectEmail) {
@@ -85,39 +87,36 @@
 			.resourceId$(email.id)
 			["resend-code"].POST()
 			.Success(async (res) => {
-				toastStore.trigger(new Toast({ message: "Verification email sent", style: "success" }))
+				toast.create({description: "Verification email sent", type: "success" })
 			})
-			.ClientError(handleClientError({ toastStore }))
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ClientError(handleClientError({ toast }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 	async function onDeleteEmailClick(email: SelectEmail) {
-		const modal: ModalSettings = {
-			type: "confirm",
-			title: "Delete Email Address",
-			body: `Are you sure you want to delete the email address ${email.address}?`,
-			response: (r: boolean) => {
-				if (r) {
-					onDeleteEmailConfirmClick(email)
-				}
-			}
-		}
-		modalStore.trigger(modal)
+		deleteEmailModalData = { email }
+		isDeleteEmailModalOpen = true
 	}
 
-	async function onDeleteEmailConfirmClick(email: SelectEmail) {
+	async function onDeleteEmailModalConfirm(email: SelectEmail) {
 		deletedEmailIds.push(email.id)
 		await api.profile.email
 			.resourceId$(email.id)
 			.DELETE()
 			.Success(async (res) => {
 				getEmails()
-				toastStore.trigger(new Toast({ message: "Your email was deleted", style: "success" }))
+				toast.create({ description: "Your email was deleted", type: "success" })
 			})
-			.ClientError(handleClientError({ toastStore }))
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ClientError(handleClientError({ toast }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
+		deleteEmailModalData = {}
+	}
+
+	async function onDeleteEmailModalCancel() {
+		isDeleteEmailModalOpen = false
+		deleteEmailModalData = {}
 	}
 
 	async function getEmails() {
@@ -135,11 +134,29 @@
 	})
 </script>
 
+<ConfirmationModal
+	bind:openState={isSetPrimaryModalOpen}
+	title="Change Primary Email Address"
+	body="Are you sure you want to make {setPrimaryModalData.email.address} your primary email address for all future authentication and communications? You will no longer be able to login with your current primary email address."
+	onConfirm={onSetPrimaryModalConfirm}
+	onCancel={onSetPrimaryModalCancel}
+	data={setPrimaryModalData}
+/>
+
+<ConfirmationModal
+	bind:openState={isDeleteEmailModalOpen}
+	title="Delete Email Address"
+	body="Are you sure you want to delete {deleteEmailModalData.email.address}?"
+	onConfirm={onDeleteEmailModalConfirm}
+	onCancel={onDeleteEmailModalCancel}
+	data={deleteEmailModalData}
+/>
+
 <Main>
 	<div class="m-auto md:w-[35rem]">
 		<div class="card p-4 mb-4 border-0">
 			<h1 class="h2">
-				{$page.data.title}
+				{page.data.title}
 			</h1>
 		</div>
 	</div>
@@ -167,7 +184,7 @@
 								{new Date(email.verifiedAt).toLocaleDateString()}
 							{:else}
 								<button 
-									class="btn btn-sm variant-filled-warning" 
+									class="btn btn-sm preset-filled-warning" 
 									onclick={() => onResendCodeClick(email)}
 								>
 									Resend Verification Email
@@ -179,7 +196,7 @@
 								<Icon icon="mdi:check" class="w-6 h-6 text-green-500" />
 							{:else if email.verifiedAt}
 								<button
-									class="btn btn-sm variant-filled-surface hover:variant-filled-secondary"
+									class="btn btn-sm preset-filled-surface hover:preset-filled-secondary"
 									onclick={() => onSetPrimaryClick(email)}
 									disabled={isSettingPrimary}
 								>
@@ -193,7 +210,7 @@
 							<td>
 								{#if !email.isUserPrimary && emails.length > 1}
 									<button
-										class="btn btn-sm variant-filled-surface hover:variant-filled-error btn-secondary"
+										class="btn btn-sm preset-filled-surface hover:preset-filled-error btn-secondary"
 										onclick={() => onDeleteEmailClick(email)}
 										disabled={deletedEmailIds.includes(email.id)}
 									>

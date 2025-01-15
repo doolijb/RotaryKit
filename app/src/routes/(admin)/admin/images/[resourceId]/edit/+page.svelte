@@ -1,10 +1,10 @@
 <script lang="ts">
     import {AdminEditResultView, AdminEditImageForm} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
     import api from "$shared/api"
 
     const resource = "images"
-    const resourceId = $page.params.resourceId
+    const resourceId = page.params.resourceId
     const naturalKey = "title"
     const resourceApi = api.admin.images as ResourceApi
 

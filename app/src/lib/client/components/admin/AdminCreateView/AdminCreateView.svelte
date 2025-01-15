@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { AdminHeader } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton"
+	import { gettoast } from "@skeletonlabs/skeleton-svelte"
+	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton-svelte"
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
 	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
 	import type { Component, Snippet } from "svelte"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -76,16 +76,14 @@
 
 			await resourceApi.POST({body})
 				.Success(async (r) => {
-					toastStore.trigger(
-						new Toast({
-							message: `${pluralize.singular(humanizeString(resource))} created successfully.`,
-							style: "success"
-						})
-					)
+					toast.create({
+						description: `${pluralize.singular(humanizeString(resource))} created successfully.`,
+						type: "success"
+					})
 					goto(`/admin/${resource}/${r.body.result[primaryKey]}`)
 				})
-				.ClientError(handleClientError({ toastStore}))
-				.ServerError(handleServerError({ toastStore }))
+				.ClientError(handleClientError({ toast}))
+				.ServerError(handleServerError({ toast }))
 			
 				disabled = false
 		}
@@ -95,7 +93,7 @@
 {#snippet createButton()}
 	<button
 		type="button"
-		class="btn variant-filled-success"
+		class="btn preset-filled-success"
 		onclick={onsubmit}
 		disabled={!canSubmit}
 	>
@@ -105,7 +103,7 @@
 {/snippet}
 
 {#snippet cancelButton()}
-	<button type="button" class="btn variant-filled-surface" onclick={oncancel}>
+	<button type="button" class="btn preset-filled-surface" onclick={oncancel}>
 		<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 		Cancel
 	</button>

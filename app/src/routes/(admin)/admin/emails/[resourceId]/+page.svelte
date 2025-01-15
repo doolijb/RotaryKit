@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { AdminResultDetailView } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import api from "$shared/api"
 
 	const resource = "emails"
     const resourceApi = api.admin.emails as ResourceApi
 	const dataHandlers = {}
 	const naturalKey = "address"
-	const resourceId = $page.params.resourceId
+	const resourceId = page.params.resourceId
 
 	const mutateResult = (result: SelectEmail & {user:SelectUser & {emails?: SelectEmail[], primaryEmailAddress?: string}}) => {
 		if (result.user && result.user.emails) {

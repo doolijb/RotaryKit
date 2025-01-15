@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { FormBase, TextInput, CheckboxInput } from "$client/components"
 	import ModalSelectField from "$client/components/fields/ModalSelectField"
 	import { AdminCreateEmail as Form } from "$shared/validation/forms"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 
 	const form = Form.init()
 
@@ -61,7 +61,7 @@
 	// CALCULATED
 	////
 
-	let canEditUsers = $page.data.permissions?.includes("admin.users.PUT") || $page.data.user.isSuperUser
+	let canEditUsers = page.data.permissions?.includes("admin.users.PUT") || page.data.user.isSuperUser
 
 	$effect.pre(() => {
 		if (!ready) {

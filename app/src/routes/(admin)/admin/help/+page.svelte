@@ -1,6 +1,6 @@
 <script lang="ts">
 
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 
 </script>
 <div class="card p-4 mb-5">
@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each $page.data.adminPermissions as permission}
+            {#each page.data.adminPermissions as permission}
                 <tr>
                     <td>{permission.name}</td>
                     <td>{permission.action}</td>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AdminResultDetailView } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import api from "$shared/api"
 
 	const resource = "images"
@@ -9,7 +9,7 @@
 		tabType: "image"
 	}
 	const naturalKey = "title"
-	const resourceId = $page.params.resourceId
+	const resourceId = page.params.resourceId
 
 	const mutateResult = (result: SelectImage) => {
 	}

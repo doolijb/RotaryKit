@@ -1,6 +1,6 @@
 <script lang="ts">
     import {AdminCreateView, AdminCreateUserForm} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 	import api from "$shared/api"
 
     const resource = "users"
@@ -8,7 +8,7 @@
     const resourceApi = api.admin.users as  ResourceApi
     const displayTitle = "User"
     const extras = {
-        canEditSuperUsers: $page.data.user.isSuperUser,
+        canEditSuperUsers: page.data.user.isSuperUser,
     }
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
     import Icon from "@iconify/svelte"
     import { hasAdminPermission } from "$client/utils"
     import { SiteNavigation } from "$client/components"
@@ -48,7 +48,7 @@
 	// COMPUTED
 	////
 
-	let currentTile = $derived(Object.keys(sidebarOptions).find((key) => $page.url.pathname.includes(`admin/${key}`)) || "")
+	let currentTile = $derived(Object.keys(sidebarOptions).find((key) => page.url.pathname.includes(`admin/${key}`)) || "")
 
     ////
     // FUNCTIONS
@@ -89,7 +89,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="/admin" class="navLink" class:bg-surface-700={$page.url.pathname === "/admin"}>
+				<a href="/admin" class="navLink" class:bg-surface-700={page.url.pathname === "/admin"}>
 					<span class="navIcon">
 						<Icon class="h-7 w-7" icon="clarity:dashboard-solid" />
 					</span>
@@ -97,7 +97,7 @@
 				</a>
 			</li>
 			{#each Object.entries(sidebarOptions) as [resource, option]}
-				{#if hasAdminPermission( { user: $page.data.user, adminPermissions: $page.data.adminPermissions, action: "GET", resources: [resource] } )}
+				{#if hasAdminPermission( { user: page.data.user, adminPermissions: page.data.adminPermissions, action: "GET", resources: [resource] } )}
 					<li>
 						<a
 							href={`/admin/${resource}`}
@@ -114,7 +114,7 @@
 				{/if}
 			{/each}
 			<li class="py-4">
-				<a href="/admin/help" class="navLink" class:bg-surface-700={$page.url.pathname.includes("/admin/help")}>
+				<a href="/admin/help" class="navLink" class:bg-surface-700={page.url.pathname.includes("/admin/help")}>
 					<span class="navIcon">
 						<Icon class="h-7 w-7" icon="mdi:help-circle" />
 					</span>
@@ -149,7 +149,7 @@
 
 	<!-- Main Content -->
 	<main class="flex flex-col flex-grow p-5 overflow-auto">
-		<button type="button" class="w-full md:hidden btn variant-filled mb-2 rounded-sm" disabled={!mobileCompact} onclick={toggleMobileCompact}>
+		<button type="button" class="w-full md:hidden btn preset-filled mb-2 rounded-sm" disabled={!mobileCompact} onclick={toggleMobileCompact}>
             <span class="navIcon">
                 <Icon class="h-7 w-7 mr-1" icon="mdi:menu" />
             </span>

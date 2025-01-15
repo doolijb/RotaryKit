@@ -1,7 +1,7 @@
 import Component from "./UserAdminModal.svelte"
 import { ReviewModes } from "$lib/shared/constants"
 import { ModalDecorator } from "$client/components"
-import type { ModalSettings } from "@skeletonlabs/skeleton"
+import type { ModalSettings } from "@skeletonlabs/skeleton-svelte"
 
 const meta = {
 	component: ModalDecorator,

@@ -1,6 +1,6 @@
 <script lang="ts">
     import {AdminResultsTableView} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 	import api from "$shared/api"
 
     const resource = "emails"

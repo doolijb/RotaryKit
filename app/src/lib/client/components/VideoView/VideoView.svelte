@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 
     ////
     // PROPS
@@ -38,7 +38,7 @@
 
 <!-- svelte-ignore a11y_media_has_caption -->
 <video { ...restProps } controls>
-    <source src={$page.data.storageUrl + result.originalPath} type={videoType} />
+    <source src={page.data.storageUrl + result.originalPath} type={videoType} />
     Your browser does not support the video tag.
 </video>
 

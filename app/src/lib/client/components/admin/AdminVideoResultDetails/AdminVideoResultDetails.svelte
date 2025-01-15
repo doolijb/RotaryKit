@@ -1,10 +1,7 @@
 <script lang="ts">
 	import byteSize from "byte-size"
-	import { ImageView, DetailGridItem, VideoView } from "$client/components"
-	import { page } from "$app/stores"
-    import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-
-    const modalStore = getModalStore()
+	import { DetailGridItem, VideoView } from "$client/components"
+	import { page } from "$app/state"
 
 	interface Props {
 		result: SelectImage;
@@ -15,7 +12,7 @@
 	function getValue(key) {
 		switch (key) {
 			case "originalPath":
-				return result[key] ? $page.data.storageUrl + result[key] : false
+				return result[key] ? page.data.storageUrl + result[key] : false
 			case "originalBytes":
 				return result[key] ? byteSize(result[key]).toString() : false
 			default:

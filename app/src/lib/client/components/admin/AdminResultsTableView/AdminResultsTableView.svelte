@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { getModalStore } from "@skeletonlabs/skeleton"
-	import { onMount, setContext, type Snippet } from "svelte"
-	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast, handleServerError, hasAdminPermission } from "$client/utils"
-	import { page } from "$app/stores"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { getContext, onMount, setContext, type Snippet } from "svelte"
+	import { handleServerError, hasAdminPermission } from "$client/utils"
+	import { page } from "$app/state"
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
+	import ConfirmationModal from "$client/components/modals/ConfirmationModal"
 
 	setContext("page", page)
 
-	const toastStore = getToastStore()
-	const modalStore = getModalStore()
+	const toast: ToastContext = getContext("toast")
 
 	////
 	// VARIABLE PROPS
@@ -57,10 +56,10 @@
 	let errorLoading = $state(false)
 
 	// SEARCH PARAMS
-	let searchParam: string = $state($page.url.searchParams.get("search") || "")
-	let orderByParam: string | undefined = $page.url.searchParams.get("orderBy")
-	let pageParam: number | undefined = parseInt($page.url.searchParams.get("page"))
-	let pageLimitParam: number | undefined = parseInt($page.url.searchParams.get("pageLimit"))
+	let searchParam: string = $state(page.url.searchParams.get("search") || "")
+	let orderByParam: string | undefined = page.url.searchParams.get("orderBy")
+	let pageParam: number | undefined = parseInt(page.url.searchParams.get("page"))
+	let pageLimitParam: number | undefined = parseInt(page.url.searchParams.get("pageLimit"))
 
 	// RESULTS
 	let response: Response & {
@@ -84,26 +83,26 @@
 
 	// PERMISSIONS
 	const canCreateResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "POST",
 		resources: [resource]
 	}) && showCreateButton
 	const canViewResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "GET",
 		resources: [resource]
 	})
 	const canEditResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "PUT",
 		resources: [resource]
 	})
 	const canDeleteResource: boolean = hasAdminPermission({
-		user: $page.data.user,
-		adminPermissions: $page.data.adminPermissions,
+		user: page.data.user,
+		adminPermissions: page.data.adminPermissions,
 		action: "DELETE",
 		resources: [resource]
 	}) && showDeleteButton
@@ -124,7 +123,7 @@
 		if (orderByParam) paramString += `orderBy=${orderByParam}&`
 		if (pageParam) paramString += `page=${pageParam}&`
 		if (pageLimitParam) paramString += `pageLimit=${pageLimitParam}&`
-		goto(`${$page.url.pathname}${paramString ? `?${paramString.slice(0, -1)}` : ""}`, {
+		goto(`${page.url.pathname}${paramString ? `?${paramString.slice(0, -1)}` : ""}`, {
 			replaceState: false
 		})
 	}
@@ -149,7 +148,7 @@
 		})
 		.ServerError((r: Response) => {
 			errorLoading = true
-			handleServerError({toastStore})
+			handleServerError({toast})
 			return undefined
 		})
 
@@ -186,41 +185,40 @@
 		goto(`/admin/${resource}/${resourceId}/edit`)
 	}
 
+	let isDeleteModalOpen = $state(false)
+	let deleteModalData: any = $state({})
+
 	async function onDelete(result: any): Promise<void> {
+		deleteModalData = { result }
+		isDeleteModalOpen = true
+	}
+
+	async function onDeleteCancel(): Promise<void> {
+		isDeleteModalOpen = false
+		deleteModalData = {}
+	}
+
+	async function onDeleteConfirm({result}): Promise<void> {
 		const resourceId = getResourceId(result)
-		modalStore.trigger({
-			type: "confirm",
-			title: `Delete ${pluralize.plural(humanizeString(resource))}`,
-			body: `Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`,
-			response: async (r) => {
-				if (r) {
-					await resourceApi.resourceId$(resourceId).DELETE({}).Success((r: Response) => {
-						toastStore.trigger(
-							new Toast({
-								message: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
-								style: "success"
-							})
-						)
-						loadResults()
-					}).ClientError((r: Response) => {
-						toastStore.trigger(
-							new Toast({
-								message: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
-								style: "error"
-							})
-						)
-					}).ServerError((r: Response) => {
-						toastStore.trigger(
-							new Toast({
-								message: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
-								style: "error"
-							})
-						)
-					})
-				}
+		await resourceApi.resourceId$(resourceId).DELETE({}).Success((r: Response) => {
+				toast.create({
+					description: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
+					type: "success"
+				})
 				loadResults()
-			}
-		})
+			}).ClientError((r: Response) => {
+				toast.create({
+					description: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
+					type: "error"
+				})
+			}).ServerError((r: Response) => {
+				toast.create({
+					description: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
+					type: "error"
+				})
+			})
+		loadResults()
+		deleteModalData = {}
 	}
 
 	async function onCreate(): Promise<void> {
@@ -241,6 +239,17 @@
 	})
 </script>
 
+<ConfirmationModal
+	openState={isDeleteModalOpen}
+	onCancel={onDeleteCancel}
+	onConfirm={onDeleteConfirm}
+	title={`Delete ${pluralize.plural(humanizeString(resource))}`}
+	body={`Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`}
+	data={deleteModalData}
+	cancelButton="Cancel"
+	confirmButton="Delete"
+/>
+
 <AdminHeader>
 	{#snippet title()}
 		<div  class="capitalize">
@@ -260,7 +269,7 @@
 					oninput={onSearchStringChange}
 				/>
 				<button
-					class="btn variant-filled"
+					class="btn preset-filled"
 					disabled={!searchParam}
 					onclick={() => {
 					searchParam = ""
@@ -273,7 +282,7 @@
 			<div>
 				{@render extraHeaderControls?.()}
 				{#if canCreateResource}
-					<button class="btn variant-filled-secondary" onclick={onCreate}>
+					<button class="btn preset-filled-secondary" onclick={onCreate}>
 						<Icon icon="mdi:plus" class="mr-2" />
 						New
 					</button>
@@ -318,7 +327,7 @@
 		<br />
 	</div>
 	<div class="flex items-center justify-center">
-		<button class="btn variant-filled" onclick={loadResults}>
+		<button class="btn preset-filled" onclick={loadResults}>
 			<Icon icon="mdi:reload" class="mr-2" />
 			Retry
 		</button>

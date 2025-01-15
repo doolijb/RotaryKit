@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
-	import { popup } from "@skeletonlabs/skeleton"
+	import { popup } from "@skeletonlabs/skeleton-svelte"
 	import { popupSettings } from "$shared/validation/utils"
 	import humanizeString from "humanize-string"
 
@@ -69,8 +69,8 @@
 {#each Object.values(validators) as validator}
 	<span
 		class="badge ms-1 mb-2 select-none"
-		class:variant-soft-primary={!fieldErrors[validator.key]}
-		class:variant-soft-error={!!fieldErrors[validator.key]}
+		class:preset-soft-primary={!fieldErrors[validator.key]}
+		class:preset-soft-error={!!fieldErrors[validator.key]}
 		use:popup={validator.popup}
 		aria-label={`${validator.message}`}
 	>
@@ -78,15 +78,15 @@
 	</span>
 	<div
 		class="card z-10 block p-4 hidden"
-		class:variant-filled-primary={!fieldErrors[validator.key]}
-		class:variant-filled-error={!!fieldErrors[validator.key]}
+		class:preset-filled-primary={!fieldErrors[validator.key]}
+		class:preset-filled-error={!!fieldErrors[validator.key]}
 		data-popup={validator.popup.target}
 	>
 		<p>{validator.message}</p>
 		<div
 			class="arrow"
-			class:variant-filled-primary={!fieldErrors[validator.key]}
-			class:variant-filled-error={!!fieldErrors[validator.key]}
+			class:preset-filled-primary={!fieldErrors[validator.key]}
+			class:preset-filled-error={!!fieldErrors[validator.key]}
 		></div>
 	</div>
 {/each}
@@ -95,7 +95,7 @@
 	{@const resPopup = popupSettings()}
 	<span
 		class="badge ms-1 mb-2 select-none"
-		class:variant-soft-error={true}
+		class:preset-soft-error={true}
 		use:popup={resPopup}
 		aria-label=message
 	>
@@ -103,10 +103,10 @@
 	</span>
 	<div
 		class="card z-10 block p-4 hidden"
-		class:variant-filled-error={true}
+		class:preset-filled-error={true}
 		data-popup={resPopup.target}
 	>
 		<p>{message}</p>
-		<div class="arrow" class:variant-filled-error={true}></div>
+		<div class="arrow" class:preset-filled-error={true}></div>
 	</div>
 {/each}

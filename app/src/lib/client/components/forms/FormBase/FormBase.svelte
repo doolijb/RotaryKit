@@ -171,7 +171,7 @@
 			{@render cancelSnippet()}
 		{:else}
 			{#if showCancel}
-				<button type="button" class="btn variant-filled-surface" {disabled} onclick={oncancel}>
+				<button type="button" class="btn preset-filled-surface" {disabled} onclick={oncancel}>
 					{cancelLabel}
 				</button>
 			{/if}
@@ -186,7 +186,7 @@
 			{#if showSubmit}
 				<button
 					type="button"
-					class="btn variant-filled ms-auto"
+					class="btn preset-filled ms-auto"
 					disabled={disabled || !canSubmit}
 					onclick={async (e) => {
 						disabled = true

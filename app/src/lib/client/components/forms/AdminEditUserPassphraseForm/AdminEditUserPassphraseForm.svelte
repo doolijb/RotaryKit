@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
     import { FormBase, PassphraseInput } from "$client/components"
-    import { Toast } from "$client/utils"
     import { AdminEditUserPassphrase as Form } from "$shared/validation/forms"
     import Icon from "@iconify/svelte"
-    import { getToastStore } from "@skeletonlabs/skeleton"
-	import type { on } from "events"
+    import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { getContext } from "svelte"
 
     ////
     // PROSP
@@ -45,7 +44,7 @@
         oncancel,
     }: Props = $props();
 
-    const toastStore = getToastStore()
+    const toast: ToastContext = getContext("toast")
 
     /**
      * Generates a random string with the specified length and character set.
@@ -85,16 +84,15 @@
      */
     function copyPassphrase() {
         navigator.clipboard.writeText(data.passphrase);
-        const toast = new Toast({
-            message: "Passphrase copied to clipboard",
-            style: "success",
+        toast.create({
+            description: "Passphrase copied to clipboard",
+            type: "success",
         });
-        toastStore.trigger(toast);
     }
 </script>
 
-{#if result && $page.data.user.id === result.id}
-    <div class="card mb-3 variant-filled-error">
+{#if result && page.data.user.id === result.id}
+    <div class="card mb-3 preset-filled-error">
         <section class="p-4">
             <p>
                 <Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
@@ -127,7 +125,7 @@
             <button
                 type="button"
                 onclick={generatePassphrase}
-                class="btn variant-filled-secondary">
+                class="btn preset-filled-secondary">
                 <Icon icon="mdi:dice" class="me-2" />
                 Generate Random Passphrase
             </button>
@@ -135,7 +133,7 @@
                 type="button"
                 onclick={copyPassphrase}
 				disabled={!data.passphrase && !!Object.keys(errors).length}
-                class="btn variant-filled-surface">
+                class="btn preset-filled-surface">
                 <Icon icon="mdi:clipboard" class="me-2" />
                 Copy Passphrase
             </button>

@@ -1,13 +1,12 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte"
-	import { getToastStore } from "@skeletonlabs/skeleton"
-	import { Toast } from "$client/utils"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import humanizeString from "humanize-string"
     import { getDisplayAndCopyText } from "$client/utils"
-    import { type Snippet } from "svelte"
+    import { getContext, type Snippet } from "svelte"
     import DOMPurify from "isomorphic-dompurify"
 
-    const toastStore = getToastStore()
+    const toast: ToastContext = getContext("toast")
 
     ////
     // PROPS
@@ -64,7 +63,7 @@
     function onClick() {
         if (canCopy) {
             copyToClipboard()
-            toastStore.trigger(new Toast({ message: "Copied to clipboard"}))
+            toast.create({ description: "Copied to clipboard"})
         }
     }
     
@@ -120,7 +119,7 @@
     {:else}
         <p 
             class:card={dataType === "html"} 
-            class:variant-soft={dataType === "html"} 
+            class:preset-soft={dataType === "html"} 
             class:p-4={dataType === "html"}
         >
             {#if dataType === "url"}

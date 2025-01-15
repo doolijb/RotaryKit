@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { FormBase, MultiSelect } from "$client/components"
 	import { AdminEditAdminRolesToUser as Form } from "$shared/validation/forms"
 	import Icon from "@iconify/svelte"
@@ -108,8 +108,8 @@
 	showSubmit={false}
 	showCancel={false}
 >
-	{#if result && $page.data.user.id === result.id}
-		<div class="card mb-3 variant-filled-error">
+	{#if result && page.data.user.id === result.id}
+		<div class="card mb-3 preset-filled-error">
 			<section class="p-4">
 				<p>
 					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own admin roles.
@@ -120,7 +120,7 @@
 	{/if}
 
 	{#if result && result.isAdmin && result.toAdminRoles.length === 0}
-		<div class="card mb-3 variant-filled-error">
+		<div class="card mb-3 preset-filled-error">
 			<section class="p-4">
 				<p>
 					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user has no admin roles.
@@ -131,7 +131,7 @@
 	{/if}
 
 	{#if result && !result.isAdmin}
-		<div class="card mb-3 variant-filled-error">
+		<div class="card mb-3 preset-filled-error">
 			<section class="p-4">
 				<p>
 					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
@@ -142,7 +142,7 @@
 	{/if}
 
 	{#if result && result.isSuperUser}
-		<div class="card mb-3 variant-filled-error">
+		<div class="card mb-3 preset-filled-error">
 			<section class="p-4">
 				<p>
 					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is a <u>super user</u>.
@@ -153,7 +153,7 @@
 	{/if}
 
 	{#if !adminRoleOptions.length}
-		<div class="card mb-3 variant-filled-warning">
+		<div class="card mb-3 preset-filled-warning">
 			<section class="p-4">
 				<p class="">
 					<Icon icon="mdi:info-outline" class="me-1 inline" height="1.5em" />

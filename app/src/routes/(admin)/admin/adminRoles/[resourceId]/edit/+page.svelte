@@ -1,11 +1,11 @@
 <script lang="ts">
     import {AdminEditResultView, AdminEditAdminRoleForm} from "$client/components"
-    import { page } from "$app/stores"
+    import { page } from "$app/state"
 	import api from "$shared/api"
 
     const resource = "adminRoles"
     const resourceApi = api.admin.adminRoles as unknown as ResourceApi
-    const resourceId = $page.params.resourceId
+    const resourceId = page.params.resourceId
     const naturalKey = "name"
     const tabs = $state({
         default: {

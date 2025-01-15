@@ -353,4 +353,9 @@ declare global {
 	type MultiSelectOption = { [key: string]: string | number; label: string }
 }
 
+type AutocompleteOption = {
+	value: string
+	label: string
+} | string
+
 export {}

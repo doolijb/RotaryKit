@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { FormBase, CheckboxInput, TextInput } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
 	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
@@ -79,7 +79,7 @@
 	// CALCULATED
 	////
 
-	let canEditSuperUsers = $derived($page.data.user.isSuperUser)
+	let canEditSuperUsers = $derived(page.data.user.isSuperUser)
 
 </script>
 {#if isLoaded}
@@ -94,8 +94,8 @@
 		showCancel={false}
 	>
 
-		{#if result && $page.data.user.id === result.id}
-			<div class="card mb-3 variant-filled-error">
+		{#if result && page.data.user.id === result.id}
+			<div class="card mb-3 preset-filled-error">
 				<section class="p-4">
 					<p>
 						<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own user.

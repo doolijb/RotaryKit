@@ -1,6 +1,6 @@
 // import { browser } from "$app/environment"
 import { popupSettings } from "$shared/validation/utils"
-import type { PopupSettings } from "@skeletonlabs/skeleton"
+import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 
 class Validator {
 	static init(args = {}) {

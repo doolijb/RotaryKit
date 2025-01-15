@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import type { PopupSettings } from "@skeletonlabs/skeleton"
+import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 
 /**
  * Returns the popup settings for the skeleton popup component

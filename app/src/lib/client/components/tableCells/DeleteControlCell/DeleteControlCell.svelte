@@ -16,7 +16,7 @@
     <div class="flex items-center items-stretch justify-center pt-2">
         <button
             type="button"
-            class="variant-soft-error btn-icon btn-icon-sm"
+            class="preset-soft-error btn-icon btn-icon-sm"
             {disabled}
             onclick={onClick}
             onfocus={() => (focused = true)}

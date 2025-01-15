@@ -1,24 +1,27 @@
-import type { ToastStore } from '@skeletonlabs/skeleton';
-import {Toast} from './Toast';
+import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 
 /**
  * Returns a function that automatically handles form errors (if formErrors is provided),
- * toasts (if toastStore is provided), before executing an optional callback function
+ * toasts (if toast is provided), before executing an optional callback function
  */
 export function handleClientError(
 	{
-		toastStore
+		toast
 	}: {
-		toastStore?: ToastStore
+		toast?: ToastContext
 	},
 	callback?: (res: DefaultResponse) => Promise<any>
 ) {
 	return (res: DefaultResponse) => {
-		if (toastStore) {
+		if (toast) {
 			if (!res.body["message"]) {
 				res.body["message"] = "An unknown error occurred"
 			}
-			toastStore.trigger(new Toast({ message: res.body["message"], style: "error" }))
+			toast.create({ 
+				title: "Error",
+				description: res.body["message"], 
+				type: "error" 
+			})
 		}
 		if (callback) {
 			return callback(res)

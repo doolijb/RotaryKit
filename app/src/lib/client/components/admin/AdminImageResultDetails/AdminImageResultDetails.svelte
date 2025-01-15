@@ -1,16 +1,17 @@
 <script lang="ts">
 	import byteSize from "byte-size"
 	import { ImageView, DetailGridItem } from "$client/components"
-	import { page } from "$app/stores"
-    import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-
-    const modalStore = getModalStore()
+	import { page } from "$app/state"
+    import { Modal } from "@skeletonlabs/skeleton-svelte";
+	import ImageViewerModal from "$client/components/modals/ImageViewerModal"
 
 	interface Props {
 		result: SelectImage;
 	}
 
 	let { result }: Props = $props();
+
+	let isImageModalOpen = $state(false)
 
 	function getValue(key) {
 		switch (key) {
@@ -21,7 +22,7 @@
 			case "mediumJpgPath":
 			case "smallWebpPath":
 			case "smallJpgPath":
-				return result[key] ? $page.data.storageUrl + result[key] : false
+				return result[key] ? page.data.storageUrl + result[key] : false
 			case "totalBytes":
 			case "originalBytes":
 			case "webpBytes":
@@ -74,18 +75,16 @@
 	}
 
     function onImageClick() {
-        const modal: ModalSettings = {
-            type: 'component',
-            component: 'imageViewerModal',
-            meta: {
-                result: result
-            },
-			backdropClasses: "z-[500]"
-        };
-        modalStore.trigger(modal);
+		isImageModalOpen = true
     }
 
+	function modalClose() {
+		isImageModalOpen = false
+	}
+
 </script>
+
+<ImageViewerModal bind:isOpen={isImageModalOpen} onClose={modalClose} />
 
 <div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 	<DetailGridItem label="Preview" class="row-span-3">

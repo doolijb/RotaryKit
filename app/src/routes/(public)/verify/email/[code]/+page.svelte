@@ -1,29 +1,30 @@
 <script lang="ts">
 	import { Main, Loading } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
-	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { handleClientError, handleException, handleServerError } from "$client/utils"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
-	import { onMount } from "svelte"
+	import { getContext, onMount } from "svelte"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 	const isCodeValid = null
 
 	async function verify() {
-		const code = $page.params.code
+		const code = page.params.code
 		await api.verify.email.code$(code).GET()
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toastStore.trigger(
-					new Toast({ message: "Your email has been verified", style: "success" })
-				)
+				toast.create({ 
+					description: "Your email has been verified", 
+					type: "success" 
+				})
 				completed = true
 			})
-			.ClientError(handleClientError({ toastStore}, errCallback))
-			.ServerError(handleServerError({ toastStore }, errCallback))
-			.catch(handleException({ toastStore }, errCallback))
+			.ClientError(handleClientError({ toast}, errCallback))
+			.ServerError(handleServerError({ toast }, errCallback))
+			.catch(handleException({ toast }, errCallback))
 	}
 
 	async function errCallback(err): Promise<void> {
@@ -45,7 +46,7 @@
 	<div class="m-auto md:w-[35rem]">
         <div class="card p-4 mb-4">
             <h1 class="h2">
-                {$page.data.title}
+                {page.data.title}
             </h1>
         </div>
 		<div class="card p-4 w-full mb-4">
@@ -54,7 +55,7 @@
 					{#if completed}
 						<h1 class="text-2xl font-bold">Your email address is verified!</h1>
 						<p class="text-lg">
-							{#if $page.data.user}
+							{#if page.data.user}
 								You may continue browsing the <a href="/">site</a>.
 							{:else}
 								You may now <a href="/login">login</a>.
@@ -74,10 +75,10 @@
 		{#if completed}
 			<div class="card p-4">
 				<p class="text-center">
-					{#if $page.data.user}
-						<a href="/" class="btn btn-sm variant-filled-secondary">Home</a>
+					{#if page.data.user}
+						<a href="/" class="btn btn-sm preset-filled-secondary">Home</a>
 					{:else}
-						<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
+						<a href="/login" class="btn btn-sm preset-filled-secondary">Login</a>
 					{/if}
 				</p>
 			</div>

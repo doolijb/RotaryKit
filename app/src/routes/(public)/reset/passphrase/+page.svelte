@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Main, RecoverPassphraseByEmailForm } from "$client/components"
 	import { handleClientError, handleServerError, handleException } from "$client/utils"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import api from "$shared/api"
-	import { getToastStore } from "@skeletonlabs/skeleton"
+	import { gettoast } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { RecoverPassphraseByEmail } from "$shared/validation/forms"
 
-	const toastStore = getToastStore()
+	const toast: ToastContext = getContext("toast")
 
 	let completed: boolean = $state(false)
 	let email: string = $state()
@@ -17,16 +17,16 @@
 		await api.reset.passphrase.POST({body: data})
 			.Success(async (res) => {
 				completed = true
-				const nextPage: string = $page.url.searchParams.get("next") || "/"
+				const nextPage: string = page.url.searchParams.get("next") || "/"
 			})
 			.ClientError((r) => { 
 				if ("errors" in r.body) {
 					errors = r.body.errors
 				}
-                return handleClientError({ errors, toastStore})(r)
+                return handleClientError({ errors, toast})(r)
             })
-			.ServerError(handleServerError({ toastStore }))
-			.catch(handleException({ toastStore }))
+			.ServerError(handleServerError({ toast }))
+			.catch(handleException({ toast }))
 	}
 
 	let data: FormDataOf<RecoverPassphraseByEmail> = $state()
@@ -38,7 +38,7 @@
 	<div class="m-auto md:w-[35rem]">
 		<div class="card p-4 mb-4 border-0">
 			<h1 class="h2">
-				{$page.data.title}
+				{page.data.title}
 			</h1>
 		</div>
 		{#if completed}
@@ -58,13 +58,13 @@
 		<div class="card p-4 mb-4">
 			<p class="text-center">
 				Don't have an account?
-				<a href="/register" class="btn btn-sm variant-filled-secondary">Register</a>
+				<a href="/register" class="btn btn-sm preset-filled-secondary">Register</a>
 			</p>
 		</div>
 		<div class="card p-4 mb-4">
 			<p class="text-center">
 				Change your mind?
-				<a href="/login" class="btn btn-sm variant-filled-secondary">Login</a>
+				<a href="/login" class="btn btn-sm preset-filled-secondary">Login</a>
 			</p>
 		</div>
 		{/if}

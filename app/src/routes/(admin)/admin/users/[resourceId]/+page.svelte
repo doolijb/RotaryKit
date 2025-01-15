@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AdminResultDetailView } from "$client/components"
-	import { page } from "$app/stores"
+	import { page } from "$app/state"
 	import api from "$shared/api"
 	import byteSize from "byte-size"
 
@@ -8,7 +8,7 @@
     const resourceApi = api.admin.users as ResourceApi
 	const dataHandlers = {}
 	const naturalKey = "username"
-	const resourceId = $page.params.resourceId
+	const resourceId = page.params.resourceId
 
 	type Result = SelectUser & {
 		profileImages: SelectImage[]

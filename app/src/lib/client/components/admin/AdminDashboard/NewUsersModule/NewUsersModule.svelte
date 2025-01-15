@@ -67,7 +67,7 @@
                                 />
                             </td>
                             <td>
-                                <a href={`/admin/users/${user.id}`} target="_blank" class="btn btn-sm variant-filled" onclick={(e) => e.stopPropagation()}>
+                                <a href={`/admin/users/${user.id}`} target="_blank" class="btn btn-sm preset-filled" onclick={(e) => e.stopPropagation()}>
                                     <Icon icon="mdi:open-in-new" class="mr-2" />
                                     Details
                                 </a>

@@ -2,7 +2,7 @@
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { ValidStates } from "$shared/constants"
 	import { v4 } from "uuid"
-	import type { PopupSettings } from "@skeletonlabs/skeleton"
+	import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
@@ -405,8 +405,8 @@
 {#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: string = "")}
 	<button 
 		class="btn btn-sm rounded-sm" 
-		class:variant-filled={!active}
-		class:variant-filled-primary={active}
+		class:preset-filled={!active}
+		class:preset-filled-primary={active}
 		type="button"
 		{onclick} 
 		{title}

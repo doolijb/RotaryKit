@@ -53,7 +53,7 @@
         </div>
 
         <!-- PAGINATOR -->
-        <div class="btn-group variant-filled-surface">
+        <div class="btn-group preset-filled-surface">
 
             <!-- FIRST PAGE -->
             <button 
