@@ -3,8 +3,8 @@
 	import { ValidStates } from "$shared/constants"
 	import { getContext } from "svelte"
 	import { v4 } from "uuid"
-	import { Autocomplete } from "@skeletonlabs/skeleton-svelte"
-	import type { AutocompleteOption, ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { Combobox } from "@skeletonlabs/skeleton-svelte"
+	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
@@ -399,12 +399,12 @@
 		class="card flex min-h-10 max-h-48 p-4 overflow-y-auto mt-2" 
 		tabindex="-1"
 	>
-		<Autocomplete
-			class="w-full"
-			bind:input
-			options={availableOptions}
-			on:selection={onOptionSelect}
-			denylist={selectedList.map((o: AutocompleteOption | unknown) => isAutocompleteOption(o) ? o.value : o)}
+		<Combobox 
+			value={[input]} 
+			data={options.filter((i) => selectedList.map((o: AutocompleteOption | unknown) => isAutocompleteOption(o) ? o.value : o).includes(i))} 
+			onValueChange={onOptionSelect} 
+			inputBehavior="autocomplete" 
+			deny
 		/>
 	</div>
 

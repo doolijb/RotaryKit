@@ -185,58 +185,58 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div class="mb-2">
-	<div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id}>
-			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-				{label}
-			</span>
-		</label>
-		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
-		{/if}
-	</div>
+    <div class="flex items-center">
+        <label class="label inline-flex pb-2" for={id}>
+            <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
+                {label || humanizeString(field)}
+            </span>
+        </label>
+        {#if !disabled}
+            <ValidationBadges {fieldValidator} bind:fieldErrors />
+        {/if}
+    </div>
 
-	<div class="input-group flex border" class:border-error-500={validState === ValidStates.INVALID}>
-		{#if prefixSnippet}
-			<div class="align-middle m-0 px-0">
-				{@render prefixSnippet?.()}
-			</div>
-		{/if}
-		<input
-			bind:this={ref}
-			{id}
-			{type}
-			class="input border-0 disabled:cursor-not-allowed"
-			{placeholder}
-			bind:value={data[field]}
-			{disabled}
-			{required}
-			{maxlength}
-			{minlength}
-			{onfocus}
-			oninput={handleOnInput}
-			onblur={handleOnBlur}
-			aria-label={label}
-		/>
-		{#if suffixSnippet}
-			<div class="align-middle m-0 px-0 me-2">
-				{@render suffixSnippet?.()}
-			</div>
-		{/if}
-		{#if !disabled && validatorLength}
-			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
-			</div>
-		{/if}
-	</div>
-	{#if !disabled && (validatorLength || attrs?.description)}
-		<ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
-	{/if}
+    <div class="input flex border p-1" class:border-red-500={validState === ValidStates.INVALID}>
+        {#if prefixSnippet}
+            <div class="align-middle m-0 px-0">
+                {@render prefixSnippet?.()}
+            </div>
+        {/if}
+        <input
+            bind:this={ref}
+            {id}
+            {type}
+            class="appearance-none border-none bg-transparent flex-grow focus:outline-none focus:ring-0"
+            {placeholder}
+            bind:value={data[field]}
+            {disabled}
+            {required}
+            {maxlength}
+            {minlength}
+            {onfocus}
+            oninput={handleOnInput}
+            onblur={handleOnBlur}
+            aria-label={label}
+        />
+        {#if suffixSnippet}
+            <div class="align-middle m-0 px-0 me-2">
+                {@render suffixSnippet?.()}
+            </div>
+        {/if}
+        {#if !disabled && validatorLength}
+            <div class="legendIcon align-middle px-0 me-3">
+                <ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
+            </div>
+        {/if}
+    </div>
+    <!-- {#if !disabled && (validatorLength || attrs?.description)}
+        <ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
+    {/if} -->
 </div>
 
 <style lang="postcss">
-	.input-group div.px-0 {
-		padding-left: 0 !important;
-		padding-right: 0 !important;
-	}
+    .input-group div.px-0 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 </style>

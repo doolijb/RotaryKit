@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
-	import { popup } from "@skeletonlabs/skeleton-svelte"
 	import { popupSettings } from "$shared/validation/utils"
 	import humanizeString from "humanize-string"
 
@@ -63,30 +62,29 @@
 	})
 
 	let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
-
+	
 </script>
 
 {#each Object.values(validators) as validator}
 	<span
 		class="badge ms-1 mb-2 select-none"
-		class:preset-soft-primary={!fieldErrors[validator.key]}
-		class:preset-soft-error={!!fieldErrors[validator.key]}
-		use:popup={validator.popup}
+		class:preset-tonal-success={!fieldErrors[validator.key]}
+		class:preset-tonal-error={!!fieldErrors[validator.key]}
 		aria-label={`${validator.message}`}
 	>
 		{validator.badge}
 	</span>
 	<div
 		class="card z-10 block p-4 hidden"
-		class:preset-filled-primary={!fieldErrors[validator.key]}
-		class:preset-filled-error={!!fieldErrors[validator.key]}
+		class:preset-tonal-primary={!fieldErrors[validator.key]}
+		class:preset-tonal-error={!!fieldErrors[validator.key]}
 		data-popup={validator.popup.target}
 	>
 		<p>{validator.message}</p>
 		<div
 			class="arrow"
-			class:preset-filled-primary={!fieldErrors[validator.key]}
-			class:preset-filled-error={!!fieldErrors[validator.key]}
+			class:preset-tonal-primary={!fieldErrors[validator.key]}
+			class:preset-tonal-error={!!fieldErrors[validator.key]}
 		></div>
 	</div>
 {/each}
@@ -96,7 +94,6 @@
 	<span
 		class="badge ms-1 mb-2 select-none"
 		class:preset-soft-error={true}
-		use:popup={resPopup}
 		aria-label=message
 	>
 		{humanizeString(key)}

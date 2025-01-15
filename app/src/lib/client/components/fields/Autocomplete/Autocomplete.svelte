@@ -3,13 +3,11 @@
 
     import { ValidationBadges, ValidationLegend } from "$client/components"
     import { ValidStates } from "$shared/constants"
-    import { Autocomplete, popup, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
-    import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
-	import { createEventDispatcher, onMount } from "svelte"
+    import { Combobox  } from "@skeletonlabs/skeleton-svelte"
+	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
-
-	const dispatch = createEventDispatcher()
+	import { blur } from 'svelte/transition'
 
 	////
 	// UPSTREAM EXPORTS
@@ -40,6 +38,11 @@
         autocomplete?: string;
         prefix?: import('svelte').Snippet;
         suffix?: import('svelte').Snippet;
+
+        // Events
+		oninput?: (e: Event) => Promise<void> | void
+		onfocus?: (e: Event) => Promise<void> | void
+		onblur?: (e: Event) => Promise<void> | void
     }
 
     let {
@@ -57,7 +60,11 @@
         searchInput = $bindable(""),
         autocomplete = undefined,
         prefix,
-        suffix
+        suffix,
+        // Events
+		oninput,
+		onfocus,
+		onblur,
     }: Props = $props();
 
     ////
@@ -140,7 +147,7 @@
         return option
     }
 
-    function handleSelection(e: CustomEvent) {
+    function handleSelection(e: ValueChangeDetails<any>) {
         // When an option is selected, update the search input,
         // the value will be updated automatically by the reactive variables
         if (!e.detail) {
@@ -158,16 +165,16 @@
 	function handleOnBlur(e: Event) {
         updateField()
 		touch()
-		dispatch("blur", e)
+		onblur(e)
 	}
 
 	function handleOnFocus(e: Event) {
-		dispatch("focus", e)
+		onfocus(e)
 	}
 
 	function handleOnInput(e: Event) {
 		touch()
-		dispatch("input", e)
+		oninput(e)
 	}
 
     ////
@@ -258,7 +265,7 @@
         tabindex="-1"
         data-popup={popupSettings.target}
         >
-        <Autocomplete input={searchInput} {options} on:selection={handleSelection} />
+        <Combobox value={[searchInput]} data={options} onValueChange={handleSelection} inputBehavior="autocomplete" />
         {#if searchInput}
             <div class="text-center">
                 <button

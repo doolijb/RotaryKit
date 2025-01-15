@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AdminHeader, Loading } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { Tab, TabGroup, type ToastContext, Accordion, AccordionItem } from "@skeletonlabs/skeleton-svelte"
+	import { Tabs, type ToastContext, Accordion } from "@skeletonlabs/skeleton-svelte"
 	import { handleClientError, handleServerError } from "$client/utils"
 	import { page } from "$app/state"
 	import { goto } from "$app/navigation"
@@ -99,10 +99,10 @@
 		}
 	}
 
-	async function onsubmit() {
-		if (!tabs[currentTab].disabled) {
-			tabs[currentTab].disabled = true
-			await tabs[currentTab].onsubmit({ data: tabs[currentTab].data })
+	async function onsubmit(tab) {
+		if (!tabs[tab].disabled) {
+			tabs[tab].disabled = true
+			await tabs[tab].onsubmit({ data: tabs[tab].data })
 			.Success(async () => {
 				toast.create({
 					description: `${pluralize.singular(humanizeString(resource))} updated successfully.`,
@@ -112,7 +112,7 @@
 			})
 			.ClientError(handleClientError({ toast}))
 			.ServerError(handleServerError({ toast }))
-			tabs[currentTab].disabled = false
+			tabs[tab].disabled = false
 		}
 	}
 
@@ -176,59 +176,62 @@
 {#if helpSnippet}
 	<div class="card p-4 m-0 mb-4">
 		<Accordion>
-			<AccordionItem title="Help">
+			<Accordion.Item title="Help">
 				<!-- Help Icon -->
 				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
 					
 				About editing a {pluralize.singular(resource)}
 					
 				{@render helpSnippet()}
-			</AccordionItem>
+			</Accordion.Item>
 		</Accordion>
 	</div>
 {/if}
 
 <div class="card p-4 mb-4">
-	{#if Object.keys(tabs).length > 1}
-		<TabGroup class="mb-4 capitalize">
-			{#each Object.keys(tabs) as tab}
-				<Tab
-					bind:group={currentTab}
-					name={tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}
-					value={tab}
+<Tabs bind:value={currentTab} class="mb-4 capitalize">
+	{#snippet list()}
+		{#each Object.keys(tabs) as tab}
+			<Tabs.Control
+				bind:group={currentTab}
+				name={tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}
+				value={tab}
+			>
+				<span>{tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}</span
 				>
-					<span>{tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}</span
-					>
-				</Tab>
-			{/each}
-		</TabGroup>
-	{/if}
-	<!-- RENDER TABS -->
-	{#each Object.keys(tabs) as tab}
-		<!-- Only render tab if it's open or has been opened to preserve state -->
-		{#if result && (currentTab === tab || openedTabs.includes(tab))}
-			<!-- Hide opened tabs that are not currently open -->
-			<div class:hidden={currentTab !== tab}>
-				<!-- Show loading if formExtras is not loaded -->
-				{#if !tabs[tab].isLoaded}
-					<Loading />
-				{:else}
-					<!-- Show form if tab is populated -->
-					{@const FormComponent = tabs[tab].FormComponent}
-					<FormComponent
-						bind:data={tabs[tab].data}
-						bind:errors={tabs[tab].errors}
-						bind:canSubmit={tabs[tab].canSubmit}
-						bind:disabled={tabs[tab].disabled}
-						{onsubmit}
-						{oncancel}
-						{...tabs[tab].extras}
-						{result}
-					/>
+			</Tabs.Control>
+		{/each}
+	{/snippet}
+	{#snippet content()}
+		{#each Object.keys(tabs) as tab}
+			<Tabs.Panel value={tab}>
+				<!-- Only render tab if it's open or has been opened to preserve state -->
+				{#if result && (currentTab === tab || openedTabs.includes(tab))}
+					<!-- Hide opened tabs that are not currently open -->
+					<div class:hidden={currentTab !== tab}>
+						<!-- Show loading if formExtras is not loaded -->
+						{#if !tabs[tab].isLoaded}
+							<Loading />
+						{:else}
+							<!-- Show form if tab is populated -->
+							{@const FormComponent = tabs[tab].FormComponent}
+							<FormComponent
+								bind:data={tabs[tab].data}
+								bind:errors={tabs[tab].errors}
+								bind:canSubmit={tabs[tab].canSubmit}
+								bind:disabled={tabs[tab].disabled}
+								{onsubmit}
+								{oncancel}
+								{...tabs[tab].extras}
+								{result}
+							/>
+						{/if}
+					</div>
 				{/if}
-			</div>
-		{/if}
-	{/each}
+			</Tabs.Panel>
+		{/each}
+	{/snippet}
+</Tabs>
 </div>
 
 <AdminHeader>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BoolCell, TextCell } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { popup } from "@skeletonlabs/skeleton-svelte"
+	import { Popover } from "@skeletonlabs/skeleton-svelte"
 
 	/**
 	 * @fires orderByChange - Dispatched when an orderable table header is clicked, returns an updated orderBy query string.
@@ -74,6 +74,12 @@
 		onEdit,
 		onDelete,
 	}: Props = $props();
+
+	////
+	// STATE
+	////
+
+	let resultActionsDropdowns: Record<string, boolean> = $state({})
 
 	////
 	// FUNCTIONS
@@ -203,30 +209,43 @@
 {#snippet actionsDropdown(result: any)}
 	{#if canViewResource || canEditResource || canDeleteResource}
 		<td class="text-center">
-			<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
-				<span>
-					<Icon icon="akar-icons:more-vertical" />
-				</span>
-			</button>
-			<div
-				class="card w-48 shadow-xl p-0 z-50"
-				data-popup={actionPopupSettings[String(result["id"])].target}
+			<Popover
+				bind:open={resultActionsDropdowns[result.id]}
+				positioning={{ placement: 'top' }}
+				triggerBase="btn preset-tonal"
+				contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
+				arrow
+				arrowBackground="!bg-surface-200 dark:!bg-surface-800"
 			>
-				<div class="arrow bg-primary-500-backdrop-token"></div>
-				<div class="btn-group-vertical preset-filled w-full">
-					{#if canViewResource}
-						<button onclick={() => onView(result)}> View </button>
-					{/if}
+				{#snippet trigger()}
+				<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
+					<span>
+						<Icon icon="akar-icons:more-vertical" />
+					</span>
+				</button>
+				{/snippet}
+				{#snippet content()}
+					<div
+						class="card w-48 shadow-xl p-0 z-50"
+						data-popup={actionPopupSettings[String(result["id"])].target}
+					>
+						<div class="arrow bg-primary-500-backdrop-token"></div>
+						<div class="btn-group-vertical preset-filled w-full">
+							{#if canViewResource}
+								<button onclick={() => onView(result)}> View </button>
+							{/if}
 
-					{#if canEditResource}
-						<button onclick={() => onEdit(result)}> Edit </button>
-					{/if}
+							{#if canEditResource}
+								<button onclick={() => onEdit(result)}> Edit </button>
+							{/if}
 
-					{#if canDeleteResource}
-						<button onclick={() => onDelete(result)}> Delete </button>
-					{/if}
-				</div>
-			</div>
+							{#if canDeleteResource}
+								<button onclick={() => onDelete(result)}> Delete </button>
+							{/if}
+						</div>
+					</div>
+				{/snippet}
+			</Popover>
 		</td>
 	{/if}
 {/snippet}

@@ -2,7 +2,6 @@
     import {ValidStates} from "$shared/constants"
 	import type { Primitive } from "$shared/validation/base"
     import Icon from "@iconify/svelte"
-    import {popup, type PopupSettings} from "@skeletonlabs/skeleton-svelte"
     import {onMount} from "svelte"
 
     ////
@@ -36,7 +35,7 @@
         // Enforce OOP to give elements a chance to render
         // before we try to attach the popup
         if (validatorLength) {
-            popup(legendIcon, legendPopup)
+            // popup(legendIcon, legendPopup)
         }
     })
 </script>

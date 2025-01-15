@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte"
     import { createSwapy, type Swapy } from "swapy"
-    import { gettoast, type ToastSettings } from "@skeletonlabs/skeleton-svelte"
 	import { slide } from "svelte/transition"
     import NewUsersModule from "../NewUsersModule"
 	import { hasAdminPermission } from "$client/utils"

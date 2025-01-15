@@ -1,12 +1,12 @@
 <script lang="ts">
     import Icon from "@iconify/svelte"
-    import { clipboard, gettoast } from "@skeletonlabs/skeleton-svelte"
-    import { getDisplayAndCopyText, Toast } from "$client/utils"
-    import type { Snippet } from "svelte"
-
-    const toast: ToastContext = getContext("toast")
+    import { getDisplayAndCopyText } from "$client/utils"
+    import { getContext, type Snippet } from "svelte"
+	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 
     type ValueType = "unknown" | "uuid" | "number" | "date" | "url" | "boolean"
+
+    const toast: ToastContext = getContext("toast")
 
     ////
     // PROPS
@@ -90,7 +90,7 @@
     $effect.pre(() => {if (text === undefined) {
             displayText = "N/A"
         } else {
-            let displayAndCopy = getDisplayAndCopyText(text)
+            let displayAndCopy = getDisplayAndCopyText(text, "string")
             displayText = displayAndCopy.displayText
             copyText === undefined && (copyText = displayAndCopy.copyText)
             type = displayAndCopy.type
@@ -136,10 +136,10 @@
     <td
         class="select-none"
         {title}
-        use:clipboard={copyText}
         onclick={() => {
+
             url && window.open(url)
-            !url && canCopy && toast.create({ description: "Copied to clipboard"})
+            !url && navigator.clipboard.writeText(text) && canCopy && toast.create({ description: "Copied to clipboard"})
         }}
         onfocus={() => (focused = true)}
         onfocusout={() => (focused = false)}
@@ -163,5 +163,3 @@
         {/if}
     </td>
 {/if}
-
-<style></style>

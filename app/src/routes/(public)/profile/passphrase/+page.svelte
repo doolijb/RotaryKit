@@ -3,9 +3,10 @@
 	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
 	import { Toast, handleClientError, handleException, handleServerError } from "$client/utils"
-	import { gettoast } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
 	import type { ChangePassphrase as Form } from "$shared/validation/forms"
+	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { getContext } from "svelte"
 
 	const toast: ToastContext = getContext("toast")
 

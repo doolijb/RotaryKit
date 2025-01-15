@@ -14,5 +14,6 @@ export default {
             // NOTE: each theme included will increase the size of your CSS bundle
             themes: [ themes.cerberus ]
         })
-    ]
+    ],
+    darkMode: 'class',
 }

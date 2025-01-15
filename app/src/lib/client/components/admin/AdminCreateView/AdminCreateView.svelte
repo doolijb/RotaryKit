@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { AdminHeader } from "$client/components"
 	import Icon from "@iconify/svelte"
-	import { gettoast } from "@skeletonlabs/skeleton-svelte"
-	import { Accordion, AccordionItem } from "@skeletonlabs/skeleton-svelte"
+	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { Accordion } from "@skeletonlabs/skeleton-svelte"
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import { Toast, handleClientError, handleServerError, useFormData } from "$client/utils"
-	import type { Component, Snippet } from "svelte"
+	import { handleClientError, handleServerError, useFormData } from "$client/utils"
+	import { getContext, type Component, type Snippet } from "svelte"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -130,7 +130,7 @@
 {#if helpSnippet}
 	<div class="card bg-surface-100-800-token p-4 m-0 mb-4">
 		<Accordion>
-			<AccordionItem title="Help">
+			<Accordion.Item title="Help">
 							
 				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
 					
@@ -138,7 +138,7 @@
 					
 				{@render helpSnippet?.()}
 
-			</AccordionItem>
+			</Accordion.Item>
 		</Accordion>
 	</div>
 {/if}

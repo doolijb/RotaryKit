@@ -9,7 +9,7 @@
 		ConfirmationModal,
 	} from "$client/components" 
 	import Icon from "@iconify/svelte"
-	import { Tab, TabGroup, type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { Tabs, type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/state"
 	import BoolCell from "../../tableCells/BoolCell/BoolCell.svelte"
@@ -161,17 +161,17 @@
 		return dataHandlers[currentTab]?.[key]
 	}
 
-	function getCurrentTabType() {
-		const dataHandler = currentTab === "default" ? dataHandlers : dataHandlers[currentTab]
+	function getTabType(key:string) {
+		const dataHandler = key === "default" ? dataHandlers : dataHandlers[key]
 		if (dataHandler) {
 			const type = dataHandler.tabType
 
 			if (type) return type
 		}
 
-		if (result && currentTab && ("smallWebpPath" in tabs[currentTab])) {
+		if (result && key && ("smallWebpPath" in tabs[key])) {
 			return "image"
-		} else if (result && currentTab && Array.isArray(tabs[currentTab])) {
+		} else if (result && key && Array.isArray(tabs[key])) {
 			return "array"
 		}
 
@@ -263,25 +263,27 @@
 {#if isLoaded}
 	<section class="card p-4 mb-4">
 		<!-- svelte-ignore a11y_label_has_associated_control -->
-		<TabGroup>
-			{#each Object.keys(tabs) as key}
-				<Tab bind:group={currentTab} name={humanizeString(key)} value={key}>
-					<!-- <svelte:fragment slot="lead">(icon)</svelte:fragment> -->
-					<span
-						>{humanizeString(
-							key === "default" ? pluralize.singular(humanizeString(resource)) : humanizeString(key)
-						)}</span
-					>
-				</Tab>
-			{/each}
+		<Tabs bind:value={currentTab}>
+			{#snippet list()}
+				{#each Object.keys(tabs) as key}
+					<Tabs.Control value={key}>
+						<!-- <svelte:fragment slot="lead">(icon)</svelte:fragment> -->
+						<span
+							>{humanizeString(
+								key === "default" ? pluralize.singular(humanizeString(resource)) : humanizeString(key)
+							)}</span
+						>
+					</Tabs.Control>
+				{/each}
+			{/snippet}
 			<!-- Tab Panels --->
-			{#snippet panel()}
-					{#key currentTab}
-						{#if currentTab}
-						{@const tabType = getCurrentTabType()}
+			{#snippet content()}
+				{#each Object.keys(tabs) as key}
+					<Tabs.Panel value={key}>
+						{@const tabType = getTabType(key)}
 							<!-- If array of items, display a table -->
 							{#if tabType === "array"}
-								{#if tabs[currentTab].length === 0}
+								{#if tabs[key].length === 0}
 									{@render noResults()}
 								{:else}
 								<!-- Display a table -->
@@ -289,13 +291,13 @@
 										<table class="table w-full m-0 preset-soft">
 											<thead>
 												<tr>
-													{#each Object.keys(tabs[currentTab][0]) as key}
+													{#each Object.keys(tabs[key][0]) as key}
 														<th>{getHeader(key)}</th>
 													{/each}
 												</tr>
 											</thead>
 											<tbody>
-												{#each tabs[currentTab] as result}
+												{#each tabs[key] as result}
 													<tr>
 														{#each Object.keys(result) as key}
 															{#if typeof getValue(result, key,) === "boolean"}
@@ -311,26 +313,26 @@
 									</div>
 								{/if}
 							<!-- If object -->
-							{:else if Object.keys(tabs[currentTab] || {}).length === 0}
+							{:else if Object.keys(tabs[key] || {}).length === 0}
 								{@render noResults()}
 
 							{:else if tabType === "image"}
-								<AdminImageResultDetails result={tabs[currentTab]} />
+								<AdminImageResultDetails result={tabs[key]} />
 							{:else if tabType === "video"}
-								<AdminVideoResultDetails result={tabs[currentTab]} />
+								<AdminVideoResultDetails result={tabs[key]} />
 							{:else if tabType === "default"}
 								<!-- If object, display a grid of details -->
 								<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min">
-									{#each Object.keys(tabs[currentTab]) as key}
-										{@const dataType = getDataType(key)}
-										<DetailGridItem label={key} value={getValue(tabs[currentTab], key)} {dataType}  />
+									{#each Object.keys(tabs[key]) as subkey}
+										{@const dataType = getDataType(subkey)}
+										<DetailGridItem label={key} value={getValue(tabs[key], subkey)} {dataType}  />
 									{/each}
 								</div>
 							{/if}
-						{/if}
-					{/key}
+						</Tabs.Panel>		
+					{/each}
 				{/snippet}
-		</TabGroup>
+		</Tabs>
 	</section>
 {:else}
 	<Loading />

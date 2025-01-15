@@ -2,7 +2,7 @@
 	import { ValidationBadges, ValidationLegend } from "$client/components"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import { FileDropzone, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
+	import { FileUpload, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import { fileTypes } from "$shared/data"
 	import Icon from "@iconify/svelte"
@@ -329,7 +329,7 @@
 
 	<!-- Show the drop zone if we can accept multiple files, or if 1 file max and no file selected -->
 	 <div class:hidden={!(allowMultiSelect || (!allowMultiSelect && !data[field]?.length))}>
-		<FileDropzone 
+		<FileUpload 
 			name={field} 
 			{id}
 			{disabled}
@@ -367,7 +367,7 @@
 				{/if}
 			{/snippet}
 
-		</FileDropzone>
+		</FileUpload>
 	</div>
 
 	{#if showFiles && data[field]}
