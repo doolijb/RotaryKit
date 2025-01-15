@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditEmailForm} from "$client/components"
+    import {AdminResultEditView, AdminEditEmailForm} from "$client/components"
     import { page } from "$app/state"
     import api from "$shared/api"
 	import { forms as f } from "$shared/validation"
@@ -39,7 +39,7 @@
     })
 </script>
 
-<AdminEditResultView
+<AdminResultEditView
     {resourceApi}
     {resource}
     {tabs}

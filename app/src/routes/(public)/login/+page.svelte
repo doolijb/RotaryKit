@@ -12,7 +12,6 @@
 	const toast: ToastContext = getContext("toast")
 
 	let completed = false
-	
 
 	async function onsubmit() {
 		await api.login.POST({body: data})
@@ -31,31 +30,32 @@
 			.catch(handleException({ toast }))
 	}
 
-	let data: FormDataOf<UserLogin> = $state({})
+	let data: FormDataOf<UserLogin> = $state({
+		email: "",
+		passphrase: ""
+	})
 	let errors: FormErrors = $state({})
 
 </script>
 
 <Main>
-	<div class="m-auto md:w-[35rem]">
-		<div class="card p-4 mb-4 border-0">
-			<h1 class="h2">
-				{page.data.title}
-			</h1>
-		</div>
-		<div class="card border-0 p-4 mb-4">
+	<div class="m-auto md:w-[35rem] flex flex-col gap-4">
+		<h1 class="h2">
+			{page.data.title}
+		</h1>
+		<div class="card preset-tonal border-0 p-4">
 			<UserLoginForm {onsubmit} bind:data bind:errors />
 		</div>
-		<div class="card p-4 mb-4">
+		<div class="card preset-tonal p-4">
 			<p class="text-center">
 				Don't have an account?
-				<a href="/register" class="btn btn-sm preset-filled-secondary">Register</a>
+				<a href="/register" class="btn btn-sm preset-filled-primary-500">Register</a>
 			</p>
 		</div>
-		<div class="card p-4 mb-4">
+		<div class="card preset-tonal p-4">
 			<p class="text-center">
 				Forgot your passphrase?
-				<a href="/reset/passphrase" class="btn btn-sm preset-filled-secondary">Reset</a>
+				<a href="/reset/passphrase" class="btn btn-sm preset-filled-primary-500">Reset</a>
 			</p>
 		</div>
 	</div>

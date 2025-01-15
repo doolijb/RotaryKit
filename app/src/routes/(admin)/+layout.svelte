@@ -2,7 +2,6 @@
     import { page } from "$app/state"
     import Icon from "@iconify/svelte"
     import { hasAdminPermission } from "$client/utils"
-    import { SiteNavigation } from "$client/components"
 
 	////
 	// PROPS
@@ -89,7 +88,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="/admin" class="navLink" class:bg-surface-700={page.url.pathname === "/admin"}>
+				<a href="/admin" class="navLink" class:bg-surface-200={page.url.pathname === "/admin"}>
 					<span class="navIcon">
 						<Icon class="h-7 w-7" icon="clarity:dashboard-solid" />
 					</span>
@@ -102,7 +101,7 @@
 						<a
 							href={`/admin/${resource}`}
 							class="navLink"
-							class:bg-surface-700={currentTile === resource}
+							class:bg-surface-200={currentTile === resource}
 						>
 							<span class="navIcon">
 								<Icon class="h-7 w-7" icon={option.icon} />
@@ -114,7 +113,7 @@
 				{/if}
 			{/each}
 			<li class="py-4">
-				<a href="/admin/help" class="navLink" class:bg-surface-700={page.url.pathname.includes("/admin/help")}>
+				<a href="/admin/help" class="navLink" class:bg-surface-200={page.url.pathname.includes("/admin/help")}>
 					<span class="navIcon">
 						<Icon class="h-7 w-7" icon="mdi:help-circle" />
 					</span>
@@ -129,7 +128,7 @@
 	<!-- Sidebar -->
     <aside 
         id="desktop-sidebar" 
-        class="bg-surface-100-800-token z-[50] block transition-all absolute left-0 top-0 bottom-0 opacity-100 relative collapse md:visible" 
+        class="preset-tonal z-[50] block transition-all absolute left-0 top-0 bottom-0 opacity-100 relative collapse md:visible" 
         aria-label="Sidebar"
         class:compact={desktopCompact}
     >
@@ -139,7 +138,7 @@
     {#if !mobileCompact}
         <aside 
             id="mobile-sidebar" 
-            class="bg-surface-100-800-token z-[50] transition-all absolute left-0 top-0 bottom-0 opacity-[98%] md:collapse" 
+            class="preset-tonal z-[50] transition-all absolute left-0 top-0 bottom-0 opacity-[98%] md:collapse" 
             aria-label="Sidebar"
             class:compact={mobileCompact}
         >

@@ -95,7 +95,7 @@
 		/>
 
 		<div class="flex space-x-3 my-5">
-			<div class="card px-3 pt-3 w-full">
+			<div class="card preset-tonal px-3 pt-3 w-full">
 				<CheckboxInput
 					label="Is Verified"
 					id="isVerified"
@@ -110,7 +110,7 @@
 
 		{#if canEditSuperUsers}
 			<div class="flex space-x-3 my-5">
-				<div class="card px-3 pt-3 w-full">
+				<div class="card preset-tonal px-3 pt-3 w-full">
 					<CheckboxInput
 						label="Is Admin"
 						id="isAdmin"
@@ -124,7 +124,7 @@
 			</div>
 
 			<div class="flex space-x-3 my-5">
-				<div class="card px-3 pt-3 w-full">
+				<div class="card preset-tonal px-3 pt-3 w-full">
 					<CheckboxInput
 						label="Is Super User"
 						id="isSuperUser"

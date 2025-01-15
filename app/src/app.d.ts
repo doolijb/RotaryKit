@@ -200,7 +200,7 @@ declare global {
 		resourceId$?: (uuid: string) => ApiMethods
 	}
 
-	type AdminEditResultViewTab = {
+	type AdminResultEditViewTab = {
 		FormComponent: ConstructorOfATypedSvelteComponent
 		onsubmit: ({ data }) => ApiRequest
 		getExtras?: () => Promise<{ [key: string]: any }>
@@ -222,9 +222,9 @@ declare global {
 		search?: string
 	}
 
-	type AdminEditResultViewTabs = {
-		default: AdminEditResultViewTab
-		[key: string]: AdminEditResultViewTab
+	type AdminResultEditViewTabs = {
+		default: AdminResultEditViewTab
+		[key: string]: AdminResultEditViewTab
 	}
 
 	type EnvDefaults = {

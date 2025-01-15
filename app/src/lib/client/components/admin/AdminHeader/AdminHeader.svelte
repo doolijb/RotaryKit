@@ -10,7 +10,7 @@
 </script>
 
 <div>
-    <div class="card rounded mb-4 p-4">
+    <div class="card preset-tonal rounded mb-4 p-4">
         <h1 class="h4 w-auto mb-2">
             {@render title?.()}
         </h1>

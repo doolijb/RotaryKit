@@ -30,18 +30,18 @@
 	{/if}
 </svelte:head>
 
-<div class="flex flex-col min-h-screen relative">
-    <header>
-        <SiteNavigation />
-    </header>
+<ToastProvider>
+	<div class="flex flex-col min-h-screen relative">
+		<header>
+			<SiteNavigation />
+		</header>
 
-    <div class="flex flex-col flex-grow">
-        {@render children?.()}
-    </div>
+		<div class="flex flex-col flex-grow">
+			{@render children?.()}
+		</div>
 
-    <footer class="mt-auto">
-        <SiteFooter />
-    </footer>
-</div>
-
-<ToastProvider />
+		<footer class="mt-auto">
+			<SiteFooter />
+		</footer>
+	</div>
+</ToastProvider>

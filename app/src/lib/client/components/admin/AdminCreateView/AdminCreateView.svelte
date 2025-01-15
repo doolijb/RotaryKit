@@ -93,7 +93,7 @@
 {#snippet createButton()}
 	<button
 		type="button"
-		class="btn preset-filled-success"
+		class="btn preset-filled-success-500"
 		onclick={onsubmit}
 		disabled={!canSubmit}
 	>
@@ -103,7 +103,7 @@
 {/snippet}
 
 {#snippet cancelButton()}
-	<button type="button" class="btn preset-filled-surface" onclick={oncancel}>
+	<button type="button" class="btn preset-filled-surface-500" onclick={oncancel}>
 		<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 		Cancel
 	</button>
@@ -128,7 +128,7 @@
 </AdminHeader>
 
 {#if helpSnippet}
-	<div class="card bg-surface-100-800-token p-4 m-0 mb-4">
+	<div class="card preset-tonal p-4 m-0 mb-4">
 		<Accordion>
 			<Accordion.Item title="Help">
 							
@@ -143,7 +143,7 @@
 	</div>
 {/if}
 
-<div class="card bg-surface-100-800-token p-4 mb-4">
+<div class="card preset-tonal p-4 mb-4">
 	<FormComponent
 		bind:canSubmit
 		bind:disabled

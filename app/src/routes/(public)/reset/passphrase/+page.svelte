@@ -3,9 +3,8 @@
 	import { handleClientError, handleServerError, handleException } from "$client/utils"
 	import { page } from "$app/state"
 	import api from "$shared/api"
-	import { gettoast } from "@skeletonlabs/skeleton-svelte"
-	import type { FormSchema } from "$shared/validation/base"
 	import type { RecoverPassphraseByEmail } from "$shared/validation/forms"
+	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -55,7 +54,7 @@
 		<div class="card border-0 p-4 mb-4">
 			<RecoverPassphraseByEmailForm {onsubmit} bind:data bind:errors />
 		</div>
-		<div class="card p-4 mb-4">
+		<div class="card preset-filled-surface-500 p-4 mb-4">
 			<p class="text-center">
 				Don't have an account?
 				<a href="/register" class="btn btn-sm preset-filled-secondary">Register</a>

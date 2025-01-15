@@ -39,12 +39,12 @@
 
 {#snippet accountMenu()}
 	<Popover
-	bind:open={isAccountMenuOpen}
-	positioning={{ placement: 'bottom' }}
-	triggerBase="btn preset-tonal"
-	contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
-	arrow
-	arrowBackground="!bg-surface-200 dark:!bg-surface-800"
+		bind:open={isAccountMenuOpen}
+		positioning={{ placement: 'bottom' }}
+		triggerBase="btn preset-tonal"
+		contentBase="card preset-filled-surface-500 p-4 space-y-4 max-w-[320px]"
+		arrow
+		arrowBackground="!bg-surface-500"
 	>
 	{#snippet trigger()}{page.data.user.username}{/snippet}
 	{#snippet content()}
@@ -82,7 +82,7 @@
 		<a href="/" class="font-semibold text-xl tracking-tight mr-5">
 			RotaryKit
 			{#if page.url.pathname.includes("/admin")}
-				<span class="text-sm text-success-500">Admin</span>
+				<span class="text-success-500 ml-2 font-light">ADMIN</span>
 			{/if}
 		</a>
 		<a href="/" class="btn btn-sm hover:preset-filled-primary-500">
@@ -93,9 +93,10 @@
 		<button
 			class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white"
 		>
-			<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
-				><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg
-			>
+			<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+				<title>Menu</title>
+				<path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+			</svg>
 		</button>
 	</div>
 	<div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">

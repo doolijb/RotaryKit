@@ -6,6 +6,8 @@
 	import { hasAdminPermission } from "$client/utils"
 	import { page } from "$app/state"
     import { AdminHeader } from "$client/components"
+	import { getContext } from "svelte"
+	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
   
     type AvailableModule = {
         item: string
@@ -90,11 +92,10 @@
         localStorage.setItem("admin_dashboard_modules", JSON.stringify(modules))
         localStorage.setItem("admin_dashboard_slots", JSON.stringify(slots))
 
-        const toast: ToastSettings = {
-            message: "Dashboard settings saved to browser",
-        }
-
-        toast.create(toast)
+        toast.create({
+            description: "Dashboard settings saved to browser",
+            type: "success"
+        })
     }
 
     function loadLayout() {
@@ -222,11 +223,11 @@
 
 {#snippet moduleSnippet(module:Module)}
     <div 
-        class="rounded p-4 flex-grow max-h-full relative bg-surface-100-800-token" 
+        class="rounded p-4 flex-grow max-h-full relative preset-tonal" 
         class:preset-ringed={swapyEnabled}
         data-swapy-item={module.item}
     >
-        <div class="max-h-full flex-grow overflow-scroll relative" class:blur-[2px]={swapyEnabled || columnControlsEnabled}>
+        <div class="max-h-full h-full flex-grow overflow-scroll relative" class:blur-[2px]={swapyEnabled || columnControlsEnabled}>
             {@render moduleComponents[module.item]()}
         </div>
         {#if swapyEnabled}
@@ -239,7 +240,7 @@
         {#if columnControlsEnabled}
             {@const slot = slots[Object.keys(slots).find(slotId => module.slotId === slotId)]}
             <div class="absolute top-0 right-0 h-full w-full flex items-center justify-center text-center">
-                <span class="preset-glass-tertiary p-4 rounded-lg">
+                <span class="preset-filled w-[8em] p-4 rounded-lg">
                     <label>
                         Width
                         <select
@@ -260,55 +261,6 @@
         {/if}
     </div>
 {/snippet}
-
-<!-- {#if !!swapy && !loadFailed}
-    <div class="hidden md:flex card preset-soft-surface p-4 mb-4">
-        <div class="flex-grow">
-            <h1 class="h4 w-auto mb-2">
-                <Icon class="h-5 w-5 inline" icon="clarity:dashboard-solid" /> Dashboard
-            </h1>
-            {#if swapyEnabled || columnControlsEnabled}
-                <button 
-                    class="btn btn-sm me-2" 
-                    class:preset-filled-surface={!swapyEnabled && !columnControlsEnabled}
-                    class:preset-filled-primary={swapyEnabled || columnControlsEnabled}
-                    onclick={save}
-                >
-                <Icon icon="mdi:content-save-outline" width="1.6em" class="inline me-2" />
-                    Save
-                </button>
-            {/if}
-        </div>
-        <div class="mb-4 align-middle">
-            <button 
-                class="btn btn-sm me-2 align-middle" 
-                disabled={columnControlsEnabled || swapyEnabled}
-                onclick={() => controlsOpen = !controlsOpen}
-                title="Toggle controls"
-            >
-                <Icon icon="mdi:settings" height="1.25em" class="inline" />
-            </button>
-            {#if controlsOpen}
-                <div class="inline-flex space-x-2" transition:slide={{ axis: "x" }}>
-                    <button 
-                        class="btn btn-sm me-2 my-0 align-middle" 
-                        class:preset-filled-surface={!swapyEnabled}
-                        class:preset-filled-primary={swapyEnabled}
-                        disabled={columnControlsEnabled || swapyEnabled}
-                        onclick={enableSwapy}
-                    >Drag</button>
-                    <button 
-                        class="btn btn-sm my-0 align-middle" 
-                        class:preset-filled-surface={!columnControlsEnabled} 
-                        class:preset-filled-primary={columnControlsEnabled}
-                        disabled={columnControlsEnabled || swapyEnabled}
-                        onclick={enableColSpan}
-                    >Size</button>
-                </div>
-            {/if}
-        </div>
-    </div>
-{/if} -->
 
 <AdminHeader>
     {#snippet title()}
@@ -379,7 +331,7 @@
             </div>
         {/each}
     {:else}
-        <div class="col-span-6 card preset-soft p-4">
+        <div class="col-span-6 card preset-tonal p-4">
             Hmmm... your dashboard is empty.
         </div>
     {/if}

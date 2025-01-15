@@ -115,7 +115,7 @@
 			{disabled}
 		/>
 
-		<div class="card px-3 pt-2 w-100">
+		<div class="card preset-tonal px-3 pt-2 w-100">
 			<CheckboxInput
 				id="isVerified"
 				field="isVerified"
@@ -126,7 +126,7 @@
 			/>
 		</div>
 
-		<div class="card px-3 pt-2 w-100">
+		<div class="card preset-tonal px-3 pt-2 w-100">
 			<CheckboxInput
 				id="isActive"
 				field="isActive"
@@ -138,7 +138,7 @@
 		</div>
 
 		{#if canEditSuperUsers}
-			<div class="card px-3 pt-2 w-100">
+			<div class="card preset-tonal px-3 pt-2 w-100">
 				<CheckboxInput
 					id="isAdmin"
 					field="isAdmin"
@@ -149,7 +149,7 @@
 				/>
 			</div>
 
-			<div class="card px-3 pt-2 w-100">
+			<div class="card preset-tonal px-3 pt-2 w-100">
 				<CheckboxInput
 					id="isSuperUser"
 					field="isSuperUser"

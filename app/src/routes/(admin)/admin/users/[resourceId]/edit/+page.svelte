@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditUserForm} from "$client/components"
+    import {AdminResultEditView, AdminEditUserForm} from "$client/components"
     import { page } from "$app/state"
 	import { AdminEditAdminRolesToUserForm, AdminEditUserPassphraseForm } from "$client/components/forms"
     import api from "$shared/api"
@@ -11,7 +11,7 @@
     const naturalKey = "username"
     const resourceApi = api.admin.users as ResourceApi
 
-    const tabs: AdminEditResultViewTabs = $state({
+    const tabs: AdminResultEditViewTabs = $state({
         default: {
             FormComponent: AdminEditUserForm,
             onsubmit: ({ data }: { data: FormDataOf<f.AdminEditUser> | FormDataOf<f.AdminEditUserWithPermissions> }) => {
@@ -63,7 +63,7 @@
     }
 </script>
 
-<AdminEditResultView
+<AdminResultEditView
     {resourceApi}
     {resource}
     {tabs}

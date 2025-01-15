@@ -196,7 +196,7 @@
         {/if}
     </div>
 
-    <div class="input flex border p-1" class:border-red-500={validState === ValidStates.INVALID}>
+    <div class="input-group flex bg-surface-50 ps-1" class:border-red-500={validState === ValidStates.INVALID}>
         {#if prefixSnippet}
             <div class="align-middle m-0 px-0">
                 {@render prefixSnippet?.()}

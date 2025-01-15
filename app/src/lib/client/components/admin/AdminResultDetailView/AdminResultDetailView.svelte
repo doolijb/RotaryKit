@@ -234,7 +234,7 @@
 <AdminHeader>
 	{#snippet title()}
 	
-			<Icon icon="bx:detail" class="mr-2 mb-1 w-auto inline" />
+			<Icon icon="bx:detail" class="mr-1 mb-1 w-auto inline" />
 			Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
 				? `: ${result[naturalKey]}`
 				: ""}
@@ -242,17 +242,17 @@
 	{/snippet}
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<a href="/admin/{resource}" class="btn preset-filled-surface">
-				<Icon icon="material-symbols:list" class="mr-2" />
+			<a href="/admin/{resource}" class="btn preset-filled-surface-500">
+				<Icon icon="material-symbols:list" class="mr-1" />
 				View All
 			</a>
 			{#if canCreateResource}
 				<a
 					href="/admin/{resource}/create"
-					class="btn preset-filled-success"
+					class="btn preset-filled-success-500"
 					class:disabled={!isLoaded}
 				>
-					<Icon icon="mdi:plus" class="mr-2" />
+					<Icon icon="mdi:plus" class="mr-1" />
 					New
 				</a>
 			{/if}
@@ -261,7 +261,7 @@
 </AdminHeader>
 
 {#if isLoaded}
-	<section class="card p-4 mb-4">
+	<section class="card preset-tonal p-4 mb-4">
 		<!-- svelte-ignore a11y_label_has_associated_control -->
 		<Tabs bind:value={currentTab}>
 			{#snippet list()}
@@ -345,21 +345,21 @@
 				{#if canDeleteResource}
 					<button
 						type="button"
-						class="btn preset-filled-error"
+						class="btn preset-filled-error-500"
 						onclick={handleDelete}
 						disabled={!isLoaded}
 					>
-						<Icon icon="mdi:trash-can" class="mr-2" />
+						<Icon icon="mdi:trash-can" class="mr-1" />
 						Delete
 					</button>
 				{/if}
 				{#if canEditResource}
 					<a
 						href="{page.url.pathname}/edit"
-						class="btn preset-filled-primary"
+						class="btn preset-filled-primary-500"
 						class:disabled={!isLoaded}
 					>
-						<Icon icon="mdi:pencil" class="mr-2" />
+						<Icon icon="mdi:pencil" class="mr-1" />
 						Edit
 					</a>
 				{/if}

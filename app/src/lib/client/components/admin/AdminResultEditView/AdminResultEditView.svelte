@@ -141,10 +141,10 @@
 
 {#snippet updateButton(tab: {canSubmit: boolean, disabled: boolean})}
 	<button
-	type="button"
-	class="btn preset-filled-success capitalize"
-	onclick={onsubmit}
-	disabled={!tab.canSubmit || tab.disabled}
+		type="button"
+		class="btn preset-filled-success-500 capitalize"
+		onclick={onsubmit}
+		disabled={!tab.canSubmit || tab.disabled}
 	>
 	<Icon icon="mdi:floppy" class="mr-2" />
 	Update {currentTab !== "default"
@@ -155,15 +155,13 @@
 
 <AdminHeader>
 	{#snippet title()}
-	
-			<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
-			Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
-		
+		<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
+		Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
 	{/snippet}
 
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<a href="/admin/{resource}/{resultId}" class="btn preset-filled-surface capitalize">
+			<a href="/admin/{resource}/{resultId}" class="btn preset-filled-surface-500 capitalize">
 				<Icon icon="bx:detail" class="mr-2" />
 				View
 			</a>
@@ -188,50 +186,50 @@
 	</div>
 {/if}
 
-<div class="card p-4 mb-4">
-<Tabs bind:value={currentTab} class="mb-4 capitalize">
-	{#snippet list()}
-		{#each Object.keys(tabs) as tab}
-			<Tabs.Control
-				bind:group={currentTab}
-				name={tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}
-				value={tab}
-			>
-				<span>{tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}</span
+<div class="card preset-tonal p-4 mb-4">
+	<Tabs bind:value={currentTab}>
+		{#snippet list()}
+			{#each Object.keys(tabs) as tab}
+				<Tabs.Control
+					bind:group={currentTab}
+					name={tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}
+					value={tab}
 				>
-			</Tabs.Control>
-		{/each}
-	{/snippet}
-	{#snippet content()}
-		{#each Object.keys(tabs) as tab}
-			<Tabs.Panel value={tab}>
-				<!-- Only render tab if it's open or has been opened to preserve state -->
-				{#if result && (currentTab === tab || openedTabs.includes(tab))}
-					<!-- Hide opened tabs that are not currently open -->
-					<div class:hidden={currentTab !== tab}>
-						<!-- Show loading if formExtras is not loaded -->
-						{#if !tabs[tab].isLoaded}
-							<Loading />
-						{:else}
-							<!-- Show form if tab is populated -->
-							{@const FormComponent = tabs[tab].FormComponent}
-							<FormComponent
-								bind:data={tabs[tab].data}
-								bind:errors={tabs[tab].errors}
-								bind:canSubmit={tabs[tab].canSubmit}
-								bind:disabled={tabs[tab].disabled}
-								{onsubmit}
-								{oncancel}
-								{...tabs[tab].extras}
-								{result}
-							/>
-						{/if}
-					</div>
-				{/if}
-			</Tabs.Panel>
-		{/each}
-	{/snippet}
-</Tabs>
+					<span>{tab !== "default" ? humanizeString(tab) : pluralize.singular(humanizeString(resource))}</span
+					>
+				</Tabs.Control>
+			{/each}
+		{/snippet}
+		{#snippet content()}
+			{#each Object.keys(tabs) as tab}
+				<Tabs.Panel value={tab}>
+					<!-- Only render tab if it's open or has been opened to preserve state -->
+					{#if result && (currentTab === tab || openedTabs.includes(tab))}
+						<!-- Hide opened tabs that are not currently open -->
+						<div class:hidden={currentTab !== tab}>
+							<!-- Show loading if formExtras is not loaded -->
+							{#if !tabs[tab].isLoaded}
+								<Loading />
+							{:else}
+								<!-- Show form if tab is populated -->
+								{@const FormComponent = tabs[tab].FormComponent}
+								<FormComponent
+									bind:data={tabs[tab].data}
+									bind:errors={tabs[tab].errors}
+									bind:canSubmit={tabs[tab].canSubmit}
+									bind:disabled={tabs[tab].disabled}
+									{onsubmit}
+									{oncancel}
+									{...tabs[tab].extras}
+									{result}
+								/>
+							{/if}
+						</div>
+					{/if}
+				</Tabs.Panel>
+			{/each}
+		{/snippet}
+	</Tabs>
 </div>
 
 <AdminHeader>

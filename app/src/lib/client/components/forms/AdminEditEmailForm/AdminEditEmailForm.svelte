@@ -124,7 +124,7 @@
 		{/if}
 
 		<div class="flex space-x-3 my-5">
-			<div class="card px-3 pt-3 w-full">
+			<div class="card preset-tonal px-3 pt-3 w-full">
 				<CheckboxInput
 					id="isVerified"
 					field="isVerified"
@@ -138,7 +138,7 @@
 	
 		{#if canEditUsers}
 			<div class="flex space-x-3 my-5">
-				<div class="card px-3 pt-3 w-full">
+				<div class="card preset-tonal px-3 pt-3 w-full">
 					<CheckboxInput
 						id="isUserPrimary"
 						field="isUserPrimary"				

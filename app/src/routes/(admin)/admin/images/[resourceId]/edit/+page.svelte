@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {AdminEditResultView, AdminEditImageForm} from "$client/components"
+    import {AdminResultEditView, AdminEditImageForm} from "$client/components"
     import { page } from "$app/state"
     import api from "$shared/api"
 
@@ -16,7 +16,7 @@
     })
 </script>
 
-<AdminEditResultView
+<AdminResultEditView
     {resourceApi}
     {resource}
     {tabs}

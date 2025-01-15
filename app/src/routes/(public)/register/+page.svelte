@@ -6,6 +6,7 @@
 	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import api from "$shared/api"
 	import { getContext } from "svelte"
+	import { UserRegister } from "$shared/validation/forms"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -22,31 +23,27 @@
 			})
 			.ClientError((r) => { 
                 errors = r.body.errors
-                return handleClientError({ errors, toast})(r)
+                return handleClientError({ toast })(r)
             })
 			.ServerError(handleServerError({ toast }))
 			.catch(handleException({ toast }))
 	}
 
 	let completed = $state(false)
-	let data: UserRegisterForm["Data"] = $state({})
+	let data = $state({} as UserRegister["Data"])
 	let errors: FormErrors = $state({})
 
 </script>
 
-<!-- Nice rounded wrapper, centered, fixed width at full screen, responsive -->
-
 <Main>
-	<div class="m-auto md:w-[35rem]">
-        <div class="card p-4 mb-4">
-            <h1 class="h2">
-                {page.data.title}
-            </h1>
-        </div>
-		<div class="card p-4 w-full mb-4">
+	<div class="m-auto md:w-[35rem] flex flex-col gap-4">
+		<h1 class="h2">
+			{page.data.title}
+		</h1>
+		<div class="card preset-tonal border-0 p-4">
 			<container class="container">
 				{#if !completed}
-					<UserRegisterForm on:submit={onsubmit} bind:data bind:errors />
+					<UserRegisterForm onsubmit={onsubmit} bind:data bind:errors />
 				{:else}
 					<div class="flex flex-col items-center justify-center space-y-4">
 						<h1 class="text-2xl font-bold">Thank you for registering!</h1>
@@ -57,10 +54,10 @@
 				{/if}
 			</container>
 		</div>
-		<div class="card p-4">
+		<div class="card preset-tonal p-4">
 			<p class="text-center">
 				Already have an account?
-				<a href="/login" class="btn btn-sm preset-filled-secondary">Login</a>
+				<a href="/login" class="btn btn-sm preset-filled-primary-500">Login</a>
 			</p>
 		</div>
 	</div>
