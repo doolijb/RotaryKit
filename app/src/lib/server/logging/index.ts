@@ -79,7 +79,6 @@ export const logger = {
 	debug: baseLogger.debug.bind(baseLogger),
 	exception: handleException,
 	resolvedRequest: (event: RequestEvent, response: Response) => {
-		console.log(response)
 		logger.info(
 			`[${styledMethod(event.request.method)}] ${event.request.url} ${styledStatus(response.status)}`
 		)

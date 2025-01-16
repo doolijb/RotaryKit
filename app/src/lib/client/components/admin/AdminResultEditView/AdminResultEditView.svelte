@@ -235,7 +235,7 @@
 <AdminHeader>
 	{#snippet controls()}
 		<div class="flex justify-between" >
-			<button type="button" class="btn preset-filled-surface capitalize" onclick={oncancel}>
+			<button type="button" class="btn preset-filled-surface-500 capitalize" onclick={oncancel}>
 				<Icon icon="material-symbols:cancel-outline" class="mr-2" />
 				Cancel
 			</button>

@@ -79,7 +79,7 @@
 	// STATE
 	////
 
-	let resultActionsDropdowns: Record<string, boolean> = $state({})
+	let actionDropdownStates: Record<string, boolean> = $state({})
 
 	////
 	// FUNCTIONS
@@ -138,7 +138,7 @@
 	 * If it is, return the orderByKey.
 	 * If it isn't, just return the key.
 	 */
-	function getOrderByKey(key: string): string | undefined {
+	function getOrderByKey(key: string): string | false | undefined {
 		if (dataHandlers[key] !== undefined) {
 			return dataHandlers[key].orderByKey
 		}
@@ -192,61 +192,51 @@
 		return { key, direction }
 	}))
 
-	/**
-	 * Create popup settings for each result.
-	 */
-	let actionPopupSettings = $derived(results.reduce((acc, result) => {
-		acc[String(result.id)] = {
-			event: "focus-click",
-			target: `actionListbox-${result.id}`,
-			placement: "bottom"
-		}
-		return acc
-	}, {}))
+	$effect(() => {
+		const newActionDropdownStates: Record<string, boolean> = {}
+		results.forEach((result) => {
+			newActionDropdownStates[String(result["id"])] = false
+		})
+		actionDropdownStates = newActionDropdownStates
+	})
 
 </script>
 
 {#snippet actionsDropdown(result: any)}
-	{#if canViewResource || canEditResource || canDeleteResource}
-		<td class="text-center">
-			<Popover
-				bind:open={resultActionsDropdowns[result.id]}
-				positioning={{ placement: 'top' }}
-				triggerBase="btn preset-tonal"
-				contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
-				arrow
-				arrowBackground="!bg-surface-200 dark:!bg-surface-800"
-			>
-				{#snippet trigger()}
-				<button use:popup={actionPopupSettings[String(result["id"])]} class=" px-5">
+	{#if (canViewResource || canEditResource || canDeleteResource) && actionDropdownStates[String(result["id"])] !== undefined}
+		<Popover
+			bind:open={actionDropdownStates[String(result["id"])]}
+			positioning={{ placement: 'bottom' }}
+			triggerBase="btn preset-tonal"
+			contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
+			arrow
+			arrowBackground="!bg-surface-200 dark:!bg-surface-800"
+		>
+			{#snippet trigger()}
+				<button class=" px-5">
 					<span>
 						<Icon icon="akar-icons:more-vertical" />
 					</span>
 				</button>
-				{/snippet}
-				{#snippet content()}
-					<div
-						class="card w-48 shadow-xl p-0 z-50"
-						data-popup={actionPopupSettings[String(result["id"])].target}
-					>
-						<div class="arrow bg-primary-500-backdrop-token"></div>
-						<div class="btn-group-vertical preset-filled w-full">
-							{#if canViewResource}
-								<button onclick={() => onView(result)}> View </button>
-							{/if}
+			{/snippet}
+			{#snippet content()}
+				<div class="">
+					<div class="btn-group-vertical w-full flex flex-col gap-2">
+						{#if canViewResource}
+							<button class="btn preset-filled-primary-500" onclick={() => onView(result)}> View </button>
+						{/if}
 
-							{#if canEditResource}
-								<button onclick={() => onEdit(result)}> Edit </button>
-							{/if}
+						{#if canEditResource}
+							<button class="btn preset-filled-secondary-500" onclick={() => onEdit(result)}> Edit </button>
+						{/if}
 
-							{#if canDeleteResource}
-								<button onclick={() => onDelete(result)}> Delete </button>
-							{/if}
-						</div>
+						{#if canDeleteResource}
+							<button class="btn preset-filled-error-500" onclick={() => onDelete(result)}> Delete </button>
+						{/if}
 					</div>
-				{/snippet}
-			</Popover>
-		</td>
+				</div>
+			{/snippet}
+		</Popover>
 	{/if}
 {/snippet}
 
@@ -312,7 +302,9 @@
 						{/each}
 
 						<!-- ACTIONS DROPDOWN -->
-						{@render actionsDropdown(result)}
+						<td class="text-center">
+							{@render actionsDropdown(result)}
+						</td>
 					</tr>
 				{/each}
 			</tbody>

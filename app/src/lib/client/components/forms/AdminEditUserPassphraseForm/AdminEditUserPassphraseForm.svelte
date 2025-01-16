@@ -92,11 +92,10 @@
 </script>
 
 {#if result && page.data.user.id === result.id}
-    <div class="card mb-3 preset-filled-error">
+    <div class="card mb-3 preset-filled-error-500">
         <section class="p-4">
             <p>
-                <Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
-                Admin roles do not apply.
+                <Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own passphrase, you may lose access to your account.
             </p>
         </section>
     </div>
