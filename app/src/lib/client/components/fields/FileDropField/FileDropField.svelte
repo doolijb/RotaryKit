@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "$client/components"
+	import { ValidationBadges } from "$client/components"
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
-	import { FileUpload, type PopupSettings } from "@skeletonlabs/skeleton-svelte"
+	import { FileUpload } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import { fileTypes } from "$shared/data"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 	import humanizeString from "humanize-string"
 
 	////
@@ -378,7 +378,7 @@
 		>
 			{#if hasFileRelatedErrors}
 				<p class="text-sm text-red-500 mb-1">
-					<Icon icon="bi:exclamation-triangle" class="w-4 h-4 me-1 inline" />
+					<Icon.Upload class="w-4 h-4 me-1 inline" />
 					Please correct your selection before continuing
 				</p>
 			{/if}
@@ -387,7 +387,7 @@
 					<div class="card p-4 preset-filled-surface">
 						<div class="card-body">
 							<div class="flex items-center gap-2">
-								<Icon icon={getFileTypeIcon(file.name)} class="w-12 h-12" />
+								<Icon.File class="w-12 h-12" />
 								<p class="text-sm">
 									{file.name}
 									<br />
@@ -397,7 +397,7 @@
 									class="btn preset-filled-error mt-2 ml-auto mt-0"
 									onclick={() => removeFile(file)}
 								>
-									<Icon icon="bi:trash" class="w-4 h-4 me-1" />
+									<Icon.Trash class="w-4 h-4 me-1" />
 									Remove
 								</button>
 							</div>

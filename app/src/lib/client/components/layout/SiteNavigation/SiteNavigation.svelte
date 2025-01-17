@@ -1,41 +1,10 @@
 <script lang="ts">
 	import { page } from "$app/state"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 	import { Popover } from "@skeletonlabs/skeleton-svelte"
 
 	let isAccountMenuOpen = $state(false)
 </script>
-
-<!-- <div
-	data-popup="navUserPopup"
-	class="card preset-soft bg-surface-500/95 shadow-xl z-50 p-4 select-none"
->
-	<div class="flex flex-col">
-		<a
-			href="/profile"
-			class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
-		>
-			<Icon icon="mdi:user" class="mr-2 inline-block" />
-			Profile
-		</a>
-		{#if $page.data.user && ($page.data.user.isAdmin || $page.data.user.isSuperUser)}
-			<a
-				href="/admin"
-				class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
-			>
-				<Icon icon="mdi:shield" class="mr-2 inline-block" />
-				Admin
-			</a>
-		{/if}
-		<a
-			href="/logout"
-			class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
-		>
-			<Icon icon="mdi:logout" class="mr-2 inline-block" />
-			Logout
-		</a>
-	</div>
-</div> -->
 
 {#snippet accountMenu()}
 	<Popover
@@ -53,7 +22,7 @@
 				href="/profile"
 				class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
 			>
-				<Icon icon="mdi:user" class="mr-2 inline-block" />
+				<Icon.User class="mr-2 inline-block" />
 				Profile
 			</a>
 			{#if page.data.user && (page.data.user.isAdmin || page.data.user.isSuperUser)}
@@ -61,7 +30,7 @@
 					href="/admin"
 					class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
 				>
-					<Icon icon="mdi:shield" class="mr-2 inline-block" />
+					<Icon.Shield class="mr-2 inline-block" />
 					Admin
 				</a>
 			{/if}
@@ -69,7 +38,7 @@
 				href="/logout"
 				class="text-surface-50 hover:text-surface-900 py-2 px-4 block whitespace-no-wrap"
 			>
-				<Icon icon="mdi:logout" class="mr-2 inline-block" />
+				<Icon.LogOut class="mr-2 inline-block" />
 				Logout
 			</a>
 		</div>
@@ -103,13 +72,13 @@
 		<div class="text-sm lg:flex-grow"></div>
 		<div class="hidden lg:block">
 			{#if !page.data.user}
-				<div class="text-sm lg:flex-grow">
-					<a href="/login" class="btn btn-sm">
-						<Icon icon="mdi:login" class="mr-2 inline-block" />
+				<div class="text-sm lg:flex-grow flex gap-2">
+					<a href="/login" class="btn btn-sm preset-tonal-surface">
+						<Icon.LogIn class="inline-block" />
 						Login
 					</a>
 					<a href="/register" class="btn btn-sm preset-filled-secondary-500">
-						<Icon icon="mdi:account-plus" class="mr-2 inline-block" />
+						<Icon.UserPlus class="inline-block" />
 						Register
 					</a>
 				</div>

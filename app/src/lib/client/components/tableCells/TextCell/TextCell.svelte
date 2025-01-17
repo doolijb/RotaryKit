@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
     import { getDisplayAndCopyText } from "$client/utils"
     import { getContext, type Snippet } from "svelte"
 	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
@@ -127,7 +127,7 @@
                     class="ms-2 mt-1 {!focused ? "invisible" : ""}"
                     title="Click to open in new tab"
                 >
-                    <Icon icon="mdi:open-in-new" />
+                    <Icon.ExternalLink />
                 </a>
             </span>
         {/if}
@@ -153,8 +153,7 @@
                 </span>
                 {#if canCopy}
                     <span>
-                        <Icon
-                            icon="mdi:content-copy"
+                        <Icon.Clipboard
                             class="ms-2 mt-1 {!focused ? "invisible" : ""}"
                         />
                     </span>

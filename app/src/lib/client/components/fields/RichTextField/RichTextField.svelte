@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "$client/components"
+	import { ValidationBadges } from "$client/components"
 	import { ValidStates } from "$shared/constants"
 	import { v4 } from "uuid"
-	import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
-	import type { Snippet } from 'svelte'
+	import type { Snippet, SvelteComponent } from 'svelte'
 	import humanizeString from "humanize-string"
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
@@ -21,7 +20,7 @@
 	import TaskList from '@tiptap/extension-task-list'
 	import CharacterCount from '@tiptap/extension-character-count'
 	import DOMPurify from "isomorphic-dompurify"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 
 	////
 	// PROPS
@@ -76,8 +75,6 @@
 	////
 	// CONSTANTS
 	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
 
 	const Heading = BaseHeading.configure({ levels: [1, 2, 3] }).extend({
 		renderHTML({ node, HTMLAttributes }) {
@@ -402,7 +399,7 @@
 
 </script>
 
-{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: string = "")}
+{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, Icn: ConstructorOfATypedSvelteComponent)}
 	<button 
 		class="btn btn-sm rounded-sm" 
 		class:preset-filled={!active}
@@ -413,8 +410,8 @@
 		{disabled}
 		tabindex="-1"
 	>
-		{#if icon}
-			<Icon icon={icon} class="text-xl"/>
+		{#if Icn}
+			<Icn class="text-xl"/>
 		{:else}
 			{@html content}
 		{/if}
@@ -441,21 +438,21 @@
 		class:border-error-500={validState === ValidStates.INVALID}
 	>
 		<div class="toolbar mb-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:flex gap-1">
-		  {@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, "tabler:heading")}
-		  {@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, "tabler:bold")}
-		  {@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, "tabler:italic")}
-		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, "tabler:underline")}
-		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, "tabler:strikethrough")}
-		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, "tabler:superscript")}
-		  {@render styleButton('Link', 'Link', setLink, isLink, false, "tabler:link")}
-		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, "tabler:quote")}
-		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, "tabler:code")}
-		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, "tabler:list")}
-		  {@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, "tabler:list-numbers")}
-		  {@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, "tabler:list-details")}
-		  {@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, "tabler:paint-off")}
-		  {@render styleButton('Undo', 'Undo', undo, false, !canUndo, "tabler:arrow-back-up")}
-		  {@render styleButton('Redo', 'Redo', redo, false, !canRedo, "tabler:arrow-forward-up")}
+		  {@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, Icon.Heading)}
+		  {@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, Icon.Bold)}
+		  {@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, Icon.Italic)}
+		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline)}
+		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough)}
+		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript)}
+		  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link)}
+		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote)}
+		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code)}
+		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List)}
+		  {@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, Icon.ListOrdered)}
+		  {@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, Icon.ListCheck)}
+		  {@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, Icon.RemoveFormatting)}
+		  {@render styleButton('Undo', 'Undo', undo, false, !canUndo, Icon.Undo)}
+		  {@render styleButton('Redo', 'Redo', redo, false, !canRedo, Icon.Redo)}
 		</div>
 		  <div {id} bind:this={element} class="editor-container"></div>
 	</div>

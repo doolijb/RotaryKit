@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
 
     interface Props {
-        disabled?: boolean;
-        onClick?: any;
-        title?: string;
+        disabled?: boolean
+        onClick?: any
+        title?: string
     }
 
     let { disabled = false, onClick = (args: any) => console.log("onClick"), title = "View" }: Props = $props();
@@ -24,8 +24,7 @@
             onmouseover={() => (focused = true)}
             onmouseleave={() => (focused = false)}
         >
-            <Icon
-                icon="mdi:eye"
+            <Icon.Eye
                 width="1.5em"
                 class={!focused ? "opacity-75" : "opacity-100"}
             />

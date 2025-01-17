@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte"
 	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import humanizeString from "humanize-string"
     import { getDisplayAndCopyText } from "$client/utils"
     import { getContext, type Snippet } from "svelte"
     import DOMPurify from "isomorphic-dompurify"
+    import * as Icon from "lucide-svelte"
 
     const toast: ToastContext = getContext("toast")
 
@@ -126,12 +126,14 @@
                 <a href={`${value}`} target="_blank" rel="noopener noreferrer">
                     Link
                 </a>
-                <Icon
-                    icon="mdi:open-in-new"
-                    class="inline ms-1 {!focused ? "invisible" : ""}"
+                <Icon.ExternalLink class="inline ms-1 {!focused ? "invisible" : ""}"
                 />
             {:else if dataType === "boolean"}
-                <Icon icon={value ? "mdi:check" : "mdi:close"} class="w-auto inline" />
+                {#if !!value}
+                    <Icon.Check class="w-auto inline" />
+                {:else}
+                    <Icon.X class="w-auto inline" />
+                {/if}
                 {humanizeString(value.toString())}
                 <!-- Is it a date string? -->
             {:else if dataType === "html"}
@@ -140,10 +142,7 @@
                 {displayText}
             {/if}
             {#if canCopy}
-            <Icon
-                icon="mdi:content-copy"
-                class="inline ms-1 {!focused ? "invisible" : ""}"
-            />
+                <Icon.Clipboard class="inline ms-1 {!focused ? "invisible" : ""}" />
             {/if}
         </p>
     {/if}

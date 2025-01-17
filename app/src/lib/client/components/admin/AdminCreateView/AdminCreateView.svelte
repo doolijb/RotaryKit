@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { AdminHeader } from "$client/components"
-	import Icon from "@iconify/svelte"
 	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { Accordion } from "@skeletonlabs/skeleton-svelte"
 	import { goto } from "$app/navigation"
@@ -8,6 +7,7 @@
 	import pluralize from "pluralize"
 	import { handleClientError, handleServerError, useFormData } from "$client/utils"
 	import { getContext, type Component, type Snippet } from "svelte"
+	import { CircleHelp, CircleX, Save, Table } from "lucide-svelte"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -97,14 +97,14 @@
 		onclick={onsubmit}
 		disabled={!canSubmit}
 	>
-		<Icon icon="mdi:floppy" class="mr-2" />
+		<Save />
 		Create
 	</button>
 {/snippet}
 
 {#snippet cancelButton()}
 	<button type="button" class="btn preset-filled-surface-500" onclick={oncancel}>
-		<Icon icon="material-symbols:cancel-outline" class="mr-2" />
+		<CircleX />
 		Cancel
 	</button>
 {/snippet}
@@ -112,7 +112,7 @@
 <AdminHeader>
 	{#snippet title()}
 	
-			<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
+			<Table />
 			<span class="capitalize">
 				Create: {displayTitle}
 			</span>
@@ -132,7 +132,7 @@
 		<Accordion>
 			<Accordion.Item title="Help">
 							
-				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
+				<CircleHelp />
 					
 				About adding a new {displayTitle}
 					

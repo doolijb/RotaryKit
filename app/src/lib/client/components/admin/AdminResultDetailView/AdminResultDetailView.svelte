@@ -8,7 +8,6 @@
 		AdminVideoResultDetails ,
 		ConfirmationModal,
 	} from "$client/components" 
-	import Icon from "@iconify/svelte"
 	import { Tabs, type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { handleClientError, handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/state"
@@ -17,20 +16,9 @@
 	import { goto } from "$app/navigation"
 	import pluralize from "pluralize"
 	import humanizeString from "humanize-string"
+	import * as Icon from "lucide-svelte"
 
 	const toast: ToastContext = getContext("toast")
-
-	type DataType = "string" | "number" | "boolean" | "html"
-
-	type DataHandler = {
-		header?: string
-		handler?: (result: Result<any>) => string | boolean | number
-		orderByKey?: string
-		getUrl?: (result: Result<any>) => string
-		defer?: string
-		dataType?: DataType
-		tabType?: "default" | "image" | "video" | "array"
-	}
 
 	////
 	// VARIABLE PROPS
@@ -38,17 +26,17 @@
 
 	interface Props {
 		// Props
-		resource: string;
-		resourceApi: ResourceApi;
-		dataHandlers?: DataHandlers;
-		naturalKey: string;
-		resourceId: string;
-		showCreateButton: boolean;
-		showEditButton: boolean;
-		showDeleteButton: boolean;
+		resource: string
+		resourceApi: ResourceApi
+		dataHandlers?: DataHandlers
+		naturalKey: string
+		resourceId: string
+		showCreateButton: boolean
+		showEditButton: boolean
+		showDeleteButton: boolean
 
 		// Functions
-		mutateResult?: (result: Result<any>) => Result<any> | undefined;
+		mutateResult?: (result: Result<any>) => Result<any> | undefined
 	}
 
 	let {
@@ -64,7 +52,7 @@
 
 		// Functions
 		mutateResult = undefined
-	}: Props = $props();
+	}: Props = $props()
 
 
 	////
@@ -94,15 +82,7 @@
 
 	let isDeleteModalOpen = $state(false)
 
-	async function handleDelete() {
-		isDeleteModalOpen = true
-	}
-
-	function onDeleteModalClose() {
-		isDeleteModalOpen = false
-	}
-
-	async function onDeleteModalConfirm() {
+	async function onDelete() {
 		resourceApi.resourceId$(resourceId).DELETE({})
 			.Success((r) => {
 				toast.create({
@@ -210,9 +190,6 @@
 		buildTabs()
 		currentTab = page.url.searchParams.get("tab") || "default"
 	})
-	////
-	// INTERNAL VARIABLES
-	////
 
 	let isLoaded = $derived(!!result && !!currentTab)
 </script>
@@ -223,27 +200,19 @@
 	</div>
 {/snippet}
 
-<ConfirmationModal
-	openState={isDeleteModalOpen}
-	onCancel={onDeleteModalClose}
-	onConfirm={onDeleteModalConfirm}
-	title={`Delete ${pluralize.singular(humanizeString(resource))}`}
-	body={`Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`}
-/>
-
 <AdminHeader>
+	{#snippet icon()}
+		<Icon.Notebook />
+	{/snippet}
 	{#snippet title()}
-	
-			<Icon icon="bx:detail" class="mr-1 mb-1 w-auto inline" />
-			Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
-				? `: ${result[naturalKey]}`
-				: ""}
-		
+		Viewing {pluralize.singular(humanizeString(resource))}{isLoaded && result[naturalKey]
+			? `: ${result[naturalKey]}`
+			: ""}
 	{/snippet}
 	{#snippet controls()}
 		<div class="flex justify-between" >
 			<a href="/admin/{resource}" class="btn preset-filled-surface-500">
-				<Icon icon="material-symbols:list" class="mr-1" />
+				<Icon.List />
 				View All
 			</a>
 			{#if canCreateResource}
@@ -251,8 +220,8 @@
 					href="/admin/{resource}/create"
 					class="btn preset-filled-success-500"
 					class:disabled={!isLoaded}
-				>
-					<Icon icon="mdi:plus" class="mr-1" />
+				> 
+					<Icon.Plus />
 					New
 				</a>
 			{/if}
@@ -341,17 +310,37 @@
 {#if canDeleteResource || canEditResource}
 	<AdminHeader>
 		{#snippet controls()}
-				<div class="flex justify-between" >
+			<div class="flex justify-between" >
 				{#if canDeleteResource}
-					<button
-						type="button"
-						class="btn preset-filled-error-500"
-						onclick={handleDelete}
-						disabled={!isLoaded}
-					>
-						<Icon icon="mdi:trash-can" class="mr-1" />
-						Delete
-					</button>
+					{#if isLoaded}
+						<!-- Workaround until disable trigger feature is added -->
+						<ConfirmationModal
+							onConfirm={onDelete}
+							title={`Delete ${pluralize.singular(humanizeString(resource))}`}
+							body={`Are you sure you want to continue?`}
+						>
+							{#snippet trigger()}
+								<!-- Icon in button is bugged with snippets in svelte -->
+								<span
+									class="btn preset-filled-error-500 disabled"
+									aria-label="Delete"
+									class:disabled={!isLoaded}
+								>
+									<Icon.Trash />
+									Delete
+								</span>
+							{/snippet}
+						</ConfirmationModal>
+					{:else}
+						<span
+							class="btn preset-filled-error-500 disabled"
+							aria-label="Delete"
+							class:disabled={!isLoaded}
+						>
+							<Icon.Trash />
+							Delete
+						</span>
+					{/if}
 				{/if}
 				{#if canEditResource}
 					<a
@@ -359,11 +348,11 @@
 						class="btn preset-filled-primary-500"
 						class:disabled={!isLoaded}
 					>
-						<Icon icon="mdi:pencil" class="mr-1" />
+						<Icon.Pencil />
 						Edit
 					</a>
 				{/if}
 			</div>
-			{/snippet}
+		{/snippet}
 	</AdminHeader>
 {/if}

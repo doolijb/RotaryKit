@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte";
 
     interface Props {
         disabled?: boolean;
@@ -24,8 +24,7 @@
             onmouseover={() => (focused = true)}
             onmouseleave={() => (focused = false)}
         >
-            <Icon
-                icon="mdi:delete"
+            <Icon.Trash
                 width="1.5em"
                 class={!focused ? "opacity-75" : "opacity-100"}
             />

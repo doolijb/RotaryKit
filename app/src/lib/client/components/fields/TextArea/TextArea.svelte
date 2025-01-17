@@ -79,12 +79,6 @@
     })
 
     ////
-    // CONSTANTS
-    ////
-
-    const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-    ////
     // FUNCTIONS
     ////
 
@@ -166,15 +160,12 @@
                 <div class="flex w-100 ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
                     {@render extraControls?.()}
                     {#if !disabled && validatorLength}
-                        <ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
+                        <ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
                     {/if}
                 </div>
             </div>
         {/if}
     </div>
-    {#if !disabled && validatorLength || attrs?.description}
-		<ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
-	{/if}
 </div>
 
 <style lang="postcss">

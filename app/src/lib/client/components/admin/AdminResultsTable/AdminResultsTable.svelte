@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { BoolCell, TextCell } from "$client/components"
-	import Icon from "@iconify/svelte"
-	import { Popover } from "@skeletonlabs/skeleton-svelte"
+	import { AdminResultsTableRow } from "$client/components"
+	import * as Icon from "lucide-svelte"
 
 	/**
 	 * @fires orderByChange - Dispatched when an orderable table header is clicked, returns an updated orderBy query string.
@@ -15,47 +14,43 @@
 	////
 	
 	interface Props {
+		/** Name of the resource */
+		resource: string
 		/** The results to display in the table. */
-		results: PaginatedResponse<any>["results"];
+		results: PaginatedResponse<any>["results"]
 		/** The orderBy query string. */
-		orderBy: PaginatedResponse<any>["orderBy"];
+		orderBy: PaginatedResponse<any>["orderBy"]
 		/** The total number of results. */
-		totalCount: PaginatedResponse<any>["totalCount"];
+		totalCount: PaginatedResponse<any>["totalCount"]
 		/** The sequence of the first result. */
-		resultStart: PaginatedResponse<any>["resultStart"];
+		resultStart: PaginatedResponse<any>["resultStart"]
 		/** The sequence of the last result. */
-		resultEnd: PaginatedResponse<any>["resultEnd"];
+		resultEnd: PaginatedResponse<any>["resultEnd"]
 		/** Manually set the priority of keys in the table. Optional */
-		orderedKeys?: string[];
+		orderedKeys?: string[]
 		/** Manually exclude keys from the table. Optional */
-		excludeKeys?: string[];
+		excludeKeys?: string[]
 		/** Staff user can view resource. */
-		canViewResource: boolean;
+		canViewResource: boolean
 		/** Staff user can edit resource. */
-		canEditResource: boolean;
+		canEditResource: boolean
 		/** Staff user can delete resource. */
-		canDeleteResource: boolean;
+		canDeleteResource: boolean
 		/**
 	 * Manually handle how data is displayed for a key in the table.
 	 * Recommended for displaying nested data. Optional
 	 */
-		dataHandlers?: {
-			[key: string]: {
-				header?: string
-				handler?: (result: Result<any>) => any
-				orderByKey?: string | false
-				getUrl?: (result: Result<any>) => string
-			}
-		};
+		dataHandlers?: DataHandlers
 
 		// Events
-		onOrderByChange: (orderBy: string) => void;
-		onView: (result: Result<any>) => void;
-		onEdit: (result: Result<any>) => void;
-		onDelete: (result: Result<any>) => void;
+		onOrderByChange: (orderBy: string) => void
+		onView: (result: Result<any>) => void
+		onEdit: (result: Result<any>) => void
+		onDelete: (result: Result<any>) => void
 	}
 
 	let {
+		resource,
 		results,
 		orderBy,
 		totalCount,
@@ -73,13 +68,7 @@
 		onView,
 		onEdit,
 		onDelete,
-	}: Props = $props();
-
-	////
-	// STATE
-	////
-
-	let actionDropdownStates: Record<string, boolean> = $state({})
+	}: Props = $props()
 
 	////
 	// FUNCTIONS
@@ -192,53 +181,7 @@
 		return { key, direction }
 	}))
 
-	$effect(() => {
-		const newActionDropdownStates: Record<string, boolean> = {}
-		results.forEach((result) => {
-			newActionDropdownStates[String(result["id"])] = false
-		})
-		actionDropdownStates = newActionDropdownStates
-	})
-
 </script>
-
-{#snippet actionsDropdown(result: any)}
-	{#if (canViewResource || canEditResource || canDeleteResource) && actionDropdownStates[String(result["id"])] !== undefined}
-		<Popover
-			bind:open={actionDropdownStates[String(result["id"])]}
-			positioning={{ placement: 'bottom' }}
-			triggerBase="btn preset-tonal"
-			contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
-			arrow
-			arrowBackground="!bg-surface-200 dark:!bg-surface-800"
-		>
-			{#snippet trigger()}
-				<button class=" px-5">
-					<span>
-						<Icon icon="akar-icons:more-vertical" />
-					</span>
-				</button>
-			{/snippet}
-			{#snippet content()}
-				<div class="">
-					<div class="btn-group-vertical w-full flex flex-col gap-2">
-						{#if canViewResource}
-							<button class="btn preset-filled-primary-500" onclick={() => onView(result)}> View </button>
-						{/if}
-
-						{#if canEditResource}
-							<button class="btn preset-filled-secondary-500" onclick={() => onEdit(result)}> Edit </button>
-						{/if}
-
-						{#if canDeleteResource}
-							<button class="btn preset-filled-error-500" onclick={() => onDelete(result)}> Delete </button>
-						{/if}
-					</div>
-				</div>
-			{/snippet}
-		</Popover>
-	{/if}
-{/snippet}
 
 {#if results.length}
 	<!-- DISPLAY TABLE OF RESULTS -->
@@ -258,9 +201,9 @@
 									{getKeyDisplay(key)}
 									{#if orderByArray.find((orderBy) => orderBy.key === getOrderByKey(key))}
 										{#if orderByArray.find((orderBy) => orderBy.key === getOrderByKey(key)).direction === "asc"}
-											<Icon icon="akar-icons:arrow-up" style="display: inline-block" />
+											<Icon.ArrowUp style="display: inline-block" />
 										{:else if orderByArray.find((orderBy) => orderBy.key === getOrderByKey(key)).direction === "desc"}
-											<Icon icon="akar-icons:arrow-down" style="display: inline-block" />
+											<Icon.ArrowDown style="display: inline-block" />
 										{/if}
 									{/if}
 								</button>
@@ -276,7 +219,7 @@
 					{#if canViewResource || canEditResource || canDeleteResource}
 						<th class="text-center opacity-50">
 							<!-- COG icon -->
-							<Icon icon="mdi:cog" style="display: inline-block" />
+							<Icon.Cog style="display: inline-block" />
 						</th>
 					{/if}
 				</tr>
@@ -286,26 +229,7 @@
 			<tbody>
 				{#each results as result, idx (result.id)}
 					<!-- RESULT ROW -->
-					<tr>
-						<!-- ROW NUMBER IN TOTAL RESULTS -->
-						<td onclick={() => onView(result)} class="opacity-50 hover:opacity-100 cursor-pointer" title="View">
-							{idx + resultStart}
-						</td>
-
-						<!-- RESULT DATA COLUMNS -->
-						{#each finalOrderedKeys as key}
-							{#if typeof getValue(result, key) === "boolean"}
-								<BoolCell value={!!result[key]} />
-							{:else}
-								<TextCell text={`${getValue(result, key)}`} url={getKeyUrl(result, key)} />
-							{/if}
-						{/each}
-
-						<!-- ACTIONS DROPDOWN -->
-						<td class="text-center">
-							{@render actionsDropdown(result)}
-						</td>
-					</tr>
+					<AdminResultsTableRow {resource} keys={finalOrderedKeys} index={idx + resultStart} {result} {canViewResource} {canEditResource} {canDeleteResource} {dataHandlers} {onView} {onEdit} {onDelete} />
 				{/each}
 			</tbody>
 
@@ -333,6 +257,6 @@
 
 <style>
 	th {
-		white-space: nowrap;
+		white-space: nowrap
 	}
 </style>

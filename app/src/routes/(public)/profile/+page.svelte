@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state"
     import { Main } from "$client/components"
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
 
     const username: string = page.data.user.username
     const userSince: Date = page.data.user.createdAt
@@ -30,7 +30,7 @@
                 <a href="/profile/image" class="card p-4 border-0 preset-filled ">
                     <div class="grid grid-cols-12">
                         <div class="col-span-4">
-                            <Icon icon="mdi:email" class="w-16 h-16" />
+                            <Icon.AtSign class="w-16 h-16" />
                         </div>
                         <div class="col-span-8 text-sm">
                             <h3 class="h4">Profile Image</h3>
@@ -45,7 +45,7 @@
     <div class="m-auto md:w-[35rem]">
 		<div class="card p-4 mb-4 border-0">
             <h2 class="h3 mb-2">
-                <Icon icon="mdi:cog" class="w-6 h-6 inline" /> Settings
+                <Icon.Cog class="w-6 h-6 inline" /> Settings
             </h2>
 			
             <!-- Create 2x2 colum of card links that is responsive -->
@@ -54,7 +54,7 @@
                 <a href="/profile/email" class="card p-4 border-0 preset-filled ">
                     <div class="grid grid-cols-12">
                         <div class="col-span-4">
-                            <Icon icon="mdi:email" class="w-16 h-16" />
+                            <Icon.AtSign class="w-16 h-16" />
                         </div>
                         <div class="col-span-8 text-sm">
                             <h3 class="h4">Email</h3>
@@ -67,7 +67,7 @@
                 <a href="/profile/passphrase" class="card p-4 border-0 preset-filled ">
                     <div class="grid grid-cols-12">
                         <div class="col-span-4">
-                            <Icon icon="mdi:form-textbox-password" class="w-16 h-16" />
+                            <Icon.Key class="w-16 h-16" />
                         </div>
                         <div class="col-span-8 text-sm">
                             <h3 class="h4">Passphrase</h3>

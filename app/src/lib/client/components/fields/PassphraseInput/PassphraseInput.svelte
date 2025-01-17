@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { TextInput } from "$client/components"
-	import Icon from "@iconify/svelte"
-	import { createEventDispatcher, onMount, type Snippet } from "svelte"
+	import * as Icon from "lucide-svelte"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
-
-	const dispatch = createEventDispatcher()
 
 	////
 	// PROPS
@@ -98,9 +95,9 @@
 			title="Show Password"
 		>	
 			{#if !showPassword}
-				<Icon icon="mdi:eye-outline" width="2em" />
+				<Icon.Eye class="opacity-50 hover:opacity-100" width="2em" />
 			{:else}
-				<Icon class="opacity-50 hover:opacity-100" icon="mdi:eye-off-outline" width="2em" />
+				<Icon.EyeClosed class="opacity-50 hover:opacity-100" width="2em" />
 			{/if}
 		</span>
 	{/snippet}

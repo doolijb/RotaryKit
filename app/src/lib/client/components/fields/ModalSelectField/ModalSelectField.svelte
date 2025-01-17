@@ -64,12 +64,6 @@
 	}: Props = $props();
 
 	////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-
-	////
 	// STATE
 	////
 
@@ -199,6 +193,7 @@
 
 
 <div class="mb-2">
+
     <div class="flex items-center">
         <label class="label inline-flex pb-2" for={id}>
             <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
@@ -227,7 +222,7 @@
 			{/if}
 			{#if !disabled && validatorLength}
 				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
+					<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
 				</div>
 			{/if}
 		</button>
@@ -240,9 +235,7 @@
 			</button>
 		</div>
     </div>
-    {#if !disabled && (validatorLength || attrs?.description)}
-        <ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
-    {/if}
+
 </div>
 
 <style lang="postcss">

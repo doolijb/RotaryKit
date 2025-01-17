@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 
     interface Props {
         amounts?: number[];
@@ -62,7 +62,7 @@
                 onclick={() => onPageChange(1)}
                 title="First Page"
             >
-                <Icon icon="mdi:page-first" />
+                <Icon.SkipBack />
             </button>
 
             <!-- PREVIOUS PAGE -->
@@ -72,7 +72,7 @@
                 onclick={() => onPageChange(previousPage)}
                 title="Previous Page"
             >
-                <Icon icon="mdi:chevron-left" />
+                <Icon.ArrowLeft />
             </button>
 
             <!-- DESCRIPTION -->
@@ -88,7 +88,7 @@
                 disabled={!nextPage} onclick={() => onPageChange(nextPage)}
                 title="Next Page"
             >
-                <Icon icon="mdi:chevron-right" />
+                <Icon.ArrowRight />
             </button>
 
             <!-- LAST PAGE -->
@@ -97,7 +97,7 @@
                 disabled={!nextPage} onclick={() => onPageChange(pageCount)}
                 title="Last Page"
             >
-                <Icon icon="mdi:page-last" />
+                <Icon.SkipForward />
             </button>
 
         </div>

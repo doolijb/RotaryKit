@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { onMount } from "svelte"
+	import { ValidationBadges } from "$client/components"
 	import { v4 } from "uuid"
-	import type { PopupSettings } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 	import humanizeString from "humanize-string"
 
 	////
@@ -177,11 +175,11 @@
 					disabled={!canAdd || disabled}
 					title={canAdd ? "Add selected options" : "First select an option to add"}
 				>
-					<Icon icon="akar-icons:arrow-down" class="md:hidden w-4 h-4" />
+					<Icon.ArrowDown  class="md:hidden w-4 h-4" />
 					<span class="mx-2">
 						Add
 					</span>
-					<Icon icon="akar-icons:arrow-right" class="hidden md:inline w-4 h-4" />
+					<Icon.ArrowRight class="hidden md:inline w-4 h-4" />
 				</button>
 				<button
 					type="button"
@@ -190,8 +188,8 @@
 					disabled={!canRemove || disabled}
 					title={canRemove ? "Remove selected options" : "First select an option to remove"}
 				>
-					<Icon icon="akar-icons:arrow-up" class="md:hidden w-4 h-4" />
-					<Icon icon="akar-icons:arrow-left" class="hidden md:inline-block w-4 h-4" />
+					<Icon.ArrowUp class="md:hidden w-4 h-4" />
+					<Icon.ArrowLeft class="hidden md:inline-block w-4 h-4" />
 					<span class="mx-2">
 						Remove
 					</span>

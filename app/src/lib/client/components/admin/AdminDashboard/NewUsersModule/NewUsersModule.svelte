@@ -1,9 +1,9 @@
 <script lang="ts">
 	import api from "$shared/api"
-    import Icon from "@iconify/svelte"
     import { Loading } from "$client/components"
     import { onMount } from "svelte"
     import { goto } from "$app/navigation"
+	import { Check, ExternalLink, X } from "lucide-svelte"
     
 
     ////
@@ -11,7 +11,7 @@
     ////
 
     let loading = $state(true)
-    let users: SelectUser & { emails: string[] }[] = $state([])
+    let users: (SelectUser & { emails: SelectEmail[] })[] = $state([])
 
     ////
     // FUNCTIONS
@@ -53,22 +53,22 @@
                 </thead>
                 <tbody>
                     {#each users as user}
-                        {@const createdDate = new Date(Date.parse(user.createdAt))}
+                        {@const createdDate = new Date(user.createdAt)}
                         {@const isVerified = !!user.verifiedAt}
                         <tr class="cursor-pointer" onclick={() => onclick(user)} title="View {user.username}">
                             <td>{createdDate.toLocaleDateString()} {createdDate.toLocaleTimeString()}</td>
                             <td>{user.username}</td>
                             <td>{user.emails.length ? user.emails[0].address : ""}</td>
                             <td class="text-center">
-                                <Icon 
-                                    icon={isVerified ? "mdi:check" : "mdi:times"} 
-                                    class="{isVerified ? "text-success-500" : "text-error-500"}"
-                                    height="1.5em" 
-                                />
+                                {#if isVerified}
+                                    <Check class="text-success-500" />
+                                {:else}
+                                    <X class="text-success-500" />
+                                {/if}
                             </td>
                             <td>
                                 <a href={`/admin/users/${user.id}`} target="_blank" class="btn btn-sm preset-filled" onclick={(e) => e.stopPropagation()}>
-                                    <Icon icon="mdi:open-in-new" class="mr-2" />
+                                    <ExternalLink />
                                     Details
                                 </a>
                             </td>

@@ -2,13 +2,13 @@
 
 	import { page } from "$app/state"
 	import { AdminHeader } from "$client/components"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 
 </script>
 
 <AdminHeader>
 	{#snippet title()}
-        <Icon icon="mdi:help-circle" class="mr-2 mb-1 w-auto inline" />
+        <Icon.CircleHelp class="mb-1 w-auto inline" />
         <span class="capitalize">
             Help
         </span>

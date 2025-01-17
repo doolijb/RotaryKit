@@ -3,7 +3,7 @@
 	import { page } from "$app/state"
 	import { ConfirmationModal, Main } from "$client/components"
 	import api from "$shared/api"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 	import { getContext, onMount } from "svelte"
 	import { AddEmailAddressForm } from "$client/components"
 	import { handleClientError, handleException, handleServerError } from "$client/utils"
@@ -76,12 +76,6 @@
 		setPrimaryModalData = {}
 	}
 
-	async function onSetPrimaryModalCancel() {
-		isSetPrimaryModalOpen = false
-		isSettingPrimary = false
-		setPrimaryModalData = {}
-	}
-
 	async function onResendCodeClick(email: SelectEmail) {
 		await api.profile.email
 			.resourceId$(email.id)
@@ -114,11 +108,6 @@
 		deleteEmailModalData = {}
 	}
 
-	async function onDeleteEmailModalCancel() {
-		isDeleteEmailModalOpen = false
-		deleteEmailModalData = {}
-	}
-
 	async function getEmails() {
 		api.profile.email.GET().Ok((res) => {
 			emails = res.body.emails as SelectEmail[]
@@ -135,20 +124,16 @@
 </script>
 
 <ConfirmationModal
-	bind:openState={isSetPrimaryModalOpen}
 	title="Change Primary Email Address"
 	body="Are you sure you want to make {setPrimaryModalData.email.address} your primary email address for all future authentication and communications? You will no longer be able to login with your current primary email address."
 	onConfirm={onSetPrimaryModalConfirm}
-	onCancel={onSetPrimaryModalCancel}
 	data={setPrimaryModalData}
 />
 
 <ConfirmationModal
-	bind:openState={isDeleteEmailModalOpen}
 	title="Delete Email Address"
 	body="Are you sure you want to delete {deleteEmailModalData.email.address}?"
 	onConfirm={onDeleteEmailModalConfirm}
-	onCancel={onDeleteEmailModalCancel}
 	data={deleteEmailModalData}
 />
 
@@ -170,7 +155,7 @@
 					<th class="text-start">Is Primary</th>
 					{#if isShowControlColumn}
 						<th class="text-start">
-                            <Icon icon="mdi:settings" class="w-5 h-5 text-surface-900" />
+                            <Icon.Settings class="w-5 h-5 text-surface-900" />
                         </th>
 					{/if}
 				</tr>
@@ -193,7 +178,7 @@
 						</td>
 						<td>
 							{#if email.isUserPrimary}
-								<Icon icon="mdi:check" class="w-6 h-6 text-green-500" />
+								<Icon.Check class="w-6 h-6 text-green-500" />
 							{:else if email.verifiedAt}
 								<button
 									class="btn btn-sm preset-filled-surface hover:preset-filled-secondary"
@@ -203,7 +188,7 @@
 									Set Primary
 								</button>
 							{:else}
-								<Icon icon="mdi:cross-circle" class="w-6 h-6 text-surface-300" />
+								<Icon.CirclePlus class="w-6 h-6 text-surface-300" />
 							{/if}
 						</td>
 						{#if isShowControlColumn}

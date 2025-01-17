@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte"
     import { createSwapy, type Swapy } from "swapy"
 	import { slide } from "svelte/transition"
     import NewUsersModule from "../NewUsersModule"
@@ -8,6 +7,7 @@
     import { AdminHeader } from "$client/components"
 	import { getContext } from "svelte"
 	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import * as Icon from "lucide-svelte"
   
     type AvailableModule = {
         item: string
@@ -263,8 +263,10 @@
 {/snippet}
 
 <AdminHeader>
+    {#snippet icon()}
+        <Icon.CircleGauge />
+    {/snippet}
     {#snippet title()}
-        <Icon icon="clarity:dashboard-solid" class="mr-2 mb-1 w-auto inline" />
         Admin Dashboard	
 	{/snippet}
     {#snippet controls()}
@@ -277,7 +279,7 @@
                     class:preset-filled-primary={swapyEnabled || columnControlsEnabled}
                     onclick={save}
                 >
-                <Icon icon="mdi:content-save-outline" width="1.6em" class="inline me-2" />
+                <Icon.Save width="1.6em" class="inline me-2" />
                     Save
                 </button>
             {/if}
@@ -289,21 +291,21 @@
                 onclick={() => controlsOpen = !controlsOpen}
                 title="Toggle controls"
             >
-                <Icon icon="mdi:settings" height="1.25em" class="inline" />
+                <Icon.Settings />
             </button>
             {#if controlsOpen}
                 <div class="inline-flex space-x-2" transition:slide={{ axis: "x" }}>
                     <button 
                         class="btn btn-sm me-2 my-0 align-middle" 
-                        class:preset-filled-surface={!swapyEnabled}
-                        class:preset-filled-primary={swapyEnabled}
+                        class:preset-filled-surface-500={!swapyEnabled}
+                        class:preset-filled-primary-500={swapyEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableSwapy}
                     >Drag</button>
                     <button 
                         class="btn btn-sm my-0 align-middle" 
-                        class:preset-filled-surface={!columnControlsEnabled} 
-                        class:preset-filled-primary={columnControlsEnabled}
+                        class:preset-filled-surface-500={!columnControlsEnabled} 
+                        class:preset-filled-primary-500={columnControlsEnabled}
                         disabled={columnControlsEnabled || swapyEnabled}
                         onclick={enableColSpan}
                     >Size</button>

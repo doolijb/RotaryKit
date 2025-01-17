@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
-	import Icon from "@iconify/svelte"
 	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { getContext, onMount, setContext, type Snippet } from "svelte"
 	import { handleServerError, hasAdminPermission } from "$client/utils"
@@ -8,7 +7,7 @@
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
-	import ConfirmationModal from "$client/components/modals/ConfirmationModal"
+	import * as Icon from "lucide-svelte"
 
 	setContext("page", page)
 
@@ -239,21 +238,10 @@
 	})
 </script>
 
-<ConfirmationModal
-	openState={isDeleteModalOpen}
-	onCancel={onDeleteCancel}
-	onConfirm={onDeleteConfirm}
-	title={`Delete ${pluralize.plural(humanizeString(resource))}`}
-	body={`Are you sure you want to delete this ${pluralize.singular(humanizeString(resource))}?`}
-	data={deleteModalData}
-	cancelButton="Cancel"
-	confirmButton="Delete"
-/>
-
 <AdminHeader>
 	{#snippet title()}
-		<div  class="capitalize">
-			<Icon icon="mdi:table" class="mr-2 mb-1 w-auto inline" />
+		<div class="capitalize">
+			<Icon.Table class="mb-1 w-auto inline" />
 			{pluralize.plural(humanizeString(resource))}
 		</div>
 	{/snippet}
@@ -283,7 +271,7 @@
 				{@render extraHeaderControls?.()}
 				{#if canCreateResource}
 					<button class="btn preset-filled-secondary-500" onclick={onCreate}>
-						<Icon icon="mdi:plus" class="mr-2" />
+						<Icon.Plus />
 						New
 					</button>
 				{/if}
@@ -295,6 +283,7 @@
 <!-- RESULTS TABLE -->
 {#if response && response.body && response.body}
 	<AdminResultsTable
+		{resource}
 		{...response.body}
 		{dataHandlers}
 		{orderedKeys}
@@ -322,13 +311,13 @@
 	{/if}
 {:else if errorLoading}
 	<div class="flex items-center justify-center mb-2">
-		<Icon icon="mdi:alert-circle-outline" class="mr-2" />
+		<Icon.AlertCircle />
 		Failed to load results.
 		<br />
 	</div>
 	<div class="flex items-center justify-center">
 		<button class="btn preset-filled" onclick={loadResults}>
-			<Icon icon="mdi:reload" class="mr-2" />
+			<Icon.RefreshCw />
 			Retry
 		</button>
 	</div>

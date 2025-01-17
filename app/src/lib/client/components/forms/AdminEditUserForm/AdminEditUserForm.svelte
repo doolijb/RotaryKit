@@ -3,7 +3,7 @@
 	import { FormBase, CheckboxInput, TextInput } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
 	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
-	import Icon from "@iconify/svelte"
+	import * as Icon from "lucide-svelte"
 	import { onMount } from "svelte"
 
 	////
@@ -98,7 +98,7 @@
 			<div class="card w-full mb-3 preset-filled-error-500">
 				<section class="p-4">
 					<p>
-						<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own user.
+						<Icon.TriangleAlert class="me-1 inline" height="1.5em" /> You are editing your own user.
 						This may result in you losing access to your account.
 					</p>
 				</section>

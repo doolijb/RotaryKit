@@ -2,7 +2,7 @@
 	import { page } from "$app/state"
     import { FormBase, PassphraseInput } from "$client/components"
     import { AdminEditUserPassphrase as Form } from "$shared/validation/forms"
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
     import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { getContext } from "svelte"
 
@@ -95,7 +95,7 @@
     <div class="card mb-3 preset-filled-error-500">
         <section class="p-4">
             <p>
-                <Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own passphrase, you may lose access to your account.
+                <Icon.TriangleAlert class="me-1 inline" height="1.5em" /> You are editing your own passphrase, you may lose access to your account.
             </p>
         </section>
     </div>
@@ -125,7 +125,7 @@
                 type="button"
                 onclick={generatePassphrase}
                 class="btn preset-filled-secondary">
-                <Icon icon="mdi:dice" class="me-2" />
+                <Icon.Dices class="me-2" />
                 Generate Random Passphrase
             </button>
             <button
@@ -133,7 +133,7 @@
                 onclick={copyPassphrase}
 				disabled={!data.passphrase && !!Object.keys(errors).length}
                 class="btn preset-filled-surface">
-                <Icon icon="mdi:clipboard" class="me-2" />
+                <Icon.Clipboard class="me-2" />
                 Copy Passphrase
             </button>
         </div>

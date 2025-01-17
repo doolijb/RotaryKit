@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { AdminHeader, Loading } from "$client/components"
-	import Icon from "@iconify/svelte"
 	import { Tabs, type ToastContext, Accordion } from "@skeletonlabs/skeleton-svelte"
 	import { handleClientError, handleServerError } from "$client/utils"
 	import { page } from "$app/state"
@@ -9,6 +8,7 @@
 	import humanizeString from "humanize-string"
 	import pluralize from "pluralize"
 	import type { Snippet } from "svelte"
+	import * as Icon from "lucide-svelte"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -146,7 +146,7 @@
 		onclick={onsubmit}
 		disabled={!tab.canSubmit || tab.disabled}
 	>
-	<Icon icon="mdi:floppy" class="mr-2" />
+	<Icon.Save />
 	Update {currentTab !== "default"
 		? humanizeString(currentTab)
 		: pluralize.singular(humanizeString(resource))}
@@ -155,14 +155,14 @@
 
 <AdminHeader>
 	{#snippet title()}
-		<Icon icon="mdi:pencil" class="mr-2 mb-1 w-auto inline" />
+		<Icon.NotebookPen />
 		Edit {pluralize.singular(humanizeString(resource))}{naturalKey && result ? `: ${result[naturalKey]}` : ""}
 	{/snippet}
 
 	{#snippet controls()}
 		<div class="flex justify-between" >
 			<a href="/admin/{resource}/{resultId}" class="btn preset-filled-surface-500 capitalize">
-				<Icon icon="bx:detail" class="mr-2" />
+				<Icon.NotebookText />
 				View
 			</a>
 			{@render updateButton(tabs[currentTab])}
@@ -176,7 +176,7 @@
 		<Accordion>
 			<Accordion.Item title="Help">
 				<!-- Help Icon -->
-				<Icon icon="mdi:help-circle-outline" class="mr-2 mb-1 w-auto inline" />
+				<Icon.CircleHelp />
 					
 				About editing a {pluralize.singular(resource)}
 					
@@ -236,7 +236,7 @@
 	{#snippet controls()}
 		<div class="flex justify-between" >
 			<button type="button" class="btn preset-filled-surface-500 capitalize" onclick={oncancel}>
-				<Icon icon="material-symbols:cancel-outline" class="mr-2" />
+				<Icon.CircleX />
 				Cancel
 			</button>
 			{@render updateButton(tabs[currentTab])}

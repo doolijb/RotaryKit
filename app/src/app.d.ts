@@ -351,11 +351,25 @@ declare global {
 	}
 
 	type MultiSelectOption = { [key: string]: string | number; label: string }
-}
 
-type AutocompleteOption = {
-	value: string
-	label: string
-} | string
+	type AutocompleteOption = {
+		value: string
+		label: string
+	} | string
+	
+	type DataHandler = {
+		header?: string
+		handler?: (result: Result<any>) => string | boolean | number
+		orderByKey?: string
+		getUrl?: (result: Result<any>) => string
+		defer?: string
+		dataType?: DataType
+		tabType?: "default" | "image" | "video" | "array"
+	}
+	
+	type DataHandlers = {
+		[key: string]: DataHandler
+	}
+}
 
 export {}

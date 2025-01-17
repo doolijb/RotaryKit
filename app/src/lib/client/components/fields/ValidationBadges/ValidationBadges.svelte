@@ -54,7 +54,6 @@
 	$effect(() => {
 		const res: FieldErrors = {}
 		Object.keys(fieldErrors).forEach((key) => {
-			console.log(`Includes "${key}"`, validatorKeys.includes(key))
 			if (!validatorKeys.includes(key)) {
 				res[key] = fieldErrors[key]
 			}})

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
 
     interface Props {
         title?: string | null;
@@ -21,25 +21,20 @@
 <td title={title || getBoolDisplay(value)}>
     <div class="flex items-center items-stretch justify-center">
         {#if value}
-            <Icon
+            <Icon.CircleCheck
                 class="inline"
-                icon="ant-design:check-circle-filled"
                 width={iconWidth}
             />
         {:else if value === false}
-            <Icon
+            <Icon.CircleX
                 class="text-surface-500"
-                icon="ant-design:close-circle-filled"
                 width={iconWidth}
             />
         {:else}
-            <Icon
+            <Icon.CircleOff
                 class="text-surface-500"
-                icon="ant-design:question-circle-filled"
                 width={iconWidth}
             />
         {/if}
     </div>
 </td>
-
-<style></style>

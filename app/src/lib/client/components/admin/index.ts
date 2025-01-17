@@ -8,5 +8,6 @@ export { default as DetailGridItem } from "./DetailGridItem"
 export { default as AdminResultEditView } from "./AdminResultEditView"
 export { default as AdminImageResultDetails } from "./AdminImageResultDetails"
 export { default as AdminVideoResultDetails } from "./AdminVideoResultDetails"
+export { default as AdminResultsTableRow } from "./AdminResultsTableRow"
 
 export * from "./AdminDashboard"

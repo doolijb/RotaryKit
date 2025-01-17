@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state"
-    import Icon from "@iconify/svelte"
+    import * as Icon from "lucide-svelte"
     import { hasAdminPermission } from "$client/utils"
 
 	////
@@ -17,22 +17,22 @@
 	// CONSTANTS
 	////
 
-    const sidebarOptions = {
+    const sidebarOptions: Record<string, {title: string, icon: ConstructorOfATypedSvelteComponent}> = {
         users: {
             title: "Users",
-            icon: "mdi:accounts"
+            icon: Icon.Users
         },
         emails: {
             title: "Emails",
-            icon: "ic:baseline-email"
+            icon: Icon.AtSign
         },
         adminRoles: {
             title: "Admin Roles",
-            icon: "mdi:shield-account"
+            icon: Icon.Shield
         },
         images: {
             title: "Images",
-            icon: "mdi:image"
+            icon: Icon.Image
         }
     }
 
@@ -74,7 +74,7 @@
 					title={compact ? "Expand" : "Collapse"}
 				>
 					<span class="navIcon">
-						<Icon class="h-7 w-7" icon="mdi:menu" />
+						<Icon.Menu class="h-7 w-7" />
 					</span>
 					<span class="ms-2" class:hidden={compact}>Collapse</span>
 				</button>
@@ -82,7 +82,7 @@
 			<li class="pb-4">
 				<a href="/" class="navLink">
 					<span class="navIcon">
-						<Icon class="h-7 w-7" icon="mdi:home" />
+						<Icon.Home class="h-7 w-7" />
 					</span>
 					<span class="ms-2" class:hidden={compact}>Home</span>
 				</a>
@@ -90,7 +90,7 @@
 			<li>
 				<a href="/admin" class="navLink" class:bg-surface-200={page.url.pathname === "/admin"}>
 					<span class="navIcon">
-						<Icon class="h-7 w-7" icon="clarity:dashboard-solid" />
+						<Icon.CircleGauge class="h-7 w-7" />
 					</span>
 					<span class="ms-2" class:hidden={compact}>Dashboard</span>
 				</a>
@@ -104,7 +104,7 @@
 							class:bg-surface-200={currentTile === resource}
 						>
 							<span class="navIcon">
-								<Icon class="h-7 w-7" icon={option.icon} />
+								<option.icon class="h-7 w-7" />
 							</span>
 
 							<span class="ms-2" class:hidden={compact}>{option.title}</span>
@@ -115,7 +115,7 @@
 			<li class="py-4">
 				<a href="/admin/help" class="navLink" class:bg-surface-200={page.url.pathname.includes("/admin/help")}>
 					<span class="navIcon">
-						<Icon class="h-7 w-7" icon="mdi:help-circle" />
+						<Icon.CircleHelp class="h-7 w-7" />
 					</span>
 					<span class="ms-2" class:hidden={compact}>Help</span>
 				</a>
@@ -150,7 +150,7 @@
 	<main class="flex flex-col flex-grow p-5 overflow-auto">
 		<button type="button" class="w-full md:hidden btn preset-filled mb-2 rounded-sm" disabled={!mobileCompact} onclick={toggleMobileCompact}>
             <span class="navIcon">
-                <Icon class="h-7 w-7 mr-1" icon="mdi:menu" />
+                <Icon.Menu class="h-7 w-7 mr-1" />
             </span>
             Show Sidebar
         </button>

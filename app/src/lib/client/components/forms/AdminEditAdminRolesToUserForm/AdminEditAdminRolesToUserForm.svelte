@@ -2,8 +2,7 @@
 	import { page } from "$app/state"
 	import { FormBase, MultiSelect } from "$client/components"
 	import { AdminEditAdminRolesToUser as Form } from "$shared/validation/forms"
-	import Icon from "@iconify/svelte"
-	import { onMount } from "svelte"
+	import * as Icon from "lucide-svelte"
 
 
 	export const form = Form.init()
@@ -112,7 +111,7 @@
 		<div class="card mb-3 preset-filled-error-500">
 			<section class="p-4">
 				<p>
-					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> You are editing your own admin roles.
+					<Icon.TriangleAlert class="me-1 inline" height="1.5em" /> You are editing your own admin roles.
 					This may result in you losing access to this page.
 				</p>
 			</section>
@@ -123,7 +122,7 @@
 		<div class="card mb-3 preset-filled-error-500">
 			<section class="p-4">
 				<p>
-					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user has no admin roles.
+					<Icon.TriangleAlert class="me-1 inline" height="1.5em" /> This user has no admin roles.
 					They will not be able to view or modify any data.
 				</p>
 			</section>
@@ -134,7 +133,7 @@
 		<div class="card mb-3 preset-filled-error-500">
 			<section class="p-4">
 				<p>
-					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is not an admin.
+					<Icon.TriangleAlert class="me-1 inline" height="1.5em" /> This user is not an admin.
 					Admin roles do not apply.
 				</p>
 			</section>
@@ -145,7 +144,7 @@
 		<div class="card mb-3 preset-filled-error-500">
 			<section class="p-4">
 				<p>
-					<Icon icon="icon-park-outline:caution" class="me-1 inline" height="1.5em" /> This user is a <u>super user</u>.
+					<Icon.TriangleAlert class="me-1 inline" height="1.5em" /> This user is a <u>super user</u>.
 					All admin permissions are bypassed.
 				</p>
 			</section>
@@ -156,7 +155,7 @@
 		<div class="card mb-3 preset-filled-warning-500">
 			<section class="p-4">
 				<p class="">
-					<Icon icon="mdi:info-outline" class="me-1 inline" height="1.5em" />
+					<Icon.TriangleAlert class="me-1 inline" height="1.5em" />
 					No admin roles have been created yet. <a href="/admin/adminRoles/create" class="link hover:underline">Click here to create one.</a>
 				</p>
 			</section>

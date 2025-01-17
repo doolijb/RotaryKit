@@ -73,17 +73,6 @@
 
     let fieldErrors: FieldErrors = $state({})
 
-    ////
-	// CONSTANTS
-	////
-
-	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
-    let popupSettings: PopupSettings = {
-        event: "focus-click",
-        target: v4(),
-        placement: "bottom"
-    }
-
 	////
 	// FUNCTIONS
 	////
@@ -238,7 +227,6 @@
             {id}
             class="input border-0 disabled:cursor-not-allowed"
             use:setType
-            use:popup={popupSettings}
             bind:value={searchInput}
             bind:this={ref}
             placeholder={!disabled ? placeholder : ""}
@@ -248,22 +236,18 @@
 			onblur={handleOnBlur}
             aria-label={label}
             {required}
-            {autocomplete}
         />
         {@render suffix?.()}
         {#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend.Icon {fieldValidator} bind:fieldErrors {validState} {legendPopup} />
+				<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
 			</div>
 		{/if}
     </div>
-    {#if !disabled && (validatorLength || attrs?.description)}
-		<ValidationLegend.Popup {fieldValidator} bind:fieldErrors {legendPopup} {attrs} />
-	{/if}
+
     <div 
         class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto" 
         tabindex="-1"
-        data-popup={popupSettings.target}
         >
         <Combobox value={[searchInput]} data={options} onValueChange={handleSelection} inputBehavior="autocomplete" />
         {#if searchInput}
