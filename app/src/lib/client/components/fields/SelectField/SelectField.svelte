@@ -5,6 +5,7 @@
 	import type { PopupSettings, AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import humanizeString from 'humanize-string'
+	import { ValidStates } from "$shared/constants"
 
 	////
 	// LOCAL EXPORTS
@@ -60,6 +61,7 @@
 
 	let validatorLength = $state(0)
 	let fieldErrors: FieldErrors = $state({})
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
@@ -100,6 +102,16 @@
 	let selectOptionsValidator = $derived(fieldValidator.validators.find(v => v.key == "selectOptions"))
 
 	$effect(() => {
+		validState = isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE
+	})
+
+	$effect(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
 			validator => !validator.isHidden
 		).length
@@ -137,7 +149,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
+			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
 		{/if} 
 	</div>
 

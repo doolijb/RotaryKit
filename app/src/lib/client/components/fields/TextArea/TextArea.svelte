@@ -19,20 +19,20 @@
     
 
     interface Props {
-        ////
+
         field: string;
         form: FormSchema;
         data: typeof form["Data"];
         errors: FormErrors;
         resizeY?: boolean;
         rows?: number;
-        ////
-        ref: HTMLTextAreaElement;
+
         placeholder?: any;
         label?: string;
         disabled?: boolean;
         id?: string;
         isTouched?: boolean;
+        showLegend?: boolean;
         controls?: import('svelte').Snippet;
         extraControls?: import('svelte').Snippet;
     }
@@ -49,6 +49,7 @@
         label = attrs?.label,
         disabled = $bindable(false),        id = v4(),
         isTouched = $bindable(false),
+        showLegend = true,
         controls,
         extraControls
     }: Props = $props();
@@ -58,6 +59,7 @@
     ////
 
     let fieldErrors: FieldErrors = $state({})
+    let validState = $state(ValidStates.NONE)
 
     ////
     // CALCULATED
@@ -66,13 +68,15 @@
     let fieldValidator = $derived(form.fields[field])
     let validatorLength = $derived(form.fields[field].validators.length)
     let required = $derived(fieldValidator.isRequired)
-    let validState = $derived(isTouched
-        ? fieldErrors && Object.keys(fieldErrors).length
-            ? ValidStates.INVALID
-            : data[field]
-            ? ValidStates.VALID
-            : ValidStates.NONE
-        : ValidStates.NONE)
+    $effect(() => {
+		validState = isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE
+	})
 
     $effect(() => {
         fieldErrors = errors[field] || {}
@@ -132,7 +136,7 @@
                 </span>
             </label>
             {#if !disabled}
-                <ValidationBadges {fieldValidator} bind:fieldErrors />
+                <ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
             {/if}
         </div>
     </div>
@@ -152,15 +156,15 @@
             onfocus={handleOnFocus}
             onblur={handleOnBlur}
 ></textarea>
-        {#if controls || extraControls || !disabled && validatorLength || attrs?.description }
+        {#if controls || extraControls || !disabled && (showLegend && (validatorLength || attrs?.description))  }
             <div class="fieldFooter flex items-center justify-between px-3 py-2 border bg-surface-50 dark:bg-surface-500">
                 <div class="inline-flex items-center">
                     {@render controls?.()}
                 </div>
                 <div class="flex w-100 ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
                     {@render extraControls?.()}
-                    {#if !disabled && validatorLength}
-                        <ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
+                    {#if !disabled && validatorLength && showLegend}
+                        <ValidationLegend.Icon {fieldValidator} bind:fieldErrors  bind:validState {legendPopup} />
                     {/if}
                 </div>
             </div>

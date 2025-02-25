@@ -71,6 +71,7 @@
 	let validatorLength = $state(0)
 	let isTouched = $state(false)
 	let fieldErrors: FieldErrors = $state({})
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
@@ -128,13 +129,16 @@
 
 	let attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	let validState = $derived(isTouched
+	$effect(() => {
+		validState = isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE)
+		: ValidStates.NONE
+	})
+
 	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
 
 	$effect.pre(() => {
@@ -201,7 +205,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} bind:fieldErrors />
+            <ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
         {/if}
     </div>
 
@@ -222,7 +226,7 @@
 			{/if}
 			{#if !disabled && validatorLength}
 				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
+					<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} bind:validState  />
 				</div>
 			{/if}
 		</button>

@@ -7,6 +7,7 @@
 	import { fileTypes } from "$shared/data"
 	import * as Icon from "lucide-svelte"
 	import humanizeString from "humanize-string"
+	import { ValidStates } from "$shared/constants"
 
 	////
 	// LOCAL EXPORTS
@@ -63,6 +64,7 @@
 	let listedAvailableExtensions: string = $state()
 	let listedFileSizes: string = $state()
 	let listedMaxFileCounts: string = $state()
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
@@ -86,30 +88,14 @@
 		await touch()
 	}
 
-
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		validate()
 	}
 
 	function getFileAcceptsAttr() {
 		if (!fileTypesValidator) return
 
 		let extensions = []
-		// if ("fileTypes" in fileTypesValidator.args) {
-		// 	;(fileTypesValidator.args.fileTypes as FileType[]).forEach((fileType) => {
-		// 		extensions.push(...fileTypes[fileType])
-		// 	})
-		// }
 		if ("extensions" in fileTypesValidator.args) {
 			extensions.push(...(fileTypesValidator.args.extensions as FileExtension[]).map((ext) => `.${ext}`))
 		}
@@ -300,13 +286,23 @@
 	$effect(() => {
 		fieldErrors = errors[field] || {}
 	})
+	
+	$effect(() => {
+		validState = isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE
+	})
 
 	////
 	// LIFECYCLE
 	////
 
 	onMount(async () => {
-		if (data[field]) {
+		if (data[field] && data[field].length) {
 			await touch()
 		}
 		listedAvailableExtensions = listAvailableExtensions()
@@ -323,7 +319,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
+			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
 		{/if}
 	</div>
 

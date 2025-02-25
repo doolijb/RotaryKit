@@ -67,11 +67,25 @@
 		onblur,
     }: Props = $props();
 
+    const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+
     ////
     // STATE
     ////
 
     let fieldErrors: FieldErrors = $state({})
+    let validState = $state(ValidStates.NONE)
+
+	////
+	// CONSTANTS
+	////
+
+	const legendPopup: PopupSettings = ValidationLegend.popupSettings()
+    let popupSettings: PopupSettings = {
+        event: "focus-click",
+        target: v4(),
+        placement: "bottom"
+    }
 
 	////
 	// FUNCTIONS
@@ -81,18 +95,8 @@
 		node.type = type
 	}
 
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		validate()
 	}
 
     function updateField() {
@@ -114,7 +118,6 @@
             searchInput = ""
         }
         isTouched = true
-        validate()
     }
 
     function showOptions() {
@@ -130,13 +133,7 @@
         return option
     }
 
-    function getOptionByValue(value: any): AutocompleteOption {
-        // Find the option by value so we can track state during input or selection
-        const option = options.find(option => option.value === value)
-        return option
-    }
-
-    function handleSelection(e: ValueChangeDetails<any>) {
+    function handleSelection(e: CustomEvent) {
         // When an option is selected, update the search input,
         // the value will be updated automatically by the reactive variables
         if (!e.detail) {
@@ -179,13 +176,15 @@
 		).length
 	});
 	let required = $derived(fieldValidator.isRequired)
-	let validState = $derived(isTouched
+	$effect(() => {
+		validState = isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE)
+		: ValidStates.NONE
+	})
     let selectedOption = $derived(Object.values(options).find(option => option.value === data[field]) || null)
 
     $effect(() => {
@@ -213,7 +212,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
+			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
 		{/if}
 	</div>
 
@@ -240,7 +239,7 @@
         {@render suffix?.()}
         {#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} />
+				<ValidationLegend {fieldValidator} bind:fieldErrors bind:validState {attrs} />
 			</div>
 		{/if}
     </div>

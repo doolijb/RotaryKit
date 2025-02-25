@@ -62,28 +62,22 @@
 	// COMPUTED
 	////
 
-	const isPopulated = $derived(!!Object.values(data).find((value) => !!value))
-	const hasErrors = $derived(Object.keys(errors).some((field) => Object.keys(errors[field]).length))
+	$effect(() => {
+		validate(data)
+	})
 
-	$effect(()=> {
-		canSubmit = !hasErrors
+	$effect(() => {
+		canSubmit = !Object.keys(errors).length
 	})
 
 	////
-	// Event Handlers
+	// FUNCTIONS
 	////
 
-	async function validate() {
+	async function validate(data:typeof form["Data"]) {
 		errors = await form.validate({data})
 	}
 
-	////
-	// USE DIRECTIVES
-	////
-
-	/**
-	 * This directive will submit the form when the user presses enter
-	 */
 	function submitOnEnter(node: HTMLFormElement) {
 		const handler = (event: KeyboardEvent) => {
 			if (!useSubmitOnEnter) {
@@ -118,24 +112,6 @@
 		}
 	}
 
-	/**
-	 * This directive will autofocus the first input field in the form
-	 */
-	function autofocus(node: HTMLFormElement) {
-		// // Get the first input field in the form
-		// const firstField: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =
-		// 	node.querySelector('input, select, textarea [type="radio"], [type="checkbox"]')
-
-		// // Focus on the first field when the action is mounted
-		// if (firstField) {
-		// 	firstField.focus()
-		// }
-
-		return {
-			// No cleanup necessary
-		}
-	}
-
 	////
 	// LIFECYCLE
 	////
@@ -160,20 +136,22 @@
 
 <div>
 	
-	<form use:submitOnEnter use:autofocus {onsubmit} class="mb-4">
+	<form use:submitOnEnter {onsubmit} class="mb-4">
 		{@render children()}
 	</form>
 
-	<div class="flex flex-row justify-between">
+	<div class="flex gap-2 flex-row justify-between">
 
 		<!-- Cancel button, etc -->
 		{#if cancelSnippet}
 			{@render cancelSnippet()}
 		{:else}
 			{#if showCancel}
-				<button type="button" class="btn preset-filled-surface" {disabled} onclick={oncancel}>
-					{cancelLabel}
-				</button>
+				<span class="h-fit">
+					<button type="button" class="btn variant-filled-surface" {disabled} onclick={oncancel}>
+						{cancelLabel}
+					</button>
+				</span>
 			{/if}
 		{/if}
 
@@ -184,22 +162,22 @@
 			{@render submitSnippet()}
 		{:else}
 			{#if showSubmit}
-				<button
-					type="button"
-					class="btn preset-filled ms-auto"
-					disabled={disabled || !canSubmit}
-					onclick={async (e) => {
-						disabled = true
-						validate()
-						canSubmit && onsubmit && (await onsubmit(e))
-						disabled = false
-					}}
-					title={canSubmit ? "" : "Please fill out all required fields"}
-				>
-					{submitLabel}
-				</button>
+				<span class="h-fit">
+					<button
+						type="button"
+						class="btn variant-filled ms-auto"
+						disabled={disabled || !canSubmit}
+						onclick={async (e) => {
+							disabled = true
+							canSubmit && onsubmit && (await onsubmit(e))
+							disabled = false
+						}}
+						title={canSubmit ? "" : "Please fill out all required fields"}
+					>
+						{submitLabel}
+					</button>
+				</span>
 			{/if}
-		{/if}
-
+		{/if}		
 	</div>
 </div>

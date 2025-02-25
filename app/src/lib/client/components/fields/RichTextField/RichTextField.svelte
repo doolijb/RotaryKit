@@ -3,12 +3,12 @@
 	import { ValidStates } from "$shared/constants"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
-	import type { Snippet, SvelteComponent } from 'svelte'
+	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
 	import StarterKit from '@tiptap/starter-kit'
-	import { TextStyle } from '@tiptap/extension-text-style'
+	import TextStyle from '@tiptap/extension-text-style'
 	import Underline from '@tiptap/extension-underline'
 	import Link from '@tiptap/extension-link'
 	import Superscript from '@tiptap/extension-superscript'
@@ -32,6 +32,7 @@
 		placeholder?: string;
 		label?: string;
 		autocomplete?: string;
+		enableLinks?: boolean;
 
 		// Bindables
 		form?: FormSchema;
@@ -56,6 +57,7 @@
 		field,
 		placeholder = "",
 		label,
+		enableLinks = false,
 
 		// Bindables
 		form = $bindable(),
@@ -124,6 +126,7 @@
 	let isBlockquote = $state(false)
 	let canUndo = $state(false)
 	let canRedo = $state(false)
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
@@ -174,7 +177,7 @@
 		isUnderline = editor.isActive('underline')
 		isStrike = editor.isActive('strike')
 		isSuperscript = editor.isActive('superscript')
-		isLink = editor.isActive('link')
+		isLink = enableLinks ? editor.isActive('link') : false
 		isCode = editor.isActive('code')
 		isBulletList = editor.isActive('bulletList')
 		isOrderedList = editor.isActive('orderedList')
@@ -207,7 +210,7 @@
 	}
   
 	function setLink() {
-		if (isLink) {
+		if (enableLinks && isLink) {
 			editor.chain().focus().unsetLink().run();
 		} else {
 			const url = prompt('Enter the URL, i.e. (https://example.com)')
@@ -287,6 +290,16 @@
 	let validatorLength = $state(0);
 	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
 
+	$effect(() => {
+		validState = isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE
+	})
+
 	let canUnstyle = $derived(
 		isHeader || 
 		isBold || 
@@ -300,14 +313,6 @@
 		isOrderedList ||
 		isTaskList
 	)
-
-	let validState = $derived(isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE)
 
 	$effect(() => {
 		if (!placeholder && attrs) {
@@ -342,47 +347,50 @@
 	////
 
 	onMount(() => {
+		const extensions = [
+			StarterKit.configure({
+				bulletList: {
+					HTMLAttributes: {
+						class: 'list-disc pl-4 ml-2'
+					},
+				},
+				orderedList: {
+					HTMLAttributes: {
+						class: 'list-decimal pl-4 ml-2'
+					},
+				},
+				code: {
+					HTMLAttributes: {
+						class: 'bg-surface-600 p-1 rounded-sm'
+					},
+				},
+			}),
+			Placeholder.configure({ placeholder }),
+			TextStyle,
+			Underline,
+			Superscript,
+			Typography,
+			Heading,
+			Blockquote,
+			TaskItem,
+			TaskList.configure({
+				HTMLAttributes: {
+					class: 'ml-1'
+				},
+			}),
+			CharacterCount,
+		]
+		if (enableLinks) {
+			extensions.push(Link.configure({
+				HTMLAttributes: {
+					class: 'text-primary-500 underline',
+					target: '_blank'
+				}
+			}))
+		}
 		editor = new Editor({
 			element: element,
-			extensions: [
-				StarterKit.configure({
-					bulletList: {
-						HTMLAttributes: {
-							class: 'list-disc pl-4 ml-2'
-						},
-					},
-					orderedList: {
-						HTMLAttributes: {
-							class: 'list-decimal pl-4 ml-2'
-						},
-					},
-					code: {
-						HTMLAttributes: {
-							class: 'bg-surface-600 p-1 rounded-sm'
-						},
-					},
-				}),
-				Placeholder.configure({ placeholder }),
-				TextStyle,
-				Underline,
-				Link.configure({
-					HTMLAttributes: {
-						class: 'text-primary-500 underline',
-						target: '_blank'
-					}
-				}),
-				Superscript,
-				Typography,
-				Heading,
-				Blockquote,
-				TaskItem,
-				TaskList.configure({
-					HTMLAttributes: {
-						class: 'ml-1'
-					},
-				}),
-				CharacterCount,
-			],
+			extensions,
 			content: data[field],
 		});
 		editor.on("selectionUpdate", updateSelectionButtons)
@@ -399,7 +407,7 @@
 
 </script>
 
-{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, Icn: ConstructorOfATypedSvelteComponent)}
+{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: string = "")}
 	<button 
 		class="btn btn-sm rounded-sm" 
 		class:preset-filled={!active}
@@ -420,7 +428,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div class="mb-2">
+<div class="mb-2 relative overflow-hidden">
 	<div class="flex items-center">
 		<label class="label inline-flex pb-2" for={id} onclick={focus}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
@@ -433,7 +441,7 @@
 	</div>
 
 	<div 
-		class="rounded bg-surface-700 transition duration-300 ease-in-out p-4 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105" 
+		class="rounded bg-surface-700 transition duration-300 ease-in-out p-4 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105 relative" 
 		class:[&:has(:focus-visible)]:border-primary-500={validState !== ValidStates.INVALID} 
 		class:border-error-500={validState === ValidStates.INVALID}
 	>
@@ -444,7 +452,9 @@
 		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline)}
 		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough)}
 		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript)}
-		  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link)}
+		  {#if enableLinks}
+			  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link)}
+		  {/if}
 		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote)}
 		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code)}
 		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List)}

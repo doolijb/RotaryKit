@@ -4,6 +4,7 @@
 	import type { FormSchema } from "$shared/validation/base"
 	import * as Icon from "lucide-svelte"
 	import humanizeString from "humanize-string"
+	import { ValidStates } from "$shared/constants"
 
 	////
 	// PROPS
@@ -61,6 +62,7 @@
 	////
 
 	let fieldErrors: FieldErrors = $state({})
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
@@ -117,6 +119,16 @@
 	let canRemove = $derived(!!selectedValues.length) 
 	let canAdd = $derived(!!selectedAvailable.length)
 
+	$effect(() => {
+		validState = isTouched
+		? fieldErrors && Object.keys(fieldErrors).length
+			? ValidStates.INVALID
+			: data[field]
+			  ? ValidStates.VALID
+			  : ValidStates.NONE
+		: ValidStates.NONE
+	})
+
 	$effect.pre(() => {
 		if (data[field] === undefined) {
 			data[field] = []
@@ -148,7 +160,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors hideRequired={true} />
+			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState hideRequired={true} />
 		{/if}
 	</div>
 	<!-- Side by side select, with arrows to add, remove from left to right -->

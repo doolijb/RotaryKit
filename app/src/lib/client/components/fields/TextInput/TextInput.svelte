@@ -69,23 +69,14 @@
 	////
 
 	let fieldErrors: FieldErrors = $state({})
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
 	////
 
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		await validate()
 	}
 
 	async function handleOnBlur(e: Event) {
@@ -103,7 +94,7 @@
 	////
 
 	let fieldValidator = $derived(form.fields[field])
-	let validatorLength = $state(0);
+	let validatorLength = $state(0)
 	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
 	let maxlength = $derived.by(() => {
 		if (fieldValidator) {
@@ -158,13 +149,16 @@
 		).length
 	});
 	let required = $derived(fieldValidator.isRequired)
-	let validState = $derived(isTouched
+
+	$effect(() => {
+		validState = isTouched
 		? fieldErrors && Object.keys(fieldErrors).length
 			? ValidStates.INVALID
 			: data[field]
 			  ? ValidStates.VALID
 			  : ValidStates.NONE
-		: ValidStates.NONE)
+		: ValidStates.NONE
+	})
 
 	////
 	// LIFECYCLE
@@ -186,7 +180,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} bind:fieldErrors />
+            <ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
         {/if}
     </div>
 

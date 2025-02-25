@@ -22,7 +22,7 @@ export class Required extends Validator {
 		}
 
 		if (Array.isArray(value)) {
-			return true
+			return !!value.length
 		}
 
 		// Else, undefined?

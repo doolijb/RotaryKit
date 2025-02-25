@@ -4,6 +4,7 @@
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
 	import humanizeString from "humanize-string"
+	import { ValidStates } from "$shared/constants"
 
 	////
 	// PROPS
@@ -56,6 +57,7 @@
 	////
 
 	let fieldErrors: FieldErrors = $state({})
+	let validState = $state(ValidStates.NONE)
 
 	////
 	// CALCULATED
@@ -79,23 +81,8 @@
 	// FUNCTIONS
 	////
 
-	function setType(node: HTMLInputElement) {
-		// Can not set dynamic type directly in the input element
-		node.type = type
-	}
-
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		validate()
 	}
 
 	////
@@ -147,7 +134,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} bind:fieldErrors hideRequired={true} />
+            <ValidationBadges {fieldValidator} bind:fieldErrors hideRequired={true} bind:validState />
         {/if}
     </div>
 </div>

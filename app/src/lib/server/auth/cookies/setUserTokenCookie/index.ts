@@ -4,12 +4,20 @@ import type { RequestEvent } from "@sveltejs/kit"
 const maxHours = process.env.USER_TOKEN_EXPIRATION_HOURS
 const maxAge = 60 * 60 * Number(maxHours)
 
+// Check if dev environment
+const dev = process.env.NODE_ENV === "development"
+const secure = !dev
+const sameSite = dev ? "lax" : "strict"
+
+console.log("secure", secure)
+console.log("sameSite", sameSite)
+
 export function setUserTokenCookie({ event, token }: { event: RequestEvent; token: string }) {
 	event.cookies.set("userToken", token, {
 		path: "/",
 		httpOnly: true,
-		secure: true,
-		sameSite: "strict",
+		secure,
+		sameSite,
 		maxAge
 	})
 }
