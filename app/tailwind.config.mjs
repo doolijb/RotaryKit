@@ -6,6 +6,7 @@ export default {
         './src/**/*.{html,js,svelte,ts}',
         contentPath(import.meta.url, 'svelte')
     ],
+    darkMode: ['class', '[data-mode="dark"]'],
     theme: {
         extend: {},
     },
@@ -13,7 +14,8 @@ export default {
         skeleton({
             // NOTE: each theme included will increase the size of your CSS bundle
             themes: [ themes.cerberus ]
-        })
+        }),
+        require('@tailwindcss/forms'),
     ],
     darkMode: 'class',
 }

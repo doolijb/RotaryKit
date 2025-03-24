@@ -34,7 +34,7 @@
 
 <!-- USERNAME -->
 <div class="my-4 flex flex-row">
-    <label class="label mx-2 grow">
+    <label class="label-text mx-2 grow">
         <span>Username</span>
         {#if mode === ReviewModes.CREATE || mode === ReviewModes.EDIT}
             <input
@@ -53,7 +53,7 @@
 
 <!-- EMAIL ADDRESS -->
 <div class="my-4 flex flex-row">
-    <label class="label mx-2 grow">
+    <label class="label-text mx-2 grow">
         <span>Email Address</span>
         <input
             bind:value={formData.user.email}
@@ -65,7 +65,7 @@
 </div>
 
 <div class="my-4 flex flex-row">
-    <label class="label mx-2 grow">
+    <label class="label-text mx-2 grow">
         <span>Password</span>
         <input
             bind:value={formData.user.email}

@@ -15,7 +15,7 @@
 </script>
 
 <div>
-    <div class="card preset-tonal rounded mb-4 p-4">
+    <div class="card preset-tonal rounded-xs mb-4 p-4">
         {#if icon || title}
             <h1 class="h4 w-auto mb-2 flex gap-2 items-center">
                 {#if icon}

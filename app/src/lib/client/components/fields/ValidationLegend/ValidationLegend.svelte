@@ -61,8 +61,7 @@
 
 {#snippet icon({Icn, preset})}
     <Icn
-        class="pointer-events-none {preset}"
-        width="2em"
+        class="pointer-events-none w-[1em] h-[1em] mt-[-0.25em] inline {preset}"
     />
 {/snippet}
 
@@ -83,17 +82,19 @@
 
 {#if validatorLength}
 <Popover
-  bind:open={open}
+  {open}
+  onOpenChange={(e) => (open = e.open)}
   positioning={{ placement: 'bottom' }}
-  contentBase="card preset-filled-surface-50-950 p-4 space-y-4 max-w-[320px] shadow-xl"
+  contentBase="card preset-filled-surface-100-900 p-4 space-y-4 max-w-[320px] shadow-xl"
   arrow
-  arrowBackground="!bg-surface-50"
+  arrowBackground="!bg-surface-100-900"
+  zIndex="10"
 >
         {#snippet trigger()}
             <!-- svelte-ignore a11y_click_events_have_key_events The event is required for event behavior to work as intended -->
             <!-- We need to execute the attached event, and prevent populating up on click -->
             <div
-                class="legendIconWrapper cursor-pointer {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
+                class="cursor-pointer max-h-[1em] inline {validState === ValidStates.NONE ? "hover:opacity-100 opacity-50" : ""}"
                 tabindex="-1"
                 bind:this={legendIcon}
                 aria-label="Legend"
@@ -103,7 +104,7 @@
                 {#if validState === ValidStates.INVALID}
                     {@render icon({Icn: Icon.AlertCircle, preset: "text-error-500"})}
                 {:else if validState === ValidStates.VALID}
-                    {@render icon({iIcn: Icon.Check, preset: "text-success-700"})}
+                    {@render icon({Icn: Icon.Check, preset: "text-success-700"})}
                 {:else}
                     {@render icon({Icn: Icon.Minus, preset: "text-surface-500"})}
                 {/if}
@@ -132,9 +133,3 @@
         {/snippet}
     </Popover>
 {/if}
-
-<style lang="postcss">
-    .legendIconWrapper {
-        padding: 0;
-    }
-</style>

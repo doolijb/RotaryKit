@@ -148,7 +148,7 @@
 
 	<!-- Main Content -->
 	<main class="flex flex-col flex-grow p-5 overflow-auto">
-		<button type="button" class="w-full md:hidden btn preset-filled mb-2 rounded-sm" disabled={!mobileCompact} onclick={toggleMobileCompact}>
+		<button type="button" class="w-full md:hidden btn preset-filled mb-2 rounded-xs" disabled={!mobileCompact} onclick={toggleMobileCompact}>
             <span class="navIcon">
                 <Icon.Menu class="h-7 w-7 mr-1" />
             </span>

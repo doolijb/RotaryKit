@@ -7,17 +7,12 @@
 	import { onMount } from "svelte"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
-	import { blur } from 'svelte/transition'
 
 	////
-	// UPSTREAM EXPORTS
-	
-
-	const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-
+	// PROPS
 	////
-	// LOCAL EXPORTS
-	
+
+    const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
 
     interface Props {
         ////
@@ -66,8 +61,6 @@
 		onfocus,
 		onblur,
     }: Props = $props();
-
-    const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
 
     ////
     // STATE
@@ -206,7 +199,7 @@
 
 <div class="mb-2">
     <div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id}>
+		<label class="label-text inline-flex pb-2" for={id}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
 				{label}
 			</span>
@@ -269,6 +262,7 @@
 </div>
     
 <style lang="postcss">
+  @reference "tailwindcss";
     .input:focus-visible {
         outline: none;
         border: none;

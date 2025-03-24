@@ -35,7 +35,7 @@
 <Modal
   bind:open={openState}
   contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
-  backdropClasses="backdrop-blur-sm"
+  backdropClasses="backdrop-blur-xs"
 >
     {#snippet content()}
         <!-- Button -->

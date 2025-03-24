@@ -8,7 +8,7 @@
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
 	import StarterKit from '@tiptap/starter-kit'
-	import TextStyle from '@tiptap/extension-text-style'
+	import { TextStyle } from '@tiptap/extension-text-style'
 	import Underline from '@tiptap/extension-underline'
 	import Link from '@tiptap/extension-link'
 	import Superscript from '@tiptap/extension-superscript'
@@ -361,7 +361,7 @@
 				},
 				code: {
 					HTMLAttributes: {
-						class: 'bg-surface-600 p-1 rounded-sm'
+						class: 'bg-surface-600 p-1 rounded-xs'
 					},
 				},
 			}),
@@ -409,7 +409,7 @@
 
 {#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: string = "")}
 	<button 
-		class="btn btn-sm rounded-sm" 
+		class="btn btn-sm rounded-xs" 
 		class:preset-filled={!active}
 		class:preset-filled-primary={active}
 		type="button"
@@ -430,7 +430,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div class="mb-2 relative overflow-hidden">
 	<div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id} onclick={focus}>
+		<label class="label-text inline-flex pb-2" for={id} onclick={focus}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
 				{label}
 			</span>
@@ -441,7 +441,7 @@
 	</div>
 
 	<div 
-		class="rounded bg-surface-700 transition duration-300 ease-in-out p-4 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105 relative" 
+		class="rounded-xs bg-surface-700 transition duration-300 ease-in-out p-4 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105 relative" 
 		class:[&:has(:focus-visible)]:border-primary-500={validState !== ValidStates.INVALID} 
 		class:border-error-500={validState === ValidStates.INVALID}
 	>
@@ -469,6 +469,7 @@
 </div>
 
 <style lang="postcss">
+  @reference "tailwindcss";
 	.editor-container {
 	  overflow-y: auto; /* Add a scrollbar if content exceeds the height */
 	}

@@ -54,13 +54,13 @@
 				<span class="text-success-500 ml-2 font-light">ADMIN</span>
 			{/if}
 		</a>
-		<a href="/" class="btn btn-sm hover:preset-filled-primary-500">
+		<a href="/" class="btn hover:preset-filled-secondary-500">
             Home
         </a>
 	</div>
 	<div class="block lg:hidden">
 		<button
-			class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white"
+			class="flex items-center px-3 py-2 border rounded-xs text-teal-200 border-teal-400 hover:text-white hover:border-white"
 		>
 			<svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<title>Menu</title>
@@ -72,13 +72,13 @@
 		<div class="text-sm lg:flex-grow"></div>
 		<div class="hidden lg:block">
 			{#if !page.data.user}
-				<div class="text-sm lg:flex-grow flex gap-2">
-					<a href="/login" class="btn btn-sm preset-tonal-surface">
-						<Icon.LogIn class="inline-block" />
+				<div class="lg:flex-grow flex gap-2">
+					<a href="/login" class="btn hover:preset-filled-secondary-500">
+						<Icon.LogIn class="inline-block w-[1em] h-[1em]" />
 						Login
 					</a>
-					<a href="/register" class="btn btn-sm preset-filled-secondary-500">
-						<Icon.UserPlus class="inline-block" />
+					<a href="/register" class="btn hover:preset-filled-secondary-500">
+						<Icon.UserPlus class="inline-block w-[1em] h-[1em]" />
 						Register
 					</a>
 				</div>

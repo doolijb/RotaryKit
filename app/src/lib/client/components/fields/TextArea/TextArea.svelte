@@ -130,7 +130,7 @@
 <div>
     <div class="mb-1">
         <div class="flex items-center">
-            <label class="label inline-flex pb-2" for={id}>
+            <label class="label-text inline-flex pb-2" for={id}>
                 <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
                     {label}
                 </span>
@@ -141,9 +141,9 @@
         </div>
     </div>
 
-    <div class="fieldWrapper rounded w-full flex flex-col mb-4">
+    <div class="fieldWrapper rounded-xs w-full flex flex-col mb-4">
         <textarea
-            class="textarea rounded px-2 m-0"
+            class="textarea rounded-xs px-2 m-0"
             class:resize-none={!resizeY}
             class:resize-y={resizeY}
             bind:this={ref}
@@ -173,6 +173,7 @@
 </div>
 
 <style lang="postcss">
+  @reference "tailwindcss";
     .fieldFooter {
         border-color: rgb(var(--color-surface-400));
         border-top: 0;

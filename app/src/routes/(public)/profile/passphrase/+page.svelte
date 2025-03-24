@@ -43,7 +43,7 @@
 
 </script>
 
-<!-- Nice rounded wrapper, centered, fixed width at full screen, responsive -->
+<!-- Nice rounded-xs wrapper, centered, fixed width at full screen, responsive -->
 
 <Main>
 	<div class="m-auto md:w-[35rem]">

@@ -89,7 +89,7 @@
 <div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 	<DetailGridItem label="Preview" class="row-span-3">
 		<button onclick={onImageClick}>
-			<ImageView {result} size="small" class="rounded cursor-pointer" />
+			<ImageView {result} size="small" class="rounded-xs cursor-pointer" />
 		</button>
 	</DetailGridItem>
     <DetailGridItem label={getLabel("id")} value={getValue("id")} />

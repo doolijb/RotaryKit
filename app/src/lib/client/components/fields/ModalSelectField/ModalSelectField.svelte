@@ -199,7 +199,7 @@
 <div class="mb-2">
 
     <div class="flex items-center">
-        <label class="label inline-flex pb-2" for={id}>
+        <label class="label-text inline-flex pb-2" for={id}>
             <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
                 {label}
             </span>
@@ -226,7 +226,7 @@
 			{/if}
 			{#if !disabled && validatorLength}
 				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend {fieldValidator} bind:fieldErrors {validState} {attrs} bind:validState  />
+					<ValidationLegend {fieldValidator} bind:fieldErrors {attrs} bind:validState  />
 				</div>
 			{/if}
 		</button>
@@ -243,6 +243,7 @@
 </div>
 
 <style lang="postcss">
+  @reference "tailwindcss";
 	.input-group div.px-0 {
 		padding-left: 0 !important;
 		padding-right: 0 !important;

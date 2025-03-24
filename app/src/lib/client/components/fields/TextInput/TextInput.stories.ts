@@ -1,16 +1,16 @@
-import Component from "."
-import type { Meta } from "@storybook/svelte"
+import Component from "./TextInput.svelte"
+import type { Meta, StoryObj } from "@storybook/svelte"
 import { FormSchema } from "$shared/validation/base"
 import { validators as v } from "$shared/validation"
-import type { ComponentType } from "svelte"
 
 const meta: Meta<typeof Component> = {
-	component: Component as ComponentType,
-	tags: ["autodocs"],
-	decorators: []
+	component: Component,
+	// tags: ["autodocs"],
+	// decorators: []
 }
 
 export default meta
+type Story = StoryObj<typeof meta>;
 
 class DefaultForm extends FormSchema {
 	fields = {
@@ -24,7 +24,7 @@ class DefaultForm extends FormSchema {
 	}
 }
 
-export const Default = {
+export const Default: Story = {
 	args: {
 		field: "inputField",
 		form: DefaultForm.init(),
@@ -33,7 +33,7 @@ export const Default = {
 	}
 }
 
-export const Disabled = {
+export const Disabled: Story = {
 	args: {
 		disabled: true,
 		field: "inputField",
@@ -43,7 +43,7 @@ export const Disabled = {
 	}
 }
 
-export const Filled = {
+export const Filled: Story = {
 	args: {
 		field: "inputField",
 		form: DefaultForm.init(),
@@ -66,7 +66,7 @@ class WithValidatorsForm extends FormSchema {
 	}
 }
 
-export const WithValidators = {
+export const WithValidators: Story = {
 	args: {
 		field: "inputField",
 		form: WithValidatorsForm.init(),
@@ -75,7 +75,7 @@ export const WithValidators = {
 	}
 }
 
-export const FilledWithValidators = {
+export const FilledWithValidators: Story = {
 	args: {
 		field: "inputField",
 		form: WithValidatorsForm.init(),
@@ -97,7 +97,7 @@ class WithPlaceholderForm extends FormSchema {
 	}
 }
 
-export const WithPlaceholder = {
+export const WithPlaceholder: Story = {
 	args: {
 		field: "inputField",
 		form: WithPlaceholderForm.init(),

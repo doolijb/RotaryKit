@@ -347,7 +347,7 @@
 
 <div class="mb-2" {onfocus} onblur={handleOnBlur}>
 	<div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id}>
+		<label class="label-text inline-flex pb-2" for={id}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
 				{label}
 			</span>
@@ -357,7 +357,7 @@
 		{/if}
 	</div>
 
-	<div class="input-group flex flex-col items-start rounded p-0 m-0" class:border-error-500={validState === ValidStates.INVALID} onsubmit={(e) => {e.preventDefault(); e.stopImmediatePropagation; e.stopPropagation()}}>
+	<div class="input-group flex flex-col items-start rounded-xs p-0 m-0" class:border-error-500={validState === ValidStates.INVALID} onsubmit={(e) => {e.preventDefault(); e.stopImmediatePropagation; e.stopPropagation()}}>
 		<div class="flex flex-grow w-full pl-0 pr-0 ml-0 pr-0">
 			<input 
 				bind:this={inputRet}

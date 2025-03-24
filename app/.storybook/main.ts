@@ -1,8 +1,7 @@
-import type { StorybookConfig } from "@storybook/sveltekit"
-import path from "path"
+import type { StorybookConfig } from '@storybook/sveltekit';
 
 const config: StorybookConfig = {
-	stories: [
+  "stories": [
 		{
 			directory: "../src/lib/client/components",
 			titlePrefix: "Components"
@@ -12,19 +11,17 @@ const config: StorybookConfig = {
 			titlePrefix: "Email Templates"
 		}
 	],
-
-	addons: [
-		"@storybook/addon-links",
-		"@storybook/addon-essentials",
-		"@storybook/addon-interactions",
-		"storybook-addon-mock",
-		"@chromatic-com/storybook",
-		"@storybook/addon-styling-webpack"
-	],
-	framework: {
-		name: "@storybook/sveltekit",
-		options: {}
-	},
-	docs: {}
-}
-export default config
+  "addons": [
+    "@storybook/addon-essentials",
+    "@storybook/addon-svelte-csf",
+    "@chromatic-com/storybook",
+    "@storybook/experimental-addon-test",
+    "@storybook/addon-styling-webpack",
+    "@storybook/addon-themes"
+  ],
+  "framework": {
+    "name": "@storybook/sveltekit",
+    "options": {}
+  }
+};
+export default config;

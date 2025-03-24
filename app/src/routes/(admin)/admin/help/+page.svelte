@@ -19,7 +19,7 @@
     <h1 class="h3 mb-2">
         Your Admin Permissions
     </h1>
-    <div class="table-wrap preset-tonal rounded p-2">
+    <div class="table-wrap preset-tonal rounded-xs p-2">
         <table class="table">
             <thead>
                 <tr>

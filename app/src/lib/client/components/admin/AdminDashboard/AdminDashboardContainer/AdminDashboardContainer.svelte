@@ -223,7 +223,7 @@
 
 {#snippet moduleSnippet(module:Module)}
     <div 
-        class="rounded p-4 flex-grow max-h-full relative preset-tonal" 
+        class="rounded-xs p-4 flex-grow max-h-full relative preset-tonal" 
         class:preset-ringed={swapyEnabled}
         data-swapy-item={module.item}
     >

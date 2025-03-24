@@ -313,7 +313,7 @@
 
 <div class="mb-2">
 	<div class="flex items-center">
-		<label class="label inline-flex pb-2" for={id}>
+		<label class="label-text inline-flex pb-2" for={id}>
 			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
 				{label}
 			</span>

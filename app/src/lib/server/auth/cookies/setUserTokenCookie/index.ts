@@ -9,9 +9,6 @@ const dev = process.env.NODE_ENV === "development"
 const secure = !dev
 const sameSite = dev ? "lax" : "strict"
 
-console.log("secure", secure)
-console.log("sameSite", sameSite)
-
 export function setUserTokenCookie({ event, token }: { event: RequestEvent; token: string }) {
 	event.cookies.set("userToken", token, {
 		path: "/",

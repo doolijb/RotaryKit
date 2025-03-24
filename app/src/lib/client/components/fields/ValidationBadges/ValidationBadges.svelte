@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Primitive } from "$shared/validation/base"
-	import { popup } from "@skeletonlabs/skeleton"
 	import { popupSettings } from "$shared/validation/utils"
 	import humanizeString from "humanize-string"
 	import { ValidStates } from "$shared/constants"
@@ -69,35 +68,36 @@
 	let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
 
 </script>
-
-{#each Object.values(validators) as validator}
-	<span
-		class="badge ms-1 mb-2 select-none"
-		class:preset-tonal-success={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
-		class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-		aria-label={`${validator.message}`}
-	>
-		{validator.badge}
-	</span>
-	<div
-		class="card z-10 block p-4 hidden"
-		class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
-		class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-		data-popup={validator.popup.target}
-	>
-		<p>{validator.message}</p>
-		<div
-			class="arrow"
-			class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key}
+<div class="flex gap-2">
+	{#each Object.values(validators) as validator}
+		<span
+			class="badge select-none px-1 py-0 text-xs"
+			class:preset-tonal-success={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
 			class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-		></div>
-	</div>
-{/each}
+			aria-label={`${validator.message}`}
+		>
+			{validator.badge}
+		</span>
+		<div
+			class="card z-10 block p-4 hidden"
+			class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
+			class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
+			data-popup={validator.popup.target}
+		>
+			<p>{validator.message}</p>
+			<div
+				class="arrow"
+				class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
+				class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
+			></div>
+		</div>
+	{/each}
+</div>
 
 {#each Object.entries(responseValidators) as [key, message]}
 	{@const resPopup = popupSettings()}
 	<span
-		class="badge ms-1 mb-2 select-none"
+		class="badge mb-2 select-none"
 		class:preset-soft-error={true}
 		aria-label=message
 	>

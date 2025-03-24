@@ -125,7 +125,7 @@
 			onblur={handleOnBlur}
             aria-label={label}
         />
-        <label class="label inline-flex me-3 mb-2" for={id}>
+        <label class="label-text inline-flex me-3 mb-2" for={id}>
             <span 
                 class="cursor-pointer select-none" 
                 class:text-gray-500={disabled}

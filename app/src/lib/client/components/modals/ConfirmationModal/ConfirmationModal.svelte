@@ -48,7 +48,7 @@
 <Modal
 	bind:open
 	contentBase="card bg-surface-50-950 p-4 space-y-4 shadow-xl max-w-screen-sm shadow-xl"
-	backdropClasses="backdrop-blur-sm"
+	backdropClasses="backdrop-blur-xs"
     {trigger}
 >
 	{#snippet content()}
