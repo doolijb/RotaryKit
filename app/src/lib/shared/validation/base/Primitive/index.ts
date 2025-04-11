@@ -16,10 +16,7 @@ export class Primitive<T> {
 	}
 
 	/**
-	 * Adds a validator to the chain,
-	 * @param {Validator} validator
-	 * @param {string} property? // Populate to limit the validator to one use per instance
-	 * @returns {this}
+	 * Adds a validator to the chain
 	 */
 	addValidator(validator: Validator) {
 		this.validators.push(validator)

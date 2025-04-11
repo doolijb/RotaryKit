@@ -10,7 +10,7 @@
 	import { FormBase, PassphraseInput } from "$client/components"
 	import { ChangePassphrase as Form } from "$shared/validation/forms"
 
-	export const form = Form.init()
+	let form = $state(Form.init())
 	
 	////
 	// LOCAL EXPORTS
@@ -49,28 +49,22 @@
 
 </script>
 
-<FormBase {form} bind:data bind:errors bind:canSubmit {onsubmit} showCancel={false}>
+<FormBase {form} {onsubmit} showCancel={false}>
 	<PassphraseInput
 		id="currentPassphrase"
 		field="currentPassphrase"
-		bind:data
-		bind:errors
 		{form}
 		{disabled}
 	/>
 	<PassphraseInput
 		id="passphrase"
 		field="passphrase"
-		bind:data
-		bind:errors
 		{form}
 		{disabled}
 	/>
 	<PassphraseInput
 		id="passphraseConfirm"
 		field="passphraseConfirm"
-		bind:data
-		bind:errors
 		{form}
 		{disabled}
 	/>

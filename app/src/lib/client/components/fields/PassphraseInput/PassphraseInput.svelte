@@ -16,8 +16,6 @@
 		label?: string;
 
 		// Bindables
-		data?: Record<string, any>;
-		errors?: Record<string, any>;
 		ref?: any;
 		disabled?: boolean;
 		id?: string;
@@ -38,8 +36,6 @@
 		label,
 
 		// Bindables
-		data = $bindable({}),
-		errors = $bindable({}),
 		ref = $bindable(undefined),
 		disabled = $bindable(false),
 		id = $bindable(v4()),
@@ -74,8 +70,6 @@
 	{placeholder}
 	{field}
 	{form}
-	{errors}
-	{data}
 	{type}
 	bind:id
 	bind:disabled

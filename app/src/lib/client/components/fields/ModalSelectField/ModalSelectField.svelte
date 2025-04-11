@@ -23,8 +23,6 @@
 		label?: string
 
 		// Bindings
-		data: FormDataOf<any>
-		errors: FormErrors
 		mapOptions: (data: any[]) => AutocompleteOption[]
 		getOptions: ({searchString}) => Promise<any[]>
 		disabled: boolean
@@ -48,8 +46,6 @@
 		label,
 
 		// Bindings
-		data = $bindable({} as FormDataOf<any>),
-		errors = $bindable({}),
 		mapOptions,
 		getOptions,
 		disabled = $bindable(false),		
@@ -77,18 +73,8 @@
 	// FUNCTIONS
 	////
 
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		await validate()
 	}
 
 	let isModalOpen = $state(false)
@@ -108,7 +94,7 @@
 	}
 
 	async function clearSelection() {
-		data[field] = undefined
+		formCtx.data[field] = undefined
 		selectedOption = undefined
 		await touch()
 	}
@@ -129,15 +115,6 @@
 
 	let attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
 	let fieldValidator = $derived(form.fields[field])
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
 
 	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
 
@@ -158,7 +135,7 @@
 	})
 
 	$effect(() => {
-		fieldErrors = errors[field] || {}
+		fieldErrors = formCtx.errors[field] || {}
 	})
 
 	////
@@ -174,9 +151,9 @@
 		}
 		if (result) {
 			selectedOption = mapOptions([result])[0];
-			data[field] = selectedOption.value || selectedOption
+			formCtx.data[field] = selectedOption.value || selectedOption
 		}
-		data[field] && touch()
+		formCtx.data[field] && touch()
 	})
 
 </script>
@@ -205,7 +182,7 @@
             </span>
         </label>
         {#if !disabled}
-            <ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
+            <ValidationBadges {fieldValidator} {form} {field} />
         {/if}
     </div>
 
@@ -216,7 +193,7 @@
 					{@render prefixSnippet()}
 				</div>
 			{/if}
-			<span class="m-2 border-0 disabled:cursor-not-allowed flex-grow" class:text-surface-400={!data[field] || disabled} aria-label={label}>
+			<span class="m-2 border-0 disabled:cursor-not-allowed flex-grow" class:text-surface-400={!formCtx.data[field] || disabled} aria-label={label}>
 				{displayValue || placeholder || "\u00A0"}
 			</span>
 			{#if suffixSnippet}
@@ -226,7 +203,7 @@
 			{/if}
 			{#if !disabled && validatorLength}
 				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend {fieldValidator} bind:fieldErrors {attrs} bind:validState  />
+					<ValidationLegend {fieldValidator} {form} {attrs} {field}  />
 				</div>
 			{/if}
 		</button>
@@ -234,7 +211,7 @@
 			<button type="button" class="btn preset-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
 				Select
 			</button>
-			<button type="button" class="btn preset-filled-surface ml-2" onclick={clearSelection} disabled={!data[field] || disabled}>
+			<button type="button" class="btn preset-filled-surface ml-2" onclick={clearSelection} disabled={!formCtx.data[field] || disabled}>
 				Clear
 			</button>
 		</div>

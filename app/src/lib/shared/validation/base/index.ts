@@ -8,4 +8,4 @@ export * from "./Validator"
 export * from "./Primitive"
 
 // Depends on Primitive
-export * from "./FormSchema"
+export * from "./FormSchema/index.svelte.ts"

@@ -2,7 +2,7 @@
 	import { FormBase, TextInput, SelectField } from "$client/components"
 	import { AdminEditImage as Form } from "$shared/validation/forms"
 
-	const form = Form.init()
+	let form = Form.init()
 
 	////
 	// PROPS
@@ -14,9 +14,6 @@
 
 		// Bindables
 		data: Form["Data"]
-		errors?: FormErrors
-		disabled?: boolean
-		canSubmit?: boolean
 		populatedFormData?: boolean
 
 		// Events
@@ -27,15 +24,6 @@
 	let {
 		// Props
 		result,
-
-		// Bindables
-		data = $bindable({
-			title: "",
-			status: "",
-		}),
-		errors = $bindable({}),
-		disabled = $bindable(false),
-		canSubmit = $bindable(false),
 		populatedFormData = $bindable(false),
 
 		// Events
@@ -49,12 +37,9 @@
 
 	$effect.pre(() => {
 		if (!populatedFormData && result) {
-			data.title = result.title
-			data.status = result.status
+			formCtx.data.title = result.title
+			formCtx.data.status = result.status
 			populatedFormData = true
-			form.validate({data}).then((result) => {
-				errors = result
-			})
 		}
 	})
 
@@ -62,10 +47,6 @@
 
 <FormBase
 	{form}
-	bind:data
-	bind:errors
-	bind:canSubmit
-	bind:disabled 
 	{onsubmit}
 	{oncancel}
 	showSubmit={false}
@@ -74,18 +55,12 @@
 	<TextInput
 		id="title"
 		field="title"
-		bind:data
-		bind:errors
 		{form}
-		{disabled}
 	/>
 
 	<SelectField
 		id="status"
 		field="status"
-		bind:data
-		bind:errors
 		{form}
-		{disabled}
 	/>
 </FormBase>

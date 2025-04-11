@@ -2,7 +2,7 @@
 	import { FormBase, FileDropField } from "$client/components"
 	import { UserProfileImage as Form } from "$shared/validation/forms"
 
-	const form = Form.init()
+	let form = $state(Form.init())
 
 	
 	////

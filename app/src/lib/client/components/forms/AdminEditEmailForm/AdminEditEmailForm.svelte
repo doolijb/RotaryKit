@@ -6,7 +6,7 @@
 	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import { onMount } from "svelte"
 
-	const form = Form.init()
+	let form = $state(Form.init())
 
 	////
 	// PROPS
@@ -19,7 +19,7 @@
 		// Bindings
 		disabled?: boolean
 		canSubmit?: boolean
-		form: FormSchema
+		// form: FormSchema
 		data: Form["Data"]
 		errors?: FormErrors
 
@@ -35,6 +35,7 @@
 		result,
 
 		// Bindings
+		// form,
 		data = $bindable({} as Form["Data"]),
 		errors = $bindable({}),
 		disabled = $bindable(false),
@@ -65,28 +66,25 @@
 	////
 
 	onMount(() => {
-
-		data = {
-			address: "",
-			isVerified: false,
-			isUserPrimary: false,
-		}
 		data.address = result.address
 		data.isVerified = !!result.verifiedAt
 		data.isUserPrimary = result.isUserPrimary
 		isLoaded = true
 	})
+
 </script>
 {#if isLoaded}
 	<FormBase
 		{form}
-		bind:errors
-		bind:data
-		bind:canSubmit
 		{onsubmit}
 		{oncancel}
 		showSubmit={false}
 		showCancel={false}
+		defaultValues={{
+			address: "",
+			isVerified: false,
+			isUserPrimary: false,
+		}}
 	>
 
 		{#if result && page.data.user.id === result.userId}
@@ -104,8 +102,6 @@
 			id="address"
 			field="address"
 			{form}
-			bind:errors
-			bind:data
 			{disabled}
 		/>
 
@@ -113,8 +109,6 @@
 			<ModalSelectField
 				id="userId"
 				field="userId"
-				bind:data
-				bind:errors
 				{form}
 				{disabled}
 				getOptions={getUserOptions}
@@ -128,8 +122,6 @@
 				<CheckboxInput
 					id="isVerified"
 					field="isVerified"
-					bind:data
-					bind:errors
 					{form}
 					{disabled}
 				/>

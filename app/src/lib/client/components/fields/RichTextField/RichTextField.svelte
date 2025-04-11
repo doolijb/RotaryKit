@@ -3,7 +3,7 @@
 	import { ValidStates } from "$shared/constants"
 	import { v4 } from "uuid"
 	import type { FormSchema } from "$shared/validation/base"
-	import type { Snippet } from 'svelte'
+	import type { Snippet, SvelteComponent } from 'svelte'
 	import humanizeString from "humanize-string"
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
@@ -36,8 +36,6 @@
 
 		// Bindables
 		form?: FormSchema;
-		data?: Record<string, any>;
-		errors?: Record<string, any>;
 		disabled?: boolean;
 		id?: string;
 		isTouched?: boolean;
@@ -60,9 +58,7 @@
 		enableLinks = false,
 
 		// Bindables
-		form = $bindable(),
-		data = $bindable({} as FormDataOf<any>),
-		errors = $bindable({}),
+		form,
 		disabled = $bindable(false),
 		id = $bindable(v4()),
 		isTouched = $bindable(false),
@@ -135,9 +131,9 @@
 	async function validate() {
 		let fieldErrors = await form.fields[field].validate({key:field, data})
 		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
+			formCtx.errors[field] = fieldErrors
 		} else {
-			delete errors[field]
+			delete formCtx.errors[field]
 		}
 	}
 
@@ -167,7 +163,7 @@
 		canRedo = editor.can().redo()
 		const html = editor.getHTML()
 		const clean = DOMPurify.sanitize(html)
-		data[field] = clean
+		formCtx.data[field] = clean
 		handleOnInput(null)
 	}
 
@@ -290,16 +286,6 @@
 	let validatorLength = $state(0);
 	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
 
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
-
 	let canUnstyle = $derived(
 		isHeader || 
 		isBold || 
@@ -333,7 +319,7 @@
 	})
 
 	$effect(() => {
-		fieldErrors = errors[field] || {}
+		fieldErrors = formCtx.errors[field] || {}
 	})
 	
 	$effect.pre(() => {
@@ -391,12 +377,12 @@
 		editor = new Editor({
 			element: element,
 			extensions,
-			content: data[field],
+			content: formCtx.data[field],
 		});
 		editor.on("selectionUpdate", updateSelectionButtons)
 		editor.on("update", onUpdate)
 		editor.on("blur", () => handleOnBlur(null))
-		if (data[field]) { touch() }
+		if (formCtx.data[field]) { touch() }
 	})
 
 	onDestroy(() => {
@@ -407,7 +393,7 @@
 
 </script>
 
-{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: string = "")}
+{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: SvelteComponent | string = "")}
 	<button 
 		class="btn btn-sm rounded-xs" 
 		class:preset-filled={!active}
@@ -436,7 +422,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
+			<ValidationBadges {fieldValidator} {form} {field} />
 		{/if}
 	</div>
 
@@ -446,23 +432,23 @@
 		class:border-error-500={validState === ValidStates.INVALID}
 	>
 		<div class="toolbar mb-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:flex gap-1">
-		  {@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, Icon.Heading)}
-		  {@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, Icon.Bold)}
-		  {@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, Icon.Italic)}
-		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline)}
-		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough)}
-		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript)}
+		  {@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, Icon.Heading as any as SvelteComponent)}
+		  {@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, Icon.Bold as any as SvelteComponent)}
+		  {@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, Icon.Italic as any as SvelteComponent)}
+		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline as any as SvelteComponent)}
+		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough as any as SvelteComponent)}
+		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript as any as SvelteComponent)}
 		  {#if enableLinks}
-			  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link)}
+			  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link as any as SvelteComponent)}
 		  {/if}
-		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote)}
-		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code)}
-		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List)}
-		  {@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, Icon.ListOrdered)}
-		  {@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, Icon.ListCheck)}
-		  {@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, Icon.RemoveFormatting)}
-		  {@render styleButton('Undo', 'Undo', undo, false, !canUndo, Icon.Undo)}
-		  {@render styleButton('Redo', 'Redo', redo, false, !canRedo, Icon.Redo)}
+		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote as any as SvelteComponent)}
+		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code as any as SvelteComponent)}
+		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List as any as SvelteComponent)}
+		  {@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, Icon.ListOrdered as any as SvelteComponent)}
+		  {@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, Icon.ListCheck as any as SvelteComponent)}
+		  {@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, Icon.RemoveFormatting as any as SvelteComponent)}
+		  {@render styleButton('Undo', 'Undo', undo, false, !canUndo, Icon.Undo as any as SvelteComponent)}
+		  {@render styleButton('Redo', 'Redo', redo, false, !canRedo, Icon.Redo as any as SvelteComponent)}
 		</div>
 		  <div {id} bind:this={element} class="editor-container"></div>
 	</div>

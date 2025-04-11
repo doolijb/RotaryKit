@@ -9,12 +9,6 @@
     const dispatch = createEventDispatcher()
 
     ////
-    // UPSTREAM EXPORTS
-    
-
-    const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
-
-    ////
     // LOCAL EXPORTS
     
 
@@ -22,16 +16,13 @@
 
         field: string;
         form: FormSchema;
-        data: typeof form["Data"];
-        errors: FormErrors;
         resizeY?: boolean;
         rows?: number;
-
+        ref?: HTMLTextAreaElement | null;
         placeholder?: any;
         label?: string;
         disabled?: boolean;
         id?: string;
-        isTouched?: boolean;
         showLegend?: boolean;
         controls?: import('svelte').Snippet;
         extraControls?: import('svelte').Snippet;
@@ -40,19 +31,22 @@
     let {
         field,
         form,
-        data = $bindable({} as FormDataOf<any>),
-        errors = $bindable({}),
         resizeY = false,
         rows = 3,
         ref = $bindable(),
-        placeholder = attrs?.placeholder,
-        label = attrs?.label,
-        disabled = $bindable(false),        id = v4(),
-        isTouched = $bindable(false),
+        placeholder,
+        label,
+        id = v4(),
+        disabled = $bindable(false),
         showLegend = true,
         controls,
         extraControls
     }: Props = $props();
+
+    const attrs: FormFieldAttributes | undefined = form.fieldAttributes[field]
+
+    if (placeholder === undefined) placeholder = attrs?.placeholder
+    if (label === undefined) label = attrs?.label
 
     ////
     // STATE
@@ -68,36 +62,17 @@
     let fieldValidator = $derived(form.fields[field])
     let validatorLength = $derived(form.fields[field].validators.length)
     let required = $derived(fieldValidator.isRequired)
-    $effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
 
     $effect(() => {
-        fieldErrors = errors[field] || {}
+        fieldErrors = formCtx.errors[field] || {}
     })
 
     ////
     // FUNCTIONS
     ////
 
-    async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
     async function touch() {
-        isTouched = true
-        validate()
+        formCtx.touchedFields[field] = true
     }
 
     ////
@@ -118,14 +93,6 @@
         dispatch("input", e)
     }
 
-    ////
-    // LIFECYCLE
-    ////
-
-    onMount(() => {
-        data[field] && touch()
-    })
-
 </script>
 <div>
     <div class="mb-1">
@@ -136,7 +103,7 @@
                 </span>
             </label>
             {#if !disabled}
-                <ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
+                <ValidationBadges {fieldValidator} {form} {field} />
             {/if}
         </div>
     </div>
@@ -147,7 +114,7 @@
             class:resize-none={!resizeY}
             class:resize-y={resizeY}
             bind:this={ref}
-            bind:value={data[field]}
+            bind:value={formCtx.data[field]}
             {disabled}
             {required}
             {rows}
@@ -164,7 +131,7 @@
                 <div class="flex w-100 ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
                     {@render extraControls?.()}
                     {#if !disabled && validatorLength && showLegend}
-                        <ValidationLegend.Icon {fieldValidator} bind:fieldErrors  bind:validState {legendPopup} />
+                        <ValidationLegend {fieldValidator} {form} {field} {attrs} />
                     {/if}
                 </div>
             </div>

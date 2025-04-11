@@ -19,8 +19,6 @@
 
 		// Bindables
 		disabled: boolean
-		data: Record<string, any>
-		errors: Record<string, any>
 		ref?: HTMLInputElement | null
 		id?: string
 		isTouched?: boolean
@@ -40,8 +38,6 @@
 
 		// Bindables
 		disabled = $bindable(false),
-		data = $bindable({}),
-		errors = $bindable({}),
 		ref = $bindable(null),
 		id = $bindable(v4()),
 		isTouched = $bindable(false),
@@ -95,7 +91,7 @@
 	}
 
 	function handleOnInput(e: Event) {
-        data[field] = !data[field]
+        formCtx.data[field] = !formCtx.data[field]
 		touch()
 		oninput?.(e)
 	}
@@ -105,7 +101,7 @@
 	////
 
 	onMount(() => {
-		data[field] && touch()
+		formCtx.data[field] && touch()
 	})
 
 </script>
@@ -119,7 +115,7 @@
             class="checkbox me-3 mb-2" 
             {type}
             bind:this={ref}
-            checked={!!data[field]}
+            checked={!!formCtx.data[field]}
 			{onfocus}
             oninput={handleOnInput}
 			onblur={handleOnBlur}

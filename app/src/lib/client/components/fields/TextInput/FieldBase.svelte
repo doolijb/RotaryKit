@@ -34,6 +34,8 @@
 		// Snippets
 		prefixSnippet?: Snippet
 		suffixSnippet?: Snippet
+
+		children: Snippet<[Record<string, any>]>
 	}
 
 	let {
@@ -56,8 +58,10 @@
 		onblur,
 
 		// Snippets
-		prefixSnippet,
-		suffixSnippet,
+		children,
+
+		// Rest
+		...restProps
 	}: Props = $props()
 
 	////
@@ -69,8 +73,6 @@
 	////
 	// STATE
 	////
-
-	let validState = $state(ValidStates.NONE)
 	let attrs = $state(form.fieldAttributes[field] || {})
 
 	////
@@ -97,26 +99,6 @@
 
 	let fieldValidator = $derived(form.fields[field])
 	let validatorLength = $state(0)
-	let maxlength = $derived.by(() => {
-		if (fieldValidator) {
-			const validator = fieldValidator.validators.find( v => {
-				return v.key === "maxLength"
-			})
-			if (validator) {
-				return validator.args["maxLen"]
-			}
-		}
-	})
-	let minlength = $derived.by(() => {
-		if (fieldValidator) {
-			const validator = fieldValidator.validators.find( v => {
-				return v.key === "minLength"
-			})
-			if (validator) {
-				return validator.args["minLen"]
-			}
-		}
-	})
 
 	/**
 	 * Set the attributes for the field.
@@ -159,8 +141,6 @@
 		).length
 	})
 
-	let required = $derived(fieldValidator.isRequired)
-
 	let isDisabled = $derived(disabled || formCtx.meta.disabled)
 
 	////
@@ -173,8 +153,6 @@
 
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div class="mb-2 w-100" title={isDisabled ? "Disabled" : ""}>
     <div class="flex items-center mb-1">
         <label class="label inline-flex" for={id}>
@@ -193,45 +171,18 @@
 		</p>
 	{/if}
 
-    <div class="input-group flex ps-1 p-1 input" class:border-red-500={validState === ValidStates.INVALID}>
-        {#if prefixSnippet}
-            <div class="align-middle m-0 px-0">
-                {@render prefixSnippet?.()}
-            </div>
-        {/if}
-        <input
-            bind:this={ref}
-            {id}
-            type={attrs.type}
-            class="appearance-none border-0 bg-transparent flex-grow focus:outline-none focus:ring-0"
-            placeholder={attrs.placeholder}
-			bind:value={formCtx.data[field]}
-            disabled={isDisabled}
-            {required}
-            {maxlength}
-            {minlength}
-            {onfocus}
-            oninput={handleOnInput}
-            onblur={handleOnBlur}
-            aria-label={attrs.label}
-			aria-describedby={attrs.description ? `${id}-description` : undefined}
-        />
-        {#if suffixSnippet}
-            <div class="align-middle m-0 px-0 me-2 !border-l-0">
-                {@render suffixSnippet?.()}
-            </div>
-        {/if}
-        {#if !isDisabled && (validatorLength || attrs?.description)}
-            <div class="legendIcon align-middle px-0 me-3 !border-l-0">
-                <ValidationLegend {fieldValidator} {form} {field} {attrs} />
-            </div>
-        {/if}
-    </div>
-</div>
+    {@render children({
+		...restProps, 
+		id, 
+		field, 
+		form, 
+		onblur: handleOnBlur, 
+		onfocus, 
+		oninput: handleOnInput, 
+		ref, 
+		disabled: isDisabled, 
+		attrs,
+		value: formCtx.data[field]}
+	)}
 
-<style lang="postcss">
-    .input-group div.px-0 {
-        padding-left: 0 !important
-        padding-right: 0 !important
-    }
-</style>
+</div>

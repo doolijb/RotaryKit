@@ -32,7 +32,7 @@
 
 		// Bindables
 		disabled = $bindable(false),
-		form = $bindable(),
+		form,
 		data = $bindable({} as Form["Data"] | FormWithPermissions["Data"]),
 		errors = $bindable({}),
 		canSubmit = $bindable(false)

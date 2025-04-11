@@ -48,17 +48,13 @@
 	// CALCULATED
 	////
 
-	let form = $derived(canEditSuperUsers ? FormWithPermissions.init() : Form.init())
+	let form = $state(canEditSuperUsers ? FormWithPermissions.init() : Form.init())
 
 	
 </script>
 {#if form}
 	<FormBase
 		{form}
-		bind:data
-		bind:errors
-		bind:canSubmit
-		bind:disabled
 		{onsubmit}
 		{oncancel}
 		showSubmit={false}
@@ -68,8 +64,6 @@
 			label="Username"
 			id="username"
 			field="username"
-			bind:data
-			bind:errors
 			{form}
 			{disabled}
 		/>
@@ -78,8 +72,6 @@
 			label="Email"
 			id="email"
 			field="email"
-			bind:data
-			bind:errors
 			{form}
 			{disabled}
 		/>
@@ -88,8 +80,6 @@
 			label="Passphrase"
 			id="passphrase"
 			field="passphrase"
-			bind:data
-			bind:errors
 			{form}
 			{disabled}
 		/>
@@ -97,12 +87,10 @@
 		<div class="flex space-x-3 my-5">
 			<div class="card preset-tonal px-3 pt-3 w-full">
 				<CheckboxInput
+					{form}
 					label="Is Verified"
 					id="isVerified"
 					field="isVerified"
-					bind:data
-					bind:errors
-					{form}
 					{disabled}
 				/>
 			</div>
@@ -112,12 +100,10 @@
 			<div class="flex space-x-3 my-5">
 				<div class="card preset-tonal px-3 pt-3 w-full">
 					<CheckboxInput
+						{form}
 						label="Is Admin"
 						id="isAdmin"
 						field="isAdmin"
-						bind:data
-						bind:errors
-						{form}
 						{disabled}
 					/>
 				</div>
@@ -126,12 +112,10 @@
 			<div class="flex space-x-3 my-5">
 				<div class="card preset-tonal px-3 pt-3 w-full">
 					<CheckboxInput
+						{form}
 						label="Is Super User"
 						id="isSuperUser"
 						field="isSuperUser"
-						bind:data
-						bind:errors
-						{form}
 						{disabled}
 					/>
 				</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ValidStates } from "$shared/constants"
 	import type { FormSchema } from "$shared/validation/base"
 	import { onMount, type Snippet } from "svelte"
 
@@ -14,12 +15,8 @@
 		showSubmit?: boolean
 		form: FormSchema
 		useSubmitOnEnter?: boolean
-
-		// Bindables
+		defaultValues?: Partial<typeof form["Data"]>
 		disabled?: boolean
-		data?: typeof form["Data"]
-		errors?: FormErrors
-		canSubmit?: boolean
 
 		// Events
 		onsubmit?: (args: any) => Promise<void>
@@ -40,12 +37,8 @@
 		showSubmit = true,
 		form,
 		useSubmitOnEnter = false,
-
-		// Bindables
+		defaultValues,
 		disabled = $bindable(false),
-		data = $bindable({} as typeof form["Data"]),
-		errors = $bindable({}),
-		canSubmit = $bindable(false),
 
 		// Events
 		onsubmit,
@@ -58,25 +51,59 @@
 		cancelSnippet
 	}: Props = $props()
 
+	const formCtx = form.getContext()
+
 	////
 	// COMPUTED
 	////
 
 	$effect(() => {
-		validate(data)
+		if (disabled !== undefined) {
+			formCtx.meta.disabled = disabled
+		}
 	})
 
 	$effect(() => {
-		canSubmit = !Object.keys(errors).length
+		formCtx.meta.canSubmit = !Object.keys(formCtx.errors).length
+	})
+
+	$effect(() => {
+		form.validate({ data: formCtx.data }).then((errors) => {
+			formCtx.errors = errors
+		})
+		.then(() => {
+			Object.keys(form.fields).forEach((key) => {
+			formCtx.validStates[key] = formCtx.touchedFields[key]
+				? formCtx.errors[key] && Object.keys(formCtx.errors).length
+					? ValidStates.INVALID
+					: formCtx.data[key]
+						? ValidStates.VALID
+						: ValidStates.NONE
+				: ValidStates.NONE
+		})
+		})
+	})
+
+	$effect(() => {
+		console.log("FormBase: formCtx.touchedFields", $state.snapshot(formCtx.touchedFields))
+		let doValidation = false
+
+		Object.keys(formCtx.touchedFields).forEach((key) => {
+				if (formCtx.touchedFields[key] !== formCtx.touchedFields[key]) {
+					doValidation = true
+				}
+			})
+
+		if (doValidation) {
+			form.validate({ data: formCtx.data }).then((errors) => {
+				formCtx.errors = errors
+			})
+		}
 	})
 
 	////
 	// FUNCTIONS
 	////
-
-	async function validate(data:typeof form["Data"]) {
-		errors = await form.validate({data})
-	}
 
 	function submitOnEnter(node: HTMLFormElement) {
 		const handler = (event: KeyboardEvent) => {
@@ -122,14 +149,17 @@
 			if (
 				"defaultValue" in fieldAttrs[field] && 
 				(
-					data[field] === undefined 
-					|| data[field] === null 
-					|| data[field] === ""
+					formCtx.data[field] === undefined 
+					|| formCtx.data[field] === null 
+					|| formCtx.data[field] === ""
 				)
 			) {
-				data[field] = fieldAttrs[field].defaultValue
+				formCtx.data[field] = fieldAttrs[field].defaultValue
 			}
 		})
+		if (defaultValues) {
+			formCtx.data = {...formCtx.data, ...defaultValues }
+		}
 	})
 
 </script>
@@ -148,7 +178,7 @@
 		{:else}
 			{#if showCancel}
 				<span class="h-fit">
-					<button type="button" class="btn variant-filled-surface" {disabled} onclick={oncancel}>
+					<button type="button" class="btn variant-filled-surface" disabled={formCtx.meta?.disabled} onclick={oncancel}>
 						{cancelLabel}
 					</button>
 				</span>
@@ -166,13 +196,13 @@
 					<button
 						type="button"
 						class="btn variant-filled ms-auto"
-						disabled={disabled || !canSubmit}
+						disabled={formCtx.meta?.disabled || !formCtx.meta?.canSubmit}
 						onclick={async (e) => {
-							disabled = true
-							canSubmit && onsubmit && (await onsubmit(e))
-							disabled = false
+							formCtx.meta.disabled = true
+							formCtx.meta?.canSubmit && onsubmit && (await onsubmit(e))
+							formCtx.meta.disabled = false
 						}}
-						title={canSubmit ? "" : "Please fill out all required fields"}
+						title={formCtx.meta?.canSubmit ? "" : "Please fill out all required fields"}
 					>
 						{submitLabel}
 					</button>
@@ -181,3 +211,9 @@
 		{/if}		
 	</div>
 </div>
+<br/>
+<!-- Data:
+{JSON.stringify(formCtx.data)}
+<br/>
+Errors:
+{JSON.stringify(formCtx.errors)} -->

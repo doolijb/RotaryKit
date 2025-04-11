@@ -1,31 +1,31 @@
 <script lang="ts">
-	import type { Primitive } from "$shared/validation/base"
-	import { popupSettings } from "$shared/validation/utils"
-	import humanizeString from "humanize-string"
+	import type { FormSchema, Primitive } from "$shared/validation/base"
 	import { ValidStates } from "$shared/constants"
+	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
 
 	////
 	// PROPS
 	////
 
 	interface Props {
-		fieldErrors: FieldErrors
+		form: FormSchema
 		fieldValidator: Primitive<unknown>
+		field: string
 		hideRequired?: boolean,
-		validState: ValidStates
 	}
 
 	let { 
-		fieldErrors = $bindable({}), 
+		form,
 		fieldValidator, 
 		hideRequired = false,
-		validState = $bindable(ValidStates.NONE),
+		field,
     	}: Props = $props()
 
 	////
 	// CONSTANTS
 	////
 
+	const formCtx = form.getContext()
 	const validatorKeys = fieldValidator.validators.map((v) => v.key)
 
 	////
@@ -33,6 +33,7 @@
 	////
 
 	let responseValidators: FieldErrors = $state({})
+	let openBadges: Record<string, boolean> = $state({})
 
 	////
 	// CALCULATED
@@ -49,52 +50,66 @@
 	)
 	let dynamicValidators = $derived(
 		Object.values(fieldValidator.validators).filter(
-			(validator) => !validator.isHidden && !validator.isSticky && !!fieldErrors[validator.key]
+			(validator) => !validator.isHidden && !validator.isSticky && !!formCtx.errors[field]?.[validator.key]
 		)
 	)
 
 	// Filter out validators that are not in the fieldValidator
 	$effect(() => {
-		if (validState === ValidStates.INVALID) {
-			const res: FieldErrors = {}
-			Object.keys(fieldErrors).forEach((key) => {
-				if (!validatorKeys.includes(key)) {
-					res[key] = fieldErrors[key]
-				}})
+		const res: FieldErrors = {}
+		if (formCtx.validStates[field] === ValidStates.INVALID) {
+			if (formCtx.errors[field] !== undefined) {
+				Object.keys(formCtx.errors[field]).forEach((key) => {
+					if (!validatorKeys.includes(key)) {
+						res[key] = formCtx.errors[field][key]
+					}})
+			}
 			responseValidators = res
 		}
 	})
 
 	let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
 
+	$effect(() => {
+		console.log("openBadges", $state.snapshot(openBadges))
+	})
+
 </script>
-<div class="flex gap-2">
-	{#each Object.values(validators) as validator}
-		<span
-			class="badge select-none px-1 py-0 text-xs"
-			class:preset-tonal-success={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
-			class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-			aria-label={`${validator.message}`}
-		>
-			{validator.badge}
-		</span>
-		<div
-			class="card z-10 block p-4 hidden"
-			class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
-			class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-			data-popup={validator.popup.target}
-		>
-			<p>{validator.message}</p>
-			<div
-				class="arrow"
-				class:preset-tonal-primary={validState !== ValidStates.INVALID ? true : !fieldErrors[validator.key]}
-				class:preset-tonal-error={validState === ValidStates.INVALID ? !!fieldErrors[validator.key] : false}
-			></div>
-		</div>
+<div class="flex gap-2 items-center">
+    {#each Object.values(validators) as validator}
+		{@const isError = formCtx.validStates[field] === ValidStates.INVALID ? !!formCtx.errors[field]?.[validator.key] : false}
+		<Tooltip
+			open={openBadges[validator.key]}
+			onOpenChange={(e) => {openBadges[validator.key] = e.open}}
+			arrow
+			arrowBackground={isError ? "!bg-error-400-600" : "!bg-success-400-600"}
+			zIndex="10"
+			>
+			{#snippet trigger()}
+				<span
+					class="badge select-none px-1 py-0 text-xs"
+					class:preset-tonal-success={!isError}
+					class:preset-tonal-error={isError}
+					aria-label={`${validator.message}`}
+				>
+					{validator.badge}
+				</span>
+			{/snippet}
+			{#snippet content()}
+				<div
+					class="card z-10 block p-4"
+					class:preset-filled-success-400-600={!isError}
+					class:preset-filled-error-400-600={isError}
+					data-popup={validator.popup.target}
+				>
+					<p>{validator.message}</p>
+				</div>
+			{/snippet}
+		</Tooltip>
 	{/each}
 </div>
 
-{#each Object.entries(responseValidators) as [key, message]}
+<!-- {#each Object.entries(responseValidators) as [key, message]}
 	{@const resPopup = popupSettings()}
 	<span
 		class="badge mb-2 select-none"
@@ -111,4 +126,4 @@
 		<p>{message}</p>
 		<div class="arrow" class:preset-filled-error={true}></div>
 	</div>
-{/each}
+{/each} -->

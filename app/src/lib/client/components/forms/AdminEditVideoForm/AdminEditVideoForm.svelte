@@ -2,7 +2,7 @@
 	import { FormBase, TextInput, SelectField } from "$client/components"
 	import { AdminEditVideo as Form } from "$shared/validation/forms"
 
-	const form = Form.init()
+	let form = $state(Form.init())
 
 	////
 	// PROPS

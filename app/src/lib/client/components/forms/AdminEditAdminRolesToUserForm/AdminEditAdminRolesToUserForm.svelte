@@ -5,7 +5,7 @@
 	import * as Icon from "lucide-svelte"
 
 
-	export const form = Form.init()
+	let form = $state(Form.init())
 
 
 	////

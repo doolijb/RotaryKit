@@ -6,7 +6,7 @@
 	// PROPS
 	////
 	
-	export const form = Form.init()
+	let form = $state(Form.init())
 	interface Props {
 		// Props
 

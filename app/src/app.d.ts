@@ -90,7 +90,8 @@ declare global {
 		label?: string
 		placeholder?: string
 		defaultValue?: any
-		description?: string
+		description?: string,
+		type?: string
 	}
 
 	////

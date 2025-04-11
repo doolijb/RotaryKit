@@ -1,16 +1,20 @@
 import type { StorybookConfig } from '@storybook/sveltekit';
 
 const config: StorybookConfig = {
+  // "stories": [
+	// 	{
+	// 		directory: "../src/lib/client/components",
+	// 		titlePrefix: "Components"
+	// 	},
+	// 	{
+	// 		directory: "../src/lib/client/emailTemplates",
+	// 		titlePrefix: "Email Templates"
+	// 	}
+	// ],
   "stories": [
-		{
-			directory: "../src/lib/client/components",
-			titlePrefix: "Components"
-		},
-		{
-			directory: "../src/lib/client/emailTemplates",
-			titlePrefix: "Email Templates"
-		}
-	],
+		"../src/**/*.mdx",
+		"../src/**/*.stories.@(js|ts|svelte)"
+	  ],
   "addons": [
     "@storybook/addon-essentials",
     "@storybook/addon-svelte-csf",

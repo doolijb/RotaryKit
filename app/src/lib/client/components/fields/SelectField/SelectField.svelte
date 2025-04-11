@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { onMount } from "svelte"
+	import { ValidationBadges } from "$client/components"
 	import { v4 } from "uuid"
-	import type { PopupSettings, AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
+	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 	import type { FormSchema } from "$shared/validation/base"
 	import humanizeString from 'humanize-string'
-	import { ValidStates } from "$shared/constants"
 
 	////
 	// LOCAL EXPORTS
@@ -21,8 +19,6 @@
 		options?: AutocompleteOption[]
 
 		// Bindables
-		data?: Record<string, any>
-		errors?: Record<string, any>
 		ref?: any
 		disabled?: boolean
 		isTouched?: boolean
@@ -43,8 +39,6 @@
 		options,
 
 		// Bindables
-		data = $bindable({}),
-		errors = $bindable({}),
 		ref = $bindable(),
 		disabled = $bindable(false),		
 		isTouched = $bindable(false),
@@ -56,29 +50,23 @@
 	}: Props = $props();
 
 	////
+	// CONSTANTS
+	////
+
+	const formCtx = form.getContext()
+
+	////
 	// STATE
 	////
 
 	let validatorLength = $state(0)
-	let fieldErrors: FieldErrors = $state({})
-	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
 	////
 
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
-		} else {
-			delete errors[field]
-		}
-	}
-
 	async function touch() {
 		isTouched = true
-		validate()
 	}
 
 	function handleOnBlur(e: Event) {
@@ -87,7 +75,6 @@
 	}
 
 	function handleOnChange(e: Event) {
-		console.log("handleOnChange")
 		touch()
 		onchange?.(e)
 	}
@@ -100,16 +87,6 @@
 	let fieldValidator = $derived(form.fields[field])
 	let required = $derived(fieldValidator.isRequired)
 	let selectOptionsValidator = $derived(fieldValidator.validators.find(v => v.key == "selectOptions"))
-
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
 
 	$effect(() => {
 		validatorLength = Object.values(fieldValidator.validators).filter(
@@ -127,18 +104,6 @@
 		}
 	})
 
-	$effect(() => {
-		fieldErrors = errors[field] || {}
-	})
-
-	////
-	// LIFECYCLE
-	////
-
-	onMount(() => {
-		data[field] && touch()
-	})
-
 </script>
 
 <div class="mb-2">
@@ -149,7 +114,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
+			<ValidationBadges {fieldValidator} {form} {field}  />
 		{/if} 
 	</div>
 
@@ -158,7 +123,7 @@
 		class="select disabled:cursor-not-allowed"
 		bind:this={ref}
 		{placeholder}
-		bind:value={data[field]}
+		bind:value={formCtx.data[field]}
 		{disabled}
 		{required}
 		{onfocus}
@@ -167,15 +132,15 @@
 		aria-label={label}
 	>
 		{#if !required}
-			<option value="" selected={!data[field]}>Select an option</option>
+			<option value="" selected={!formCtx.data[field]}>Select an option</option>
 		{/if}
 		{#if options && options.length > 0}
 			{#each options.reverse() as option}
-				<option value={option.value} selected={option===data[field]}>{option.label}</option>
+				<option value={option.value} selected={option===formCtx.data[field]}>{option.label}</option>
 			{/each}
 		{:else if selectOptionsValidator}
 			{#each selectOptionsValidator.args["options"].reverse() as option}
-				<option value={option} selected={option==data[field]}>{option}</option>
+				<option value={option} selected={option==formCtx.data[field]}>{option}</option>
 			{/each}
 		{/if}
 	</select>

@@ -18,8 +18,6 @@
         ////
         field: string;
         form: FormSchema;
-        data: typeof form["Data"];
-        errors: FormErrors;
         options: AutocompleteOption[];
         ////
         ref?: HTMLInputElement | null;
@@ -43,8 +41,6 @@
     let {
         field,
         form,
-        data = $bindable({} as FormDataOf<any>),
-        errors = $bindable({}),
         options,
         ref = $bindable(null),
         placeholder = attrs?.placeholder,
@@ -96,10 +92,10 @@
         if (searchInput) {
             const option = getOptionByLabel(searchInput)
             if (option) {
-                data[field] = option.value
+                formCtx.data[field] = option.value
                 searchInput = option.label
             } else {
-                data[field] = undefined
+                formCtx.data[field] = undefined
                 searchInput = ""
             }
         } else if (selectedOption) {
@@ -107,7 +103,7 @@
                 searchInput = selectedOption.label
             }
         } else {
-            data[field] = undefined
+            formCtx.data[field] = undefined
             searchInput = ""
         }
         isTouched = true
@@ -169,19 +165,11 @@
 		).length
 	});
 	let required = $derived(fieldValidator.isRequired)
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
-    let selectedOption = $derived(Object.values(options).find(option => option.value === data[field]) || null)
+
+    let selectedOption = $derived(Object.values(options).find(option => option.value === formCtx.data[field]) || null)
 
     $effect(() => {
-        fieldErrors = errors[field] || {}
+        fieldErrors = formCtx.errors[field] || {}
     })
 
 	////
@@ -189,7 +177,7 @@
 	////
 
 	onMount(() => {
-		if (data[field]) {
+		if (formCtx.data[field]) {
             updateField() 
             touch()
         }
@@ -205,7 +193,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
+			<ValidationBadges {fieldValidator} {form} {field} />
 		{/if}
 	</div>
 
@@ -232,7 +220,7 @@
         {@render suffix?.()}
         {#if !disabled && validatorLength}
 			<div class="legendIcon align-middle px-0 me-3">
-				<ValidationLegend {fieldValidator} bind:fieldErrors bind:validState {attrs} />
+				<ValidationLegend {fieldValidator} {form} {field} {attrs} />
 			</div>
 		{/if}
     </div>
@@ -248,7 +236,7 @@
                     class="mt-3 select-none"
                     type="button"
                     onclick={e => {
-                        data[field] = ""
+                        formCtx.data[field] = ""
                         searchInput = ""
                         touch()
                         e.preventDefault()

@@ -21,8 +21,6 @@
 		size?: number
 
 		// Bindables
-		data?: FormDataOf<any>
-		errors?: Record<string, Record<string, string>>
 		ref?: HTMLSelectElement
 		isTouched?: boolean
 		selectedValues?: string[]
@@ -40,12 +38,11 @@
 		form,
 		options,
 		label,
-		disabled = $bindable(false),		id = v4(),
+		disabled = $bindable(false),
+		id = v4(),
 		size = 4,
 
 		// Bindables
-		data = $bindable({} as FormDataOf<any>),
-		errors = $bindable({}),
 		ref = $bindable(undefined),
 		isTouched = $bindable(false),
 		selectedValues = $bindable([]),
@@ -71,9 +68,9 @@
 	async function validate() {
 		let fieldErrors = await form.fields[field].validate({key:field, data})
 		if (Object.keys(fieldErrors).length) {
-			errors[field] = fieldErrors
+			formCtx.errors[field] = fieldErrors
 		} else {
-			delete errors[field]
+			delete formCtx.errors[field]
 		}
 	}
 
@@ -84,13 +81,13 @@
 
 	function handleAdd() {
 
-		data[field] = [... new Set([...Object.values(data[field]), ...selectedAvailable])]
+		formCtx.data[field] = [... new Set([...Object.values(formCtx.data[field]), ...selectedAvailable])]
 		selectedAvailable = []
 		touch()
 	}
 
 	function handleRemove() {
-		data[field] = Object.values(data[field]).filter( value => !selectedValues.includes(value))
+		formCtx.data[field] = Object.values(formCtx.data[field]).filter( value => !selectedValues.includes(value))
 		selectedValues = []
 		touch()
 	}
@@ -119,21 +116,12 @@
 	let canRemove = $derived(!!selectedValues.length) 
 	let canAdd = $derived(!!selectedAvailable.length)
 
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
 
 	$effect.pre(() => {
-		if (data[field] === undefined) {
-			data[field] = []
+		if (formCtx.data[field] === undefined) {
+			formCtx.data[field] = []
 		}
-		if (data[field].length) touch()
+		if ((formCtx.data[field] as Array<any> ).length) touch()
 	})
 
 	$effect.pre(() => {
@@ -147,7 +135,7 @@
 	})
 
 	$effect(() => {
-		fieldErrors = errors[field] || {}
+		fieldErrors = formCtx.errors[field] || {}
 	})
 
 </script>
@@ -160,7 +148,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState hideRequired={true} />
+			<ValidationBadges {fieldValidator} {form} {field} hideRequired={true} />
 		{/if}
 	</div>
 	<!-- Side by side select, with arrows to add, remove from left to right -->
@@ -168,13 +156,13 @@
 		<div class="flex flex-col col-span-2">
 			<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
 				{#each Object.values(options) as {key, label}}
-					{#if !Object.values(data[field]).includes(key)}
+					{#if !Object.values(formCtx.data[field]).includes(key)}
 						<option value={key}>{label}</option>
 					{/if}
 				{/each}
 			</select>
 			<span class="text-surface-300 text-sm">
-				Available options: {Object.keys(options).length - Object.values(data[field]).length}
+				Available options: {Object.keys(options).length - Object.values(formCtx.data[field]).length}
 				</span>
 		</div>
 
@@ -225,12 +213,12 @@
 				{required}
 			>
 				{#each Object.values(options) as {key, label}}
-					{#if Object.values(data[field]).includes(key)}
+					{#if Object.values(formCtx.data[field]).includes(key)}
 						<option value={key}>{label}</option>
 					{/if}
 				{/each}
 			</select>
-			<span class="text-surface-300 text-sm">Selected options: {Object.values(data[field]).length}</span>
+			<span class="text-surface-300 text-sm">Selected options: {Object.values(formCtx.data[field]).length}</span>
 		</div>
 	</div>
 </div>

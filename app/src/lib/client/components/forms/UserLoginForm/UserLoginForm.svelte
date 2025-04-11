@@ -2,7 +2,7 @@
 	import { FormBase, TextInput, PassphraseInput } from "$client/components"
 	import { UserLogin as Form } from "$shared/validation/forms"
 
-	export const form = Form.init()
+	let form = $state(Form.init())
 
 	////
 	// PROPS

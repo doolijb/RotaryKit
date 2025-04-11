@@ -8,6 +8,7 @@
 	import type { FormSchema } from "$shared/validation/base"
 	import type { Snippet } from 'svelte'
 	import humanizeString from "humanize-string"
+	import { Icon } from "lucide-svelte"
 
 	const toast: ToastContext = getContext("toast")
 
@@ -53,7 +54,7 @@
 		options,
 
 		// Bindables
-		form = $bindable(),
+		form,
 		data = $bindable({} as FormDataOf<any>),
 		errors = $bindable({}),
 		ref = $bindable(undefined),
@@ -353,7 +354,7 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors />
+			<ValidationBadges {validState} {fieldValidator} bind:fieldErrors />
 		{/if}
 	</div>
 

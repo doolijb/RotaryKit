@@ -3,9 +3,8 @@
 	import { FormBase, TextInput, CheckboxInput } from "$client/components"
 	import ModalSelectField from "$client/components/fields/ModalSelectField"
 	import { AdminCreateEmail as Form } from "$shared/validation/forms"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
 
-	const form = Form.init()
+	let form = $state(Form.init())
 
 	////
 	// Props
@@ -15,10 +14,6 @@
 		// Props
 
 		// Bindables
-		data?: typeof form["Data"];
-		errors?: FormErrors;
-		disabled?: boolean;
-		canSubmit?: boolean;
 		userSearchInput?: string;
 		getUserChoices?: any;
 
@@ -33,15 +28,6 @@
 		// Props
 
 		// Bindables
-		data = $bindable({
-			address: "",
-			isVerified: false,
-			isUserPrimary: false,
-			userId: null,
-		}),
-		errors = $bindable({}),
-		disabled = $bindable(false),
-		canSubmit = $bindable(false),
 		userSearchInput = $bindable(""),
 
 		// Events
@@ -74,33 +60,29 @@
 
 <FormBase
 	{form}
-	bind:data
-	bind:errors
-	bind:canSubmit
-	bind:disabled
 	{onsubmit}
 	{oncancel}
 	showSubmit={false}
 	showCancel={false}
+	defaultValues={{
+		address: "",
+		isVerified: false,
+		isUserPrimary: false,
+		userId: null,
+	}}
 >
 
 	<TextInput
 		id="address"
 		field="address"
-		bind:data
-		bind:errors
 		{form}
-		{disabled}
 	/>
 
 	{#if canEditUsers}
 		<ModalSelectField
 			id="userId"
 			field="userId"
-			bind:data
-			bind:errors
 			{form}
-			{disabled}
 			getOptions={getUserOptions}
 			mapOptions={mapUserOptions}
 		/>
@@ -111,10 +93,7 @@
 			<CheckboxInput
 				id="isVerified"
 				field="isVerified"
-				bind:data
-				bind:errors
 				{form}
-				{disabled}
 			/>
 		</div>
 	</div>
@@ -125,10 +104,7 @@
 				<CheckboxInput
 					id="isUserPrimary"
 					field="isUserPrimary"				
-					bind:data
-					bind:errors
 					{form}
-					{disabled}
 				/>
 			</div>
 		</div>

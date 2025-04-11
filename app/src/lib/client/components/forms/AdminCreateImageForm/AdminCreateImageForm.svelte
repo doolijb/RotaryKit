@@ -4,7 +4,7 @@
 	import { AdminCreateImage as Form } from "$shared/validation/forms"
 
 
-	const form = Form.init()
+	let form = Form.init()
 
 
 	////
@@ -58,10 +58,6 @@
 
 <FormBase
 	{form}
-	bind:data
-	bind:errors
-	bind:canSubmit
-	bind:disabled 
 	{onsubmit}
 	{oncancel}
 	showSubmit={false}
@@ -70,8 +66,6 @@
 	<TextInput
 		id="title"
 		field="title"
-		bind:data
-		bind:errors
 		{form}
 		{disabled}
 	/>
@@ -79,9 +73,7 @@
 	<FileDropField
 		id="image"
 		field="image"
-		bind:data
 		{form}
-		bind:errors
 		{disabled}
 	/>
 

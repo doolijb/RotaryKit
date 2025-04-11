@@ -22,8 +22,6 @@
 		showFiles?: boolean
 
 		// Bindables
-		data?: Record<string, any>
-		errors?: Record<string, any>
 		ref?: HTMLInputElement
 		id?: string
 		isTouched?: boolean
@@ -39,11 +37,10 @@
 		field,
 		form,
 		label,
-		disabled = $bindable(false),		showFiles = true,
+		disabled = $bindable(false),
+		showFiles = true,
 
 		// Bindables
-		data = $bindable({} as FormDataOf<any>),
-		errors = $bindable({}),
 		ref = $bindable(undefined),
 		id = $bindable(v4()),
 		isTouched = $bindable(false),
@@ -74,14 +71,14 @@
 		const initialDisabled = disabled
 		disabled = true
 		// Remove any files already in the data
-		const newFiles = Array.from(addedFiles).filter((file) => !data[field].find((f: File) => f.name === file.name))
-		const updatedFiles = data[field] || []
+		const newFiles = Array.from(addedFiles).filter((file) => !formCtx.data[field].find((f: File) => f.name === file.name))
+		const updatedFiles = formCtx.data[field] || []
 		newFiles.forEach((file) => {
 			if (!updatedFiles.find((f) => f.name === file.name)) {
 				updatedFiles.push(file)
 			}
 		})
-		data[field] = updatedFiles
+		formCtx.data[field] = updatedFiles
 		// Clear the added files
 		addedFiles = null
 		disabled = initialDisabled
@@ -214,7 +211,7 @@
 	}
 
 	function removeFile(file: File) {
-		data[field] = data[field].filter((f) => f !== file)
+		formCtx.data[field] = formCtx.data[field].filter((f) => f !== file)
 		touch()
 	}
 
@@ -278,31 +275,22 @@
 	})
 
 	$effect.pre(() => {
-		if (!Array.isArray(data[field])) {
-			data[field] = []
+		if (!Array.isArray(formCtx.data[field])) {
+			formCtx.data[field] = []
 		}
 	})
 
 	$effect(() => {
-		fieldErrors = errors[field] || {}
+		fieldErrors = formCtx.errors[field] || {}
 	})
 	
-	$effect(() => {
-		validState = isTouched
-		? fieldErrors && Object.keys(fieldErrors).length
-			? ValidStates.INVALID
-			: data[field]
-			  ? ValidStates.VALID
-			  : ValidStates.NONE
-		: ValidStates.NONE
-	})
 
 	////
 	// LIFECYCLE
 	////
 
 	onMount(async () => {
-		if (data[field] && data[field].length) {
+		if (formCtx.data[field] && formCtx.data[field].length) {
 			await touch()
 		}
 		listedAvailableExtensions = listAvailableExtensions()
@@ -319,12 +307,12 @@
 			</span>
 		</label>
 		{#if !disabled}
-			<ValidationBadges {fieldValidator} bind:fieldErrors bind:validState />
+			<ValidationBadges {fieldValidator} {form} {field} />
 		{/if}
 	</div>
 
 	<!-- Show the drop zone if we can accept multiple files, or if 1 file max and no file selected -->
-	 <div class:hidden={!(allowMultiSelect || (!allowMultiSelect && !data[field]?.length))}>
+	 <div class:hidden={!(allowMultiSelect || (!allowMultiSelect && !formCtx.data[field]?.length))}>
 		<FileUpload 
 			name={field} 
 			{id}
@@ -366,7 +354,7 @@
 		</FileUpload>
 	</div>
 
-	{#if showFiles && data[field]}
+	{#if showFiles && formCtx.data[field]}
 		<div
 			class="mt-2"
 			class:preset-ringed-error={hasFileRelatedErrors}
@@ -379,7 +367,7 @@
 				</p>
 			{/if}
 			<div class="grid grid-cols-1 gap-2">
-				{#each data[field] as file}
+				{#each formCtx.data[field] as file}
 					<div class="card p-4 preset-filled-surface">
 						<div class="card-body">
 							<div class="flex items-center gap-2">

@@ -27,28 +27,21 @@ class DefaultForm extends FormSchema {
 export const Default: Story = {
 	args: {
 		field: "inputField",
-		form: DefaultForm.init(),
-		data: { inputField: "" },
-		errors: {}
+		form: DefaultForm.init({data: { inputField: "" }}),
 	}
 }
 
 export const Disabled: Story = {
 	args: {
-		disabled: true,
 		field: "inputField",
-		form: DefaultForm.init(),
-		data: { inputField: "Hello world" },
-		errors: {}
+		form: DefaultForm.init({data: { inputField: "Hello world" }}),
 	}
 }
 
 export const Filled: Story = {
 	args: {
 		field: "inputField",
-		form: DefaultForm.init(),
-		data: { inputField: "Hello world" },
-		errors: {}
+		form: DefaultForm.init({data: { inputField: "Hello world" }}),
 	}
 }
 
@@ -69,18 +62,14 @@ class WithValidatorsForm extends FormSchema {
 export const WithValidators: Story = {
 	args: {
 		field: "inputField",
-		form: WithValidatorsForm.init(),
-		data: { inputField: "" },
-		errors: {}
+		form: WithValidatorsForm.init({data: { inputField: "" }})
 	}
 }
 
 export const FilledWithValidators: Story = {
 	args: {
 		field: "inputField",
-		form: WithValidatorsForm.init(),
-		data: { inputField: "Hello world" },
-		errors: {}
+		form: WithValidatorsForm.init({data: { inputField: "Hello world" }})
 	}
 }
 
@@ -100,8 +89,6 @@ class WithPlaceholderForm extends FormSchema {
 export const WithPlaceholder: Story = {
 	args: {
 		field: "inputField",
-		form: WithPlaceholderForm.init(),
-		data: { inputField: "" },
-		errors: {}
+		form: WithPlaceholderForm.init({data: { inputField: "" }})
 	}
 }
