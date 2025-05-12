@@ -26,11 +26,9 @@ export const passphrases: PgTableWithColumns<any> & { usePermissions?: boolean }
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		invalidatedAt: timestamp("updated_at")
 	},
-	(t) => {
-		return {
-			onePerUser: uniqueIndex("unique_user_passphrases").on(t.userId)
-		}
-	}
+	(t) => [
+		uniqueIndex("unique_user_passphrases").on(t.userId)
+	]
 )
 
 passphrases.usePermissions = true

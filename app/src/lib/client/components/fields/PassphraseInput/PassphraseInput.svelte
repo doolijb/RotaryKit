@@ -1,51 +1,23 @@
 <script lang="ts">
-	import { TextInput } from "$client/components"
+	import { FieldBase, Input } from "$client/components"
 	import * as Icon from "lucide-svelte"
-	import { v4 } from "uuid"
-	import type { FormSchema } from "$shared/validation/base"
+	import type { ComponentProps } from "svelte"
 
 	////
 	// PROPS
 	////
 
-	interface Props {
-		// Props
-		field: string;
-		form: FormSchema;
-		placeholder?: string;
-		label?: string;
-
+	interface Props extends Omit<ComponentProps<typeof FieldBase>, "children" | "type"> {
 		// Bindables
-		ref?: any;
-		disabled?: boolean;
-		id?: string;
-		isTouched?: boolean;
 		showPassword?: boolean;
-
-		// Events
-		oninput?: (e: Event) => void;
-		onfocus?: (e: Event) => void;
-		onblur?: (e: Event) => void;
 	}
 
 	let {
-		// Props
-		field,
-		form,
-		placeholder,
-		label,
-
 		// Bindables
 		ref = $bindable(undefined),
-		disabled = $bindable(false),
-		id = $bindable(v4()),
-		isTouched = $bindable(false),
 		showPassword = $bindable(false),
 
-		// Events
-		oninput,
-		onfocus,
-		onblur
+		...restProps
 	}: Props = $props();
 
 	////
@@ -54,45 +26,30 @@
 	
 	let type = $derived(showPassword ? "text" : "password")
 
-	////
-	// FUNCTIONS
-	////
-
-	function togglePasswordVisibility() {
-		showPassword = !showPassword
-	}
-
-
 </script>
 
-<TextInput
-	{label}
-	{placeholder}
-	{field}
-	{form}
-	{type}
-	bind:id
-	bind:disabled
+
+<Input
+	{...restProps}
 	bind:ref
-	bind:isTouched
-	{oninput}
-	{onfocus}
-	{onblur}
+	{type}
 >
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	{#snippet suffixSnippet()}
-		<span
-			
-			onclick={togglePasswordVisibility}
-			class="text-surface-500 cursor-pointer"
-			title="Show Password"
-		>	
-			{#if !showPassword}
-				<Icon.Eye class="opacity-50 hover:opacity-100" width="2em" />
-			{:else}
-				<Icon.EyeClosed class="opacity-50 hover:opacity-100" width="2em" />
-			{/if}
-		</span>
+	{#snippet suffixSnippet({disabled})}
+		{#if !disabled}
+			<button
+				type="button"
+				onclick={(e) => {showPassword = !showPassword}}
+				class="cursor-pointer p-0 m-0 h-fit flex items-center"
+				title={showPassword ? "Hide passphrase" : "Show passphrase"}
+				aria-label={showPassword ? "Hide passphrase" : "Show passphrase"}
+				aria-pressed={showPassword}
+			>	
+				{#if !showPassword}
+					<Icon.Eye class="opacity-50 hover:opacity-100" width="2em" />
+				{:else}
+					<Icon.EyeClosed class="opacity-50 hover:opacity-100" width="2em" />
+				{/if}
+			</button>
+		{/if}
 	{/snippet}
-</TextInput>
+</Input>

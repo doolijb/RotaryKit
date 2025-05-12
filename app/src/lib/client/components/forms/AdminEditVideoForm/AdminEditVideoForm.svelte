@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput, SelectField } from "$client/components"
+	import { FormBase, Input, SelectField } from "$client/components"
 	import { AdminEditVideo as Form } from "$shared/validation/forms"
 
 	let form = $state(Form.init())
@@ -71,7 +71,7 @@
 	showSubmit={false}
 	showCancel={false}
 >
-	<TextInput
+	<Input
 		id="title"
 		field="title"
 		bind:data

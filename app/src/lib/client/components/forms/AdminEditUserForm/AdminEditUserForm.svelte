@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state"
-	import { FormBase, CheckboxInput, TextInput } from "$client/components"
+	import { FormBase, CheckboxInput, Input } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
 	import { AdminEditUser as Form, AdminEditUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
 	import * as Icon from "lucide-svelte"
@@ -105,7 +105,7 @@
 			</div>
 		{/if}
 
-		<TextInput
+		<Input
 			label="Username"
 			id="username"
 			field="username"

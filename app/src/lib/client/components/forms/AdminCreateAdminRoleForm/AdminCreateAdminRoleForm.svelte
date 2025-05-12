@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput, MultiSelect } from "$client/components"
+	import { FormBase, Input, MultiSelect } from "$client/components"
 	import { AdminCreateAdminRole as Form } from "$shared/validation/forms"
 
 	let form = $state(Form.init())
@@ -44,7 +44,7 @@
 	showCancel={false}
 	>
 
-	<TextInput
+	<Input
 		id="name"
 		field="name"
 		{form}

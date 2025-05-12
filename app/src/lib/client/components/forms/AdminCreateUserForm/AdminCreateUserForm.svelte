@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput, PassphraseInput, CheckboxInput } from "$client/components"
+	import { FormBase, Input, PassphraseInput, CheckboxInput } from "$client/components"
 	import { AdminCreateUser as Form, AdminCreateUserWithPermissions as FormWithPermissions } from "$shared/validation/forms"
 	import { onMount } from "svelte"
 
@@ -60,7 +60,7 @@
 		showSubmit={false}
 		showCancel={false}
 	>
-		<TextInput
+		<Input
 			label="Username"
 			id="username"
 			field="username"
@@ -68,7 +68,7 @@
 			{disabled}
 		/>
 
-		<TextInput
+		<Input
 			label="Email"
 			id="email"
 			field="email"

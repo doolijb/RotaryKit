@@ -85,7 +85,6 @@
 	})
 
 	$effect(() => {
-		console.log("FormBase: formCtx.touchedFields", $state.snapshot(formCtx.touchedFields))
 		let doValidation = false
 
 		Object.keys(formCtx.touchedFields).forEach((key) => {
@@ -164,56 +163,53 @@
 
 </script>
 
-<div>
-	
-	<form use:submitOnEnter {onsubmit} class="mb-4">
-		{@render children()}
-	</form>
+{#if formCtx}
+	<div>
+		
+		<form use:submitOnEnter {onsubmit} class="mb-4">
+			{@render children()}
+		</form>
 
-	<div class="flex gap-2 flex-row justify-between">
+		<div class="flex gap-2 flex-row justify-between">
 
-		<!-- Cancel button, etc -->
-		{#if cancelSnippet}
-			{@render cancelSnippet()}
-		{:else}
-			{#if showCancel}
-				<span class="h-fit">
-					<button type="button" class="btn variant-filled-surface" disabled={formCtx.meta?.disabled} onclick={oncancel}>
-						{cancelLabel}
-					</button>
-				</span>
+			<!-- Cancel button, etc -->
+			{#if cancelSnippet}
+				{@render cancelSnippet()}
+			{:else}
+				{#if showCancel}
+					<span class="h-fit">
+						<button type="button" class="btn variant-filled-surface" disabled={formCtx.meta?.disabled} onclick={oncancel}>
+							{cancelLabel}
+						</button>
+					</span>
+				{/if}
 			{/if}
-		{/if}
 
-		{@render extraButtonsSnippet?.()}
+			{@render extraButtonsSnippet?.()}
 
-		<!-- Submit button -->
-		{#if submitSnippet}
-			{@render submitSnippet()}
-		{:else}
-			{#if showSubmit}
-				<span class="h-fit">
-					<button
-						type="button"
-						class="btn variant-filled ms-auto"
-						disabled={formCtx.meta?.disabled || !formCtx.meta?.canSubmit}
-						onclick={async (e) => {
-							formCtx.meta.disabled = true
-							formCtx.meta?.canSubmit && onsubmit && (await onsubmit(e))
-							formCtx.meta.disabled = false
-						}}
-						title={formCtx.meta?.canSubmit ? "" : "Please fill out all required fields"}
-					>
-						{submitLabel}
-					</button>
-				</span>
-			{/if}
-		{/if}		
+			<!-- Submit button -->
+			{#if submitSnippet}
+				{@render submitSnippet()}
+			{:else}
+				{#if showSubmit}
+					<span class="h-fit">
+						<button
+							type="button"
+							class="btn variant-filled ms-auto"
+							disabled={formCtx.meta?.disabled || !formCtx.meta?.canSubmit}
+							onclick={async (e) => {
+								formCtx.meta.disabled = true
+								formCtx.meta?.canSubmit && onsubmit && (await onsubmit(e))
+								formCtx.meta.disabled = false
+							}}
+							title={formCtx.meta?.canSubmit ? "" : "Please fill out all required fields"}
+						>
+							{submitLabel}
+						</button>
+					</span>
+				{/if}
+			{/if}		
+		</div>
 	</div>
-</div>
+{/if}
 <br/>
-<!-- Data:
-{JSON.stringify(formCtx.data)}
-<br/>
-Errors:
-{JSON.stringify(formCtx.errors)} -->

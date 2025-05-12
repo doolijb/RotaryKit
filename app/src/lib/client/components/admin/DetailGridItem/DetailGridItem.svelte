@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import humanizeString from "humanize-string"
     import { getDisplayAndCopyText } from "$client/utils"
     import { getContext, type Snippet } from "svelte"
     import DOMPurify from "isomorphic-dompurify"
     import * as Icon from "lucide-svelte"
 
-    const toast: ToastContext = getContext("toast")
 
     ////
     // PROPS
@@ -63,7 +62,7 @@
     function onClick() {
         if (canCopy) {
             copyToClipboard()
-            toast.create({ description: "Copied to clipboard"})
+            toaster.create({ description: "Copied to clipboard"})
         }
     }
     

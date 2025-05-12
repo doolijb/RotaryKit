@@ -1,12 +1,11 @@
-import { users } from "$server/providers"
-import { db, schema } from "$server/database"
+import { db } from "$server/database"
 import { UserLogin as PostForm } from "$shared/validation/forms"
 import { validateData } from "$server/requests"
 import { BadRequest, InternalServerError, Forbidden, Ok } from "sveltekit-zero-api/http"
 import type { RequestEvent } from "@sveltejs/kit"
 import type { KitEvent } from "sveltekit-zero-api"
 import { logger } from "$server/logging"
-import { username } from "$shared/validation/fields"
+import { users } from "$server/providers"
 
 const postForm = PostForm.init()
 
@@ -31,21 +30,6 @@ type Post = {
  * Login a user
  */
 export async function POST(event: KitEvent<Post, RequestEvent>) {
-
-
-
-
-	const users = db.query.users({
-		where: (u, { eq }) => eq(u.username, "admin"),
-		columns: {
-			id: true,
-			username: true,
-			address: true,
-		}
-	})
-
-	const users = await db.insert(schema.users).values({ id: "1", username: "admin", address: "admin@localhost" })
-
 	
 	try {
 		// await limiter.cookieLimiter?.preflight(event)
@@ -77,6 +61,8 @@ export async function POST(event: KitEvent<Post, RequestEvent>) {
 				user: true
 			}
 		})
+
+		console.log("email", email)
 
 		if (email) {
 			if (!email.verifiedAt) {

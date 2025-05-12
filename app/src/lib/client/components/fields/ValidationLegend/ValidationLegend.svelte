@@ -55,7 +55,7 @@
 			if (formCtx.errors[field] !== undefined) {
 				Object.keys(formCtx.errors[field]).forEach((key) => {
 					if (!validatorKeys.includes(key)) {
-						res[key] = formCtx.errors[field][key]
+						res[key] = formCtx.errors[field]?.[key]
 					}})
 			}
 			responseValidators = res
@@ -64,7 +64,7 @@
 
 </script>
 
-{#snippet icon({Icn, preset})}
+{#snippet icon({Icn, preset}:{Icn: typeof Icon, preset?: string})}
     <Icn
         class="pointer-events-none w-[1em] h-[1em] mt-[-0.25em] inline {preset}"
     />
@@ -74,8 +74,8 @@
     <div>
         <span
             class="badge"
-            class:preset-filled-success-500={!isValid}
-            class:preset-filled-error-500={!!isValid}
+            class:preset-filled-success-500={isValid}
+            class:preset-filled-error-500={!isValid}
         >
             {badge}
         </span>
@@ -109,9 +109,9 @@
                 {#if formCtx.validStates[field] === ValidStates.INVALID}
                     {@render icon({Icn: Icon.AlertCircle, preset: "text-error-500"})}
                 {:else if formCtx.validStates[field] === ValidStates.VALID}
-                    {@render icon({Icn: Icon.Check, preset: "text-success-700"})}
+                    {@render icon({Icn: Icon.Check, preset: "text-success-500"})}
                 {:else}
-                    {@render icon({Icn: Icon.Minus, preset: "text-surface-500"})}
+                    {@render icon({Icn: Icon.Minus})}
                 {/if}
             </div>
         {/snippet}
@@ -127,7 +127,7 @@
                     <div class="flex flex-col gap-1">
                         <h4 class="h4 mb-1">Requirements</h4>
                         {#each Object.values(validators) as validator}
-                            {@render badge({badge: validator.badge, message: validator.message, isValid: formCtx.errors[field][validator.key]})}
+                            {@render badge({badge: validator.badge, message: validator.message, isValid: !formCtx.errors[field]?.[validator.key]})}
                         {/each}
                         {#each Object.entries(responseValidators) as [key, value]}
                             {@render badge({badge: humanizeString(key), message: value, isValid: false})}

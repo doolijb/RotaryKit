@@ -1,8 +1,9 @@
 <script lang="ts">
 	import "../app.css"
-	import { ToastProvider } from "@skeletonlabs/skeleton-svelte"
+	import { Toaster } from "@skeletonlabs/skeleton-svelte"
 	import { SiteNavigation, SiteFooter } from "$client/components"
 	import { page } from "$app/state"
+	import { toaster } from "$client/utils"
 
 
 	////
@@ -30,18 +31,18 @@
 	{/if}
 </svelte:head>
 
-<ToastProvider>
-	<div class="flex flex-col min-h-screen relative">
-		<header>
-			<SiteNavigation />
-		</header>
+<Toaster {toaster}></Toaster>
 
-		<div class="flex flex-col flex-grow">
-			{@render children?.()}
-		</div>
+<div class="flex flex-col min-h-screen relative">
+	<header>
+		<SiteNavigation />
+	</header>
 
-		<footer class="mt-auto">
-			<SiteFooter />
-		</footer>
+	<div class="flex flex-col flex-grow">
+		{@render children?.()}
 	</div>
-</ToastProvider>
+
+	<footer class="mt-auto">
+		<SiteFooter />
+	</footer>
+</div>

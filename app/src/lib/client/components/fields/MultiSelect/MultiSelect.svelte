@@ -1,168 +1,85 @@
 <script lang="ts">
-	import { ValidationBadges } from "$client/components"
-	import { v4 } from "uuid"
-	import type { FormSchema } from "$shared/validation/base"
+	import { FieldBase } from "$client/components"
 	import * as Icon from "lucide-svelte"
-	import humanizeString from "humanize-string"
-	import { ValidStates } from "$shared/constants"
+	import type { ComponentProps } from "svelte"
 
 	////
 	// PROPS
 	////
 
-	interface Props {
+	interface Props extends Omit<ComponentProps<typeof FieldBase>, "children"> {
 		// Props
-		field: string
-		form: FormSchema
 		options: MultiSelectOption[]
-		label?: string
-		disabled?: boolean
-		id?: string
 		size?: number
 
 		// Bindables
-		ref?: HTMLSelectElement
-		isTouched?: boolean
 		selectedValues?: string[]
 		selectedAvailable?: string[]
-
-		// Events
-		onblur?: (e: Event) => void
-		onfocus?: (e: Event) => void
-		oninput?: (e: Event) => void
 	}
 
 	let {
 		// Props
-		field,
-		form,
 		options,
-		label,
-		disabled = $bindable(false),
-		id = v4(),
 		size = 4,
 
 		// Bindables
 		ref = $bindable(undefined),
-		isTouched = $bindable(false),
 		selectedValues = $bindable([]),
 		selectedAvailable = $bindable([]),
 
-		// Events
-		onblur,
-		onfocus,
-		oninput
+		...restProps
 	}: Props = $props();
+
+	////
+	// CONSTANTS
+	////
+
+	const formCtx = restProps.form.getContext()
 
 	////
 	// STATE
 	////
 
-	let fieldErrors: FieldErrors = $state({})
-	let validState = $state(ValidStates.NONE)
+	let prepared: ComponentProps<typeof FieldBase>["prepared"] = $state()
 
 	////
 	// FUNCTIONS
 	////
 
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			formCtx.errors[field] = fieldErrors
-		} else {
-			delete formCtx.errors[field]
-		}
-	}
-
-	async function touch() {
-		isTouched = true
-		validate()
-	}
-
 	function handleAdd() {
 
-		formCtx.data[field] = [... new Set([...Object.values(formCtx.data[field]), ...selectedAvailable])]
+		formCtx.data[restProps.field] = [... new Set([...Object.values(formCtx.data[restProps.field]), ...selectedAvailable])]
 		selectedAvailable = []
-		touch()
 	}
 
 	function handleRemove() {
-		formCtx.data[field] = Object.values(formCtx.data[field]).filter( value => !selectedValues.includes(value))
+		formCtx.data[restProps.field] = Object.values(formCtx.data[restProps.field]).filter( value => !selectedValues.includes(value))
 		selectedValues = []
-		touch()
-	}
-
-	////
-	// EVENTS
-	////
-
-	function handleOnBlur(e: Event) {
-		touch()
-		onblur?.(e)
-	}
-
-	function handleOnInput(e: Event) {
-		touch()
-		oninput?.(e)
 	}
 
 	////
 	// CALCULATED
 	////
 
-	let attrs = $derived(form.fieldAttributes[field])
-	let fieldValidator = $derived(form.fields[field])
-	let required = $derived(fieldValidator.isRequired)
 	let canRemove = $derived(!!selectedValues.length) 
 	let canAdd = $derived(!!selectedAvailable.length)
 
-
-	$effect.pre(() => {
-		if (formCtx.data[field] === undefined) {
-			formCtx.data[field] = []
-		}
-		if ((formCtx.data[field] as Array<any> ).length) touch()
-	})
-
-	$effect.pre(() => {
-		if (!label) {
-			if (attrs.label) {
-				label = attrs.label
-			} else {
-				label = humanizeString(field)
-			}
-		}
-	})
-
-	$effect(() => {
-		fieldErrors = formCtx.errors[field] || {}
-	})
-
 </script>
 
-<div class="mb-2">
-	<div class="flex items-center">
-		<label class="label-text inline-flex pb-2" for={id}>
-			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-				{label}
-			</span>
-		</label>
-		{#if !disabled}
-			<ValidationBadges {fieldValidator} {form} {field} hideRequired={true} />
-		{/if}
-	</div>
-	<!-- Side by side select, with arrows to add, remove from left to right -->
+<div>
+	<FieldBase bind:ref {...restProps} bind:prepared />
+	
 	<div class="sm:flex sm:flex-col md:grid md:grid-cols-5 gap-4">
 		<div class="flex flex-col col-span-2">
-			<select class="select h-full" multiple bind:value={selectedAvailable} {size} {disabled}>
-				{#each Object.values(options) as {key, label}}
-					{#if !Object.values(formCtx.data[field]).includes(key)}
-						<option value={key}>{label}</option>
+			<select class="select h-full" multiple bind:value={selectedAvailable} {size} disabled={prepared.disabled}>
+				{#each Object.values(options) as {value, label}}
+					{#if !Object.values(formCtx.data[prepared.field]).includes(value)}
+						<option {value}>{label}</option>
 					{/if}
 				{/each}
 			</select>
-			<span class="text-surface-300 text-sm">
-				Available options: {Object.keys(options).length - Object.values(formCtx.data[field]).length}
+			<span class="text-surface-300 text-sm" class:disabled={prepared.disabled}>
+				Available options: {Object.keys(options).length - Object.values(formCtx.data[prepared.field]).length}
 				</span>
 		</div>
 
@@ -172,7 +89,7 @@
 					type="button"
 					class="btn btn-primary btn-sm mb-2"
 					onclick={handleAdd}
-					disabled={!canAdd || disabled}
+					disabled={!canAdd || prepared.disabled}
 					title={canAdd ? "Add selected options" : "First select an option to add"}
 				>
 					<Icon.ArrowDown  class="md:hidden w-4 h-4" />
@@ -185,7 +102,7 @@
 					type="button"
 					class="btn btn-primary btn-sm mb-3"
 					onclick={handleRemove}
-					disabled={!canRemove || disabled}
+					disabled={!canRemove || prepared.disabled}
 					title={canRemove ? "Remove selected options" : "First select an option to remove"}
 				>
 					<Icon.ArrowUp class="md:hidden w-4 h-4" />
@@ -199,26 +116,36 @@
 
 		<div class="flex flex-col col-span-2">
 			<select
-				{id}
+				id={prepared.id}
 				class="select h-full border-success-500"
 				multiple
 				bind:value={selectedValues}
 				{size}
 				bind:this={ref}
-				{disabled}
-				oninput={handleOnInput}
-				onblur={handleOnBlur}
-				{onfocus}
-				aria-label={label}
-				{required}
+				disabled={prepared.disabled}
+				oninput={prepared.oninput}
+				onblur={prepared.onblur}
+				onfocus={prepared.onfocus}
+				aria-label={prepared.label}
+				required={prepared.required}
 			>
-				{#each Object.values(options) as {key, label}}
-					{#if Object.values(formCtx.data[field]).includes(key)}
-						<option value={key}>{label}</option>
+				{#each Object.values(options) as {value, label}}
+					{#if Object.values(formCtx.data[prepared.field]).includes(value)}
+						<option value={value}>{label}</option>
 					{/if}
 				{/each}
 			</select>
-			<span class="text-surface-300 text-sm">Selected options: {Object.values(formCtx.data[field]).length}</span>
+			<span class="text-surface-300 text-sm" class:disabled={prepared.disabled}>Selected options: {Object.values(formCtx.data[prepared.field]).length}</span>
 		</div>
 	</div>
 </div>
+
+<style lang="postcss">
+	select {
+		gap: 0;
+	}
+	option {
+		font-size: 0.875rem;
+		margin: none !important;
+	}
+</style>

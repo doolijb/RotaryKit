@@ -1,147 +1,134 @@
 <script lang="ts">
-	import { ValidationBadges } from "$client/components"
-	import { v4 } from "uuid"
-	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
-	import type { FormSchema } from "$shared/validation/base"
-	import humanizeString from 'humanize-string'
+    import { FieldBase } from "$client/components"
+    import { Combobox } from "@skeletonlabs/skeleton-svelte"
+    import { type ComponentProps } from "svelte"
+	import { validators as v } from "$shared/validation"
+	import * as Icon from "lucide-svelte"
 
-	////
-	// LOCAL EXPORTS
-	////
+    ////
+    // LOCAL EXPORTS
+    ////
 
-	interface Props {
-		// Props
-		field: string
-		form: FormSchema
-		placeholder?: string
-		label?: string
-		id?: string
-		options?: AutocompleteOption[]
+    interface Props extends Omit<ComponentProps<typeof FieldBase>, "children"> {
+        // Props
+        options?: ComboboxData[]
+		allowCustomValue?: boolean
+    }
 
-		// Bindables
-		ref?: any
-		disabled?: boolean
-		isTouched?: boolean
-
-		// Events
-		onchange?: (e: Event) => Promise<void>
-		onblur?: (e: Event) => Promise<void>
-		onfocus?: (e: Event) => Promise<void>
+	type ComboboxData = {
+		label: string
+		value: string
 	}
 
-	let {
-		// Props
-		field,
-		form,
-		placeholder,
-		label,
-		id = v4(),
-		options,
+    let {
+        // Props
+        options,
+		allowCustomValue = false,
 
-		// Bindables
-		ref = $bindable(),
-		disabled = $bindable(false),		
-		isTouched = $bindable(false),
+        // Bindables
+        ref = $bindable(undefined),
 
-		// Events
-		onchange,
-		onblur,
-		onfocus,
-	}: Props = $props();
+        ...restProps
+    }: Props = $props();
+
+    ////
+    // CONSTANTS
+    ////
+
+    const formCtx = restProps.form.getContext();
 
 	////
-	// CONSTANTS
+	// VARIABLES
 	////
 
-	const formCtx = form.getContext()
+	let inputValue: string = $state()
 
-	////
-	// STATE
-	////
+    ////
+    // CALCULATED
+    ////
 
-	let validatorLength = $state(0)
+    let fieldValidator = $derived(restProps.form.fields[restProps.field]);
+    let selectOptionsValidator = $derived(fieldValidator.validators.find((v) => v.key == "selectOptions"));
 
-	////
-	// FUNCTIONS
-	////
+    // Combobox data
+    let comboboxData: ComboboxData[] = $state(options || []);
+	let comboboxValue: string[] = $derived(formCtx.data[restProps.field] instanceof Array ? formCtx.data[restProps.field] as string[] : formCtx.data[restProps.field] ? [formCtx.data[restProps.field] as string] : [])
 
-	async function touch() {
-		isTouched = true
-	}
-
-	function handleOnBlur(e: Event) {
-		touch()
-		onblur?.(e)
-	}
-
-	function handleOnChange(e: Event) {
-		touch()
-		onchange?.(e)
-	}
-
-	////
-	// CALCULATED
-	////
-
-	let attrs = $derived(form.fieldAttributes[field])
-	let fieldValidator = $derived(form.fields[field])
-	let required = $derived(fieldValidator.isRequired)
-	let selectOptionsValidator = $derived(fieldValidator.validators.find(v => v.key == "selectOptions"))
-
-	$effect(() => {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
+    $effect(() => { 
+		if (!comboboxData.length && selectOptionsValidator) {
+			comboboxData = selectOptionsValidator.args["options"].map((option: string) => ({
+				label: option,
+				value: option,
+			}));
+		}
 	})
 
-	$effect.pre(() => {
-		if (!label) {
-			if (attrs && attrs.placeholder) {
-				label = attrs.placeholder
+	const multiple = restProps.form.fields[restProps.field] instanceof v.Array
+
+	function onValueChange (value: string[]) {
+		if (multiple) {
+			formCtx.data[restProps.field] = value
+		} else {
+			if (value.length) {
+				formCtx.data[restProps.field] = value[0]
 			} else {
-				label = humanizeString(field)
+				formCtx.data[restProps.field] = ""
 			}
+		}
+	}
+
+	$effect(() => {
+		if (!multiple && comboboxValue.length) {
+			const option = options.find((option) => option.value === comboboxValue[0])
+			inputValue = option ? option.label : ""
+		} else if (multiple) {
+			inputValue = ""
 		}
 	})
 
 </script>
 
-<div class="mb-2">
-	<div class="flex items-center">
-		<label class="label-text inline-flex pb-2" for={id}>
-			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-				{label}
-			</span>
-		</label>
-		{#if !disabled}
-			<ValidationBadges {fieldValidator} {form} {field}  />
-		{/if} 
-	</div>
+<FieldBase bind:ref {...restProps}>
+    {#snippet children({
+        id,
+        attrs,
+        field,
+        disabled,
+        onblur,
+    })}
+        <Combobox
+            data={comboboxData}
+            value={comboboxValue}
+            onValueChange={(e) => onValueChange(e.value)}
+            placeholder={attrs.placeholder || multiple ? "Select multiple..." : "Select..."}
+			inputGroupClasses="bg-surface-200-800"
+            {disabled}
+			{multiple}
+			{allowCustomValue}
+			{inputValue}
+        >
+            <!-- Custom rendering for items -->
+            {#snippet item(item)}
+                <div class="flex w-full justify-between space-x-2">
+                    <span>{item.label}</span>
+                </div>
+            {/snippet}
+        </Combobox>
+		{#if multiple && (formCtx.data[field] as string[]).length}
+			<div class="flex flex-col gap-1 mt-1" class:opacity-75={disabled}>
+				{#each (formCtx.data[field] as string[]) as item}
+					<div class="flex items-center justify-between preset-tonal p-2 rounded-sm">
+						<span class="select-none">{options.find((o) => o.value === item).label}</span>
+						{#if !disabled}
+							<button title="Remove" type="button" onclick={() => (formCtx.data[field] = (formCtx.data[field] as string[]).filter((i) => i !== item))}>
+								<Icon.X class="text-red-500" />
+							</button>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		{/if}
+    {/snippet}
+</FieldBase>
 
-	<select
-		{id}
-		class="select disabled:cursor-not-allowed"
-		bind:this={ref}
-		{placeholder}
-		bind:value={formCtx.data[field]}
-		{disabled}
-		{required}
-		{onfocus}
-		onchange={handleOnChange}
-		onblur={handleOnBlur}
-		aria-label={label}
-	>
-		{#if !required}
-			<option value="" selected={!formCtx.data[field]}>Select an option</option>
-		{/if}
-		{#if options && options.length > 0}
-			{#each options.reverse() as option}
-				<option value={option.value} selected={option===formCtx.data[field]}>{option.label}</option>
-			{/each}
-		{:else if selectOptionsValidator}
-			{#each selectOptionsValidator.args["options"].reverse() as option}
-				<option value={option} selected={option==formCtx.data[field]}>{option}</option>
-			{/each}
-		{/if}
-	</select>
-</div>
+Data: {JSON.stringify(formCtx.data)}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state"
-	import { FormBase, CheckboxInput, TextInput, ModalSelectField } from "$client/components"
+	import { FormBase, CheckboxInput, Input, ModalSelectField } from "$client/components"
 	import type { FormSchema } from "$shared/validation/base"
 	import { AdminEditEmail as Form } from "$shared/validation/forms"
 	import type { AutocompleteOption } from "@skeletonlabs/skeleton-svelte"
@@ -98,7 +98,7 @@
 			</div>
 		{/if}
 
-		<TextInput
+		<Input
 			id="address"
 			field="address"
 			{form}

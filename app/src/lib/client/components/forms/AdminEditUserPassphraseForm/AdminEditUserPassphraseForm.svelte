@@ -3,7 +3,7 @@
     import { FormBase, PassphraseInput } from "$client/components"
     import { AdminEditUserPassphrase as Form } from "$shared/validation/forms"
     import * as Icon from "lucide-svelte"
-    import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+    import { toaster } from "$client/utils"
 	import { getContext } from "svelte"
 
     ////
@@ -44,7 +44,6 @@
         oncancel,
     }: Props = $props();
 
-    const toast: ToastContext = getContext("toast")
 
     /**
      * Generates a random string with the specified length and character set.
@@ -84,7 +83,7 @@
      */
     function copyPassphrase() {
         navigator.clipboard.writeText(data.passphrase);
-        toast.create({
+        toaster.create({
             description: "Passphrase copied to clipboard",
             type: "success",
         });

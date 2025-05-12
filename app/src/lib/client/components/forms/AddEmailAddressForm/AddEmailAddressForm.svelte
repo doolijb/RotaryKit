@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput } from "$client/components"
+	import { FormBase, Input } from "$client/components"
 	import { AddEmailAddress as Form } from "$shared/validation/forms"
 
 
@@ -28,7 +28,7 @@
 	{onsubmit}
 	showCancel={false}
 >
-	<TextInput
+	<Input
 		label="Email"
 		id="email"
 		type="email"

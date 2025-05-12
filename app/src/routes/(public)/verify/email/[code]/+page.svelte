@@ -3,11 +3,10 @@
 	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
 	import { handleClientError, handleException, handleServerError } from "$client/utils"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import api from "$shared/api"
 	import { getContext, onMount } from "svelte"
 
-	const toast: ToastContext = getContext("toast")
 	const isCodeValid = null
 
 	async function verify() {
@@ -16,7 +15,7 @@
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toast.create({ 
+				toaster.create({ 
 					description: "Your email has been verified", 
 					type: "success" 
 				})

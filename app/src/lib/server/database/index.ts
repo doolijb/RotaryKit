@@ -6,9 +6,9 @@ import { dbCredentials, getConnectionString } from "./config"
 import seeds from "./seeds"
 import utils from "./utils"
 
-import pgtools from "pgtools"
+// import pgtools from "pgtools"
 import { logger } from "$server/logging"
-import { sql } from "drizzle-orm"
+// import { sql } from "drizzle-orm"
 
 export const client = new pg.Client({ connectionString: getConnectionString(dbCredentials) })
 

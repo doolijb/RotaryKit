@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { ValidationBadges } from "$client/components"
+	import { FieldBase } from "$client/components"
 	import { ValidStates } from "$shared/constants"
-	import { v4 } from "uuid"
-	import type { FormSchema } from "$shared/validation/base"
-	import type { Snippet, SvelteComponent } from 'svelte'
-	import humanizeString from "humanize-string"
+	import type { Component, ComponentProps, SvelteComponent } from 'svelte'
 	import { onMount, onDestroy } from 'svelte'
 	import { Editor, mergeAttributes } from '@tiptap/core'
 	import StarterKit from '@tiptap/starter-kit'
@@ -26,53 +23,21 @@
 	// PROPS
 	////
 
-	interface Props {
-		// Props
-		field: string;
-		placeholder?: string;
-		label?: string;
-		autocomplete?: string;
-		enableLinks?: boolean;
-
-		// Bindables
-		form?: FormSchema;
-		disabled?: boolean;
-		id?: string;
-		isTouched?: boolean;
-
-		// Events
-		oninput?: (e: Event) => Promise<void> | void
-		onfocus?: (e: Event) => Promise<void> | void
-		onblur?: (e: Event) => Promise<void> | void
-
-		// Snippets
-		prefixSnippet?: Snippet
-		suffixSnippet?: Snippet
+	interface Props extends Omit<ComponentProps<typeof FieldBase>, "children"> {
+		enableLinks?: boolean
 	}
 
 	let {
-		// Props
-		field,
-		placeholder = "",
-		label,
 		enableLinks = false,
-
-		// Bindables
-		form,
-		disabled = $bindable(false),
-		id = $bindable(v4()),
-		isTouched = $bindable(false),
-
-		// Events
-		oninput,
-		onfocus,
-		onblur,
-
-	}: Props = $props();
+		ref = $bindable(undefined),
+		...restProps
+	}: Props = $props()
 
 	////
 	// CONSTANTS
 	////
+
+	const formCtx = restProps.form.getContext()
 
 	const Heading = BaseHeading.configure({ levels: [1, 2, 3] }).extend({
 		renderHTML({ node, HTMLAttributes }) {
@@ -104,8 +69,8 @@
 	////
 	// STATE
 	////
-
-	let fieldErrors: FieldErrors = $state({})
+	
+	let prepared: ComponentProps<typeof FieldBase>["prepared"] = $state()
 	let element: HTMLDivElement = $state()
 	let editor: Editor = $state()
 	let isBold = $state(false)
@@ -122,35 +87,10 @@
 	let isBlockquote = $state(false)
 	let canUndo = $state(false)
 	let canRedo = $state(false)
-	let validState = $state(ValidStates.NONE)
 
 	////
 	// FUNCTIONS
 	////
-
-	async function validate() {
-		let fieldErrors = await form.fields[field].validate({key:field, data})
-		if (Object.keys(fieldErrors).length) {
-			formCtx.errors[field] = fieldErrors
-		} else {
-			delete formCtx.errors[field]
-		}
-	}
-
-	async function touch() {
-		isTouched = true
-		await validate()
-	}
-
-	async function handleOnBlur(e: Event) {
-		await touch()
-		await onblur?.(e)
-	}
-
-	async function handleOnInput(e: Event) {
-		await touch()
-		await oninput?.(e)
-	}
 
 	function focus() {
 		if (editor) {
@@ -162,9 +102,10 @@
 		canUndo = editor.can().undo()
 		canRedo = editor.can().redo()
 		const html = editor.getHTML()
-		const clean = DOMPurify.sanitize(html)
-		formCtx.data[field] = clean
-		handleOnInput(null)
+		let clean = DOMPurify.sanitize(html)
+		// make sure clean isn't just an empty p tag
+		if (clean === '<p></p>') clean = ''
+		formCtx.data[restProps.field] = clean
 	}
 
 	function updateSelectionButtons() {
@@ -183,67 +124,67 @@
 	
 	function isValidURL(url: string): boolean {
 		try {
-			new URL(url);
-			return true;
+			new URL(url)
+			return true
 		} catch (_) {
-			return false;
+			return false
 		}
 	}
   
 	function toggleBold() {
-	  editor.chain().focus().toggleBold().run();
+	  editor.chain().focus().toggleBold().run()
 	  updateSelectionButtons()
 	}
   
 	function toggleItalic() {
-	  editor.chain().focus().toggleItalic().run();
+	  editor.chain().focus().toggleItalic().run()
 	  updateSelectionButtons()
 	}
   
 	function toggleUnderline() {
-	  editor.chain().focus().toggleUnderline().run();
+	  editor.chain().focus().toggleUnderline().run()
 	  updateSelectionButtons()
 	}
   
 	function setLink() {
 		if (enableLinks && isLink) {
-			editor.chain().focus().unsetLink().run();
+			editor.chain().focus().unsetLink().run()
 		} else {
 			const url = prompt('Enter the URL, i.e. (https://example.com)')
 			if (url && isValidURL(url)) {
-				editor.chain().focus().setLink({ href: url }).run();
+				editor.chain().focus().setLink({ href: url }).run()
 			}
 		}
 	  updateSelectionButtons()
 	}
 
 	function toggleSuperscript() {
-		editor.chain().focus().toggleSuperscript().run();
+		editor.chain().focus().toggleSuperscript().run()
 		updateSelectionButtons()
 	}
 
 	function toggleStrike() {
-		editor.chain().focus().toggleStrike().run();
+		editor.chain().focus().toggleStrike().run()
 		updateSelectionButtons()
 	}
 
 	function toggleCode() {
-		editor.chain().focus().toggleCode().run();
+		editor.chain().focus().toggleCode().run()
 		updateSelectionButtons()
 	}
 
 	function toggleBulletList() {
-		editor.chain().focus().toggleBulletList().run();
+		editor.chain().focus().toggleBulletList().run()
 		updateSelectionButtons()
 	}
 
 	function toggleOrderedList() {
-		editor.chain().focus().toggleOrderedList().run();
+		editor.chain().focus().toggleOrderedList().run()
 		updateSelectionButtons()
 	}
 
 	function toggleTaskList() {
-		editor.chain().focus().toggleTaskList().run();
+		editor.chain().focus().toggleTaskList().run()
 		updateSelectionButtons()
 	}
 
@@ -261,30 +202,28 @@
 	}
 
 	function toggleHeader() {
-		editor.chain().focus().toggleHeading({ level: 2 }).run();
+		editor.chain().focus().toggleHeading({ level: 2 }).run()
 		updateSelectionButtons()
 	}
 
 	function toggleBlockquote() {
-		editor.chain().focus().toggleBlockquote().run();
+		editor.chain().focus().toggleBlockquote().run()
 		updateSelectionButtons()
 	}
 
-	function undo() {
-		editor.chain().focus().undo().run();
+	function undo(e) {
+		editor.chain().focus().undo().run()
+		prepared.oninput(e)
 	}
 
-	function redo() {
-		editor.chain().focus().redo().run();
+	function redo(e) {
+		editor.chain().focus().redo().run()
+		prepared.oninput(e)
 	}
 
 	////
 	// CALCULATED
 	////
-
-	let fieldValidator = $derived(form.fields[field])
-	let validatorLength = $state(0);
-	let attrs: FormFieldAttributes | undefined = $derived(form ? form.fieldAttributes[field] : {})
 
 	let canUnstyle = $derived(
 		isHeader || 
@@ -299,34 +238,6 @@
 		isOrderedList ||
 		isTaskList
 	)
-
-	$effect(() => {
-		if (!placeholder && attrs) {
-			placeholder = attrs.placeholder
-		} else if (!placeholder) {
-			placeholder = "Write something..."
-		}
-	})
-
-	$effect(() => {
-		if (!label) {
-			if (attrs && attrs.label) {
-				label = attrs.label
-			} else {
-				label = humanizeString(field)
-			}
-		}
-	})
-
-	$effect(() => {
-		fieldErrors = formCtx.errors[field] || {}
-	})
-	
-	$effect.pre(() => {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
-	});
 
 	////
 	// LIFECYCLE
@@ -351,7 +262,7 @@
 					},
 				},
 			}),
-			Placeholder.configure({ placeholder }),
+			Placeholder.configure({ placeholder: prepared.attrs.placeholder }),
 			TextStyle,
 			Underline,
 			Superscript,
@@ -377,95 +288,95 @@
 		editor = new Editor({
 			element: element,
 			extensions,
-			content: formCtx.data[field],
-		});
+			content: formCtx.data[restProps.field],
+		})
 		editor.on("selectionUpdate", updateSelectionButtons)
 		editor.on("update", onUpdate)
-		editor.on("blur", () => handleOnBlur(null))
-		if (formCtx.data[field]) { touch() }
+		editor.on("blur", (e) => prepared.onblur(e.event))
 	})
 
 	onDestroy(() => {
 		if (editor) {
-			editor.destroy();
+			editor.destroy()
 		}
 	})
 
 </script>
 
-{#snippet styleButton(content: string, title:string, onclick: () => void, active: boolean, disabled: boolean = false, icon: SvelteComponent | string = "")}
+{#snippet styleButton(
+	content: string, 
+	title: string, 
+	onclick: (e?: Event) => void, 
+	active: boolean, 
+	disabled: boolean = false, 
+	Icon: ConstructorOfATypedSvelteComponent | Component<any, any, any>
+)}
 	<button 
 		class="btn btn-sm rounded-xs" 
 		class:preset-filled={!active}
-		class:preset-filled-primary={active}
+		class:preset-filled-primary-500={active}
 		type="button"
 		{onclick} 
 		{title}
 		{disabled}
 		tabindex="-1"
 	>
-		{#if Icn}
-			<Icn class="text-xl"/>
+		{#if Icon}
+			<Icon class="text-xl"/>
 		{:else}
 			{@html content}
 		{/if}
 	</button>
 {/snippet}
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div class="mb-2 relative overflow-hidden">
-	<div class="flex items-center">
-		<label class="label-text inline-flex pb-2" for={id} onclick={focus}>
-			<span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-				{label}
-			</span>
-		</label>
-		{#if !disabled}
-			<ValidationBadges {fieldValidator} {form} {field} />
-		{/if}
-	</div>
-
+<div>
+	<FieldBase bind:ref bind:prepared {...restProps} />
 	<div 
-		class="rounded-xs bg-surface-700 transition duration-300 ease-in-out p-4 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105 relative" 
-		class:[&:has(:focus-visible)]:border-primary-500={validState !== ValidStates.INVALID} 
-		class:border-error-500={validState === ValidStates.INVALID}
+		class="@container rounded-sm bg-surface-200-800 transition duration-300 ease-in-out p-2 mb-4 opacity-75 [&:has(:focus-visible)]:opacity-100 hover:opacity-100 border border-surface-500 brightness-105 relative w-full" 
+		class:[&:has(:focus-visible)]:border-primary-500={formCtx.validStates[prepared.field] !== ValidStates.INVALID} 
+		class:border-error-500={formCtx.validStates[prepared.field] === ValidStates.INVALID}
 	>
-		<div class="toolbar mb-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:flex gap-1">
-		  {@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, Icon.Heading as any as SvelteComponent)}
-		  {@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, Icon.Bold as any as SvelteComponent)}
-		  {@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, Icon.Italic as any as SvelteComponent)}
-		  {@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline as any as SvelteComponent)}
-		  {@render styleButton('<s>&nbsp;S&nbsp;</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough as any as SvelteComponent)}
-		  {@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript as any as SvelteComponent)}
-		  {#if enableLinks}
-			  {@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link as any as SvelteComponent)}
-		  {/if}
-		  {@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote as any as SvelteComponent)}
-		  {@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code as any as SvelteComponent)}
-		  {@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List as any as SvelteComponent)}
-		  {@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, Icon.ListOrdered as any as SvelteComponent)}
-		  {@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, Icon.ListCheck as any as SvelteComponent)}
-		  {@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, Icon.RemoveFormatting as any as SvelteComponent)}
-		  {@render styleButton('Undo', 'Undo', undo, false, !canUndo, Icon.Undo as any as SvelteComponent)}
-		  {@render styleButton('Redo', 'Redo', redo, false, !canRedo, Icon.Redo as any as SvelteComponent)}
+		<div class="toolbar mb-4 grid grid-cols-8 @sm:grid-cols-10 @md:grid-cols-12 @lg:flex gap-1">
+			{@render styleButton('Heading', 'Heading', toggleHeader, isHeader, false, Icon.Heading)}
+			{@render styleButton('<b>B</b>', 'Bold', toggleBold, isBold, false, Icon.Bold)}
+			{@render styleButton('<i>I</i>', 'Italic', toggleItalic, isItalic, false, Icon.Italic)}
+			{@render styleButton('<u>U</u>', 'Underline', toggleUnderline, isUnderline, false, Icon.Underline)}
+			{@render styleButton('<s>&nbspS&nbsp</s>', 'Strike', toggleStrike, isStrike, false, Icon.Strikethrough)}
+			{@render styleButton('^', 'Superscript', toggleSuperscript, isSuperscript, false, Icon.Superscript)}
+			{#if enableLinks}
+				{@render styleButton('Link', 'Link', setLink, isLink, false, Icon.Link)}
+			{/if}
+			{@render styleButton("Blockquote", "Blockquote", toggleBlockquote, isBlockquote, false, Icon.Quote)}
+			{@render styleButton('Code', 'Code', toggleCode, isCode, false, Icon.Code)}
+			{@render styleButton('Bullet List', 'Bullet List', toggleBulletList, isBulletList, false, Icon.List)}
+			{@render styleButton('Ordered List', 'Ordered List', toggleOrderedList, isOrderedList, false, Icon.ListOrdered)}
+			{@render styleButton('Task List', 'Task List', toggleTaskList, isTaskList, false, Icon.ListCheck)}
+			{@render styleButton('Unstyle', 'Unstyle', clearStyles, false, !canUnstyle, Icon.RemoveFormatting)}
+			{@render styleButton('Undo', 'Undo', undo, false, !canUndo, Icon.Undo)}
+			{@render styleButton('Redo', 'Redo', redo, false, !canRedo, Icon.Redo)}
 		</div>
-		  <div {id} bind:this={element} class="editor-container"></div>
+		<div id={prepared.id} bind:this={element} class="editor-container"></div>
 	</div>
 </div>
 
+{formCtx.data[restProps.field]}
+
 <style lang="postcss">
-  @reference "tailwindcss";
+  @reference "tailwindcss"
 	.editor-container {
-	  overflow-y: auto; /* Add a scrollbar if content exceeds the height */
+	  overflow-y: auto /* Add a scrollbar if content exceeds the height */
 	}
 
 	/* Use global to prevent svelte from pruning "unused" css attributes */
 	:global(.tiptap p.is-editor-empty:first-child::before) {
-		opacity: 0.5;
-		content: attr(data-placeholder);
-		float: left;
-		height: 0;
-		pointer-events: none;
+		opacity: 0.5
+		content: attr(data-placeholder)
+		float: left
+		height: 0
+		pointer-events: none
+	}
+
+	:global(.tiptap.ProseMirror.ProseMirror-focused) {
+		outline: none !important;
 	}
 </style>

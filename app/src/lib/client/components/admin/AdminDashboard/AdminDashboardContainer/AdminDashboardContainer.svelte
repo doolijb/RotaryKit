@@ -37,7 +37,6 @@
     // CONSTANTS
     ////
 
-    const toast: ToastContext = getContext("toast")
 
     ////
     // VARIABLES
@@ -92,7 +91,7 @@
         localStorage.setItem("admin_dashboard_modules", JSON.stringify(modules))
         localStorage.setItem("admin_dashboard_slots", JSON.stringify(slots))
 
-        toast.create({
+        toaster.create({
             description: "Dashboard settings saved to browser",
             type: "success"
         })

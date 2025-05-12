@@ -17,9 +17,9 @@ export const adminRolesToPermissions = pgTable("admin_roles_to_permissions",
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow()
 	},
-	(t) => ({
-		pk: primaryKey({ columns: [t.adminPermissionId, t.adminRoleId] })
-	})
+	(t) => [
+		primaryKey({ columns: [t.adminPermissionId, t.adminRoleId] })
+	]
 )
 
 export const adminRolesToPermissionRelations = relations(

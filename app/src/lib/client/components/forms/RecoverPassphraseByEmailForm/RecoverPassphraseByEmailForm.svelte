@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput } from "$client/components"
+	import { FormBase, Input } from "$client/components"
 	import { RecoverPassphraseByEmail as Form } from "$shared/validation/forms"
 
 	////
@@ -40,7 +40,7 @@
 </script>
 
 <FormBase {form} bind:data bind:errors bind:canSubmit {onsubmit} {oncancel} showCancel={false}>
-	<TextInput
+	<Input
 		id="email"
 		field="email"
 		bind:data

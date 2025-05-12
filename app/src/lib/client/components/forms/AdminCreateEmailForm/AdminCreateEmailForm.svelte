@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state"
-	import { FormBase, TextInput, CheckboxInput } from "$client/components"
+	import { FormBase, Input, CheckboxInput } from "$client/components"
 	import ModalSelectField from "$client/components/fields/ModalSelectField"
 	import { AdminCreateEmail as Form } from "$shared/validation/forms"
 
@@ -72,7 +72,7 @@
 	}}
 >
 
-	<TextInput
+	<Input
 		id="address"
 		field="address"
 		{form}

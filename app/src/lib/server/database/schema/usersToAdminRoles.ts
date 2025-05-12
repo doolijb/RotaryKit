@@ -16,9 +16,9 @@ export const usersToAdminRoles = pgTable("users_to_admin_roles",
 			.references(() => adminRoles.id, { onDelete: "cascade" }),
 		createdAt: timestamp("created_at").notNull().defaultNow()
 	},
-	(t) => ({
-		pk: primaryKey({ columns: [t.userId, t.adminRoleId] })
-	})
+	(t) => [
+		primaryKey({ columns: [t.userId, t.adminRoleId] })
+	]
 )
 
 export const usersToAdminRoleRelations = relations(usersToAdminRoles, ({ one: One }) => ({

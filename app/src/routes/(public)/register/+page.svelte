@@ -3,19 +3,18 @@
 	import { page } from "$app/state"
 	import { invalidateAll } from "$app/navigation"
 	import { handleClientError, handleException, handleServerError } from "$client/utils"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import api from "$shared/api"
 	import { getContext } from "svelte"
 	import { UserRegister } from "$shared/validation/forms"
 
-	const toast: ToastContext = getContext("toast")
 
 	async function onsubmit() {
 		await api.register.POST({body: data})
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toast.create({ 
+				toaster.create({ 
 					description: "Your account has been created", 
 					type: "success" 
 				})
@@ -23,10 +22,10 @@
 			})
 			.ClientError((r) => { 
                 errors = r.body.errors
-                return handleClientError({ toast })(r)
+                return handleClientError({})(r)
             })
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
 
 	let completed = $state(false)

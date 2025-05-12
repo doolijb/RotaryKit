@@ -351,7 +351,7 @@ declare global {
 		code: CodeFileTypeExtensions
 	}
 
-	type MultiSelectOption = { [key: string]: string | number; label: string }
+	type MultiSelectOption = { [value: string]: string | number; label: string }
 
 	type AutocompleteOption = {
 		value: string

@@ -10,7 +10,6 @@
 	import type { Snippet } from "svelte"
 	import * as Icon from "lucide-svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -87,7 +86,7 @@
 				result = mutateResult ? await mutateResult(res.body) : res.body
 			})
 			.ClientError(handleClientError({ toast}))
-			.ServerError(handleServerError({ toast }))
+			.ServerError(handleServerError({}))
 	}
 
 	function oncancel() {
@@ -104,14 +103,14 @@
 			tabs[tab].disabled = true
 			await tabs[tab].onsubmit({ data: tabs[tab].data })
 			.Success(async () => {
-				toast.create({
+				toaster.create({
 					description: `${pluralize.singular(humanizeString(resource))} updated successfully.`,
 					type: "success"
 				})
 				await getResult()
 			})
 			.ClientError(handleClientError({ toast}))
-			.ServerError(handleServerError({ toast }))
+			.ServerError(handleServerError({}))
 			tabs[tab].disabled = false
 		}
 	}

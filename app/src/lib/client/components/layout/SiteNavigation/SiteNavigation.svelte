@@ -8,7 +8,8 @@
 
 {#snippet accountMenu()}
 	<Popover
-		bind:open={isAccountMenuOpen}
+		open={isAccountMenuOpen}
+		onOpenChange={(e) => { isAccountMenuOpen = e.open }}
 		positioning={{ placement: 'bottom' }}
 		triggerBase="btn preset-tonal"
 		contentBase="card preset-filled-surface-500 p-4 space-y-4 max-w-[320px]"

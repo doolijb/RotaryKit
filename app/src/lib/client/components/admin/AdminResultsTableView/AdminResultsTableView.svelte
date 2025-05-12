@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AdminResultsTable, Pagination, AdminHeader, Loading } from "$client/components"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import { getContext, onMount, setContext, type Snippet } from "svelte"
 	import { handleServerError, hasAdminPermission } from "$client/utils"
 	import { page } from "$app/state"
@@ -11,7 +11,6 @@
 
 	setContext("page", page)
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// VARIABLE PROPS
@@ -200,18 +199,18 @@
 	async function onDeleteConfirm({result}): Promise<void> {
 		const resourceId = getResourceId(result)
 		await resourceApi.resourceId$(resourceId).DELETE({}).Success((r: Response) => {
-				toast.create({
+				toaster.create({
 					description: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
 					type: "success"
 				})
 				loadResults()
 			}).ClientError((r: Response) => {
-				toast.create({
+				toaster.create({
 					description: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
 					type: "error"
 				})
 			}).ServerError((r: Response) => {
-				toast.create({
+				toaster.create({
 					description: `Error deleting ${pluralize.singular(humanizeString(resource))}`,
 					type: "error"
 				})

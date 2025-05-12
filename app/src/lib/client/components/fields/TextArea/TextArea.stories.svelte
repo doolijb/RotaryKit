@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from "@storybook/addon-svelte-csf"
-	import Component from "."
+	import TextArea from "."
 	import { fn } from "@storybook/test"
 	import { FormSchema } from "$shared/validation/base"
 	import { validators as v } from "$shared/validation"
@@ -8,20 +8,28 @@
     import { type Args, setTemplate } from "@storybook/addon-svelte-csf";
 
 	const { Story } = defineMeta({
-		title: 'Example/TextInput',
-		component: Component,
+		component: TextArea,
 		tags: ["autodocs"],
 		argTypes: {
 			Form: {
 				type: "object"
-			}
+			},
+			field: {
+				control: false,
+			},
+			ref: {
+				control: false,
+			},
+			form: {
+				control: false,
+			},
 		},
 		args: {
-			field: "inputField",
+			field: "textArea",
 		},
 		parameters: {
 			controls: {
-				exclude: ["Form"]
+				exclude: ["Form"],
 			},
 			Form: {
 				type: "object",
@@ -33,49 +41,49 @@
 <script lang="ts">
 	class DefaultForm extends FormSchema {
 		fields = {
-			inputField: v.String.init()
+			textArea: v.String.init()
 		}
-		optional = { inputField: true }
+		optional = { textArea: true }
 		fieldAttributes = {
-			inputField: {
-				label: "Input Field"
+			textArea: {
+				label: "Text Area"
 			}
 		}
 	}
 
 	class WithValidatorsForm extends FormSchema {
 		fields = {
-			inputField: v.String.init().minLength({ minLen: 3 }).maxLength({ maxLen: 12 })
+			textArea: v.String.init().minLength({ minLen: 3 }).maxLength({ maxLen: 12 })
 		}
 		optional = {}
 		fieldAttributes = {
-			inputField: {
-				label: "Input Field",
+			textArea: {
+				label: "Text Area",
 			}
 		}
 	}
 
 	class WithPlaceholderForm extends FormSchema {
 		fields = {
-			inputField: new v.String()
+			textArea: new v.String()
 		}
 		optional = {}
 		fieldAttributes = {
-			inputField: {
-				label: "Input Field",
-				placeholder: "Enter your name"
+			textArea: {
+				label: "Text Area",
+				placeholder: "Write a story..."
 			}
 		}
 	}
 
 	class WithDescriptionForm extends FormSchema {
 		fields = {
-			inputField: v.String.init()
+			textArea: v.String.init()
 		}
-		optional = {inputField: true}
+		optional = {textArea: true}
 		fieldAttributes = {
-			inputField: {
-				label: "Input Field",
+			textArea: {
+				label: "Text Area",
 				description:
 					"You can add additional information about how your users should fill out this field through the form schema."
 			}
@@ -88,26 +96,26 @@
 {#snippet template(args: Args<typeof Story>, ctx)}
 	{@const form = ctx.parameters.Form.init({data: ctx.parameters.data || {}})}
     <FormBase {form} showCancel={false} showSubmit={false}>
-        <Component {...args} {form} />
+		<TextArea {...args} {form} field={args.field} />
     </FormBase>
 {/snippet}
 
 <!-- More on writing stories with args: https://storybook.js.org/docs/writing-stories/args -->
 <Story name="Default" parameters={{ Form: DefaultForm }} />
 
-<Story name="Disabled" args={{disabled: true}} parameters={{ Form: DefaultForm, data: { inputField: "Hello World" } }} />
+<Story name="Disabled" args={{disabled: true}} parameters={{ Form: DefaultForm, data: { textArea: "Hello World" } }} />
 
 <Story name="With Placeholder (Prop)" args={{placeholder: "Placeholder"}} parameters={{ Form: DefaultForm }} />
 
-<Story name="Filled" parameters={{ Form: DefaultForm, data: { inputField: "Hello World" } }} />
+<Story name="Filled" parameters={{ Form: DefaultForm, data: { textArea: "Hello World" } }} />
 
 <Story name="With Validators" parameters={{ Form: WithValidatorsForm }} />
 
 <Story name="With Placeholder (Schema)" parameters={{ Form: WithPlaceholderForm }} />
 
-<Story name="Filled with Validators" parameters={{ Form: WithValidatorsForm, data: { inputField: "Hello World" } }} />
+<Story name="Filled with Validators" parameters={{ Form: WithValidatorsForm, data: { textArea: "Hello World" } }} />
 
-<Story name="With Validation Error" parameters={{ Form: WithValidatorsForm, data: { inputField: "H" } }} />
+<Story name="With Validation Error" parameters={{ Form: WithValidatorsForm, data: { textArea: "H" } }} />
 
 <Story name="With Description (Prop)" args={{description: "You can add additional information about how your users should fill out this field through props."}} parameters={{ Form: DefaultForm }} />
 

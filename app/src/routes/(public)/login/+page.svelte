@@ -5,36 +5,30 @@
 	import { handleClientError, handleServerError, handleException } from "$client/utils"
 	import { page } from "$app/state"
 	import api from "$shared/api"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
-	import type { UserLogin } from "$shared/validation/forms"
-	import { getContext } from "svelte"
+	import { toaster } from "$client/utils"
+	import { UserLogin } from "$shared/validation/forms"
 
-	const toast: ToastContext = getContext("toast")
 
 	let completed = false
+	let form: UserLogin = UserLogin.init() as UserLogin
+	let formCtx = form.getContext()
 
 	async function onsubmit() {
-		await api.login.POST({body: data})
+		await api.login.POST({body: formCtx.data as typeof form.Data})
 			.Success(async (res) => {
 				completed = true
 				const nextPage: string = page.url.searchParams.get("next") || "/"
 				await invalidateAll()
-				toast.create({ 
+				toaster.create({ 
 					description: `Welcome back`, 
 					type: "success" 
 				})
 				await goto(nextPage)
 			})
-			.ClientError(handleClientError({ toast}))
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
-
-	let data: FormDataOf<UserLogin> = $state({
-		email: "",
-		passphrase: ""
-	})
-	let errors: FormErrors = $state({})
 
 </script>
 
@@ -44,7 +38,7 @@
 			{page.data.title}
 		</h1>
 		<div class="card preset-tonal border-0 p-4">
-			<UserLoginForm {onsubmit} bind:data bind:errors />
+			<UserLoginForm {onsubmit} bind:form />
 		</div>
 		<div class="card preset-tonal p-4">
 			<p class="text-center">

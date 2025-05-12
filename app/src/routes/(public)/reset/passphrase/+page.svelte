@@ -6,7 +6,6 @@
 	import type { RecoverPassphraseByEmail } from "$shared/validation/forms"
 	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	let completed: boolean = $state(false)
 	let email: string = $state()
@@ -24,8 +23,8 @@
 				}
                 return handleClientError({ errors, toast})(r)
             })
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
 
 	let data: FormDataOf<RecoverPassphraseByEmail> = $state()

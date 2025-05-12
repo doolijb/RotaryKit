@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput, FileDropField, SelectField } from "$client/components"
+	import { FormBase, Input, FileDropField, SelectField } from "$client/components"
 	import { ImageResolutions, ImageSizes, ImageStatus } from "$shared/constants"
 	import { AdminCreateImage as Form } from "$shared/validation/forms"
 
@@ -63,7 +63,7 @@
 	showSubmit={false}
 	showCancel={false}
 >
-	<TextInput
+	<Input
 		id="title"
 		field="title"
 		{form}

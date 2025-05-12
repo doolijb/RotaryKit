@@ -1,10 +1,10 @@
 import {
 	pgTable,
-	uniqueIndex,
 	varchar,
 	uuid,
 	timestamp,
-	boolean
+	boolean,
+	unique
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { sql } from "drizzle-orm"
@@ -29,11 +29,9 @@ export const users = pgTable(
 		isSuperUser: boolean("is_super_user").notNull().default(false),
 		isActive: boolean("is_active").notNull().default(true),
 	},
-	(obj) => {
-		return {
-			usernameIndex: uniqueIndex("unique_usernames").on(obj.username)
-		}
-	}
+	(t) => [
+		unique().on(t.id, t.username)
+	]
 )
 
 export const userRelations = relations(users, ({ many, one }) => ({

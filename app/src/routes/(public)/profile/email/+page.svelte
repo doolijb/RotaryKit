@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import { page } from "$app/state"
 	import { ConfirmationModal, Main } from "$client/components"
 	import api from "$shared/api"
@@ -9,7 +9,6 @@
 	import { handleClientError, handleException, handleServerError } from "$client/utils"
 	import { AddEmailAddress as Form } from "$shared/validation/forms"
 
-	const toast: ToastContext = getContext("toast")
 
 
 	////
@@ -43,14 +42,14 @@
 			.Success(async (res) => {
 				getEmails()
 				addEmailCompleted = true
-				toast.create({ description: "Your email was added", type: "success" })
+				toaster.create({ description: "Your email was added", type: "success" })
 			})
 			.ClientError((r) => {
 				addEmailErrors = r.body.errors
-				return handleClientError({ toast })(r)
+				return handleClientError({})(r)
 			})
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
 
 	async function onSetPrimaryClick(email: SelectEmail) {
@@ -66,11 +65,11 @@
 			.Success(async (res) => {
 				emails = []
 				getEmails()
-				toast.create({ description: res.body.message || "Primary email updated", type: "success" })
+				toaster.create({ description: res.body.message || "Primary email updated", type: "success" })
 			})
-			.ClientError(handleClientError({ toast }))
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 		isSettingPrimary = false
 		isSetPrimaryModalOpen = false
 		setPrimaryModalData = {}
@@ -81,11 +80,11 @@
 			.resourceId$(email.id)
 			["resend-code"].POST()
 			.Success(async (res) => {
-				toast.create({description: "Verification email sent", type: "success" })
+				toaster.create({description: "Verification email sent", type: "success" })
 			})
-			.ClientError(handleClientError({ toast }))
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
 
 	async function onDeleteEmailClick(email: SelectEmail) {
@@ -100,11 +99,11 @@
 			.DELETE()
 			.Success(async (res) => {
 				getEmails()
-				toast.create({ description: "Your email was deleted", type: "success" })
+				toaster.create({ description: "Your email was deleted", type: "success" })
 			})
-			.ClientError(handleClientError({ toast }))
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 		deleteEmailModalData = {}
 	}
 

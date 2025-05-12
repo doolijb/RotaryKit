@@ -2,13 +2,12 @@
 	import { Main, Loading } from "$client/components"
 	import { page } from "$app/state"
 	import { handleClientError, handleException, handleServerError } from "$client/utils"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import api from "$shared/api"
 	import { getContext, onMount } from "svelte"
 	import { NewPassphraseForm }from "$client/components"
 	import { NewPassphrase } from "$shared/validation/forms"
 
-	const toast: ToastContext = getContext("toast")
 
 	async function verify() {
 		const code = page.params.code
@@ -26,7 +25,7 @@
 		await api.reset.passphrase.code$(code).PUT({ body: data })
 			.Success(async (res) => {
 				completed = true
-				toast.create({ 
+				toaster.create({ 
 					description: res['body']['message'] || "Passphrase updated", 
 					type: "success" 
 				})

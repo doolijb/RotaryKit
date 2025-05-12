@@ -8,7 +8,6 @@
 	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
 	import { getContext } from "svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// COMPUTED
@@ -27,7 +26,7 @@
 			.Success(async (res) => {
 				completed = true
 				await invalidateAll()
-				toast.create({ 
+				toaster.create({ 
 					description: "Your passphrase has been updated", 
 					type: "success" 
 				})
@@ -37,8 +36,8 @@
                 errors = r.body.errors
                 return handleClientError({ toast})(r)
             })
-			.ServerError(handleServerError({ toast }))
-			.catch(handleException({ toast }))
+			.ServerError(handleServerError({}))
+			.catch(handleException({}))
 	}
 
 </script>

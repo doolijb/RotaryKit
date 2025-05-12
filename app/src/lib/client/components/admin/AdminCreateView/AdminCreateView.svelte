@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { AdminHeader } from "$client/components"
-	import { type ToastContext } from "@skeletonlabs/skeleton-svelte"
+	import { toaster } from "$client/utils"
 	import { Accordion } from "@skeletonlabs/skeleton-svelte"
 	import { goto } from "$app/navigation"
 	import humanizeString from "humanize-string"
@@ -9,7 +9,6 @@
 	import { getContext, type Component, type Snippet } from "svelte"
 	import { CircleHelp, CircleX, Save, Table } from "lucide-svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -76,14 +75,14 @@
 
 			await resourceApi.POST({body})
 				.Success(async (r) => {
-					toast.create({
+					toaster.create({
 						description: `${pluralize.singular(humanizeString(resource))} created successfully.`,
 						type: "success"
 					})
 					goto(`/admin/${resource}/${r.body.result[primaryKey]}`)
 				})
-				.ClientError(handleClientError({ toast}))
-				.ServerError(handleServerError({ toast }))
+				.ClientError(handleClientError({}))
+				.ServerError(handleServerError({}))
 			
 				disabled = false
 		}

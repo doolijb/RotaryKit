@@ -18,7 +18,6 @@
 	import humanizeString from "humanize-string"
 	import * as Icon from "lucide-svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// VARIABLE PROPS
@@ -85,14 +84,14 @@
 	async function onDelete() {
 		resourceApi.resourceId$(resourceId).DELETE({})
 			.Success((r) => {
-				toast.create({
+				toaster.create({
 					description: `${pluralize.singular(humanizeString(resource))} deleted successfully`,
 					type: "success"
 				})
 				goto(`/admin/${resource}`)
 			})
-			.ClientError(handleClientError({ toast }))
-			.ServerError(handleServerError({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
 	}
 
 	////
@@ -106,8 +105,8 @@
 			.Success((r) => {
 				result = mutateResult ? mutateResult(r.body) : r.body
 			})
-			.ClientError(handleClientError({ toast }))
-			.ServerError(handleServerError({ toast }))
+			.ClientError(handleClientError({}))
+			.ServerError(handleServerError({}))
 	}
 
 	////

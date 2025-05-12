@@ -17,7 +17,7 @@ export function handleClientError(
 			if (!res.body["message"]) {
 				res.body["message"] = "An unknown error occurred"
 			}
-			toast.create({ 
+			toaster.create({ 
 				title: "Error",
 				description: res.body["message"], 
 				type: "error" 

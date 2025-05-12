@@ -1,6 +1,7 @@
+export { default as FieldBase } from "./FieldBase"
 export { default as Autocomplete } from "./Autocomplete"
 export { default as TextArea } from "./TextArea"
-export { default as TextInput } from "./TextInput"
+export { default as Input } from "./Input"
 export { default as PassphraseInput } from "./PassphraseInput"
 export { default as ValidationBadges } from "./ValidationBadges"
 export { default as ValidationLegend } from "./ValidationLegend"

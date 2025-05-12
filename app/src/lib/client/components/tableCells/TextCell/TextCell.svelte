@@ -1,12 +1,10 @@
 <script lang="ts">
     import * as Icon from "lucide-svelte"
-    import { getDisplayAndCopyText } from "$client/utils"
-    import { getContext, type Snippet } from "svelte"
-	import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
+    import { getDisplayAndCopyText, toaster } from "$client/utils"
+    import { type Snippet } from "svelte"
 
     type ValueType = "unknown" | "uuid" | "number" | "date" | "url" | "boolean"
 
-    const toast: ToastContext = getContext("toast")
 
     ////
     // PROPS
@@ -139,7 +137,7 @@
         onclick={() => {
 
             url && window.open(url)
-            !url && navigator.clipboard.writeText(text) && canCopy && toast.create({ description: "Copied to clipboard"})
+            !url && navigator.clipboard.writeText(text) && canCopy && toaster.create({ description: "Copied to clipboard"})
         }}
         onfocus={() => (focused = true)}
         onfocusout={() => (focused = false)}

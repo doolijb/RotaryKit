@@ -1,9 +1,10 @@
-import type { ToastContext } from "@skeletonlabs/skeleton-svelte"
+import { toaster } from "./toaster.ts"
 
 export * from "./hasAdminPermission.ts"
 export * from "./useFormData.ts"
 export * from "./differentiateType.ts"
 export * from "./handleClientError.ts"
+export * from "./toaster.ts"
 
 /**
  * Returns a function that automatically handles toasts (if toast is provided),
@@ -13,19 +14,15 @@ export function handleServerError(
 	{
 		toast
 	}: {
-		toast?: ToastContext
+		toast?: {title?: string, description?: string}
 	},
 	callback?: (res: DefaultResponse) => Promise<any>
 ) {
 	return (res: DefaultResponse) => {
-		if (toast) {
-			const description = res.body["message"] || "An internal error occurred"
-			toast.create({
-				title: "Error",
-				description,
-				type: "error"
-			})
-		}
+		toaster.error({ 
+			title: toast && toast.title ? toast.title : "Error", 
+			description: toast && toast.description ? toast.description : "An internal error occurred"
+		})
 		if (callback) {
 			callback(res)
 			return
@@ -41,19 +38,15 @@ export function handleException(
 	{
 		toast
 	}: {
-		toast?: ToastContext
+		toast?: {title?: string, description?: string}
 	},
 	callback?: (err: any) => Promise<any>
 ) {
 	return (err: any) => {
-		if (toast) {
-			const description = "An unexpected error occurred"
-			toast.create({
-				title: "Error",
-				description,
-				type: "error"
-			})
-		}
+		toaster.error({ 
+			title: toast && toast.title ? toast.title : "Error", 
+			description: toast && toast.description ? toast.description : "An unexpected error occurred"
+		})
 		if (callback) {
 			callback(err)
 			return

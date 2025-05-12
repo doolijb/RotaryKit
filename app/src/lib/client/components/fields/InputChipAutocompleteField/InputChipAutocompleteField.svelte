@@ -10,7 +10,6 @@
 	import humanizeString from "humanize-string"
 	import { Icon } from "lucide-svelte"
 
-	const toast: ToastContext = getContext("toast")
 
 	////
 	// PROPS
@@ -224,7 +223,7 @@
 			}
 
 			if (attrs?.maxLength && value.length > attrs.maxLength) {
-				toast.create({
+				toaster.create({
 					description: `You can only enter up to ${attrs.maxLength} characters`,
 					type: "error",
 				})
@@ -233,7 +232,7 @@
 			}
 
 			if (attrs?.minLength && value.length < attrs.minLength) {
-				toast.create({
+				toaster.create({
 					description: `You must enter at least ${attrs.minLength} characters`,
 					type: "error",
 				})
@@ -254,7 +253,7 @@
 	}
 
 	function maxSelectedReachedToast() {
-		toast.create({
+		toaster.create({
 			description: `You can only select up to ${maxSelected} items`,
 			type: "warning"
 		})

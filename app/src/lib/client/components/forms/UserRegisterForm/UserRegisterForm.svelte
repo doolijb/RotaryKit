@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormBase, TextInput, PassphraseInput } from "$client/components"
+	import { FormBase, Input, PassphraseInput } from "$client/components"
 	import { UserRegister as Form } from "$shared/validation/forms"
 
 	let form = $state(Form.init())
@@ -53,7 +53,7 @@
 	{oncancel}
 	showCancel={false}
 >
-	<TextInput
+	<Input
 		id="username"
 		field="username"
 		{form}
@@ -61,7 +61,7 @@
 		bind:errors
 		{disabled}
 	/>
-	<TextInput
+	<Input
 		id="email"
 		type="email"
 		field="email"
