@@ -92,7 +92,7 @@
 {#snippet createButton()}
 	<button
 		type="button"
-		class="btn preset-filled-success-500"
+		class="btn preset-filled-success-500 -500"
 		onclick={onsubmit}
 		disabled={!canSubmit}
 	>

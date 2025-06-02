@@ -13,6 +13,9 @@ export class MaxLength extends Validator {
 	message = () => `Must be at most ${this.args.maxLen} characters long`
 	test = async ({ key, data }) => {
 		const value = data[key]
+		if (Array.isArray(value)) {
+			return !value.some((v) => typeof v === "string" && v.length > this.args.maxLen)
+		}
 		return value ? value.length <= this.args.maxLen : true
 	}
 }

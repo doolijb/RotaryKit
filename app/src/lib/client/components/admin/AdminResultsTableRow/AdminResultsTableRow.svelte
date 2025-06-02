@@ -109,7 +109,7 @@
         <div class="">
             <div class="btn-group-vertical w-full flex flex-col gap-2">
                 {#if canViewResource}
-                    <button class="btn preset-filled-primary-500" onclick={() => onView(result)}> View </button>
+                    <button class="btn preset-filled-primary-500 -500" onclick={() => onView(result)}> View </button>
                 {/if}
 
                 {#if canEditResource}
@@ -127,7 +127,7 @@
                     confirmButtonPreset="preset-filled-error-500"
                 >
                     {#snippet trigger()}
-                        <button class="btn preset-filled-error-500"> Delete </button>
+                        <button class="btn preset-filled-error-500 -500"> Delete </button>
                     {/snippet}
                     </ConfirmationModal>
                 {/if}

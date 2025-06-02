@@ -378,7 +378,7 @@
 									{(file.size / 1000000).toPrecision(2)} MB
 								</p>
 								<button
-									class="btn preset-filled-error mt-2 ml-auto mt-0"
+									class="btn preset-filled-error-500  mt-2 ml-auto mt-0"
 									onclick={() => removeFile(file)}
 								>
 									<Icon.Trash class="w-4 h-4 me-1" />

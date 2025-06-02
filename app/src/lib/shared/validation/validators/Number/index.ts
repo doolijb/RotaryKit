@@ -8,7 +8,7 @@ class Root extends Validator {
 	test = async ({ key, data }) => {
 		const value = data[key]
 		try {
-			return !isNaN(parseInt(value))
+			return [undefined, null].includes(value) || !isNaN(parseInt(value))
 		} catch {
 			return value == null || value == undefined || typeof value === "number"
 		}

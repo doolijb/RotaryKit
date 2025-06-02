@@ -1,228 +1,132 @@
 <script lang="ts">
-	import { ValidationBadges, ValidationLegend } from "$client/components"
-	import { ValidStates } from "$shared/constants"
-	import { onMount } from "svelte"
-	import { v4 } from "uuid"
-	import type { FormSchema } from "$shared/validation/base"
-	import ModalSelectFieldModal from "./ModalSelectFieldModal.svelte"
-	import type { Snippet } from "svelte"
-	import humanizeString from "humanize-string"
-	
+    import { FieldBase } from "$client/components"
+    import ModalSelectFieldModal from "./ModalSelectFieldModal.svelte"
+	import { onMount, type ComponentProps } from "svelte"
 
-	////
-	// PROPS
-	////
+    interface Props extends Omit<ComponentProps<typeof FieldBase>, "children"> {
+        mapOptions: (data: any[]) => any[]
+        getOptions: ({ search }: { search: string }) => Promise<any[]>
+		buttonTextSubmit?: string
+        title?: string
+        buttonTextCancel?: string
+    }
 
-	interface Props {
+    let {
 		// Props
-		field: string
-		form: FormSchema
-		id?: string
-		result?: any
-		placeholder?: string
-		label?: string
+        mapOptions,
+        getOptions,
+		buttonTextSubmit = "Submit",
+        title = $bindable(),
+        buttonTextCancel = "Cancel",
 
-		// Bindings
-		mapOptions: (data: any[]) => AutocompleteOption[]
-		getOptions: ({searchString}) => Promise<any[]>
-		disabled: boolean
+		// Bindables
+        ref = $bindable(undefined),
 
-		// Events
-		onblur?: (e: Event) => void
-		oninput?: (e: Event) => void
+		...restProps
+    }: Props = $props()
 
-		// Children
-		prefixSnippet?: Snippet
-		suffixSnippet?: Snippet
-	}
+    let selectedOption: {label: string, value: any} | undefined = $state()
+    let isModalOpen = $state(false)
+	let prepared: ComponentProps<typeof FieldBase>["prepared"] = $state()
 
-	let {
-		// Props
-		field,
-		form,
-		id = v4(),
-		result,
-		placeholder,
-		label,
+    const formCtx = restProps.form.getContext()
 
-		// Bindings
-		mapOptions,
-		getOptions,
-		disabled = $bindable(false),		
+    async function openModal() {
+		await touch()
+        isModalOpen = true
+    }
 
-		// Events
-		onblur,
-		oninput,
+    async function onModalConfirm(e: Event, data : { selectedOption: { label: string, value: any } }) {
+        selectedOption = data.selectedOption
+        formCtx.data[restProps.field] = selectedOption ? selectedOption.value : undefined
+        isModalOpen = false
+    }
 
-		// Children
-		prefixSnippet,
-		suffixSnippet,
-	}: Props = $props();
+    function onModalClose() {
+        isModalOpen = false
+    }
 
-	////
-	// STATE
-	////
-
-	let selectedOption = $state(undefined)
-	let validatorLength = $state(0)
-	let isTouched = $state(false)
-	let fieldErrors: FieldErrors = $state({})
-	let validState = $state(ValidStates.NONE)
-
-	////
-	// FUNCTIONS
-	////
+    function clearSelection() {
+        formCtx.data[restProps.field] = undefined
+        selectedOption = undefined
+    }
 
 	async function touch() {
-		isTouched = true
+		formCtx.touchedFields = {...formCtx.touchedFields, [restProps.field]: true}
+		console.log("touch() touchedFields", formCtx.touchedFields)
 	}
 
-	let isModalOpen = $state(false)
-	async function openModal() {
-		isModalOpen = true
-	}
-
-	async function onModalConfirm(data) {
-		selectedOption = data.selectedOption
-		data[field] = selectedOption !== undefined ? selectedOption.value : undefined
-		isModalOpen = false
-		touch()
-	}
-
-	async function onModalClose() {
-		isModalOpen = false
-	}
-
-	async function clearSelection() {
-		formCtx.data[field] = undefined
-		selectedOption = undefined
-		await touch()
-	}
-
-	async function handleOnBlur(e: Event) {
-		await touch()
-		await onblur?.(e)
-	}
-
-	async function handleOnInput(e: Event) {
-		await touch()
-		await oninput?.(e)
-	}
-
-	////
-	// CALCULATED
-	////
-
-	let attrs: FormFieldAttributes | undefined = $derived(form.fieldAttributes[field])
-	let fieldValidator = $derived(form.fields[field])
-
-	let displayValue = $derived(selectedOption ? selectedOption.label || selectedOption : "")
-
-	$effect.pre(() => {
-		validatorLength = Object.values(fieldValidator.validators).filter(
-			validator => !validator.isHidden
-		).length
-	})
-
-	$effect.pre(() => {
-		if (!label) {
-			if (attrs?.label) {
-				label = attrs.label
-			} else {
-				label = humanizeString(field)
+	onMount(async () => {
+		if (![null, undefined].includes(formCtx.data[restProps.field]) && !selectedOption) {
+			const options = mapOptions(await getOptions({ search: `${formCtx.data[restProps.field]}` }))
+			if (options.length) {
+				selectedOption = options.find((option) => option.value == formCtx.data[restProps.field])
 			}
+		}
+		if (![null, undefined].includes(formCtx.data[restProps.field])) {
+			await touch()
 		}
 	})
 
 	$effect(() => {
-		fieldErrors = formCtx.errors[field] || {}
-	})
-
-	////
-	// LIFECYCLE
-	////
-
-	onMount(() => {
-		if (getOptions === undefined) {
-			throw new Error("getOptions function is required")
-		}
-		if (mapOptions === undefined) {
-			throw new Error("mapOptions function is required")
-		}
-		if (result) {
-			selectedOption = mapOptions([result])[0];
-			formCtx.data[field] = selectedOption.value || selectedOption
-		}
-		formCtx.data[field] && touch()
+		console.log("$effect touchedFields", formCtx.touchedFields)
 	})
 
 </script>
 
-<ModalSelectFieldModal
-	bind:open={isModalOpen}
-	{mapOptions}
-	{getOptions}
-	{selectedOption}
-	title={label}
-	body=""
-	onConfirm={onModalConfirm}
-	onClose={onModalClose}
-	buttonTextSubmit="Submit"
-	buttonTextCancel="Cancel"
-	searchTimeout={undefined}
-/>
-
-
-<div class="mb-2">
-
-    <div class="flex items-center">
-        <label class="label-text inline-flex pb-2" for={id}>
-            <span class="cursor-pointer select-none" class:text-gray-500={disabled}>
-                {label}
-            </span>
-        </label>
-        {#if !disabled}
-            <ValidationBadges {fieldValidator} {form} {field} />
-        {/if}
-    </div>
-
-    <div class="flex items-center">
-		<button class="input-group flex cursor-pointer text-left px-1" title="Select" onclick={openModal} type="button">
-			{#if prefixSnippet}
-				<div class="align-middle m-0 px-0">
-					{@render prefixSnippet()}
-				</div>
-			{/if}
-			<span class="m-2 border-0 disabled:cursor-not-allowed flex-grow" class:text-surface-400={!formCtx.data[field] || disabled} aria-label={label}>
-				{displayValue || placeholder || "\u00A0"}
-			</span>
-			{#if suffixSnippet}
-				<div class="align-middle m-0 px-0 me-2">
-					{@render suffixSnippet()}
-				</div>
-			{/if}
-			{#if !disabled && validatorLength}
-				<div class="legendIcon align-middle px-0 me-3">
-					<ValidationLegend {fieldValidator} {form} {attrs} {field}  />
-				</div>
-			{/if}
-		</button>
-		<div class="flex">
-			<button type="button" class="btn preset-filled-secondary ml-2" onclick={openModal} disabled={disabled}>
+<FieldBase bind:ref bind:prepared {...restProps}>
+	<div class="flex">
+		{#if restProps.disabled && [null, undefined].includes(formCtx.data[restProps.field])}
+			<span class="disabled select-none">N/A</span>
+		{:else}
+			<button
+				class="input-group flex cursor-pointer text-left px-1 grow"
+				title="Select"
+				onclick={openModal}
+				type="button"
+				disabled={restProps.disabled}
+			>
+				<span
+					class="m-2 border-0 disabled:cursor-not-allowed flex-grow"
+					class:text-surface-400={!formCtx.data[restProps.field] || restProps.disabled}
+					aria-label={restProps.label}
+				>
+					{selectedOption?.label || formCtx.data[restProps.field] || prepared.attrs.placeholder || "Choose an option"}
+				</span>
+			</button>
+		{/if}
+		{#if !restProps.disabled}
+			<button
+				type="button"
+				class="btn preset-filled-secondary-500 ml-2"
+				onclick={openModal}
+				disabled={isModalOpen}
+			>
 				Select
 			</button>
-			<button type="button" class="btn preset-filled-surface ml-2" onclick={clearSelection} disabled={!formCtx.data[field] || disabled}>
+			<button
+				type="button"
+				class="btn preset-filled-surface-500 ml-2"
+				onclick={clearSelection}
+				disabled={isModalOpen || !formCtx.data[restProps.field]}
+			>
 				Clear
 			</button>
-		</div>
+		{/if}
     </div>
+</FieldBase>
 
-</div>
-
-<style lang="postcss">
-  @reference "tailwindcss";
-	.input-group div.px-0 {
-		padding-left: 0 !important;
-		padding-right: 0 !important;
-	}
-</style>
+{#if !restProps.disabled}
+	<ModalSelectFieldModal
+		bind:open={isModalOpen}
+		{mapOptions}
+		{getOptions}
+		bind:selectedOption
+		title={title || prepared.attrs.label}
+		body={prepared.attrs.description}
+		{buttonTextSubmit}
+		{buttonTextCancel}
+		onConfirm={onModalConfirm}
+		onClose={onModalClose}
+	/>
+{/if}

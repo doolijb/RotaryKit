@@ -141,7 +141,7 @@
 {#snippet updateButton(tab: {canSubmit: boolean, disabled: boolean})}
 	<button
 		type="button"
-		class="btn preset-filled-success-500 capitalize"
+		class="btn preset-filled-success-500 -500 capitalize"
 		onclick={onsubmit}
 		disabled={!tab.canSubmit || tab.disabled}
 	>

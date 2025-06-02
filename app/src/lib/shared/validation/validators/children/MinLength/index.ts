@@ -13,6 +13,9 @@ export class MinLength extends Validator {
 	message = () => `Must be at least ${this.args.minLen} in length`
 	test = async ({ key, data }) => {
 		const value: string | unknown[] = data[key]
+		if (Array.isArray(value)) {
+			return !value.some((v) => !(typeof v === "string" && v.length > this.args.minLen))
+		}
 		return value ? value.length >= this.args.minLen : true
 	}
 }

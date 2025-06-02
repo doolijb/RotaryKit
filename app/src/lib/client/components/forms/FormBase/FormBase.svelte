@@ -68,7 +68,24 @@
 	})
 
 	$effect(() => {
-		form.validate({ data: formCtx.data }).then((errors) => {
+		
+	})
+
+	$effect(() => {
+		// Track reactive dependencies
+		const _data = formCtx.data
+		const _touched = formCtx.touchedFields
+
+		// Call the function
+		validate()
+	})
+
+	////
+	// FUNCTIONS
+	////
+
+	async function validate() {
+		await form.validate({ data: formCtx.data }).then((errors) => {
 			formCtx.errors = errors
 		})
 		.then(() => {
@@ -80,29 +97,9 @@
 						? ValidStates.VALID
 						: ValidStates.NONE
 				: ValidStates.NONE
-		})
-		})
-	})
-
-	$effect(() => {
-		let doValidation = false
-
-		Object.keys(formCtx.touchedFields).forEach((key) => {
-				if (formCtx.touchedFields[key] !== formCtx.touchedFields[key]) {
-					doValidation = true
-				}
 			})
-
-		if (doValidation) {
-			form.validate({ data: formCtx.data }).then((errors) => {
-				formCtx.errors = errors
-			})
-		}
-	})
-
-	////
-	// FUNCTIONS
-	////
+		})
+	}
 
 	function submitOnEnter(node: HTMLFormElement) {
 		const handler = (event: KeyboardEvent) => {

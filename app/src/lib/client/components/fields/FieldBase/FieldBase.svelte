@@ -16,6 +16,8 @@
 		attrs: FormFieldAttributes
 		maxlength?: number
 		minlength?: number
+		maxCount?: number
+		minCount?: number
 		validatorLength: number
 		fieldValidator: Primitive<unknown>
 		required: boolean
@@ -118,8 +120,8 @@
 
 		if (description) {
 			prepared.attrs.description = description
-		} else if (prepared.attrs.description) {
-			description = prepared.attrs.description
+		} else if (form.fieldAttributes) {
+			prepared.attrs.description = form.fieldAttributes[field]?.description
 		}
 
 		if (label) {
@@ -144,10 +146,15 @@
 			}
 		}
 		prepared.fieldValidator = form.fields[field]
+		if (!prepared.fieldValidator) {
+			throw new Error(`Field "${field}" not found in form schema`)
+		}
 		prepared.validatorLength = Object.values(prepared.fieldValidator.validators).filter(
 			validator => !validator["isHidden"] && !(validator instanceof Primitive) && !(validator instanceof v.children.Required)
 		).length
 		prepared.required = prepared.fieldValidator.validators.some(validator => validator.key === "required")
+		prepared.maxCount = prepared.fieldValidator.validators.find(validator => validator.key === "maxCount")?.args["maxCount"]
+		prepared.minCount = prepared.fieldValidator.validators.find(validator => validator.key === "minCount")?.args["minCount"]
 		isReady = true
 	})
 

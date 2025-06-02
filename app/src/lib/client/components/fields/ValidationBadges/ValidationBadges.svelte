@@ -71,7 +71,7 @@
 	let validators = $derived([...stickyValidators, ...dynamicValidators].slice(0, 3))
 
 	$effect(() => {
-		console.log("openBadges", $state.snapshot(openBadges))
+		console.log("badges touchedFields", formCtx.touchedFields)
 	})
 
 </script>

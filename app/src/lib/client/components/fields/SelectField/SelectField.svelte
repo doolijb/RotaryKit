@@ -41,7 +41,7 @@
 	// VARIABLES
 	////
 
-	let inputValue: string = $state()
+	let inputValue: string = $state("t")
 
     ////
     // CALCULATED
@@ -86,7 +86,11 @@
 		}
 	})
 
-</script>
+	$effect(() => {
+		console.log("inputValue", inputValue)	
+	})
+
+</script>e
 
 <FieldBase bind:ref {...restProps}>
     {#snippet children({

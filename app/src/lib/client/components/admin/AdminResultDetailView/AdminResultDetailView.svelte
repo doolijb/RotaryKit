@@ -217,7 +217,7 @@
 			{#if canCreateResource}
 				<a
 					href="/admin/{resource}/create"
-					class="btn preset-filled-success-500"
+					class="btn preset-filled-success-500 -500"
 					class:disabled={!isLoaded}
 				> 
 					<Icon.Plus />
@@ -321,7 +321,7 @@
 							{#snippet trigger()}
 								<!-- Icon in button is bugged with snippets in svelte -->
 								<span
-									class="btn preset-filled-error-500 disabled"
+									class="btn preset-filled-error-500 -500 disabled"
 									aria-label="Delete"
 									class:disabled={!isLoaded}
 								>
@@ -332,7 +332,7 @@
 						</ConfirmationModal>
 					{:else}
 						<span
-							class="btn preset-filled-error-500 disabled"
+							class="btn preset-filled-error-500 -500 disabled"
 							aria-label="Delete"
 							class:disabled={!isLoaded}
 						>
@@ -344,7 +344,7 @@
 				{#if canEditResource}
 					<a
 						href="{page.url.pathname}/edit"
-						class="btn preset-filled-primary-500"
+						class="btn preset-filled-primary-500 -500"
 						class:disabled={!isLoaded}
 					>
 						<Icon.Pencil />

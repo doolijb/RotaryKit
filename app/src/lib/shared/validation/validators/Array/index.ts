@@ -19,6 +19,8 @@ class ArrayPrimitive extends Primitive<unknown[]> {
 	Root = Root
 	maxLength = this.stageValidator(c.MaxLength)
 	minLength = this.stageValidator(c.MinLength)
+	minCount = this.stageValidator(c.MinCount)
+	maxCount = this.stageValidator(c.MaxCount)
 }
 
 export { ArrayPrimitive as Array }

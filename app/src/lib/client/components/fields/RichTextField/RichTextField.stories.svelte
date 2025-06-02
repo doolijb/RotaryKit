@@ -1,11 +1,10 @@
 <script module>
-	import { defineMeta } from "@storybook/addon-svelte-csf"
+	import { defineMeta, type Args } from "@storybook/addon-svelte-csf"
 	import RichTextField from "."
 	import { fn } from "@storybook/test"
 	import { FormSchema } from "$shared/validation/base"
 	import { validators as v } from "$shared/validation"
     import { FormBase } from "$client/components"
-    import { type Args, setTemplate } from "@storybook/addon-svelte-csf";
 
 	const { Story } = defineMeta({
 		component: RichTextField,
@@ -35,7 +34,9 @@
 			Form: {
 				type: "object",
 			}
-		}
+		},
+		// @ts-ignore - See https://github.com/storybookjs/addon-svelte-csf/pull/295
+		render: template
 	})
 </script>
 
@@ -90,8 +91,6 @@
 			}
 		}
 	}
-
-	setTemplate(template)
   </script>
   
 {#snippet template(args: Args<typeof Story>, ctx)}

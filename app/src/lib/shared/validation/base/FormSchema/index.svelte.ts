@@ -47,22 +47,21 @@ export class FormSchema {
 				disabled: false,
 				canSubmit: true
 			}
+			const formData = {...data}
 			Object.entries(form.fields).forEach(([key, field]) => {
 				touchedFields[key] = false
 				validStates[key] = ValidStates.NONE
-				if (data[key] === undefined) {
+				if (formData[key] === undefined) {
 					switch (true) {
 						case field instanceof v.Array:
-							data[key] = []
+							formData[key] = []
 							break
 						case field instanceof v.Boolean:
-							data[key] = false
+							formData[key] = false
 							break
 						case field instanceof v.Number:
-							data[key] = 0
 							break
 						case field instanceof v.String:
-							data[key] = ""
 							break
 						default:
 							throw new Error(`Unknown primitive for field ${key}`)
@@ -70,7 +69,7 @@ export class FormSchema {
 				}
 			})
 			const ctx: FormContext = $state({
-				data,
+				data:formData,
 				errors,
 				validStates,
 				touchedFields,
